@@ -1,0 +1,8 @@
+*.a
+*.bak
+*.dll
+*.log
+*.o
+*.obj
+*.so
+Makefile
