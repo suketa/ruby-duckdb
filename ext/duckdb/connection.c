@@ -2,13 +2,13 @@
 
 static void deallocate(void *ctx)
 {
-    rubyDuckDB *p = (rubyDuckDBConnection *)ctx;
+    rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;
 
     duckdb_close(&(p->con));
     xfree(p);
 }
 
-static void allocate(value klass)
+static VALUE allocate(VALUE klass)
 {
     rubyDuckDBConnection *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConnection));
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
