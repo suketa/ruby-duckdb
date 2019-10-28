@@ -7,4 +7,6 @@ struct _rubyDuckDBConnection {
 
 typedef struct _rubyDuckDBConnection rubyDuckDBConnection;
 
+void init_duckdb_connection(void);
+
 #endif
