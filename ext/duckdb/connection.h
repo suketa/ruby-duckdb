@@ -1,0 +1,10 @@
+#ifndef RUBY_DUCKDB_CONNECTION_H
+#define RUBY_DUCKDB_CONNECTION_H
+
+struct _rubyDuckDBConnection {
+    duckdb_connection con;
+};
+
+typedef struct _rubyDuckDBConnection rubyDuckDBConnection;
+
+#endif

@@ -4,6 +4,7 @@
 #include "ruby.h"
 #include <duckdb.h>
 #include "./database.h"
+#include "./connection.h"
 
 extern VALUE mDuckDB;
 
