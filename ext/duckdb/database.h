@@ -2,7 +2,7 @@
 #define RUBY_DUCKDB_DATABASE_H
 
 struct _rubyDuckDB {
-  duckdb_database db;
+    duckdb_database db;
 };
 
 typedef struct _rubyDuckDB rubyDuckDB;
