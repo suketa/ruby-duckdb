@@ -1,5 +1,6 @@
 *.a
 *.bak
+*.bundle
 *.dll
 *.log
 *.o
