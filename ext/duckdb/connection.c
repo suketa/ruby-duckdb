@@ -37,12 +37,17 @@ VALUE create_connection(VALUE oDuckDBDatabase) {
 static VALUE duckdb_connection_query(VALUE self, VALUE str) {
 
     rubyDuckDBConnection *ctx;
-    Data_Get_Struct(self, rubyDuckDBConnection, ctx);
+    rubyDuckDBResult *ctxr;
 
-    if (duckdb_query(ctx->con, StringValueCStr(str), NULL) == DuckDBError) {
-        rb_raise(rb_eRuntimeError, "fail query");
+    VALUE result = create_result();
+
+    Data_Get_Struct(self, rubyDuckDBConnection, ctx);
+    Data_Get_Struct(result, rubyDuckDBResult, ctxr);
+
+    if (duckdb_query(ctx->con, StringValueCStr(str), &(ctxr->result)) == DuckDBError) {
+        rb_raise(rb_eRuntimeError, "%s", ctxr->result.error_message);
     }
-    return Qnil;
+    return result;
 }
 
 void init_duckdb_connection(void)
