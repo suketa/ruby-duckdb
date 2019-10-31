@@ -5,6 +5,7 @@
 #include <duckdb.h>
 #include "./database.h"
 #include "./connection.h"
+#include "./result.h"
 
 extern VALUE mDuckDB;
 

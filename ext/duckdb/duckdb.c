@@ -8,4 +8,5 @@ Init_duckdb(void) {
 
     init_duckdb_database();
     init_duckdb_connection();
+    init_duckdb_result();
 }
