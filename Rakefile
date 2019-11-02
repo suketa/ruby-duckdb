@@ -11,7 +11,8 @@ require "rake/extensiontask"
 
 task :build => :compile
 
-Rake::ExtensionTask.new("duckdb") do |ext|
+Rake::ExtensionTask.new("duckdb_native") do |ext|
+  ext.ext_dir = 'ext/duckdb'
   ext.lib_dir = "lib/duckdb"
 end
 
