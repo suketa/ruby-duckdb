@@ -55,6 +55,5 @@ void init_duckdb_connection(void)
     cDuckDBConnection = rb_define_class_under(mDuckDB, "Connection", rb_cObject);
     rb_define_alloc_func(cDuckDBConnection, allocate);
 
-    rb_define_method(cDuckDBConnection, "query", duckdb_connection_query, 1)
+    rb_define_method(cDuckDBConnection, "query", duckdb_connection_query, 1);
 }
-

@@ -3,7 +3,7 @@
 
 ## Description
 
-ruby-duckdb is Ruby binding for [DuckDB](http://www.duckdb.org)
+ruby-duckdb is Ruby binding for [DuckDB](http://www.duckdb.org) database engine
 
 ## Requirement
 
