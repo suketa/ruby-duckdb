@@ -4,7 +4,7 @@ require "duckdb/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "duckdb"
-  spec.version       = Duckdb::VERSION
+  spec.version       = DuckDB::VERSION
   spec.authors       = ["Masaki Suketa"]
   spec.email         = ["masaki.suketa@nifty.ne.jp"]
 
