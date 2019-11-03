@@ -16,14 +16,18 @@ static VALUE allocate(VALUE klass)
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
+static VALUE to_ruby_obj(duckdb_result result, size_t col_idx, size_t row_idx) {
+    char *p = duckdb_value_varchar(&result, col_idx, row_idx);
+    VALUE obj = rb_str_new2(p);
+    free(p);
+    return obj;
+}
+
 static VALUE row_array(rubyDuckDBResult *ctx, size_t row_idx) {
     size_t col_idx;
     VALUE ary = rb_ary_new2(ctx->result.column_count);
     for(col_idx = 0; col_idx < ctx->result.column_count; col_idx++) {
-        char *p = duckdb_value_varchar(&(ctx->result), col_idx, row_idx);
-        rb_ary_store(ary, col_idx, rb_str_new2(p));
-
-        free(p);
+        rb_ary_store(ary, col_idx, to_ruby_obj(ctx->result, col_idx, row_idx));
     }
     return ary;
 }
