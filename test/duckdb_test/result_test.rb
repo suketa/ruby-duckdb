@@ -19,7 +19,7 @@ module DuckDBTest
     def test_each_without_block
       assert_instance_of(Enumerator, @result.each)
       expected_ary = [
-        expected_boolean.to_s.capitalize,
+        expected_boolean,
         expected_smallint.to_s,
         expected_integer.to_s,
         exptected_bigint.to_s,
@@ -33,8 +33,7 @@ module DuckDBTest
     end
 
     def test_result_boolean
-      # TODO: should be true
-      assert_equal(expected_boolean.to_s.capitalize, @ary[0])
+      assert_equal(expected_boolean, @ary[0])
     end
 
     def test_result_smallint

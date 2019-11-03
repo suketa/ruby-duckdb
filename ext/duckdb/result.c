@@ -16,15 +16,25 @@ static VALUE allocate(VALUE klass)
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
+static VALUE to_ruby_obj_boolean(duckdb_result *result, size_t col_idx, size_t row_idx) {
+    bool bval = duckdb_value_boolean(result, col_idx, row_idx);
+    return bval ? Qtrue : Qnil;
+}
+
 static VALUE to_ruby_obj(duckdb_result *result, size_t col_idx, size_t row_idx) {
     char *p;
     VALUE obj = Qnil;
     if (result->columns[col_idx].nullmask[row_idx]) {
         return obj;
     }
-    p = duckdb_value_varchar(result, col_idx, row_idx);
-    obj = rb_str_new2(p);
-    free(p);
+    switch(result->columns[col_idx].type) {
+    case DUCKDB_TYPE_BOOLEAN:
+        return to_ruby_obj_boolean(result, col_idx, row_idx);
+    default:
+        p = duckdb_value_varchar(result, col_idx, row_idx);
+        obj = rb_str_new2(p);
+        free(p);
+    }
     return obj;
 }
 
