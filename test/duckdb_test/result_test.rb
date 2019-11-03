@@ -16,6 +16,22 @@ module DuckDBTest
       assert_instance_of(Array, @ary)
     end
 
+    def test_each_without_block
+      assert_instance_of(Enumerator, @result.each)
+      expected_ary = [
+        'True',
+        '32767',
+        '2147483647',
+        '9223372036854775807',
+        '12345.678711',
+        '12345.678900',
+        'string',
+        '2019-11-03',
+        '2019-11-03 12:34:56'
+      ]
+      assert_equal([[expected_ary, 0]], @result.each.with_index.to_a)
+    end
+
     def test_result_boolean
       # TODO: should be true
       assert_equal('True', @ary[0])
