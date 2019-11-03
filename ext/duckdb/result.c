@@ -28,11 +28,18 @@ static VALUE row_array(rubyDuckDBResult *ctx, size_t row_idx) {
     return ary;
 }
 
+static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    return LONG2FIX(ctx->result.row_count);
+}
+
 static VALUE duckdb_result_each(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     size_t row_idx = 0;
 
-    // RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
+    RETURN_SIZED_ENUMERATOR(oDuckDBResult, 0, 0, duckdb_result_row_size);
 
     Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
     for (row_idx = 0; row_idx < ctx->result.row_count; row_idx++) {
