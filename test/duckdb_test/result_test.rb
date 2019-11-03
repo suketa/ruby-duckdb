@@ -58,6 +58,10 @@ module DuckDBTest
       assert_equal('2019-11-03 12:34:56', @ary[8])
     end
 
+    def test_including_enumerable
+      assert_includes(DuckDB::Result.ancestors, Enumerable)
+    end
+
     private
 
     def create_data
@@ -100,12 +104,7 @@ module DuckDBTest
     end
 
     def first_record
-      ary = nil
-      @result.each do |rec|
-        ary = rec
-        break
-      end
-      ary
+      @result.first
     end
   end
 end
