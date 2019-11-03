@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["masaki.suketa@nifty.ne.jp"]
 
   spec.summary       = %q{This module is Ruby binding for DuckDB database engine.}
-  spec.description   = %q{This module is Ruby binding for DuckDB database engine.\nYou must have the DuckDB engine installed to build/use this module.}
+  spec.description   = "This module is Ruby binding for DuckDB database engine.\nYou must have the DuckDB engine installed to build/use this module."
   spec.homepage      = "https://github.com/suketa/ruby-duckdb"
   spec.license       = "MIT"
 
