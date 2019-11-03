@@ -1,5 +1,6 @@
 # ChangeLog
 
+- `DuckDB::Result#each` returns Enumerator object when block is not given
 - `DuckDB::Result` include `Enumerable`
 - add test for `DuckDB::Result`
 - add test for `DuckDB::Connection`
