@@ -19,59 +19,59 @@ module DuckDBTest
     def test_each_without_block
       assert_instance_of(Enumerator, @result.each)
       expected_ary = [
-        'True',
-        '32767',
-        '2147483647',
-        '9223372036854775807',
-        '12345.678711',
-        '12345.678900',
-        'string',
-        '2019-11-03',
-        '2019-11-03 12:34:56'
+        expected_boolean.to_s.capitalize,
+        expected_smallint.to_s,
+        expected_integer.to_s,
+        exptected_bigint.to_s,
+        expected_float.to_s + '000',
+        expected_double.to_s,
+        expected_string,
+        expected_date,
+        expected_timestamp
       ]
       assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
     end
 
     def test_result_boolean
       # TODO: should be true
-      assert_equal('True', @ary[0])
+      assert_equal(expected_boolean.to_s.capitalize, @ary[0])
     end
 
     def test_result_smallint
       # TODO: should be Integer
-      assert_equal('32767', @ary[1])
+      assert_equal(expected_smallint.to_s, @ary[1])
     end
 
     def test_result_integer
       # TODO: should be Integer
-      assert_equal('2147483647', @ary[2])
+      assert_equal(expected_integer.to_s, @ary[2])
     end
 
     def test_result_bigint
       # TODO: should be Integer
-      assert_equal('9223372036854775807', @ary[3])
+      assert_equal(exptected_bigint.to_s, @ary[3])
     end
 
     def test_result_float
       # TODO: should be Float
-      assert_equal('12345.678711', @ary[4])
+      assert_equal(expected_float.to_s + '000', @ary[4])
     end
 
     def test_result_double
       # TODO: should be Float
-      assert_equal('12345.678900', @ary[5])
+      assert_equal(expected_double.to_s, @ary[5])
     end
 
     def test_result_varchar
-      assert_equal('string', @ary[6])
+      assert_equal(expected_string, @ary[6])
     end
 
     def test_result_date
-      assert_equal('2019-11-03', @ary[7])
+      assert_equal(expected_date, @ary[7])
     end
 
     def test_result_timestamp
-      assert_equal('2019-11-03 12:34:56', @ary[8])
+      assert_equal(expected_timestamp, @ary[8])
     end
 
     def test_result_null
@@ -111,18 +111,54 @@ module DuckDBTest
       <<-SQL
         INSERT INTO table1 VALUES
         (
-          TRUE,
-          32767,
-          2147483647,
-          9223372036854775807,
-          12345.6789,
-          12345.6789,
-          'string',
-          '2019-11-03',
-          '2019-11-03 12:34:56'
+          #{expected_boolean},
+          #{expected_smallint},
+          #{expected_integer},
+          #{exptected_bigint},
+          #{expected_float},
+          #{expected_double},
+          '#{expected_string}',
+          '#{expected_date}',
+          '#{expected_timestamp}'
         ),
         (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
+    end
+
+    def expected_boolean
+      true
+    end
+
+    def expected_smallint
+      32767
+    end
+
+    def expected_integer
+      2147483647
+    end
+
+    def exptected_bigint
+      9223372036854775807
+    end
+
+    def expected_float
+      12345.375
+    end
+
+    def expected_double
+      123.456789
+    end
+
+    def expected_string
+      'string'
+    end
+
+    def expected_date
+      '2019-11-03'
+    end
+
+    def expected_timestamp
+      '2019-11-03 12:34:56'
     end
 
     def first_record
