@@ -29,7 +29,7 @@ module DuckDBTest
         '2019-11-03',
         '2019-11-03 12:34:56'
       ]
-      assert_equal([[expected_ary, 0]], @result.each.with_index.to_a)
+      assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
     end
 
     def test_result_boolean
@@ -74,6 +74,10 @@ module DuckDBTest
       assert_equal('2019-11-03 12:34:56', @ary[8])
     end
 
+    def test_result_null
+      assert_equal(Array.new(9), @result.reverse_each.first)
+    end
+
     def test_including_enumerable
       assert_includes(DuckDB::Result.ancestors, Enumerable)
     end
@@ -105,7 +109,8 @@ module DuckDBTest
 
     def insert_sql
       <<-SQL
-        INSERT INTO table1 VALUES(
+        INSERT INTO table1 VALUES
+        (
           TRUE,
           32767,
           2147483647,
@@ -115,7 +120,8 @@ module DuckDBTest
           'string',
           '2019-11-03',
           '2019-11-03 12:34:56'
-        )
+        ),
+        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
