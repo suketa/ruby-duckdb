@@ -1,8 +1,13 @@
 # ChangeLog
 
+- `DuckDB::Result` include `Enumerable`
+- add test for `DuckDB::Result`
+- add test for `DuckDB::Connection`
+- fix description in duckdb.gemspec
+
 ## 0.0.4
 
-- add Test for `DuckDB::Database`
+- add test for `DuckDB::Database`
 - rename module name to `DuckDB` from `Duckdb`
 
 ## 0.0.3
