@@ -20,11 +20,11 @@ module DuckDBTest
       assert_instance_of(Enumerator, @result.each)
       expected_ary = [
         expected_boolean,
-        expected_smallint.to_s,
-        expected_integer.to_s,
-        exptected_bigint.to_s,
-        expected_float.to_s + '000',
-        expected_double.to_s,
+        expected_smallint,
+        expected_integer,
+        exptected_bigint,
+        expected_float,
+        expected_double,
         expected_string,
         expected_date,
         expected_timestamp
@@ -37,28 +37,23 @@ module DuckDBTest
     end
 
     def test_result_smallint
-      # TODO: should be Integer
-      assert_equal(expected_smallint.to_s, @ary[1])
+      assert_equal(expected_smallint, @ary[1])
     end
 
     def test_result_integer
-      # TODO: should be Integer
-      assert_equal(expected_integer.to_s, @ary[2])
+      assert_equal(expected_integer, @ary[2])
     end
 
     def test_result_bigint
-      # TODO: should be Integer
-      assert_equal(exptected_bigint.to_s, @ary[3])
+      assert_equal(exptected_bigint, @ary[3])
     end
 
     def test_result_float
-      # TODO: should be Float
-      assert_equal(expected_float.to_s + '000', @ary[4])
+      assert_equal(expected_float, @ary[4])
     end
 
     def test_result_double
-      # TODO: should be Float
-      assert_equal(expected_double.to_s, @ary[5])
+      assert_equal(expected_double, @ary[5])
     end
 
     def test_result_varchar
