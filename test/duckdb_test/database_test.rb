@@ -21,8 +21,7 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Database.open('foo', 'bar') }
       assert_raises(TypeError) { DuckDB::Database.open(1) }
 
-      # TODO: should be DuckDB::Error
-      assert_raises(RuntimeError) do
+      assert_raises(DuckDB::Error) do
         not_exist_path = create_path + '/' + create_path
         DuckDB::Database.open(not_exist_path)
       end
