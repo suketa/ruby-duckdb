@@ -1,5 +1,7 @@
 # ChangeLog
 
+- create database only once in result_test.rb
+
 ## 0.0.5
 
 - add `DuckDB::Error`

@@ -3,9 +3,9 @@ require 'test_helper'
 module DuckDBTest
   class ResultTest < Minitest::Test
     def setup
-      @con ||= create_data
-      @result ||= @con.query('SELECT * from table1')
-      @ary ||= first_record
+      @@con ||= create_data
+      @result = @@con.query('SELECT * from table1')
+      @ary = first_record
     end
 
     def test_result
