@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.0.5
+
 - add `DuckDB::Error`
 - `DuckDB::Result#each` convert DuckDB number value to Ruby's number
 - `DuckDB::Result#each` convert DuckDB NULL value to nil
