@@ -27,7 +27,7 @@ VALUE create_connection(VALUE oDuckDBDatabase) {
     Data_Get_Struct(obj, rubyDuckDBConnection, ctxcon);
 
     if (duckdb_connect(ctxdb->db, &(ctxcon->con)) == DuckDBError) {
-        rb_raise(rb_eRuntimeError, "connection error");
+        rb_raise(eDuckDBError, "connection error");
     }
 
     // rb_ivar_set(obj, rb_intern("database"), oDuckDBDatabase);
@@ -45,7 +45,7 @@ static VALUE duckdb_connection_query(VALUE self, VALUE str) {
     Data_Get_Struct(result, rubyDuckDBResult, ctxr);
 
     if (duckdb_query(ctx->con, StringValueCStr(str), &(ctxr->result)) == DuckDBError) {
-        rb_raise(rb_eRuntimeError, "%s", ctxr->result.error_message);
+        rb_raise(eDuckDBError, "%s", ctxr->result.error_message);
     }
     return result;
 }

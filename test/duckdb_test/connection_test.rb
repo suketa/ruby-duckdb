@@ -17,8 +17,7 @@ module DuckDBTest
 
       assert_raises(TypeError) { @con.query(1) }
 
-      # TODO: should be DuckDB::Error
-      assert_raises(RuntimeError) do
+      assert_raises(DuckDB::Error) do
         invalid_sql = 'CREATE TABLE table1 ('
         @con.query(invalid_sql)
       end

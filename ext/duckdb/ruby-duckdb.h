@@ -3,6 +3,7 @@
 
 #include "ruby.h"
 #include <duckdb.h>
+#include "./error.h"
 #include "./database.h"
 #include "./connection.h"
 #include "./result.h"

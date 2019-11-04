@@ -31,7 +31,7 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
     Data_Get_Struct(obj, rubyDuckDB, ctx);
     if (duckdb_open(pfile, &(ctx->db)) == DuckDBError)
     {
-        rb_raise(rb_eRuntimeError, "Failed to open database"); /* FIXME */
+        rb_raise(eDuckDBError, "Failed to open database"); /* FIXME */
     }
     return obj;
 }
