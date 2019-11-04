@@ -1,5 +1,7 @@
 # ChangeLog
 
+- `DuckDB::Result#each` convert DuckDB number value to Ruby's number
+- `DuckDB::Result#each` convert DuckDB NULL value to nil
 - `DuckDB::Result#each` returns Enumerator object when block is not given
 - `DuckDB::Result` include `Enumerable`
 - add test for `DuckDB::Result`
