@@ -7,6 +7,7 @@
 #include "./database.h"
 #include "./connection.h"
 #include "./result.h"
+#include "./prepared_statement.h"
 
 extern VALUE mDuckDB;
 
