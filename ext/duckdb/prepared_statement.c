@@ -16,7 +16,27 @@ static VALUE allocate(VALUE klass)
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
+static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
+
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBPreparedStatement *ctx;
+
+    if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
+        rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
+    }
+
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    Data_Get_Struct(con, rubyDuckDBConnection, ctxcon);
+
+    if (duckdb_prepare(ctxcon->con, StringValuePtr(query), &(ctx->prepared_statement)) == DuckDBError) {
+        /* TODO: include query parameter information in error message. */
+        rb_raise(eDuckDBError, "failed to prepare statement");
+    }
+    return self;
+}
+
 void init_duckdb_prepared_statement(void) {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
     rb_define_alloc_func(cDuckDBPreparedStatement, allocate);
+    rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
 }
