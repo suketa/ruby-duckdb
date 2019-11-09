@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBPreparedStatement {
     duckdb_prepared_statement prepared_statement;
+    index_t nparams;
 };
 
 typedef struct _rubyDuckDBPreparedStatement rubyDuckDBPreparedStatement;

@@ -35,6 +35,17 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     return self;
 }
 
+static VALUE duckdb_prepared_statement_nparams(VALUE self) {
+    rubyDuckDBPreparedStatement *ctx;
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+
+    if (duckdb_nparams(ctx->prepared_statement, &(ctx->nparams)) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to get number of parameters");
+    }
+    return rb_int2big(ctx->nparams);
+}
+
+
 static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
@@ -53,4 +64,5 @@ void init_duckdb_prepared_statement(void) {
     rb_define_alloc_func(cDuckDBPreparedStatement, allocate);
     rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
+    rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
 }
