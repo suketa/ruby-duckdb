@@ -54,9 +54,22 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     Data_Get_Struct(result, rubyDuckDBResult, ctxr);
     if (duckdb_execute_prepared(ctx->prepared_statement, &(ctxr->result)) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to execute statement");
+        rb_raise(eDuckDBError, "%s", ctxr->result.error_message);
     }
     return result;
+}
+
+static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
+    rubyDuckDBPreparedStatement *ctx;
+    index_t idx = FIX2INT(vidx);
+    if (idx <= 0) {
+        rb_raise(rb_eArgError, "index of parameter must be greater than 0");
+    }
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    if (duckdb_bind_varchar(ctx->prepared_statement, idx, StringValuePtr(str)) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %ld parameter", idx);
+    }
+    return self;
 }
 
 void init_duckdb_prepared_statement(void) {
@@ -65,4 +78,5 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
+    rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
 }
