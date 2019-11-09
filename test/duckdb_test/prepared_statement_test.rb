@@ -4,7 +4,8 @@ module DuckDBTest
   class PreparedStatementTest < Minitest::Test
     def self.create_table
       con = DuckDB::Database.open.connect
-      con.query('CREATE TABLE a (id INTEGER)')
+      con.query('CREATE TABLE a (id INTEGER, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
+      con.query("INSERT INTO a VALUES (1, 'str', '2019-11-09', '2019-11-09 12:34:56')")
       con
     end
 
@@ -31,6 +32,9 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
       result = stmt.execute
       assert_instance_of(DuckDB::Result, result)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a where id = ?')
+      assert_raises(DuckDB::Error) { stmt.execute }
     end
 
     def test_nparams
@@ -43,6 +47,60 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = ?')
       assert_equal(1, stmt.nparams)
+    end
+
+    def test_bind_varchar
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_varchar = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_varchar(0, 'str') }
+      assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
+      stmt.bind_varchar(1, 'str')
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_varchar = ?')
+
+      assert_raises(ArgumentError) { stmt.bind_varchar(0, 'str') }
+      assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
+
+      stmt.bind_varchar(1, 'str')
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      # SQL injection
+      param = "' or 1 = 1 --"
+      result = con.query("SELECT * FROM a WHERE col_varchar = '#{param}'")
+      assert_equal(1, result.each.size)
+
+      # block SQL injection using bind_varchar
+      stmt.bind_varchar(1, param)
+      result = stmt.execute
+      assert_equal(0, result.each.size)
+    end
+
+    def test_bind_varchar_date
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
+
+      stmt.bind_varchar(1, '2019/11/09')
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_varchar(1, 'invalid_date_string')
+      assert_raises(DuckDB::Error) { stmt.execute }
+    end
+
+    def test_bind_varchar_timestamp
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_timestamp = $1')
+
+      stmt.bind_varchar(1, '2019/11/09 12:34:56')
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_varchar(1, 'invalid_timestamp_string')
+      assert_raises(DuckDB::Error) { stmt.execute }
     end
   end
 end
