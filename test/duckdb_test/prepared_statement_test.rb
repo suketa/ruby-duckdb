@@ -4,8 +4,8 @@ module DuckDBTest
   class PreparedStatementTest < Minitest::Test
     def self.create_table
       con = DuckDB::Database.open.connect
-      con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
-      con.query("INSERT INTO a VALUES (1, True, 'str', '2019-11-09', '2019-11-09 12:34:56')")
+      con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_real REAL, col_double DOUBLE, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
+      con.query("INSERT INTO a VALUES (1, True, 12345.375, 12345.6789, 'str', '2019-11-09', '2019-11-09 12:34:56')")
       con
     end
 
@@ -63,6 +63,32 @@ module DuckDBTest
       assert_equal(0, stmt.execute.each.size)
 
       assert_raises(ArgumentError) { stmt.bind_boolean(1, 'True') }
+    end
+
+    def test_bind_float
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_real = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_float(0, 12345.375) }
+      assert_raises(DuckDB::Error) { stmt.bind_float(2, 12345.375) }
+
+      stmt.bind_float(1, 12345.375)
+      assert_equal(1, stmt.execute.each.size)
+
+      assert_raises(TypeError) { stmt.bind_float(1, 'invalid_float_val') }
+    end
+
+    def test_bind_double
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_double = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_double(0, 12345.6789) }
+      assert_raises(DuckDB::Error) { stmt.bind_double(2, 12345.6789) }
+
+      stmt.bind_double(1, 12345.6789)
+      assert_equal(1, stmt.execute.each.size)
+
+      assert_raises(TypeError) { stmt.bind_double(1, 'invalid_double_val') }
     end
 
     def test_bind_varchar

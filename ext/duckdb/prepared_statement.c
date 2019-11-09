@@ -59,18 +59,50 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     return result;
 }
 
-static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALUE bval) {
-    rubyDuckDBPreparedStatement *ctx;
+static index_t check_index(VALUE vidx) {
     index_t idx = FIX2INT(vidx);
     if (idx <= 0) {
         rb_raise(rb_eArgError, "index of parameter must be greater than 0");
     }
+    return idx;
+}
+
+static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALUE val) {
+    rubyDuckDBPreparedStatement *ctx;
+    index_t idx = check_index(vidx);
+
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
-    if (bval != Qtrue && bval != Qfalse) {
+    if (val != Qtrue && val != Qfalse) {
         rb_raise(rb_eArgError, "binding value must be boolean");
     }
 
-    if (duckdb_bind_boolean(ctx->prepared_statement, idx, (bval == Qtrue)) == DuckDBError) {
+    if (duckdb_bind_boolean(ctx->prepared_statement, idx, (val == Qtrue)) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %ld parameter", idx);
+    }
+    return self;
+}
+
+static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
+    rubyDuckDBPreparedStatement *ctx;
+    index_t idx = check_index(vidx);
+    double dbl = NUM2DBL(val);
+
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+
+    if (duckdb_bind_float(ctx->prepared_statement, idx, (float)dbl) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %ld parameter", idx);
+    }
+    return self;
+}
+
+static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
+    rubyDuckDBPreparedStatement *ctx;
+    index_t idx = check_index(vidx);
+    double dbl = NUM2DBL(val);
+
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+
+    if (duckdb_bind_double(ctx->prepared_statement, idx, dbl) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %ld parameter", idx);
     }
     return self;
@@ -78,10 +110,8 @@ static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALU
 
 static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = FIX2INT(vidx);
-    if (idx <= 0) {
-        rb_raise(rb_eArgError, "index of parameter must be greater than 0");
-    }
+    index_t idx = check_index(vidx);
+
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     if (duckdb_bind_varchar(ctx->prepared_statement, idx, StringValuePtr(str)) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %ld parameter", idx);
@@ -96,5 +126,7 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
     rb_define_method(cDuckDBPreparedStatement, "bind_boolean", duckdb_prepared_statement_bind_boolean, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_float", duckdb_prepared_statement_bind_float, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_double", duckdb_prepared_statement_bind_double, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
 }
