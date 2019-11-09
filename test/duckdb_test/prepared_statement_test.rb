@@ -4,8 +4,8 @@ module DuckDBTest
   class PreparedStatementTest < Minitest::Test
     def self.create_table
       con = DuckDB::Database.open.connect
-      con.query('CREATE TABLE a (id INTEGER, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
-      con.query("INSERT INTO a VALUES (1, 'str', '2019-11-09', '2019-11-09 12:34:56')")
+      con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
+      con.query("INSERT INTO a VALUES (1, True, 'str', '2019-11-09', '2019-11-09 12:34:56')")
       con
     end
 
@@ -47,6 +47,22 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = ?')
       assert_equal(1, stmt.nparams)
+    end
+
+    def test_bind_boolean
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_boolean(0, true) }
+      assert_raises(DuckDB::Error) { stmt.bind_boolean(2, true) }
+
+      stmt.bind_boolean(1, true)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt.bind_boolean(1, false)
+      assert_equal(0, stmt.execute.each.size)
+
+      assert_raises(ArgumentError) { stmt.bind_boolean(1, 'True') }
     end
 
     def test_bind_varchar
