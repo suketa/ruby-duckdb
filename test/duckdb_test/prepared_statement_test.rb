@@ -4,8 +4,8 @@ module DuckDBTest
   class PreparedStatementTest < Minitest::Test
     def self.create_table
       con = DuckDB::Database.open.connect
-      con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_real REAL, col_double DOUBLE, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
-      con.query("INSERT INTO a VALUES (1, True, 12345.375, 12345.6789, 'str', '2019-11-09', '2019-11-09 12:34:56')")
+      con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_smallint SMALLINT, col_integer INTEGER, col_bigint BIGINT, col_real REAL, col_double DOUBLE, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
+      con.query("INSERT INTO a VALUES (1, True, 32767, 2147483647, 9223372036854775807, 12345.375, 12345.6789, 'str', '2019-11-09', '2019-11-09 12:34:56')")
       con
     end
 
@@ -63,6 +63,57 @@ module DuckDBTest
       assert_equal(0, stmt.execute.each.size)
 
       assert_raises(ArgumentError) { stmt.bind_boolean(1, 'True') }
+    end
+
+    def test_bind_int16
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
+
+      stmt.bind_int16(1, 32767)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
+      stmt.bind_int16(1, 32767)
+      assert_equal(0, stmt.execute.each.size)
+
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
+      stmt.bind_int16(1, 32767)
+      assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_int32
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
+
+      stmt.bind_int32(1, 32767)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
+      stmt.bind_int32(1, 2147483647)
+      assert_equal(1, stmt.execute.each.size)
+
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
+      stmt.bind_int32(1, 2147483647)
+      assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_int64
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
+
+      stmt.bind_int64(1, 32767)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
+      stmt.bind_int64(1, 2147483647)
+      assert_equal(1, stmt.execute.each.size)
+
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
+      stmt.bind_int64(1, 9223372036854775807)
+      assert_equal(1, stmt.execute.each.size)
     end
 
     def test_bind_float
