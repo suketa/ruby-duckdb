@@ -36,11 +36,13 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
     return obj;
 }
 
-static VALUE duckdb_database_connect(VALUE self) {
+static VALUE duckdb_database_connect(VALUE self)
+{
     return create_connection(self);
 }
 
-void init_duckdb_database(void) {
+void init_duckdb_database(void)
+{
     VALUE cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
     rb_define_singleton_method(cDuckDBDatabase, "open", duckdb_database_s_open, -1);

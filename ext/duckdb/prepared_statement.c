@@ -16,8 +16,8 @@ static VALUE allocate(VALUE klass)
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
-static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
-
+static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query)
+{
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBPreparedStatement *ctx;
 
@@ -35,7 +35,8 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     return self;
 }
 
-static VALUE duckdb_prepared_statement_nparams(VALUE self) {
+static VALUE duckdb_prepared_statement_nparams(VALUE self)
+{
     rubyDuckDBPreparedStatement *ctx;
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
 
@@ -46,7 +47,8 @@ static VALUE duckdb_prepared_statement_nparams(VALUE self) {
 }
 
 
-static VALUE duckdb_prepared_statement_execute(VALUE self) {
+static VALUE duckdb_prepared_statement_execute(VALUE self)
+{
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
     VALUE result = create_result();
@@ -59,7 +61,8 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     return result;
 }
 
-static index_t check_index(VALUE vidx) {
+static index_t check_index(VALUE vidx)
+{
     index_t idx = FIX2INT(vidx);
     if (idx <= 0) {
         rb_raise(rb_eArgError, "index of parameter must be greater than 0");
@@ -67,7 +70,8 @@ static index_t check_index(VALUE vidx) {
     return idx;
 }
 
-static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALUE val) {
+static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALUE val)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
 
@@ -82,7 +86,8 @@ static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALU
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
+static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
@@ -95,7 +100,8 @@ static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
+static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
     int32_t i32val = NUM2LONG(val);
@@ -108,7 +114,8 @@ static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
+static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
@@ -121,7 +128,8 @@ static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
+static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -134,7 +142,8 @@ static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
+static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -147,7 +156,8 @@ static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
+static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str)
+{
     rubyDuckDBPreparedStatement *ctx;
     index_t idx = check_index(vidx);
 
@@ -158,9 +168,12 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     return self;
 }
 
-void init_duckdb_prepared_statement(void) {
+void init_duckdb_prepared_statement(void)
+{
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
+
     rb_define_alloc_func(cDuckDBPreparedStatement, allocate);
+
     rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
