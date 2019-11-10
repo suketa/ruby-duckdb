@@ -3,7 +3,8 @@
 VALUE mDuckDB;
 
 void
-Init_duckdb_native(void) {
+Init_duckdb_native(void)
+{
     mDuckDB = rb_define_module("DuckDB");
 
     init_duckdb_error();

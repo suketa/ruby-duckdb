@@ -16,37 +16,44 @@ static VALUE allocate(VALUE klass)
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
-static VALUE to_ruby_obj_boolean(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj_boolean(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     bool bval = duckdb_value_boolean(result, col_idx, row_idx);
     return bval ? Qtrue : Qnil;
 }
 
-static VALUE to_ruby_obj_smallint(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj_smallint(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     int16_t i16val = duckdb_value_int16(result, col_idx, row_idx);
     return INT2FIX(i16val);
 }
 
-static VALUE to_ruby_obj_integer(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj_integer(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     int32_t i32val = duckdb_value_int32(result, col_idx, row_idx);
     return INT2NUM(i32val);
 }
 
-static VALUE to_ruby_obj_bigint(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj_bigint(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     int64_t i64val = duckdb_value_int64(result, col_idx, row_idx);
     return rb_int2big(i64val);
 }
 
-static VALUE to_ruby_obj_float(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj_float(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     float fval = duckdb_value_float(result, col_idx, row_idx);
     return DBL2NUM(fval);
 }
 
-static VALUE to_ruby_obj_double(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj_double(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     double dval = duckdb_value_double(result, col_idx, row_idx);
     return DBL2NUM(dval);
 }
 
-static VALUE to_ruby_obj(duckdb_result *result, index_t col_idx, index_t row_idx) {
+static VALUE to_ruby_obj(duckdb_result *result, index_t col_idx, index_t row_idx)
+{
     char *p;
     VALUE obj = Qnil;
     if (result->columns[col_idx].nullmask[row_idx]) {
@@ -73,7 +80,8 @@ static VALUE to_ruby_obj(duckdb_result *result, index_t col_idx, index_t row_idx
     return obj;
 }
 
-static VALUE row_array(rubyDuckDBResult *ctx, index_t row_idx) {
+static VALUE row_array(rubyDuckDBResult *ctx, index_t row_idx)
+{
     index_t col_idx;
     VALUE ary = rb_ary_new2(ctx->result.column_count);
     for(col_idx = 0; col_idx < ctx->result.column_count; col_idx++) {
@@ -82,14 +90,16 @@ static VALUE row_array(rubyDuckDBResult *ctx, index_t row_idx) {
     return ary;
 }
 
-static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj) {
+static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj)
+{
     rubyDuckDBResult *ctx;
     Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
 
     return LONG2FIX(ctx->result.row_count);
 }
 
-static VALUE duckdb_result_each(VALUE oDuckDBResult) {
+static VALUE duckdb_result_each(VALUE oDuckDBResult)
+{
     rubyDuckDBResult *ctx;
     index_t row_idx = 0;
 
@@ -102,7 +112,8 @@ static VALUE duckdb_result_each(VALUE oDuckDBResult) {
     return oDuckDBResult;
 }
 
-VALUE create_result(void) {
+VALUE create_result(void)
+{
     return allocate(cDuckDBResult);
 }
 

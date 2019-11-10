@@ -14,7 +14,8 @@ static VALUE allocate(VALUE klass)
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
-VALUE create_connection(VALUE oDuckDBDatabase) {
+VALUE create_connection(VALUE oDuckDBDatabase)
+{
     rubyDuckDB *ctxdb;
     rubyDuckDBConnection *ctxcon;
     VALUE obj;
@@ -32,8 +33,8 @@ VALUE create_connection(VALUE oDuckDBDatabase) {
     return obj;
 }
 
-static VALUE duckdb_connection_query(VALUE self, VALUE str) {
-
+static VALUE duckdb_connection_query(VALUE self, VALUE str)
+{
     rubyDuckDBConnection *ctx;
     rubyDuckDBResult *ctxr;
 
