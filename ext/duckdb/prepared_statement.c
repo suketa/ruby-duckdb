@@ -168,6 +168,20 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     return self;
 }
 
+#ifdef HAVE_DUCKDB_BIND_NULL
+static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx)
+{
+    rubyDuckDBPreparedStatement *ctx;
+    index_t idx = check_index(vidx);
+
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    if (duckdb_bind_null(ctx->prepared_statement, idx) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %ld parameter", idx);
+    }
+    return self;
+}
+#endif
+
 void init_duckdb_prepared_statement(void)
 {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
@@ -184,4 +198,8 @@ void init_duckdb_prepared_statement(void)
     rb_define_method(cDuckDBPreparedStatement, "bind_float", duckdb_prepared_statement_bind_float, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_double", duckdb_prepared_statement_bind_double, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
+#ifdef HAVE_DUCKDB_BIND_NULL
+    /* duckdb version > 0.1.1 */
+    rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
+#endif
 }
