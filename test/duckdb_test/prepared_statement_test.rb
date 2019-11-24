@@ -195,5 +195,16 @@ module DuckDBTest
       stmt.bind_varchar(1, 'invalid_timestamp_string')
       assert_raises(DuckDB::Error) { stmt.execute }
     end
+
+    def test_bind_null
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id) VALUES ($1)')
+      stmt.bind_null(1)
+      assert_instance_of(DuckDB::Result, stmt.execute)
+      r = con.query('SELECT * FROM a WHERE id IS NULL')
+      assert_equal(1, r.each.size)
+    ensure
+      con.query('DELETE FROM a WHERE id IS NULL')
+    end
   end
 end
