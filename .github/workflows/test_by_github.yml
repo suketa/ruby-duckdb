@@ -1,0 +1,27 @@
+name: Ruby
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['2.5.x', '2.6.x']
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Build duckdb
+      run: |
+        mkdir -p tmp-duckdb && cd tmp-duckdb && git clone -b v0.1.2 https://github.com/cwida/duckdb.git && cd duckdb && make
+    - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
+      run: |
+        find . -name "libduckdb*.so"
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+        bundle exec rake -- --with-duckdb-include=${GITHUB_WORKSPACE}/tmp-duckdb/duckdb/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/tmp-duckdb/duckdb/build/release/src/
