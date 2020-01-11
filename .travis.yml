@@ -5,7 +5,7 @@ cache:
     - ${HOME}/duckdb-v0_1_2
 before_install:
   - yes | gem update --system
-  - if [[ ! -d ${HOME}/duckdb-v0_1_2/build ]]; then cd ${HOME} && git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make; fi
+  - if [[ ! -d ${HOME}/duckdb-v0_1_2/build ]]; then cd ${HOME} && git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && cd ${TRAVIS_BUILD_DIR}; fi
 
 rvm:
   - 2.5.7
