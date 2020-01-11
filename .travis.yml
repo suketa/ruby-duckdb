@@ -11,5 +11,5 @@ rvm:
   - 2.5.7
   - 2.6.5
   - 2.7.0
-  - ruby-build
+  - ruby-head
 script: bundle exec rake -- --with-duckdb-include=${HOME}/duckdb-v0_1_2/src/include --with-duckdb-lib=${HOME}/duckdb-v0_1_2/build/release/src/
