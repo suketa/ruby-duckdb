@@ -1,0 +1,11 @@
+language: ruby
+cache: bundler
+before_install:
+  - yes | gem update --system
+  - mkdir -p tmp-duckdb && cd tmp-duckdb && git clone -b v0.1.2 https://github.com/cwida/duckdb.git && cd duckdb && make && cd ../..
+rvm:
+  - 2.5.7
+  - 2.6.5
+  - 2.7.0
+  - ruby-head
+script: bundle exec rake -- --with-duckdb-include=${TRAVIS_BUILD_DIR}/tmp-duckdb/duckdb/src/include --with-duckdb-lib=${TRAVIS_BUILD_DIR}/tmp-duckdb/duckdb/build/release/src/
