@@ -23,13 +23,13 @@ jobs:
       uses: actions/cache@v1
       with:
         path: duckdb-v0_1_2
-        key: ${{ runner.os }}-duckdb-v0_1_2
+        key: ${{ runner.os }}-duckdb-${{ hashFiles('**/duckdb_version.txt') }}
         restore-keys:
           ${{ runner.os }}-duckdb-
 
     - name: Build duckdb
       if: steps.duckdb-cache.outputs.cache-hit != 'true'
-      run: git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && cd ..
+      run: if [[ ! -d duckdb-v0_1_2 ]]; then git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && cd ..; fi
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |

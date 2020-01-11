@@ -1,0 +1,4 @@
+# this file is for GitHub Actions cache
+
+# using duckdb version
+VERSION=0.1.2
