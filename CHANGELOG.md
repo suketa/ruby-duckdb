@@ -1,5 +1,6 @@
 # ChangeLog
 
+- create CI (GitHub Actions / Travis-CI)
 - create database only once in result_test.rb
 
 ## 0.0.5
