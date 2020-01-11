@@ -29,7 +29,7 @@ jobs:
 
     - name: Build duckdb
       if: steps.duckdb-cache.outputs.cache-hit != 'true'
-      run: git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && cd ..
+      run: git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && find . -name "*.o" | xargs rm -f && rm -rf build/test build/third_party build/tools build/benchmark && cd ..
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
