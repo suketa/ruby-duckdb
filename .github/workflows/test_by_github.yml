@@ -20,14 +20,16 @@ jobs:
       id: duckdb-cache
       uses: actions/cache@v1
       with:
-        path: ${HOME}/duckdb-v0_1_2/build
+        path: duckdb-v0_1_2
         key: ${{ runner.os }}-duckdb-v0_1_2
+
     - name: Build duckdb
       if: steps.duckdb-cache.outputs.cache-hit != 'true'
-      run: cd ${HOME} && git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && cd ${GITHUB_WORKSPACE}
+      run: git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0_1_2 && cd duckdb-v0_1_2 && make && cd ..
+
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
         find . -name "libduckdb*.so"
         gem install bundler
         bundle install --jobs 4 --retry 3
-        bundle exec rake -- --with-duckdb-include=${HOME}/duckdb-v0_1_2/src/include --with-duckdb-lib=${HOME}/duckdb-v0_1_2/build/release/src/
+        bundle exec rake -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v0_1_2/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v0_1_2/build/release/src/
