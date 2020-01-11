@@ -23,7 +23,7 @@ jobs:
       uses: actions/cache@v1.1.0
       with:
         path: duckdb-v0_1_2
-        key: ${{ runner.os }}-duckdb-v0_1_2_002
+        key: ${{ runner.os }}-duckdb-v0_1_2_003
         restore-keys:
           ${{ runner.os }}-duckdb-
 
