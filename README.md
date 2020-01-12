@@ -1,5 +1,6 @@
 # ruby-duckdb
 
+[![Build Status](https://travis-ci.com/suketa/ruby-duckdb.svg?branch=master)](https://travis-ci.com/suketa/ruby-duckdb)
 
 ## Description
 
