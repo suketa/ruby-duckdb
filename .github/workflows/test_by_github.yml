@@ -1,4 +1,4 @@
-name: Ruby
+name: Ubuntu
 
 on: [push]
 
@@ -30,8 +30,8 @@ jobs:
     - name: Build duckdb
       if: steps.duckdb-cache.outputs.cache-hit != 'true'
       run: |
-        git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-tmp 
-        cd duckdb-tmp && make && cd .. 
+        git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-tmp
+        cd duckdb-tmp && make && cd ..
         rm -rf duckdb-v0_1_2
         mkdir -p duckdb-v0_1_2/build/release/src duckdb-v0_1_2/src
         cp -rip duckdb-tmp/build/release/src/*.so duckdb-v0_1_2/build/release/src
