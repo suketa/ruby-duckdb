@@ -1,6 +1,7 @@
 # ruby-duckdb
 
 [![Build Status](https://travis-ci.com/suketa/ruby-duckdb.svg?branch=master)](https://travis-ci.com/suketa/ruby-duckdb)
+![](https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg)
 
 ## Description
 
