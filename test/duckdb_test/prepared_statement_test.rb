@@ -207,5 +207,97 @@ module DuckDBTest
     ensure
       con.query('DELETE FROM a WHERE id IS NULL')
     end
+
+    def test_bind_with_boolean
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')
+
+      stmt.bind(1, true)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt.bind(1, false)
+      assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_with_int16
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
+
+      stmt.bind(1, 1)
+      assert_equal(0, stmt.execute.each.size)
+
+      stmt.bind(1, 32767)
+      assert_equal(1, stmt.execute.each.size)
+    end
+
+    def test_bind_with_int32
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
+
+      stmt.bind(1, 1)
+      assert_equal(0, stmt.execute.each.size)
+
+      stmt.bind(1, 2147483647)
+      assert_equal(1, stmt.execute.each.size)
+    end
+
+    def test_bind_with_int64
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
+
+      stmt.bind(1, 1)
+      assert_equal(0, stmt.execute.each.size)
+
+      stmt.bind(1, 9223372036854775807)
+      assert_equal(1, stmt.execute.each.size)
+    end
+
+    def test_bind_with_float
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_real = $1')
+
+      stmt.bind(1, 12345.375)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt.bind(1, 12345.376)
+      assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_with_double
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_double = $1')
+
+      stmt.bind(1, 12345.6789)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt.bind(1, 12345.6788)
+      assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_with_varchar
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_varchar = $1')
+
+      stmt.bind(1, 'str')
+      assert_equal(1, stmt.execute.each.first[0])
+
+      # block SQL injection using bind
+      stmt.bind(1, "' or 1 = 1 --")
+      assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_with_null
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id) VALUES ($1)')
+
+      skip 'bind_null is not defined in DuckDB::PreparedStatement (DuckDB version <= 0.1.1?)' unless stmt.respond_to?(:bind_null)
+
+      stmt.bind(1, nil)
+      stmt.execute
+      r = con.query('SELECT * FROM a WHERE id IS NULL')
+      assert_equal(1, r.each.size)
+    ensure
+      con.query('DELETE FROM a WHERE id IS NULL')
+    end
   end
 end
