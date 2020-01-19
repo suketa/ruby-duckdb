@@ -12,6 +12,8 @@ module DuckDB
         bind_varchar(i, value)
       when TrueClass, FalseClass
         bind_boolean(i, value)
+      when Time
+        bind_varchar(i, value.strftime('%Y/%m/%d %H:%M:%S.%N'))
       else
         rb_raise(DuckDB::Error, "not supported type #{value} (value.class)")
       end
