@@ -286,6 +286,26 @@ module DuckDBTest
       assert_equal(0, stmt.execute.each.size)
     end
 
+    def test_bind_with_time
+      now = Time.now
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_timestamp = $1')
+
+      stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 0))
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 123456))
+      assert_equal(0, stmt.execute.each.size)
+
+      con.query("UPDATE a SET col_timestamp = '#{now.strftime('%Y/%m/%d %H:%M:%S.%N')}'")
+      stmt.bind(1, now)
+      assert_equal(1, stmt.execute.each.size)
+      stmt.bind(1, now.strftime('%Y/%m/%d %H:%M:%S') + ".#{now.nsec + 1000000}")
+      assert_equal(0, stmt.execute.each.size)
+    ensure
+      con.query("UPDATE a SET col_timestamp = '2019/11/09 12:34:56'")
+    end
+
     def test_bind_with_null
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id) VALUES ($1)')
