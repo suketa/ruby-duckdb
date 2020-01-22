@@ -5,12 +5,17 @@ module DuckDBTest
     def self.create_table
       con = DuckDB::Database.open.connect
       con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_smallint SMALLINT, col_integer INTEGER, col_bigint BIGINT, col_real REAL, col_double DOUBLE, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
-      con.query("INSERT INTO a VALUES (1, True, 32767, 2147483647, 9223372036854775807, 12345.375, 12345.6789, 'str', '2019-11-09', '2019-11-09 12:34:56')")
+      datestr = self.today.strftime('%Y-%m-%d')
+      con.query("INSERT INTO a VALUES (1, True, 32767, 2147483647, 9223372036854775807, 12345.375, 12345.6789, 'str', '#{datestr}', '2019-11-09 12:34:56')")
       con
     end
 
     def self.con
       @con ||= create_table
+    end
+
+    def self.today
+      @today ||= Date.today
     end
 
     def test_class_exist
@@ -176,7 +181,7 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
 
-      stmt.bind_varchar(1, '2019/11/09')
+      stmt.bind_varchar(1, PreparedStatementTest.today.strftime('%Y-%m-%d'))
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
@@ -304,6 +309,18 @@ module DuckDBTest
       assert_equal(0, stmt.execute.each.size)
     ensure
       con.query("UPDATE a SET col_timestamp = '2019/11/09 12:34:56'")
+    end
+
+    def test_bind_with_date
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
+      date = PreparedStatementTest.today
+
+      stmt.bind(1, date)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt.bind(1, date + 1)
+      assert_equal(0, stmt.execute.each.size)
     end
 
     def test_bind_with_null
