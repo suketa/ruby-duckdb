@@ -1,3 +1,5 @@
+require 'date'
+
 module DuckDB
   class PreparedStatement
     def bind(i, value)
@@ -13,7 +15,9 @@ module DuckDB
       when TrueClass, FalseClass
         bind_boolean(i, value)
       when Time
-        bind_varchar(i, value.strftime('%Y/%m/%d %H:%M:%S.%N'))
+        bind_varchar(i, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
+      when Date
+        bind_varchar(i, value.strftime('%Y-%m-%d'))
       else
         rb_raise(DuckDB::Error, "not supported type #{value} (value.class)")
       end
