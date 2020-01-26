@@ -33,7 +33,7 @@ VALUE create_connection(VALUE oDuckDBDatabase)
     return obj;
 }
 
-static VALUE duckdb_connection_query(VALUE self, VALUE str)
+static VALUE duckdb_connection_query_sql(VALUE self, VALUE str)
 {
     rubyDuckDBConnection *ctx;
     rubyDuckDBResult *ctxr;
@@ -54,5 +54,5 @@ void init_duckdb_connection(void)
     cDuckDBConnection = rb_define_class_under(mDuckDB, "Connection", rb_cObject);
     rb_define_alloc_func(cDuckDBConnection, allocate);
 
-    rb_define_method(cDuckDBConnection, "query", duckdb_connection_query, 1);
+    rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
 }
