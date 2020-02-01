@@ -11,7 +11,7 @@ module DuckDBTest
     end
 
     def test_query_argument
-      assert_raises(ArgumentError) { @con.query('foo', 'bar') }
+      assert_raises(DuckDB::Error) { @con.query('foo', 'bar') }
 
       assert_raises(ArgumentError) { @con.query }
 
