@@ -10,7 +10,12 @@ module DuckDBTest
       assert_instance_of(DuckDB::Result, @con.query('CREATE TABLE table1 (id INTEGER)'))
     end
 
-    def test_query_argument
+    def test_query_with_valid_params
+      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      assert_instance_of(DuckDB::Result, @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a'))
+    end
+
+    def test_query_with_invalid_params
       assert_raises(DuckDB::Error) { @con.query('foo', 'bar') }
 
       assert_raises(ArgumentError) { @con.query }
