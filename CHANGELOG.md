@@ -1,5 +1,7 @@
 # ChangeLog
 
+- support `duckdb version 0.1.3`
+- add `DuckDB:PreparedStatement`
 - create CI (GitHub Actions / Travis-CI)
 - create database only once in result_test.rb
 
