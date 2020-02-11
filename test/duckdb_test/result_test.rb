@@ -79,7 +79,8 @@ module DuckDBTest
     private
 
     def create_data
-      con = DuckDB::Database.open.connect
+      @@db ||= DuckDB::Database.open # FIXME
+      con = @@db.connect
       con.query(create_table_sql)
       con.query(insert_sql)
       con
