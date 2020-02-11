@@ -3,7 +3,8 @@ require 'test_helper'
 module DuckDBTest
   class PreparedStatementTest < Minitest::Test
     def self.create_table
-      con = DuckDB::Database.open.connect
+      @db = DuckDB::Database.open # FIXME
+      con = @db.connect
       con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_smallint SMALLINT, col_integer INTEGER, col_bigint BIGINT, col_real REAL, col_double DOUBLE, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
       datestr = self.today.strftime('%Y-%m-%d')
       con.query("INSERT INTO a VALUES (1, True, 32767, 2147483647, 9223372036854775807, 12345.375, 12345.6789, 'str', '#{datestr}', '2019-11-09 12:34:56')")
