@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add DuckDB::Database#close
+
 ## 0.0.6
 
 - add alias `execute` of `DuckDB::Connection#query`
