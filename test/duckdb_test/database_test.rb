@@ -31,6 +31,16 @@ module DuckDBTest
       assert_instance_of(DuckDB::Connection, DuckDB::Database.open.connect)
     end
 
+    def test_close
+      db = DuckDB::Database.open
+      con = db.connect
+      db.close
+      exception = assert_raises(DuckDB::Error) do
+        con.query('SELECT * from DUMMY')
+      end
+      assert_match(/\ADatabase .* has been closed!\z/, exception.message)
+    end
+
     private
 
     def create_path

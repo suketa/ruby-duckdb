@@ -1,10 +1,15 @@
 #include "ruby-duckdb.h"
 
+static void close_database(rubyDuckDB *p)
+{
+    duckdb_close(&(p->db));
+}
+
 static void deallocate(void * ctx)
 {
     rubyDuckDB *p = (rubyDuckDB *)ctx;
 
-    duckdb_close(&(p->db));
+    close_database(p);
     xfree(p);
 }
 
@@ -41,10 +46,19 @@ static VALUE duckdb_database_connect(VALUE self)
     return create_connection(self);
 }
 
+static VALUE duckdb_database_close(VALUE self)
+{
+    rubyDuckDB *ctx;
+    Data_Get_Struct(self, rubyDuckDB, ctx);
+    close_database(ctx);
+    return self;
+}
+
 void init_duckdb_database(void)
 {
     VALUE cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
     rb_define_singleton_method(cDuckDBDatabase, "open", duckdb_database_s_open, -1);
     rb_define_method(cDuckDBDatabase, "connect", duckdb_database_connect, 0);
+    rb_define_method(cDuckDBDatabase, "close", duckdb_database_close, 0);
 }
