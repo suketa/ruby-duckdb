@@ -1,7 +1,29 @@
 require 'date'
 
 module DuckDB
+  # The DuckDB::PreparedStatement encapsulates connection with DuckDB prepared
+  # statement.
+  #
+  #   require 'duckdb'
+  #   db = DuckDB::Database.open('duckdb_database')
+  #   con = db.connect
+  #   sql ='SELECT name, email FROM users WHERE email = ?'
+  #   stmt = PreparedStatement.new(con, sql)
+  #   stmt.bind(1, 'email@example.com')
+  #   stmt.execute
   class PreparedStatement
+
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter. The index of first parameter is
+    # 1 not 0.
+    # The second argument value is the value of prepared statement parameter.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name, email FROM users WHERE email = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind(1, 'email@example.com')
     def bind(i, value)
       case value
       when NilClass
@@ -24,4 +46,3 @@ module DuckDB
     end
   end
 end
-
