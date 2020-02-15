@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add alias `execute` of `DuckDB::Connection#query`
 - support `duckdb version 0.1.3`
 - add `DuckDB:PreparedStatement`
 - create CI (GitHub Actions / Travis-CI)

@@ -28,5 +28,7 @@ module DuckDB
       end
       stmt.execute
     end
+
+    alias execute query
   end
 end

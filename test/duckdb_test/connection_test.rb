@@ -30,5 +30,13 @@ module DuckDBTest
         @con.query(invalid_sql)
       end
     end
+
+    def test_execute
+      @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      assert_instance_of(DuckDB::Result, @con.execute('INSERT INTO t VALUES(?, ?)', 1, 'a'))
+      r = @con.execute('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
+      assert_equal(1, r.each.first[0])
+      assert_equal('a', r.each.first[1])
+    end
   end
 end
