@@ -33,6 +33,16 @@ VALUE create_connection(VALUE oDuckDBDatabase)
     return obj;
 }
 
+static VALUE duckdb_connection_disconnect(VALUE self)
+{
+    rubyDuckDBConnection *ctx;
+
+    Data_Get_Struct(self, rubyDuckDBConnection, ctx);
+    duckdb_disconnect(&(ctx->con));
+
+    return self;
+}
+
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str)
 {
     rubyDuckDBConnection *ctx;
@@ -42,6 +52,10 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str)
 
     Data_Get_Struct(self, rubyDuckDBConnection, ctx);
     Data_Get_Struct(result, rubyDuckDBResult, ctxr);
+
+    if (!(ctx->con)) {
+        rb_raise(eDuckDBError, "Database connection closed");
+    }
 
     if (duckdb_query(ctx->con, StringValueCStr(str), &(ctxr->result)) == DuckDBError) {
         rb_raise(eDuckDBError, "%s", ctxr->result.error_message);
@@ -54,5 +68,6 @@ void init_duckdb_connection(void)
     cDuckDBConnection = rb_define_class_under(mDuckDB, "Connection", rb_cObject);
     rb_define_alloc_func(cDuckDBConnection, allocate);
 
+    rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
 }

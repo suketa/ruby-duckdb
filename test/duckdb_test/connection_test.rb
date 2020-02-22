@@ -38,5 +38,21 @@ module DuckDBTest
       assert_equal(1, r.each.first[0])
       assert_equal('a', r.each.first[1])
     end
+
+    def test_disconnect
+      @con.disconnect
+      exception = assert_raises(DuckDB::Error) do
+        @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      end
+      assert_equal('Database connection closed', exception.message)
+    end
+
+    def test_close
+      @con.close
+      exception = assert_raises(DuckDB::Error) do
+        @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      end
+      assert_equal('Database connection closed', exception.message)
+    end
   end
 end
