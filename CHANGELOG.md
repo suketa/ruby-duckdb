@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::Connection#disconnect, alias method close
 - add DuckDB::Database#close
 
 ## 0.0.6
