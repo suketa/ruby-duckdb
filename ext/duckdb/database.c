@@ -46,6 +46,12 @@ static VALUE duckdb_database_connect(VALUE self)
     return create_connection(self);
 }
 
+/*
+ *  call-seq:
+ *    duckdb.close -> DuckDB::Database
+ *
+ *  closes DuckDB database.
+ */
 static VALUE duckdb_database_close(VALUE self)
 {
     rubyDuckDB *ctx;
