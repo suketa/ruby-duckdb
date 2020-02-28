@@ -3,7 +3,8 @@ require 'test_helper'
 module DuckDBTest
   class ConnectionTest < Minitest::Test
     def setup
-      @con = DuckDB::Database.open.connect
+      @db = DuckDB::Database.open
+      @con = @db.connect
     end
 
     def test_query
@@ -53,6 +54,26 @@ module DuckDBTest
         @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       end
       assert_equal('Database connection closed', exception.message)
+    end
+
+    def test_connect
+      @con.disconnect
+      exception = assert_raises(DuckDB::Error) do
+        @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      end
+      assert_equal('Database connection closed', exception.message)
+      @con.connect(@db)
+      assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
+    end
+
+    def test_open
+      @con.disconnect
+      exception = assert_raises(DuckDB::Error) do
+        @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      end
+      assert_equal('Database connection closed', exception.message)
+      @con.open(@db)
+      assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
   end
 end

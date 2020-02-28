@@ -43,6 +43,24 @@ static VALUE duckdb_connection_disconnect(VALUE self)
     return self;
 }
 
+static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase)
+{
+    rubyDuckDBConnection *ctx;
+    rubyDuckDB *ctxdb;
+
+    if (!rb_obj_is_kind_of(oDuckDBDatabase, cDuckDBDatabase)) {
+        rb_raise(rb_eTypeError, "The first argument must be DuckDB::Database object.");
+    }
+    Data_Get_Struct(oDuckDBDatabase, rubyDuckDB, ctxdb);
+    Data_Get_Struct(self, rubyDuckDBConnection, ctx);
+
+    if (duckdb_connect(ctxdb->db, &(ctx->con)) == DuckDBError) {
+        rb_raise(eDuckDBError, "connection error");
+    }
+
+    return self;
+}
+
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str)
 {
     rubyDuckDBConnection *ctx;
@@ -69,5 +87,6 @@ void init_duckdb_connection(void)
     rb_define_alloc_func(cDuckDBConnection, allocate);
 
     rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
+    rb_define_method(cDuckDBConnection, "connect", duckdb_connection_connect, 1);
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
 }

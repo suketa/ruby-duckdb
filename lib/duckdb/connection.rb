@@ -30,6 +30,7 @@ module DuckDB
     end
 
     alias execute query
+    alias open connect
     alias close disconnect
   end
 end
