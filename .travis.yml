@@ -2,16 +2,13 @@ language: ruby
 cache:
   bundler: true
   directories:
-    - ${HOME}/duckdb-v0.1.2
-    - ${HOME}/duckdb-v0.1.3
+    - ${HOME}/duckdb-v0.1.5
 before_install:
   - yes | gem update --system
-  - if [[ ! -d ${HOME}/duckdb-v0.1.2/build ]]; then cd ${HOME} && git clone -b v0.1.2 https://github.com/cwida/duckdb.git duckdb-v0.1.2 && cd duckdb-v0.1.2 && make && cd ${TRAVIS_BUILD_DIR}; fi
-  - if [[ ! -d ${HOME}/duckdb-v0.1.3/build ]]; then cd ${HOME} && git clone -b v0.1.3 https://github.com/cwida/duckdb.git duckdb-v0.1.3 && cd duckdb-v0.1.3 && make && cd ${TRAVIS_BUILD_DIR}; fi
+  - if [[ ! -d ${HOME}/duckdb-v0.1.5/build ]]; then cd ${HOME} && git clone -b v0.1.5 https://github.com/cwida/duckdb.git duckdb-v0.1.5 && cd duckdb-v0.1.5 && make && cd ${TRAVIS_BUILD_DIR}; fi
 
 env:
-  - DUCKDB_VERSION=0.1.2
-  - DUCKDB_VERSION=0.1.3
+  - DUCKDB_VERSION=0.1.5
 rvm:
   - 2.5.7
   - 2.6.5
