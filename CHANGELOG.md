@@ -1,5 +1,6 @@
 # ChangeLog
 
+- bumpup DuckDB v0.1.5
 - add DuckDB::Connection#connect, alias method open
 - add DuckDB::Connection#disconnect, alias method close
 - add DuckDB::Database#close

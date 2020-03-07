@@ -61,9 +61,9 @@ static VALUE duckdb_prepared_statement_execute(VALUE self)
     return result;
 }
 
-static index_t check_index(VALUE vidx)
+static idx_t check_index(VALUE vidx)
 {
-    index_t idx = FIX2INT(vidx);
+    idx_t idx = FIX2INT(vidx);
     if (idx <= 0) {
         rb_raise(rb_eArgError, "index of parameter must be greater than 0");
     }
@@ -73,7 +73,7 @@ static index_t check_index(VALUE vidx)
 static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     if (val != Qtrue && val != Qfalse) {
@@ -89,7 +89,7 @@ static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALU
 static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
@@ -103,7 +103,7 @@ static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
     int32_t i32val = NUM2LONG(val);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
@@ -117,7 +117,7 @@ static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
@@ -131,7 +131,7 @@ static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
@@ -145,7 +145,7 @@ static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
@@ -159,7 +159,7 @@ static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE
 static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     if (duckdb_bind_varchar(ctx->prepared_statement, idx, StringValuePtr(str)) == DuckDBError) {
@@ -168,11 +168,10 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     return self;
 }
 
-#ifdef HAVE_DUCKDB_BIND_NULL
 static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx)
 {
     rubyDuckDBPreparedStatement *ctx;
-    index_t idx = check_index(vidx);
+    idx_t idx = check_index(vidx);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     if (duckdb_bind_null(ctx->prepared_statement, idx) == DuckDBError) {
@@ -180,7 +179,6 @@ static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx)
     }
     return self;
 }
-#endif
 
 void init_duckdb_prepared_statement(void)
 {
@@ -198,8 +196,5 @@ void init_duckdb_prepared_statement(void)
     rb_define_method(cDuckDBPreparedStatement, "bind_float", duckdb_prepared_statement_bind_float, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_double", duckdb_prepared_statement_bind_double, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
-#ifdef HAVE_DUCKDB_BIND_NULL
-    /* duckdb version > 0.1.1 */
     rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
-#endif
 }
