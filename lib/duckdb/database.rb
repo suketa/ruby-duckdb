@@ -20,5 +20,10 @@ module DuckDB
   #   end
   #
   class Database
+    private_class_method :_open
+
+    def self.open(*args)
+      _open(*args)
+    end
   end
 end
