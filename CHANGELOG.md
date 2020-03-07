@@ -1,6 +1,7 @@
 # ChangeLog
 
-- bumpup DuckDB v0.1.5
+- bump DuckDB to v0.1.5
+  - DuckDB version must be 0.1.5 or later.
 - add DuckDB::Connection#connect, alias method open
 - add DuckDB::Connection#disconnect, alias method close
 - add DuckDB::Database#close
