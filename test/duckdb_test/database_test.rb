@@ -12,6 +12,10 @@ module DuckDBTest
       File.unlink(@path + '.wal') if File.exist?(@path + '.wal')
     end
 
+    def test_s__open
+      assert_raises(NoMethodError) { DuckDB::Database._open }
+    end
+
     def test_s_open
       assert_instance_of(DuckDB::Database, DuckDB::Database.open)
     end

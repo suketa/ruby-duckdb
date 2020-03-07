@@ -64,7 +64,7 @@ void init_duckdb_database(void)
 {
     cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
-    rb_define_singleton_method(cDuckDBDatabase, "open", duckdb_database_s_open, -1);
+    rb_define_singleton_method(cDuckDBDatabase, "_open", duckdb_database_s_open, -1);
     rb_define_method(cDuckDBDatabase, "connect", duckdb_database_connect, 0);
     rb_define_method(cDuckDBDatabase, "close", duckdb_database_close, 0);
 }
