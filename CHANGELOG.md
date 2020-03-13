@@ -1,5 +1,7 @@
 # ChangeLog
 
+- update duckdb.gemspec, required ruby version >= 2.4.0
+
 ## 0.0.7
 
 - bump DuckDB to v0.1.5
