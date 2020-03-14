@@ -29,6 +29,14 @@ module DuckDB
       stmt.execute
     end
 
+    #
+    # connects DuckDB database
+    # The first argument is DuckDB::Database object
+    #
+    def connect(db)
+      _connect(db)
+    end
+
     alias execute query
     alias open connect
     alias close disconnect
