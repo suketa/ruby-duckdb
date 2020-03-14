@@ -87,6 +87,6 @@ void init_duckdb_connection(void)
     rb_define_alloc_func(cDuckDBConnection, allocate);
 
     rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
-    rb_define_method(cDuckDBConnection, "connect", duckdb_connection_connect, 1);
+    rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
 }
