@@ -31,6 +31,16 @@ module DuckDBTest
       end
     end
 
+    def test_s_open_block
+      result = DuckDB::Database.open do |db|
+        assert_instance_of(DuckDB::Database, db)
+        con = db.connect
+        assert_instance_of(DuckDB::Connection, con)
+        con.query('CREATE TABLE t (id INTEGER)')
+      end
+      assert_instance_of(DuckDB::Result, result)
+    end
+
     def test_connect
       assert_instance_of(DuckDB::Connection, DuckDB::Database.open.connect)
     end
