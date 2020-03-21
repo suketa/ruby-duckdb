@@ -22,8 +22,32 @@ module DuckDB
   class Database
     private_class_method :_open
 
-    def self.open(*args)
-      _open(*args)
+    class << self
+      ##
+      # Opens database.
+      # The first argument is DuckDB database file path to open.
+      # If there is no argument, the method opens DuckDB database in memory.
+      # The method yields block if block is given.
+      #
+      #   DuckDB::Database.open('duckdb_database.db') #=> DuckDB::Database
+      #
+      #   DuckDB::Database.open #=> opens DuckDB::Database in memory.
+      #
+      #   DuckDB::Database.open do |db|
+      #     con = db.connect
+      #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+      #   end
+
+      def open(*args)
+        db = _open(*args)
+        return db unless block_given?
+
+        begin
+          yield db
+        ensure
+          db.close
+        end
+      end
     end
   end
 end

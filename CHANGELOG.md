@@ -1,5 +1,6 @@
 # ChangeLog
 
+- DuckDB::Database.open accepts block
 - update duckdb.gemspec, required ruby version >= 2.4.0
 
 ## 0.0.7
