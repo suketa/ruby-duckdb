@@ -37,7 +37,7 @@ module DuckDB
       #     con = db.connect
       #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       #   end
-
+      #
       def open(*args)
         db = _open(*args)
         return db unless block_given?
@@ -47,6 +47,30 @@ module DuckDB
         ensure
           db.close
         end
+      end
+    end
+
+    ##
+    # connects database.
+    #
+    # The method yields block and disconnects the database if block given
+    #
+    #   db = DuckDB::Database.open
+    #
+    #   con = db.connect # => DuckDB::Connection
+    #
+    #   db.connect do |con|
+    #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+    #   end
+    #
+    def connect
+      conn = _connect
+      return conn unless block_given?
+
+      begin
+        yield conn
+      ensure
+        conn.disconnect
       end
     end
   end
