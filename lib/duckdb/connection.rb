@@ -34,7 +34,14 @@ module DuckDB
     # The first argument is DuckDB::Database object
     #
     def connect(db)
-      _connect(db)
+      conn = _connect(db)
+      return conn unless block_given?
+
+      begin
+        yield conn
+      ensure
+        conn.disconnect
+      end
     end
 
     alias execute query
