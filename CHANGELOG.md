@@ -1,5 +1,9 @@
 # ChangeLog
 
+- support Ruby 2.7.1
+- support DuckDB version 0.1.6
+- DuckDB::Connection#connect accepts block
+- add DuckDB::Connection#connect
 - DuckDB::Database#connect accepts block
 - DuckDB::Database.open accepts block
 - update duckdb.gemspec, required ruby version >= 2.4.0
