@@ -66,6 +66,17 @@ module DuckDBTest
       assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
 
+    def test_connect_with_block
+      @con.disconnect
+      @con.connect(@db) do |con|
+        assert_instance_of(DuckDB::Result, con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
+      end
+      exception = assert_raises(DuckDB::Error) do
+        @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      end
+      assert_equal('Database connection closed', exception.message)
+    end
+
     def test_open
       @con.disconnect
       exception = assert_raises(DuckDB::Error) do
