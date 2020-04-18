@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['2.4.0', '2.4.10', '2.5.8', '2.6.6', '2.7.1', 'head']
+        ruby: ['2.4.10', '2.5.8', '2.6.6', '2.7.1', 'head']
         duckdb: ['0.1.5', '0.1.6']
 
     steps:
