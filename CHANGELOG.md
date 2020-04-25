@@ -2,6 +2,7 @@
 
 - support Ruby 2.7.1
 - support DuckDB version 0.1.6
+  - current ruby-duckdb supports DuckDB version 0.1.5 and 0.1.6
 - DuckDB::Connection#connect accepts block
 - add DuckDB::Connection#connect
 - DuckDB::Database#connect accepts block
