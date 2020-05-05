@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.4.10', '2.5.8', '2.6.6', '2.7.1', 'head']
-        duckdb: ['0.1.5', '0.1.6']
+        duckdb: ['0.1.6', '0.1.7']
 
     steps:
     - uses: actions/checkout@v2
@@ -18,15 +18,6 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-
-    - name: duckdb 0.1.5 cache
-      id: duckdb-cache-v0_1_5
-      uses: actions/cache@v1.1.0
-      with:
-        path: duckdb-v0.1.5
-        key: ${{ runner.os }}-duckdb-v0_1_5_001
-        restore-keys: |
-          ${{ runner.os }}-duckdb-v0_1_5
 
     - name: duckdb 0.1.6 cache
       id: duckdb-cache-v0_1_6
@@ -37,15 +28,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-duckdb-v0_1_6
 
-    - name: Build duckdb 0.1.5
-      if: steps.duckdb-cache-v0_1_5.outputs.cache-hit != 'true'
-      run: |
-        git clone -b v0.1.5 https://github.com/cwida/duckdb.git duckdb-tmp-v0.1.5
-        cd duckdb-tmp-v0.1.5 && make && cd ..
-        rm -rf duckdb-v0.1.5
-        mkdir -p duckdb-v0.1.5/build/release/src duckdb-v0.1.5/src
-        cp -rip duckdb-tmp-v0.1.5/build/release/src/*.so duckdb-v0.1.5/build/release/src
-        cp -rip duckdb-tmp-v0.1.5/src/include duckdb-v0.1.5/src/
+    - name: duckdb 0.1.7 cache
+      id: duckdb-cache-v0_1_7
+      uses: actions/cache@v1.1.0
+      with:
+        path: duckdb-v0.1.7
+        key: ${{ runner.os }}-duckdb-v0_1_7_001
+        restore-keys: |
+          ${{ runner.os }}-duckdb-v0_1_7
 
     - name: Build duckdb 0.1.6
       if: steps.duckdb-cache-v0_1_6.outputs.cache-hit != 'true'
@@ -56,6 +46,16 @@ jobs:
         mkdir -p duckdb-v0.1.6/build/release/src duckdb-v0.1.6/src
         cp -rip duckdb-tmp-v0.1.6/build/release/src/*.so duckdb-v0.1.6/build/release/src
         cp -rip duckdb-tmp-v0.1.6/src/include duckdb-v0.1.6/src/
+
+    - name: Build duckdb 0.1.7
+      if: steps.duckdb-cache-v0_1_7.outputs.cache-hit != 'true'
+      run: |
+        git clone -b v0.1.7 https://github.com/cwida/duckdb.git duckdb-tmp-v0.1.7
+        cd duckdb-tmp-v0.1.7 && make && cd ..
+        rm -rf duckdb-v0.1.7
+        mkdir -p duckdb-v0.1.7/build/release/src duckdb-v0.1.7/src
+        cp -rip duckdb-tmp-v0.1.7/build/release/src/*.so duckdb-v0.1.7/build/release/src
+        cp -rip duckdb-tmp-v0.1.7/src/include duckdb-v0.1.7/src/
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       env:
