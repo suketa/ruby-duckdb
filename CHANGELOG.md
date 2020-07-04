@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 0.0.8.1
+
+- update Gemfile.lock
+- unsupport Ruby 2.4
+
 ## 0.0.8
 
 - remove test with Ruby 2.4.10
