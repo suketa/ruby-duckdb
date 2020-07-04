@@ -1,9 +1,11 @@
 # ChangeLog
 
-- support DuckDB version 0.1.7
+- bump DuckDB to v0.1.8
+- bump DuckDB to v0.1.8
+- bump DuckDB to v0.1.7
   - current ruby-duckdb supports DuckDB version 0.1.5 and 0.1.6
 - support Ruby 2.7.1
-- support DuckDB version 0.1.6
+- bump DuckDB to v0.1.6
   - current ruby-duckdb supports DuckDB version 0.1.5 and 0.1.6
 - DuckDB::Connection#connect accepts block
 - add DuckDB::Connection#connect
