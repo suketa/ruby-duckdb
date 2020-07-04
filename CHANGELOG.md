@@ -1,5 +1,6 @@
 # ChangeLog
 
+- remove test with Ruby 2.4.10
 - bump DuckDB to v0.1.8
 - bump DuckDB to v0.1.8
 - bump DuckDB to v0.1.7
