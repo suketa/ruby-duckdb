@@ -43,11 +43,15 @@ result.each do |row|
 end
 ```
 
+Or, you can use block.
+
 ```
 require 'duckdb'
 
 DuckDB::Database.open do |db|
   db.connect do |con|
+    con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+
     con.query("INSERT into users VALUES(1, 'Alice')")
     con.query("INSERT into users VALUES(2, 'Bob')")
     con.query("INSERT into users VALUES(3, 'Cathy')")
