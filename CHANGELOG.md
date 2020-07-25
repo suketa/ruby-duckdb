@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.0.9
+
+- bunmp DuckDB to v0.2.0
+
 ## 0.0.8.1
 
 - update Gemfile.lock
