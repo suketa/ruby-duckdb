@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.5.8', '2.6.6', '2.7.2', 'head']
-        duckdb: ['0.2.0', '0.1.9']
+        duckdb: ['0.2.0', '0.2.1']
 
     steps:
     - uses: actions/checkout@v2
@@ -28,14 +28,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-duckdb-v0_2_0
 
-    - name: duckdb 0.1.9 cache
-      id: duckdb-cache-v0_1_9
+    - name: duckdb 0.2.1 cache
+      id: duckdb-cache-v0_2_1
       uses: actions/cache@v1.1.0
       with:
-        path: duckdb-v0.1.9
-        key: ${{ runner.os }}-duckdb-v0_1_9_001
+        path: duckdb-v0.2.1
+        key: ${{ runner.os }}-duckdb-v0_2_1_001
         restore-keys: |
-          ${{ runner.os }}-duckdb-v0_1_9
+          ${{ runner.os }}-duckdb-v0_2_1
 
     - name: Build duckdb 0.2.0
       if: steps.duckdb-cache-v0_2_0.outputs.cache-hit != 'true'
@@ -47,15 +47,15 @@ jobs:
         cp -rip duckdb-tmp-v0.2.0/build/release/src/*.so duckdb-v0.2.0/build/release/src
         cp -rip duckdb-tmp-v0.2.0/src/include duckdb-v0.2.0/src/
 
-    - name: Build duckdb 0.1.9
-      if: steps.duckdb-cache-v0_1_9.outputs.cache-hit != 'true'
+    - name: Build duckdb 0.2.1
+      if: steps.duckdb-cache-v0_2_1.outputs.cache-hit != 'true'
       run: |
-        git clone -b v0.1.9 https://github.com/cwida/duckdb.git duckdb-tmp-v0.1.9
-        cd duckdb-tmp-v0.1.9 && make && cd ..
-        rm -rf duckdb-v0.1.9
-        mkdir -p duckdb-v0.1.9/build/release/src duckdb-v0.1.9/src
-        cp -rip duckdb-tmp-v0.1.9/build/release/src/*.so duckdb-v0.1.9/build/release/src
-        cp -rip duckdb-tmp-v0.1.9/src/include duckdb-v0.1.9/src/
+        git clone -b v0.2.1 https://github.com/cwida/duckdb.git duckdb-tmp-v0.2.1
+        cd duckdb-tmp-v0.2.1 && make && cd ..
+        rm -rf duckdb-v0.2.1
+        mkdir -p duckdb-v0.2.1/build/release/src duckdb-v0.2.1/src
+        cp -rip duckdb-tmp-v0.2.1/build/release/src/*.so duckdb-v0.2.1/build/release/src
+        cp -rip duckdb-tmp-v0.2.1/src/include duckdb-v0.2.1/src/
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       env:
