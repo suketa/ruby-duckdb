@@ -1,5 +1,7 @@
 # ChangeLog
 
+- bump Ruby to v2.7.2
+
 ## 0.0.9
 
 - bunmp DuckDB to v0.2.0
