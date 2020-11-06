@@ -1,5 +1,7 @@
 #include "ruby-duckdb.h"
 
+VALUE cDuckDBDatabase;
+
 static void close_database(rubyDuckDB *p)
 {
     duckdb_close(&(p->db));

@@ -10,5 +10,8 @@
 #include "./prepared_statement.h"
 
 extern VALUE mDuckDB;
+extern VALUE cDuckDBDatabase;
+extern VALUE cDuckDBConnection;
+extern VALUE eDuckDBError;
 
 #endif
