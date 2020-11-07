@@ -1,5 +1,7 @@
 #include "ruby-duckdb.h"
 
+VALUE cDuckDBConnection;
+
 static void deallocate(void *ctx)
 {
     rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;

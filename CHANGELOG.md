@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.0.10
+
+- fix to build failure on MAC OS/X
+
 ## 0.0.9
 
 - bump DuckDB to v0.2.1
