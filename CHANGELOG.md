@@ -1,9 +1,11 @@
 # ChangeLog
 
+- add test CI on MacOS.
+
 ## 0.0.10
 
 - bump DuckDB to v0.2.2
-- fix to build failure on MAC OS/X
+- fix to build failure on MacOS.
 
 ## 0.0.9
 

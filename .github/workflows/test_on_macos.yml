@@ -1,0 +1,34 @@
+name: MacOS
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        ruby: ['2.5.8', '2.6.6', '2.7.2', 'head']
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Install duckdb
+      env:
+        DUCKDB_VERSION: 0.2.2
+      run: |
+        brew install duckdb
+        git clone -b v${DUCKDB_VERSION} https://github.com/cwida/duckdb.git duckdb-v${DUCKDB_VERSION}
+        ls -l duckdb-v${DUCKDB_VERSION}/src/include
+        cp duckdb-v${DUCKDB_VERSION}/src/include/duckdb.h /usr/local/include
+        ls -l /usr/local/include/duckdb.h
+
+    - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
+      run: |
+        ruby -v
+        bundle install --jobs 4 --retry 3
+        bundle exec rake
