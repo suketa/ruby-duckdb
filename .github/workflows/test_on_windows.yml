@@ -1,0 +1,32 @@
+name: Windows
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        ruby: ['2.5.8', '2.6.6', '2.7.2', 'head']
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Install duckdb
+      run: |
+        mkdir duckdb
+        cd duckdb
+        wget https://github.com/cwida/duckdb/releases/download/v0.2.2/libduckdb-windows-amd64.zip
+        7z e libduckdb-windows-amd64.zip
+        cd ..
+    - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
+      run: |
+        ruby -v
+        bundle install
+        bundle exec rake -- --with-duckdb-include=./duckdb --with-duckdb-lib=./duckdb
+
