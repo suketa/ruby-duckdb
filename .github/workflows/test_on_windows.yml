@@ -19,11 +19,8 @@ jobs:
 
     - name: Install duckdb
       run: |
-        mkdir duckdb
-        cd duckdb
-        wget https://github.com/cwida/duckdb/releases/download/v0.2.2/libduckdb-windows-amd64.zip
-        7z e libduckdb-windows-amd64.zip
-        cd ..
+        git clone -b v0.2.2 https://github.com/cwida/duckdb.git duckdb-tmp-v0.2.2
+        cd duckdb-tmp-v0.2.2 && make && cd ..
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
         ruby -v
