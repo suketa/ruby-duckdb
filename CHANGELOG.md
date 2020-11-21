@@ -1,5 +1,8 @@
 # ChangeLog
 
+- rake build on Windows in github actions.
+  - There is a LoadError to fix on github actions
+
 # 0.2.6.1
 
 - add DuckDB::PreparedStatement#bind_int8
