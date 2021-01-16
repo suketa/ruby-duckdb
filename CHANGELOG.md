@@ -2,6 +2,7 @@
 
 - add test CI with Ruby 3.0.0
 - add test CI on MacOS.
+- bunp DuckDB to v0.2.3
 
 ## 0.0.10
 
