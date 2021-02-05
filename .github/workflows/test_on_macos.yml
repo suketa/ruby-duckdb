@@ -19,7 +19,7 @@ jobs:
 
     - name: Install duckdb
       env:
-        DUCKDB_VERSION: 0.2.2
+        DUCKDB_VERSION: 0.2.4
       run: |
         brew install duckdb
         git clone -b v${DUCKDB_VERSION} https://github.com/cwida/duckdb.git duckdb-v${DUCKDB_VERSION}
