@@ -62,7 +62,11 @@ module DuckDBTest
       exception = assert_raises(DuckDB::Error) do
         con.query('SELECT * from DUMMY')
       end
-      assert_match(/\ADatabase .* has been closed!\z/, exception.message)
+
+      #
+      # The error message is changed from DuckDB 0.2.4
+      #
+      assert(exception.message.include?('SELECT * from DUMMY') || exception.message.include?('has been closed'))
     end
 
     private

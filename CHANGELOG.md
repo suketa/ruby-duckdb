@@ -1,5 +1,7 @@
 # ChangeLog
 
+- fix failure in test_close in test/duckdb_test/database_test.rb because DuckDB error message was changed.
+- bump DuckDb to v0.2.4
 - add test CI with Ruby 3.0.0
 - add test CI on MacOS.
 - bunp DuckDB to v0.2.3

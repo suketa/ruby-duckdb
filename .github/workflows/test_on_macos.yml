@@ -19,13 +19,13 @@ jobs:
 
     - name: Install duckdb
       env:
-        DUCKDB_VERSION: 0.2.2
+        DUCKDB_VERSION: 0.2.4
       run: |
         brew install duckdb
         git clone -b v${DUCKDB_VERSION} https://github.com/cwida/duckdb.git duckdb-v${DUCKDB_VERSION}
-        ls -l duckdb-v${DUCKDB_VERSION}/src/include
         cp duckdb-v${DUCKDB_VERSION}/src/include/duckdb.h /usr/local/include
-        ls -l /usr/local/include/duckdb.h
+        mkdir -p /usr/local/include/duckdb/common
+        cp duckdb-v${DUCKDB_VERSION}/src/include/duckdb/common/winapi.hpp /usr/local/include/duckdb/common
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
