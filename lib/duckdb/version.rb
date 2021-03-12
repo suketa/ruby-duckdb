@@ -1,5 +1,5 @@
 module DuckDB
   # The version string of ruby-duckdb.
   # Currently, ruby-duckdb is NOT semantic versioning.
-  VERSION = '0.0.11'.freeze
+  VERSION = '0.0.12'.freeze
 end

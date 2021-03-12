@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    duckdb (0.0.11)
+    duckdb (0.0.12)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    minitest (5.14.3)
+    minitest (5.14.4)
     rake (13.0.3)
     rake-compiler (1.1.1)
       rake

@@ -33,7 +33,11 @@ module DuckDB
       when Integer
         bind_int64(i, value)
       when String
-        bind_varchar(i, value)
+        if defined?(DuckDB::Blob)
+          blob?(value) ? bind_blob(i, value) : bind_varchar(i, value)
+        else
+          bind_varchar(i, value)
+        end
       when TrueClass, FalseClass
         bind_boolean(i, value)
       when Time
@@ -43,6 +47,12 @@ module DuckDB
       else
         rb_raise(DuckDB::Error, "not supported type #{value} (value.class)")
       end
+    end
+
+    private
+
+    def blob?(value)
+      value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
     end
   end
 end
