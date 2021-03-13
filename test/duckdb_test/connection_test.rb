@@ -86,5 +86,10 @@ module DuckDBTest
       @con.open(@db)
       assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
+
+    def test_prepared_statement
+      @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      assert_instance_of(DuckDB::PreparedStatement, @con.prepared_statement('SELECT * FROM t WHERE col1 = $1'))
+    end
   end
 end

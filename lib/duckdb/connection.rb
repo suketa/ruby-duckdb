@@ -44,6 +44,14 @@ module DuckDB
       end
     end
 
+    #
+    # returns PreparedStatement object.
+    # The first argument is SQL string.
+    #
+    def prepared_statement(str)
+      PreparedStatement.new(self, str)
+    end
+
     alias execute query
     alias open connect
     alias close disconnect
