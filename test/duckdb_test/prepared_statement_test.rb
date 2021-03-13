@@ -5,9 +5,8 @@ module DuckDBTest
     def self.create_table
       @db ||= DuckDB::Database.open # FIXME
       con = @db.connect
-      con.query('CREATE TABLE a (id INTEGER, col_boolean BOOLEAN, col_smallint SMALLINT, col_integer INTEGER, col_bigint BIGINT, col_real REAL, col_double DOUBLE, col_varchar VARCHAR, col_date DATE, col_timestamp TIMESTAMP)')
-      datestr = self.today.strftime('%Y-%m-%d')
-      con.query("INSERT INTO a VALUES (1, True, 32767, 2147483647, 9223372036854775807, 12345.375, 12345.6789, 'str', '#{datestr}', '2019-11-09 12:34:56')")
+      con.query(create_table_sql)
+      con.query(insert_sql)
       con
     end
 
@@ -17,6 +16,45 @@ module DuckDBTest
 
     def self.today
       @today ||= Date.today
+    end
+
+    def self.create_table_sql
+      sql = <<-SQL
+      CREATE TABLE a (
+        id INTEGER,
+        col_boolean BOOLEAN,
+        col_smallint SMALLINT,
+        col_integer INTEGER,
+        col_bigint BIGINT,
+        col_real REAL,
+        col_double DOUBLE,
+        col_varchar VARCHAR,
+        col_date DATE,
+        col_timestamp TIMESTAMP
+      SQL
+
+      sql << (defined?(DuckDB::Blob) ? ', col_blob BLOB' : '')
+      sql << ');'
+    end
+
+    def self.insert_sql
+      datestr = today.strftime('%Y-%m-%d')
+      sql = <<-SQL
+      INSERT INTO a VALUES (
+        1,
+        True,
+        32767,
+        2147483647,
+        9223372036854775807,
+        12345.375,
+        12345.6789,
+        'str',
+        '#{datestr}',
+        '2019-11-09 12:34:56'
+      SQL
+
+      sql << (defined?(DuckDB::Blob) ? ", 'blob data'" : '')
+      sql << ');'
     end
 
     def test_class_exist
@@ -81,7 +119,6 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_int16(1, 32767)
       assert_equal(0, stmt.execute.each.size)
-
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int16(1, 32767)
@@ -178,6 +215,18 @@ module DuckDBTest
       assert_equal(0, result.each.size)
     end
 
+    class Foo
+      def to_s
+        raise 'not implemented to_s'
+      end
+    end
+
+    def test_bind_varchar_error
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_varchar = $1')
+      assert_raises(TypeError) { stmt.bind_varchar(1, Foo.new) }
+    end
+
     def test_bind_varchar_date
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
@@ -200,6 +249,18 @@ module DuckDBTest
 
       stmt.bind_varchar(1, 'invalid_timestamp_string')
       assert_raises(DuckDB::Error) { stmt.execute }
+    end
+
+    def test_bind_blob
+      skip 'bind_blob is not available. DuckDB version >= 0.2.5 and ruby-duckdb version >= 0.0.12 are required.' unless defined?(DuckDB::Blob)
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
+      stmt.bind_blob(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
+      assert_instance_of(DuckDB::Result, stmt.execute)
+      result = con.execute('SELECT col_blob FROM a WHERE id IS NULL')
+      assert_equal("\0\1\2\3\4\5".force_encoding(Encoding::BINARY), result.first.first)
+    ensure
+      con&.query('DELETE FROM a WHERE id IS NULL')
     end
 
     def test_bind_null
@@ -322,6 +383,23 @@ module DuckDBTest
 
       stmt.bind(1, date + 1)
       assert_equal(0, stmt.execute.each.size)
+    end
+
+    def test_bind_with_blob
+      skip 'bind_blob is not available. DuckDB version >= 0.2.5 and ruby-duckdb version >= 0.0.12 are required.' unless defined?(DuckDB::Blob)
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
+      stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
+      assert_instance_of(DuckDB::Result, stmt.execute)
+      result = con.execute('SELECT col_blob FROM a WHERE id IS NULL')
+      assert_equal("\0\1\2\3\4\5".force_encoding(Encoding::BINARY), result.first.first)
+
+      stmt.bind(1, "\0\1\2\3\4\5".force_encoding(Encoding::BINARY))
+      assert_instance_of(DuckDB::Result, stmt.execute)
+      result = con.execute('SELECT col_blob FROM a WHERE id IS NULL')
+      assert_equal("\0\1\2\3\4\5".force_encoding(Encoding::BINARY), result.first.first)
+    ensure
+      con&.query('DELETE FROM a WHERE id IS NULL')
     end
 
     def test_bind_with_null

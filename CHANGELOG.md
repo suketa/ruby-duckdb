@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 0.0.12
+
+- bump DuckDB to v0.2.5
+- support BLOB type (with DuckDB version 0.2.5 or later)
+
 ## 0.0.11
 
 - fix failure in test_close in test/duckdb_test/database_test.rb because DuckDB error message was changed.

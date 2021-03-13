@@ -12,4 +12,10 @@ Init_duckdb_native(void)
     init_duckdb_connection();
     init_duckdb_result();
     init_duckdb_prepared_statement();
+
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+
+    init_duckdb_blob();
+
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
 }

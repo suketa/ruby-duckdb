@@ -168,6 +168,20 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     return self;
 }
 
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob)
+{
+    rubyDuckDBPreparedStatement *ctx;
+    idx_t idx = check_index(vidx);
+
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    if (duckdb_bind_blob(ctx->prepared_statement, idx, (const void *)StringValuePtr(blob), (idx_t)RSTRING_LEN(blob)) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
+
 static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx)
 {
     rubyDuckDBPreparedStatement *ctx;
@@ -196,5 +210,8 @@ void init_duckdb_prepared_statement(void)
     rb_define_method(cDuckDBPreparedStatement, "bind_float", duckdb_prepared_statement_bind_float, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_double", duckdb_prepared_statement_bind_double, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+    rb_define_method(cDuckDBPreparedStatement, "bind_blob", duckdb_prepared_statement_bind_blob, 2);
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
     rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
 }

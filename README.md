@@ -64,3 +64,26 @@ DuckDB::Database.open do |db|
   end
 end
 ```
+
+### using BLOB column
+
+BLOB is available with DuckDB v0.2.5 or later.
+Use `DuckDB::Blob.new` or use sting#force_encoding(Encoding::ASCII_8BIT)
+
+```
+require 'duckdb'
+
+DuckDB::Database.open do |db|
+  db.connect do |con|
+    con.query('CREATE TABLE blob_table (binary_data BLOB)')
+    stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO blob_table VALUES ($1)')
+
+    stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
+    # stmt.bind(1, "\0\1\2\3\4\5".force_encoding(Encoding::BINARY))
+    stmt.execute
+
+    result = con.query('SELECT binary_data FROM blob_table')
+    p result.first.first
+  end
+end
+```

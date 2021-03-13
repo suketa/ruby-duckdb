@@ -9,9 +9,22 @@
 #include "./result.h"
 #include "./prepared_statement.h"
 
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+
+#include "./blob.h"
+
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
+
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
 extern VALUE cDuckDBConnection;
+
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+
+extern VALUE cDuckDBBlob;
+
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
+
 extern VALUE eDuckDBError;
 
 #endif

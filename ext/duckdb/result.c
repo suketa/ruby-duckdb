@@ -52,6 +52,14 @@ static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_
     return DBL2NUM(dval);
 }
 
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+static VALUE to_ruby_obj_string_from_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx)
+{
+    duckdb_blob bval = duckdb_value_blob(result, col_idx, row_idx);
+    return rb_str_new(bval.data, bval.size);
+}
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
+
 static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx)
 {
     char *p;
@@ -72,6 +80,10 @@ static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx)
         return to_ruby_obj_float(result, col_idx, row_idx);
     case DUCKDB_TYPE_DOUBLE:
         return to_ruby_obj_double(result, col_idx, row_idx);
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+    case DUCKDB_TYPE_BLOB:
+        return to_ruby_obj_string_from_blob(result, col_idx, row_idx);
+#endif /* HAVE_DUCKDB_VALUE_BLOB */
     default:
         p = duckdb_value_varchar(result, col_idx, row_idx);
         obj = rb_str_new2(p);
