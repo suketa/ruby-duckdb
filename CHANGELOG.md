@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add DuckDB::Connection#prepared_statement
+
 ## 0.0.12
 
 - bump DuckDB to v0.2.5
