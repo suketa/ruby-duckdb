@@ -1,6 +1,8 @@
 # ChangeLog
 
-- add DuckDB::Connection#prepared_statement
+- bump DuckDB to v0.2.6 in CI.
+- remove unnecessary duckdb header file from MacOS CI.
+- add DuckDB::Connection#prepared_statement.
 
 ## 0.0.12
 
