@@ -18,4 +18,10 @@ Init_duckdb_native(void)
     init_duckdb_blob();
 
 #endif /* HAVE_DUCKDB_VALUE_BLOB */
+
+#ifdef HAVE_DUCKDB_APPENDER_CREATE
+
+    init_duckdb_appender();
+
+#endif /* HAVE_DUCKDB_APPENDER_CREATE */
 }

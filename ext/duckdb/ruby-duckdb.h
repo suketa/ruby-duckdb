@@ -15,6 +15,12 @@
 
 #endif /* HAVE_DUCKDB_VALUE_BLOB */
 
+#ifdef HAVE_DUCKDB_APPENDER_CREATE
+
+#include "./appender.h"
+
+#endif /* HAVE_DUCKDB_APPENDER_CREATE */
+
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
 extern VALUE cDuckDBConnection;
