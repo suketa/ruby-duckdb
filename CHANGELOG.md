@@ -1,5 +1,9 @@
 # ChangeLog
 
+# 0.2.6.0
+
+- change version policy
+  - ruby-duckdb W.X.Y.Z supports duckdb W.X.Y
 - add DuckDB::Appender
 - bump DuckDB to v0.2.6 in CI.
 - remove unnecessary duckdb header file from MacOS CI.
