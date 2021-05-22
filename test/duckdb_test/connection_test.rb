@@ -91,5 +91,15 @@ module DuckDBTest
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::PreparedStatement, @con.prepared_statement('SELECT * FROM t WHERE col1 = $1'))
     end
+
+    def test_appender
+      @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      assert_instance_of(DuckDB::Appender, @con.appender('t'))
+    end
+
+    def test_appender_with_schema
+      @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (col1 INTEGER, col2 STRING)')
+      assert_instance_of(DuckDB::Appender, @con.appender('a.b'))
+    end
   end
 end
