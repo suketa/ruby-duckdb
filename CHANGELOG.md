@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add DuckDB::Connection#appender
+
 # 0.2.6.0
 
 - change version policy

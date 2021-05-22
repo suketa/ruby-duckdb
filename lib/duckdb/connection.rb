@@ -52,6 +52,19 @@ module DuckDB
       PreparedStatement.new(self, str)
     end
 
+    #
+    # returns Appender object.
+    # The first argument is table name
+    #
+    def appender(table)
+      t1, t2 = table.split('.')
+      if t2
+        Appender.new(self, t1, t2)
+      else
+        Appender.new(self, t2, t1)
+      end
+    end
+
     alias execute query
     alias open connect
     alias close disconnect
