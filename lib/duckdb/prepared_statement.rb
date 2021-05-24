@@ -39,7 +39,7 @@ module DuckDB
           bind_varchar(i, value)
         end
       when TrueClass, FalseClass
-        bind_boolean(i, value)
+        bind_bool(i, value)
       when Time
         bind_varchar(i, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
       when Date
