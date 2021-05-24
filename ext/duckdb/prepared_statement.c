@@ -70,7 +70,7 @@ static idx_t check_index(VALUE vidx)
     return idx;
 }
 
-static VALUE duckdb_prepared_statement_bind_boolean(VALUE self, VALUE vidx, VALUE val)
+static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
@@ -203,7 +203,7 @@ void init_duckdb_prepared_statement(void)
     rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
-    rb_define_method(cDuckDBPreparedStatement, "bind_boolean", duckdb_prepared_statement_bind_boolean, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int32", duckdb_prepared_statement_bind_int32, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int64", duckdb_prepared_statement_bind_int64, 2);

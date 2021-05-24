@@ -93,20 +93,20 @@ module DuckDBTest
       assert_equal(1, stmt.nparams)
     end
 
-    def test_bind_boolean
+    def test_bind_bool
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_boolean(0, true) }
-      assert_raises(DuckDB::Error) { stmt.bind_boolean(2, true) }
+      assert_raises(ArgumentError) { stmt.bind_bool(0, true) }
+      assert_raises(DuckDB::Error) { stmt.bind_bool(2, true) }
 
-      stmt.bind_boolean(1, true)
+      stmt.bind_bool(1, true)
       assert_equal(1, stmt.execute.each.size)
 
-      stmt.bind_boolean(1, false)
+      stmt.bind_bool(1, false)
       assert_equal(0, stmt.execute.each.size)
 
-      assert_raises(ArgumentError) { stmt.bind_boolean(1, 'True') }
+      assert_raises(ArgumentError) { stmt.bind_bool(1, 'True') }
     end
 
     def test_bind_int16
