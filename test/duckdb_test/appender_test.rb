@@ -152,6 +152,10 @@ if defined?(DuckDB::Appender)
         t = Time.now
         sub_test_append_column(:append_varchar, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
       end
+
+      def test_append
+        sub_test_append_column(:append, 'BOOLEAN', true)
+      end
     end
   end
 end
