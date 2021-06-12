@@ -68,7 +68,7 @@ end
 ### using BLOB column
 
 BLOB is available with DuckDB v0.2.5 or later.
-Use `DuckDB::Blob.new` or use sting#force_encoding(Encoding::ASCII_8BIT)
+Use `DuckDB::Blob.new` or use sting#force_encoding(Encoding::BINARY)
 
 ```
 require 'duckdb'
@@ -86,4 +86,70 @@ DuckDB::Database.open do |db|
     p result.first.first
   end
 end
+```
+
+### Appender
+
+Appender class provides Ruby interface of [DuckDB Appender](https://duckdb.org/docs/data/appender)
+
+```
+require 'duckdb'
+require 'benchmark'
+
+def insert
+  DuckDB::Database.open do |db|
+    db.connect do |con|
+      con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+      10000.times do
+        con.query("INSERT into users VALUES(1, 'Alice')")
+      end
+      # r = con.query('SELECT count(*) from users')
+      # p r.each.first
+    end
+  end
+end
+
+def prepare
+  DuckDB::Database.open do |db|
+    db.connect do |con|
+      con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+      stmt = con.prepared_statement('INSERT INTO users VALUES($1, $2)')
+      10000.times do
+        stmt.bind(1, 1)
+        stmt.bind(2, 'Alice')
+        stmt.execute
+      end
+    end
+  end
+end
+
+def append
+  DuckDB::Database.open do |db|
+    db.connect do |con|
+      con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+      appender = con.appender('users')
+      10000.times do
+        appender.begin_row
+        appender.append(1)
+        appender.append('Alice')
+        appender.end_row
+      end
+      appender.flush
+      # r = con.query('SELECT count(*) from users')
+      # p r.each.first
+    end
+  end
+end
+
+Benchmark.bm(8) do |x|
+  x.report('insert') { insert }
+  x.report('prepare') { prepare }
+  x.report('append') { append }
+end
+
+# =>
+#                user     system      total        real
+# insert     0.637439   0.000000   0.637439 (  0.637486 )
+# prepare    0.230457   0.000000   0.230457 (  0.230460 )
+# append     0.012666   0.000000   0.012666 (  0.012670 )
 ```

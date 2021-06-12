@@ -1,5 +1,6 @@
 # ChangeLog
 
+- DuckDB::Connection#appender accepts block.
 - add DuckDB::Appender#append_row.
 - support HUGEINT type.
 - add DuckDB::Appender#append.
