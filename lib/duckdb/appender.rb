@@ -3,6 +3,9 @@ require 'date'
 module DuckDB
   if defined?(DuckDB::Appender)
     class Appender
+      RANGE_INT16 = -32768..32767
+      RANGE_INT32 = -2147483648..2147483647
+
       def append(value)
         case value
         when NilClass
@@ -10,7 +13,14 @@ module DuckDB
         when Float
           append_double(value)
         when Integer
-          append_int64(value)
+          case value
+          when RANGE_INT16
+            append_int16(value)
+          when RANGE_INT32
+            append_int32(value)
+          else
+            append_int64(value)
+          end
         when String
           if defined?(DuckDB::Blob)
             blob?(value) ? append_blob(value) : append_varchar(value)
