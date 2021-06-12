@@ -101,5 +101,14 @@ module DuckDBTest
       @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::Appender, @con.appender('a.b'))
     end
+
+    def test_appender_with_block
+      @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      @con.appender('t') do |appender|
+        appender.append_row(1, 'foo')
+      end
+      r = @con.query('SELECT col1, col2 FROM t')
+      assert_equal([1, 'foo'], r.first)
+    end
   end
 end

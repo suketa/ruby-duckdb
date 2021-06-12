@@ -57,12 +57,20 @@ module DuckDB
     # The first argument is table name
     #
     def appender(table)
+      appender = create_appender(table)
+
+      return appender unless block_given?
+
+      yield appender
+      appender.flush
+      appender.close
+    end
+
+    private
+
+    def create_appender(table)
       t1, t2 = table.split('.')
-      if t2
-        Appender.new(self, t1, t2)
-      else
-        Appender.new(self, t2, t1)
-      end
+      t2 ? Appender.new(self, t1, t2) : Appender.new(self, t2, t1)
     end
 
     alias execute query
