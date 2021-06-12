@@ -5,6 +5,16 @@ module DuckDB
     class Appender
       RANGE_INT16 = -32768..32767
       RANGE_INT32 = -2147483648..2147483647
+      RANGE_INT64 = -9223372036854775808..9223372036854775807
+
+      def append_hugeint(value)
+        case value
+        when Integer
+          append_varchar(value.to_s)
+        else
+          rb_raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+        end
+      end
 
       def append(value)
         case value
@@ -18,8 +28,10 @@ module DuckDB
             append_int16(value)
           when RANGE_INT32
             append_int32(value)
-          else
+          when RANGE_INT64
             append_int64(value)
+          else
+            append_hugeint(value)
           end
         when String
           if defined?(DuckDB::Blob)

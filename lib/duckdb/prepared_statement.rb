@@ -13,6 +13,19 @@ module DuckDB
   #   stmt.execute
   class PreparedStatement
 
+    RANGE_INT16 = -32768..32767
+    RANGE_INT32 = -2147483648..2147483647
+    RANGE_INT64 = -9223372036854775808..9223372036854775807
+
+    def bind_hugeint(i, value)
+      case value
+      when Integer
+        bind_varchar(i, value.to_s)
+      else
+        rb_raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+      end
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter. The index of first parameter is
     # 1 not 0.
@@ -31,7 +44,12 @@ module DuckDB
       when Float
         bind_double(i, value)
       when Integer
-        bind_int64(i, value)
+        case value
+        when RANGE_INT64
+          bind_int64(i, value)
+        else
+          bind_varchar(i, value.to_s)
+        end
       when String
         if defined?(DuckDB::Blob)
           blob?(value) ? bind_blob(i, value) : bind_varchar(i, value)

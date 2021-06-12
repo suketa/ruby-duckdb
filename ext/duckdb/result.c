@@ -88,6 +88,9 @@ static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx)
         p = duckdb_value_varchar(result, col_idx, row_idx);
         obj = rb_str_new2(p);
         free(p);
+        if (result->columns[col_idx].type == DUCKDB_TYPE_HUGEINT) {
+            obj = rb_funcall(obj, rb_intern("to_i"), 0);
+        }
     }
     return obj;
 }
