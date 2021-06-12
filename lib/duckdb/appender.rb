@@ -50,6 +50,15 @@ module DuckDB
         end
       end
 
+      def append_row(*args)
+        begin_row
+        args.each do |arg|
+          append(arg)
+        end
+        end_row
+        self
+      end
+
       private
 
       def blob?(value)
