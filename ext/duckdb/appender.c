@@ -112,7 +112,7 @@ static VALUE appender_append_int8(VALUE self, VALUE val) {
 
 static VALUE appender_append_int16(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
-    int16_t i16val = NUM2INT(val);
+    int16_t i16val = (int16_t)NUM2INT(val);
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
 
@@ -136,7 +136,7 @@ static VALUE appender_append_int32(VALUE self, VALUE val) {
 
 static VALUE appender_append_int64(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
-    int64_t i64val = NUM2LL(val);
+    int64_t i64val = (int64_t)NUM2LL(val);
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
 
@@ -184,7 +184,7 @@ static VALUE appender_append_uint32(VALUE self, VALUE val) {
 
 static VALUE appender_append_uint64(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
-    uint64_t ui64val = (int64_t)NUM2ULL(val);
+    uint64_t ui64val = (uint64_t)NUM2ULL(val);
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
 

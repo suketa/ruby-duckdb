@@ -51,7 +51,9 @@ if defined?(DuckDB::Appender)
       def sub_test_append_column(method, type, value = nil, len = nil, expected = nil)
         create_appender("col #{type}")
         @appender.begin_row
-        if len
+        if method == :append
+          @appender.send(method, value)
+        elsif len
           @appender.send(method, value, len)
         elsif value
           @appender.send(method, value)
@@ -65,6 +67,7 @@ if defined?(DuckDB::Appender)
         expected = value if expected.nil?
         r = @con.execute("SELECT col FROM #{table}")
         expected ? assert_equal(expected, r.first.first) : assert_nil(r.first.first)
+        teardown
       end
 
       def test_append_bool
@@ -73,6 +76,7 @@ if defined?(DuckDB::Appender)
 
       def test_append_int8
         sub_test_append_column(:append_int8, 'SMALLINT', 127)
+        sub_test_append_column(:append_int8, 'INTEGER', 127)
       end
 
       def test_append_int8_negative
@@ -84,40 +88,40 @@ if defined?(DuckDB::Appender)
       end
 
       def test_append_int16
-        sub_test_append_column(:append_int16, 'SMALLINT', 32767)
+        sub_test_append_column(:append_int16, 'SMALLINT', 32_767)
       end
 
       def test_append_int16_negative
-        sub_test_append_column(:append_int16, 'SMALLINT', -32768)
+        sub_test_append_column(:append_int16, 'SMALLINT', -32_768)
       end
 
       def test_append_uint16
-        sub_test_append_column(:append_uint16, 'INTEGER', 65535)
+        sub_test_append_column(:append_uint16, 'INTEGER', 65_535)
       end
 
       def test_append_int32
-        sub_test_append_column(:append_int32, 'INTEGER', 2147483647)
+        sub_test_append_column(:append_int32, 'INTEGER', 2_147_483_647)
       end
 
       def test_append_int32_negative
-        sub_test_append_column(:append_int32, 'INTEGER', -2147483648)
+        sub_test_append_column(:append_int32, 'INTEGER', -2_147_483_648)
       end
 
       def test_append_uint32
-        sub_test_append_column(:append_uint32, 'BIGINT', 4294967295)
+        sub_test_append_column(:append_uint32, 'BIGINT', 4_294_967_295)
       end
 
       def test_append_int64
-        sub_test_append_column(:append_int64, 'BIGINT', 9223372036854775807)
+        sub_test_append_column(:append_int64, 'BIGINT', 9_223_372_036_854_775_807)
       end
 
       def test_append_int64_negative
-        sub_test_append_column(:append_int64, 'BIGINT', -9223372036854775808)
+        sub_test_append_column(:append_int64, 'BIGINT', -9_223_372_036_854_775_808)
       end
 
       def test_append_uint64
         # sub_test_append_column(:append_uint64, 'HUGEINT', 18446744073709551615) # FIXME
-        sub_test_append_column(:append_uint64, 'BIGINT', 9223372036854775807)
+        sub_test_append_column(:append_uint64, 'BIGINT', 9_223_372_036_854_775_807)
       end
 
       def test_append_varchar
@@ -151,6 +155,41 @@ if defined?(DuckDB::Appender)
       def test_append_varchar_with_timestamp_column
         t = Time.now
         sub_test_append_column(:append_varchar, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
+      end
+
+      def test_append
+        sub_test_append_column(:append, 'BOOLEAN', true)
+        sub_test_append_column(:append, 'SMALLINT', 127)
+        sub_test_append_column(:append, 'SMALLINT', -128)
+        sub_test_append_column(:append, 'SMALLINT', 255)
+        sub_test_append_column(:append, 'SMALLINT', 32_767)
+        sub_test_append_column(:append, 'SMALLINT', -32_768)
+        sub_test_append_column(:append, 'INTEGER', -32_769)
+        sub_test_append_column(:append, 'INTEGER', 65_535)
+        sub_test_append_column(:append, 'INTEGER', 2_147_483_647)
+
+        sub_test_append_column(:append, 'INTEGER', -2_147_483_648)
+        sub_test_append_column(:append, 'BIGINT', 4_294_967_295)
+        sub_test_append_column(:append, 'BIGINT', 9_223_372_036_854_775_807)
+        sub_test_append_column(:append, 'BIGINT', -9_223_372_036_854_775_808)
+        # sub_test_append_column(:append, 'HUGEINT', 18446744073709551615) # FIXME
+        sub_test_append_column(:append, 'BIGINT', 9_223_372_036_854_775_807)
+        sub_test_append_column(:append, 'VARCHAR', 'foobarbaz')
+
+        value = DuckDB::Blob.new("\0\1\2\3\4\5")
+        expected = "\0\1\2\3\4\5".force_encoding(Encoding::BINARY)
+        sub_test_append_column(:append, 'BLOB', value, nil, expected)
+
+        sub_test_append_column(:append, 'VARCHAR', nil, nil, nil)
+
+        t = Time.now
+        sub_test_append_column(:append, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
+
+        t = Time.now
+        sub_test_append_column(:append, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
+
+        t = Time.now
+        sub_test_append_column(:append, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
       end
     end
   end

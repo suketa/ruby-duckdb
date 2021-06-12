@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::Appender#append
 - rename PreparedStatement#bind_boolean to PreparedStatement#bind_bool
 - add DuckDB::Connection#appender
 
