@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::Appender#append_row.
 - support HUGEINT type.
 - add DuckDB::Appender#append.
 - rename PreparedStatement#bind_boolean to PreparedStatement#bind_bool.

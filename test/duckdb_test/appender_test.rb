@@ -194,6 +194,16 @@ if defined?(DuckDB::Appender)
         t = Time.now
         sub_test_append_column(:append, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
       end
+
+      def test_append_row
+        @con.query('CREATE TABLE t (col1 INTEGER, col2 VARCHAR)')
+        appender = @con.appender('t')
+        appender.append_row(1, 'foo')
+        appender.flush
+        appender.close
+        r = @con.query('SELECT * FROM t')
+        assert_equal([1, 'foo'], r.first)
+      end
     end
   end
 end
