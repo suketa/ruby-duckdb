@@ -22,7 +22,8 @@ module DuckDBTest
         expected_boolean,
         expected_smallint,
         expected_integer,
-        exptected_bigint,
+        expected_bigint,
+        expected_hugeint,
         expected_float,
         expected_double,
         expected_string,
@@ -45,31 +46,35 @@ module DuckDBTest
     end
 
     def test_result_bigint
-      assert_equal(exptected_bigint, @ary[3])
+      assert_equal(expected_bigint, @ary[3])
+    end
+
+    def test_result_hugeint
+      assert_equal(expected_hugeint, @ary[4])
     end
 
     def test_result_float
-      assert_equal(expected_float, @ary[4])
+      assert_equal(expected_float, @ary[5])
     end
 
     def test_result_double
-      assert_equal(expected_double, @ary[5])
+      assert_equal(expected_double, @ary[6])
     end
 
     def test_result_varchar
-      assert_equal(expected_string, @ary[6])
+      assert_equal(expected_string, @ary[7])
     end
 
     def test_result_date
-      assert_equal(expected_date, @ary[7])
+      assert_equal(expected_date, @ary[8])
     end
 
     def test_result_timestamp
-      assert_equal(expected_timestamp, @ary[8])
+      assert_equal(expected_timestamp, @ary[9])
     end
 
     def test_result_null
-      assert_equal(Array.new(9), @result.reverse_each.first)
+      assert_equal(Array.new(10), @result.reverse_each.first)
     end
 
     def test_including_enumerable
@@ -93,6 +98,7 @@ module DuckDBTest
           smallint_col SMALLINT,
           integer_col INTEGER,
           bigint_col BIGINT,
+          hugeint_col HUGEINT,
           real_col REAL,
           double_col DOUBLE,
           varchar_col VARCHAR,
@@ -109,14 +115,15 @@ module DuckDBTest
           #{expected_boolean},
           #{expected_smallint},
           #{expected_integer},
-          #{exptected_bigint},
+          #{expected_bigint},
+          #{expected_hugeint},
           #{expected_float},
           #{expected_double},
           '#{expected_string}',
           '#{expected_date}',
           '#{expected_timestamp}'
         ),
-        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
@@ -132,8 +139,12 @@ module DuckDBTest
       2147483647
     end
 
-    def exptected_bigint
+    def expected_bigint
       9223372036854775807
+    end
+
+    def expected_hugeint
+      170141183460469231731687303715884105727
     end
 
     def expected_float

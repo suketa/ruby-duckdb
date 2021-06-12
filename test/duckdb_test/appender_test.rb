@@ -120,8 +120,11 @@ if defined?(DuckDB::Appender)
       end
 
       def test_append_uint64
-        # sub_test_append_column(:append_uint64, 'HUGEINT', 18446744073709551615) # FIXME
         sub_test_append_column(:append_uint64, 'BIGINT', 9_223_372_036_854_775_807)
+      end
+
+      def test_append_hugeint
+        sub_test_append_column(:append_hugeint, 'HUGEINT', 18_446_744_073_709_551_615)
       end
 
       def test_append_varchar
@@ -172,8 +175,8 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append, 'BIGINT', 4_294_967_295)
         sub_test_append_column(:append, 'BIGINT', 9_223_372_036_854_775_807)
         sub_test_append_column(:append, 'BIGINT', -9_223_372_036_854_775_808)
-        # sub_test_append_column(:append, 'HUGEINT', 18446744073709551615) # FIXME
-        sub_test_append_column(:append, 'BIGINT', 9_223_372_036_854_775_807)
+        sub_test_append_column(:append, 'HUGEINT', 18_446_744_073_709_551_615)
+        sub_test_append_column(:append, 'HUGEINT', -18_446_744_073_709_551_616)
         sub_test_append_column(:append, 'VARCHAR', 'foobarbaz')
 
         value = DuckDB::Blob.new("\0\1\2\3\4\5")

@@ -26,6 +26,7 @@ module DuckDBTest
         col_smallint SMALLINT,
         col_integer INTEGER,
         col_bigint BIGINT,
+        col_hugeint HUGEINT,
         col_real REAL,
         col_double DOUBLE,
         col_varchar VARCHAR,
@@ -46,6 +47,7 @@ module DuckDBTest
         32767,
         2147483647,
         9223372036854775807,
+        170141183460469231731687303715884105727,
         12345.375,
         12345.6789,
         'str',
@@ -156,6 +158,26 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int64(1, 9223372036854775807)
+      assert_equal(1, stmt.execute.each.size)
+    end
+
+    def test_bind_hugeint
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
+
+      stmt.bind_hugeint(1, 32767)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
+      stmt.bind_hugeint(1, 2147483647)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
+      stmt.bind_hugeint(1, 9223372036854775807)
+      assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_hugeint = $1')
+      stmt.bind_hugeint(1, 170141183460469231731687303715884105727)
       assert_equal(1, stmt.execute.each.size)
     end
 
