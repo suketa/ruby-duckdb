@@ -90,7 +90,6 @@ module DuckDB
           append(arg)
         end
         end_row
-        self
       end
 
       private
