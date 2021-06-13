@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::PreparedStatement#bind_int8
 - DuckDB::Connection#appender accepts block.
 - add DuckDB::Appender#append_row.
 - support HUGEINT type.

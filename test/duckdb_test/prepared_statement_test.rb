@@ -23,6 +23,7 @@ module DuckDBTest
       CREATE TABLE a (
         id INTEGER,
         col_boolean BOOLEAN,
+        col_tinyint TINYINT,
         col_smallint SMALLINT,
         col_integer INTEGER,
         col_bigint BIGINT,
@@ -44,6 +45,7 @@ module DuckDBTest
       INSERT INTO a VALUES (
         1,
         True,
+        127,
         32767,
         2147483647,
         9223372036854775807,
@@ -109,6 +111,14 @@ module DuckDBTest
       assert_equal(0, stmt.execute.each.size)
 
       assert_raises(ArgumentError) { stmt.bind_bool(1, 'True') }
+    end
+
+    def test_bind_int8
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_tinyint = $1')
+
+      stmt.bind_int8(1, 127)
+      assert_equal(1, stmt.execute.each.size)
     end
 
     def test_bind_int16

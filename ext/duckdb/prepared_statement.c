@@ -86,6 +86,20 @@ static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE v
     return self;
 }
 
+static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val)
+{
+    rubyDuckDBPreparedStatement *ctx;
+    idx_t idx = check_index(vidx);
+    int8_t i8val = (int8_t)NUM2INT(val);
+
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+
+    if (duckdb_bind_int8(ctx->prepared_statement, idx, i8val) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+
 static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val)
 {
     rubyDuckDBPreparedStatement *ctx;
@@ -204,6 +218,7 @@ void init_duckdb_prepared_statement(void)
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_int8", duckdb_prepared_statement_bind_int8, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int32", duckdb_prepared_statement_bind_int32, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int64", duckdb_prepared_statement_bind_int64, 2);
