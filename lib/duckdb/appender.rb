@@ -2,10 +2,19 @@ require 'date'
 
 module DuckDB
   if defined?(DuckDB::Appender)
+    # The DuckDB::Appender encapsulates DuckDB Appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #   appender = con.appender('users')
+    #   appender.append_row(1, 'Alice')
+    #
     class Appender
-      RANGE_INT16 = -32768..32767
-      RANGE_INT32 = -2147483648..2147483647
-      RANGE_INT64 = -9223372036854775808..9223372036854775807
+      RANGE_INT16 = (-32_768..32_767).freeze
+      RANGE_INT32 = (-2_147_483_648..2_147_483_647).freeze
+      RANGE_INT64 = (-9_223_372_036_854_775_808..9_223_372_036_854_775_807).freeze
 
       def append_hugeint(value)
         case value
@@ -16,6 +25,19 @@ module DuckDB
         end
       end
 
+      #
+      # appends value.
+      #
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+      #   appender = con.appender('users')
+      #   appender.begin_row
+      #   appender.append(1)
+      #   appender.append('Alice')
+      #   appender.end_row
+      #
       def append(value)
         case value
         when NilClass
@@ -50,6 +72,18 @@ module DuckDB
         end
       end
 
+      #
+      # append a row.
+      #
+      #   appender.append_row(1, 'Alice')
+      #
+      # is same as:
+      #
+      #   appender.begin_row
+      #   appender.append(1)
+      #   appender.append('Alice')
+      #   appender.end_row
+      #
       def append_row(*args)
         begin_row
         args.each do |arg|
