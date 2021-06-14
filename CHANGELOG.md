@@ -1,5 +1,7 @@
 # ChangeLog
 
+# 0.2.6.1
+
 - add DuckDB::PreparedStatement#bind_int8
 - DuckDB::Connection#appender accepts block.
 - add DuckDB::Appender#append_row.
