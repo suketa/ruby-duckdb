@@ -1,7 +1,8 @@
 # ChangeLog
 
+- bump DuckDB to v0.2.7 in CI
 - rake build on Windows in github actions.
-  - There is a LoadError to fix on github actions
+  - There is a issue (LoadError) when running rake test on Windows (in GitHub actions).
 
 # 0.2.6.1
 
