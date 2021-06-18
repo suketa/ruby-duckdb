@@ -135,8 +135,6 @@ def append
         appender.end_row
       end
       appender.flush
-      # r = con.query('SELECT count(*) from users')
-      # p r.each.first
     end
   end
 end
