@@ -1,5 +1,6 @@
 # ChangeLog
 
+- call duckdb_free after calling duckdb_value_blob, duckdb_value_char.
 - bump DuckDB to v0.2.7 in CI
 - rake build on Windows in github actions.
   - There is a issue (LoadError) when running rake test on Windows (in GitHub actions).
