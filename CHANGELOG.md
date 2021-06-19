@@ -1,5 +1,7 @@
 # ChangeLog
 
+# 0.2.7.0
+
 - call duckdb_free after calling duckdb_value_blob, duckdb_value_varchar.
 - bump DuckDB to v0.2.7 in CI
 - rake build on Windows in github actions.
