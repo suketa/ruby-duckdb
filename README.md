@@ -103,8 +103,6 @@ def insert
       10000.times do
         con.query("INSERT into users VALUES(1, 'Alice')")
       end
-      # r = con.query('SELECT count(*) from users')
-      # p r.each.first
     end
   end
 end
