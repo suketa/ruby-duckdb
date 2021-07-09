@@ -1,5 +1,7 @@
 # ChangeLog
 
+- bump Ruby to 2.6.8, 2.7.4, 3.0.2 in CI
+
 # 0.2.7.0
 
 - call duckdb_free after calling duckdb_value_blob, duckdb_value_varchar.
