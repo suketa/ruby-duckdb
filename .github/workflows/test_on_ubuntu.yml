@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.5.8', '2.6.8', '2.7.4', '3.0.2', 'head']
-        duckdb: ['0.2.6', '0.2.7']
+        duckdb: ['0.2.8', '0.2.7']
 
     steps:
     - uses: actions/checkout@v2
@@ -19,14 +19,14 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
-    - name: duckdb 0.2.6 cache
-      id: duckdb-cache-v0_2_6
+    - name: duckdb 0.2.8 cache
+      id: duckdb-cache-v0_2_8
       uses: actions/cache@v1.1.0
       with:
-        path: duckdb-v0.2.6
-        key: ${{ runner.os }}-duckdb-v0_2_6_001
+        path: duckdb-v0.2.8
+        key: ${{ runner.os }}-duckdb-v0_2_8_001
         restore-keys: |
-          ${{ runner.os }}-duckdb-v0_2_6
+          ${{ runner.os }}-duckdb-v0_2_8
 
     - name: duckdb 0.2.7 cache
       id: duckdb-cache-v0_2_7
@@ -37,15 +37,15 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-duckdb-v0_2_7
 
-    - name: Build duckdb 0.2.6
-      if: steps.duckdb-cache-v0_2_6.outputs.cache-hit != 'true'
+    - name: Build duckdb 0.2.8
+      if: steps.duckdb-cache-v0_2_8.outputs.cache-hit != 'true'
       run: |
-        git clone -b v0.2.6 https://github.com/cwida/duckdb.git duckdb-tmp-v0.2.6
-        cd duckdb-tmp-v0.2.6 && make && cd ..
-        rm -rf duckdb-v0.2.6
-        mkdir -p duckdb-v0.2.6/build/release/src duckdb-v0.2.6/src
-        cp -rip duckdb-tmp-v0.2.6/build/release/src/*.so duckdb-v0.2.6/build/release/src
-        cp -rip duckdb-tmp-v0.2.6/src/include duckdb-v0.2.6/src/
+        git clone -b v0.2.8 https://github.com/cwida/duckdb.git duckdb-tmp-v0.2.8
+        cd duckdb-tmp-v0.2.8 && make && cd ..
+        rm -rf duckdb-v0.2.8
+        mkdir -p duckdb-v0.2.8/build/release/src duckdb-v0.2.8/src
+        cp -rip duckdb-tmp-v0.2.8/build/release/src/*.so duckdb-v0.2.8/build/release/src
+        cp -rip duckdb-tmp-v0.2.8/src/include duckdb-v0.2.8/src/
 
     - name: Build duckdb 0.2.7
       if: steps.duckdb-cache-v0_2_7.outputs.cache-hit != 'true'
