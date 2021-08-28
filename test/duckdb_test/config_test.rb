@@ -7,6 +7,10 @@ if defined?(DuckDB::Config)
         config = DuckDB::Config.new
         assert_instance_of(DuckDB::Config, config)
       end
+
+      def test_s_size
+        assert_operator(0, :<=, DuckDB::Config.size)
+      end
     end
   end
 end
