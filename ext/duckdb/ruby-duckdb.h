@@ -21,6 +21,12 @@
 
 #endif /* HAVE_DUCKDB_APPENDER_CREATE */
 
+#ifdef HAVE_DUCKDB_CREATE_CONFIG
+
+#include "./config.h"
+
+#endif /* HAVE_DUCKDB_CREATE_CONFIG */
+
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
 extern VALUE cDuckDBConnection;
@@ -30,6 +36,12 @@ extern VALUE cDuckDBConnection;
 extern VALUE cDuckDBBlob;
 
 #endif /* HAVE_DUCKDB_VALUE_BLOB */
+
+#ifdef HAVE_DUCKDB_CREATE_CONFIG
+
+extern VALUE cDuckDBConfig;
+
+#endif /* HAVE_DUCKDB_CREATE_CONFIG */
 
 extern VALUE eDuckDBError;
 
