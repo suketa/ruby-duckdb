@@ -6,9 +6,10 @@ VALUE cDuckDBConfig;
 
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
-static VALUE config_initialize(VALUE self);
 static VALUE config_s_size(VALUE klass);
 static VALUE config_s_get_config_flag(VALUE self, VALUE value);
+static VALUE config_initialize(VALUE self);
+static VALUE config_set_config(VALUE self, VALUE key, VALUE value);
 
 static void deallocate(void * ctx)
 {
@@ -52,6 +53,19 @@ static VALUE config_s_get_config_flag(VALUE klass, VALUE value) {
     return rb_ary_new3(2, rb_str_new2(pkey), rb_str_new2(pdesc));
 }
 
+static VALUE config_set_config(VALUE self, VALUE key, VALUE value) {
+    const char *pkey = StringValuePtr(key);
+    const char *pval = StringValuePtr(value);
+
+    rubyDuckDBConfig *ctx;
+    Data_Get_Struct(self, rubyDuckDBConfig, ctx);
+
+    if (duckdb_set_config(ctx->config, pkey, pval) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to set config %s => %s", pkey, pval);
+    }
+    return self;
+}
+
 void init_duckdb_config(void) {
     cDuckDBConfig = rb_define_class_under(mDuckDB, "Config", rb_cObject);
     rb_define_alloc_func(cDuckDBConfig, allocate);
@@ -59,6 +73,7 @@ void init_duckdb_config(void) {
     rb_define_singleton_method(cDuckDBConfig, "get_config_flag", config_s_get_config_flag, 1);
 
     rb_define_method(cDuckDBConfig, "initialize", config_initialize, 0);
+    rb_define_method(cDuckDBConfig, "set_config", config_set_config, 2);
 }
 
 #endif
