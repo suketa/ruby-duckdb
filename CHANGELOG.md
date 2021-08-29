@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add DuckDB::Config
+- bump duckdb to 0.2.8 in CI
 - bump Ruby to 2.6.8, 2.7.4, 3.0.2 in CI
 
 # 0.2.7.0
