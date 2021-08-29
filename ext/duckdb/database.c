@@ -25,10 +25,22 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
 {
     rubyDuckDB *ctx;
     VALUE obj;
+#ifdef HAVE_DUCKDB_OPEN_EXT
+    rubyDuckDBConfig *ctx_config;
+    char *perror;
+#endif
+
     char *pfile = NULL;
     VALUE file = Qnil;
+#ifdef HAVE_DUCKDB_OPEN_EXT
+    VALUE config = Qnil;
+#endif
 
+#ifdef HAVE_DUCKDB_OPEN_EXT
+    rb_scan_args(argc, argv, "02", &file, &config);
+#else
     rb_scan_args(argc, argv, "01", &file);
+#endif
 
     if (!NIL_P(file)) {
         pfile = StringValuePtr(file);
@@ -36,10 +48,25 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
 
     obj = allocate(cDuckDBDatabase);
     Data_Get_Struct(obj, rubyDuckDB, ctx);
-    if (duckdb_open(pfile, &(ctx->db)) == DuckDBError)
-    {
+#ifdef HAVE_DUCKDB_OPEN_EXT
+    if (!NIL_P(config)) {
+        if (!rb_obj_is_kind_of(config, cDuckDBConfig)) {
+            rb_raise(rb_eTypeError, "The second argument must be DuckDB::Config object.");
+        }
+        Data_Get_Struct(config, rubyDuckDBConfig, ctx_config);
+        if (duckdb_open_ext(pfile, &(ctx->db), ctx_config->config, &perror) == DuckDBError) {
+            rb_raise(eDuckDBError, "Failed to open database %s", perror);
+        }
+    } else {
+        if (duckdb_open(pfile, &(ctx->db)) == DuckDBError) {
+            rb_raise(eDuckDBError, "Failed to open database"); /* FIXME */
+        }
+    }
+#else
+    if (duckdb_open(pfile, &(ctx->db)) == DuckDBError) {
         rb_raise(eDuckDBError, "Failed to open database"); /* FIXME */
     }
+#endif /* HAVE_DUCKDB_OPEN_EXT */
     return obj;
 }
 
