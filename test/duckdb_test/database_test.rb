@@ -22,10 +22,7 @@ module DuckDBTest
 
     def test_s_open_argument
       assert_instance_of(DuckDB::Database, DuckDB::Database.open(@path))
-      e = assert_raises(StandardError) { DuckDB::Database.open('foo', 'bar') }
-      # raises ArgumentError if ruby-duckdb is built with duckdb 0.2.7
-      # raises TypeError if ruby-duckdb is built with duckdb 0.2.8 or later.
-      assert_includes([TypeError, ArgumentError], e.class)
+      assert_raises(ArgumentError) { DuckDB::Database.open('foo', 'bar') }
       assert_raises(TypeError) { DuckDB::Database.open(1) }
 
       assert_raises(DuckDB::Error) do
