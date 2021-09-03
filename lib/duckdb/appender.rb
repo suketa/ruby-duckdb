@@ -12,9 +12,9 @@ module DuckDB
     #   appender.append_row(1, 'Alice')
     #
     class Appender
-      RANGE_INT16 = (-32_768..32_767).freeze
-      RANGE_INT32 = (-2_147_483_648..2_147_483_647).freeze
-      RANGE_INT64 = (-9_223_372_036_854_775_808..9_223_372_036_854_775_807).freeze
+      RANGE_INT16 = -32_768..32_767
+      RANGE_INT32 = -2_147_483_648..2_147_483_647
+      RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
 
       def append_hugeint(value)
         case value
