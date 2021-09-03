@@ -9,7 +9,8 @@ module DuckDBTest
 
     def teardown
       File.unlink(@path) if File.exist?(@path)
-      File.unlink(@path + '.wal') if File.exist?(@path + '.wal')
+      walf = "#{@path}.wal"
+      File.unlink(walf) if File.exist?(walf)
     end
 
     def test_s__open
@@ -22,11 +23,15 @@ module DuckDBTest
 
     def test_s_open_argument
       assert_instance_of(DuckDB::Database, DuckDB::Database.open(@path))
-      assert_raises(ArgumentError) { DuckDB::Database.open('foo', 'bar') }
+      if defined?(DuckDB::Config)
+        assert_raises(TypeError) { DuckDB::Database.open('foo', 'bar') }
+      else
+        assert_raises(ArgumentError) { DuckDB::Database.open('foo', 'bar') }
+      end
       assert_raises(TypeError) { DuckDB::Database.open(1) }
 
       assert_raises(DuckDB::Error) do
-        not_exist_path = create_path + '/' + create_path
+        not_exist_path = "#{create_path}/#{create_path}"
         DuckDB::Database.open(not_exist_path)
       end
     end

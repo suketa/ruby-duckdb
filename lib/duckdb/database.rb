@@ -21,6 +21,7 @@ module DuckDB
   #
   class Database
     private_class_method :_open
+    private_class_method :_open_ext if defined?(DuckDB::Config)
 
     class << self
       ##
@@ -38,14 +39,26 @@ module DuckDB
       #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       #   end
       #
-      def open(*args)
-        db = _open(*args)
+      def open(dbpath = nil, config = nil)
+        db = _db_open(dbpath, config)
         return db unless block_given?
 
         begin
           yield db
         ensure
           db.close
+        end
+      end
+
+      private
+
+      def _db_open(dbpath, config)
+        if defined?(DuckDB::Config) && config
+          _open_ext(dbpath, config)
+        elsif config
+          _open(dbpath, config)
+        else
+          _open(dbpath)
         end
       end
     end
