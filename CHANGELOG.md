@@ -1,5 +1,9 @@
 # ChangeLog
 
+- use duckdb_prepare_error when get error message of prepared statement.
+
+# 0.2.8.0
+
 - DuckDB::Database.open accepts 2-nd argument as DuckDB::Config object.
 - add DuckDB::Config
 - bump duckdb to 0.2.8 in CI
