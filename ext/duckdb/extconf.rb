@@ -7,5 +7,6 @@ if have_library('duckdb')
   have_func('duckdb_appender_create', 'duckdb.h')
   have_func('duckdb_free', 'duckdb.h')
   have_func('duckdb_create_config', 'duckdb.h')
+  have_func('duckdb_open_ext', 'duckdb.h')
   create_makefile('duckdb/duckdb_native')
 end

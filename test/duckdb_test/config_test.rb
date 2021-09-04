@@ -26,6 +26,18 @@ if defined?(DuckDB::Config)
         end
       end
 
+      def test_s_key_description
+        key, value = DuckDB::Config.key_description(0)
+        assert_equal('access_mode', key)
+        assert_match(/\AAccess mode of the database/, value)
+      end
+
+      def test_s_key_descriptions
+        h = DuckDB::Config.key_descriptions
+        assert_instance_of(Hash, h)
+        assert_match(/\AAccess mode of the database/, h['access_mode'])
+      end
+
       def test_set_config
         config = DuckDB::Config.new
         config.set_config('access_mode', 'READ_ONLY')
