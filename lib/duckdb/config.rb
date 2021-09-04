@@ -14,6 +14,8 @@ module DuckDB
           end
         end
       end
+
+      alias []= set_config
     end
   end
 end

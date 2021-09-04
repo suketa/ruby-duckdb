@@ -36,6 +36,27 @@ module DuckDBTest
       end
     end
 
+    if defined?(DuckDB::Config)
+      def test_s_open_with_config
+        config = DuckDB::Config.new
+        config['default_order'] = 'DESC'
+        db = DuckDB::Database.open(nil, config)
+        conn = db.connect
+        conn.execute('CREATE TABLE t (col1 INTEGER);')
+        conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
+        r = conn.execute('SELECT * FROM t ORDER BY col1')
+        assert_equal([4], r.first)
+
+        config['default_order'] = 'ASC'
+        db = DuckDB::Database.open(nil, config)
+        conn = db.connect
+        conn.execute('CREATE TABLE t (col1 INTEGER);')
+        conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
+        r = conn.execute('SELECT * FROM t ORDER BY col1')
+        assert_equal([1], r.first)
+      end
+    end
+
     def test_s_open_block
       result = DuckDB::Database.open do |db|
         assert_instance_of(DuckDB::Database, db)
