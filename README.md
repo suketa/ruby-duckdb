@@ -149,3 +149,21 @@ end
 # prepare    0.230457   0.000000   0.230457 (  0.230460 )
 # append     0.012666   0.000000   0.012666 (  0.012670 )
 ```
+
+### Configuration
+
+Config class provides Ruby interface of [DuckDB configuration](https://duckdb.org/docs/api/c/config).
+
+```
+require 'duckdb'
+config = DuckDB::Config.new
+config['default_order'] = 'DESC'
+db = DuckDB::Database.open(nil, config)
+con = db.connect
+con.query('CREATE TABLE numbers (number INTEGER)')
+con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
+
+# number is ordered by descending.
+r = con.query('SELECT number FROM numbers ORDER BY number')
+r.first.first # => 4
+```
