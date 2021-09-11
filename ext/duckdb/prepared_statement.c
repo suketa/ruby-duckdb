@@ -44,11 +44,14 @@ static VALUE duckdb_prepared_statement_nparams(VALUE self)
 {
     rubyDuckDBPreparedStatement *ctx;
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
-
+#ifdef HAVE_DUCKDB_NPARAMS_029
+    return rb_int2big(duckdb_nparams(ctx->prepared_statement));
+#else
     if (duckdb_nparams(ctx->prepared_statement, &(ctx->nparams)) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to get number of parameters");
     }
     return rb_int2big(ctx->nparams);
+#endif
 }
 
 
