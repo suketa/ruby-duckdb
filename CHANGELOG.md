@@ -1,5 +1,6 @@
 # ChangeLog
 
+- fix to build with duckdb v0.2.9
 - use duckdb_prepare_error when get error message of prepared statement.
 
 # 0.2.8.0
