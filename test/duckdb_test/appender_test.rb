@@ -2,6 +2,16 @@ require 'test_helper'
 
 if defined?(DuckDB::Appender)
   module DuckDBTest
+
+    def self.less_than_equal_version_028?
+      db = DuckDB::Database.open
+      con = db.connect
+      r = con.query('SELECT version()')
+      version = r.first.first.sub(/\Av/, '')
+      Gem::Version.new(version) <= Gem::Version.new('0.2.8')
+    end
+    LessThanEqualVersion028 = less_than_equal_version_028?
+
     class AppenderTest < Minitest::Test
       def self.con
         @db ||= DuckDB::Database.open # FIXME
@@ -145,19 +155,22 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append_null, 'VARCHAR', nil, nil, nil)
       end
 
-      def test_append_varchar_with_date_column
-        t = Time.now
-        sub_test_append_column(:append_varchar, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
-      end
+      # FIXME issue https://github.com/suketa/ruby-duckdb/issues/176
+      if LessThanEqualVersion028
+        def test_append_varchar_with_date_column
+          t = Time.now
+          sub_test_append_column(:append_varchar, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
+        end
 
-      def test_append_varchar_with_time_column
-        t = Time.now
-        sub_test_append_column(:append_varchar, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
-      end
+        def test_append_varchar_with_time_column
+          t = Time.now
+          sub_test_append_column(:append_varchar, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
+        end
 
-      def test_append_varchar_with_timestamp_column
-        t = Time.now
-        sub_test_append_column(:append_varchar, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
+        def test_append_varchar_with_timestamp_column
+          t = Time.now
+          sub_test_append_column(:append_varchar, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
+        end
       end
 
       def test_append
@@ -185,14 +198,15 @@ if defined?(DuckDB::Appender)
 
         sub_test_append_column(:append, 'VARCHAR', nil, nil, nil)
 
-        t = Time.now
-        sub_test_append_column(:append, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
+        # FIXME issue https://github.com/suketa/ruby-duckdb/issues/176
+        if LessThanEqualVersion028
+          t = Time.now
+          sub_test_append_column(:append, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
 
-        t = Time.now
-        sub_test_append_column(:append, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
+          sub_test_append_column(:append, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
 
-        t = Time.now
-        sub_test_append_column(:append, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
+          sub_test_append_column(:append, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
+        end
       end
 
       def test_append_row
