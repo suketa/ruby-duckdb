@@ -58,6 +58,18 @@ if defined?(DuckDB::Appender)
         }
       end
 
+      def sub_test_append_column2(method, type, values:, expected:)
+        create_appender("col #{type}")
+        @appender.begin_row
+        @appender.send(method, *values)
+        @appender.end_row
+        @appender.flush
+        r = @con.execute("SELECT col FROM #{table}")
+        assert_equal(expected, r.first.first)
+      ensure
+        teardown
+      end
+
       def sub_test_append_column(method, type, value = nil, len = nil, expected = nil)
         create_appender("col #{type}")
         @appender.begin_row
@@ -171,6 +183,23 @@ if defined?(DuckDB::Appender)
           t = Time.now
           sub_test_append_column(:append_varchar, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
         end
+      else
+        def test__append_date
+          t = Time.now
+          sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month, t.day], expected: t.strftime('%Y-%m-%d'))
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_date, 'DATE', values: ['a', t.month, t.day], expected: t.strftime('%Y-%m-%d'))
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_date, 'DATE', values: [t.year, 'a', t.day], expected: t.strftime('%Y-%m-%d'))
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month, 'c'], expected: t.strftime('%Y-%m-%d'))
+          }
+          assert_raises(ArgumentError) {
+            sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month], expected: t.strftime('%Y-%m-%d'))
+          }
+        end
       end
 
       def test_append
@@ -198,7 +227,7 @@ if defined?(DuckDB::Appender)
 
         sub_test_append_column(:append, 'VARCHAR', nil, nil, nil)
 
-        # FIXME issue https://github.com/suketa/ruby-duckdb/issues/176
+        # FIXME: issue https://github.com/suketa/ruby-duckdb/issues/176
         if LessThanEqualVersion028
           t = Time.now
           sub_test_append_column(:append, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
