@@ -7,7 +7,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ruby: ['2.5.8', '2.6.8', '2.7.4', '3.0.2', 'head']
+        ruby: ['2.6.8', '2.7.4', '3.0.2', 'head']
 
     steps:
     - uses: actions/checkout@v2
