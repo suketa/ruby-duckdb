@@ -24,6 +24,11 @@ static VALUE appender_append_varchar(VALUE self, VALUE val);
 static VALUE appender_append_varchar_length(VALUE self, VALUE val, VALUE len);
 static VALUE appender_append_blob(VALUE self, VALUE val);
 static VALUE appender_append_null(VALUE self);
+
+#ifdef HAVE_DUCKDB_APPENDER_DATE
+static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval);
+#endif
+
 static VALUE appender_flush(VALUE self);
 static VALUE appender_close(VALUE self);
 
@@ -268,6 +273,25 @@ static VALUE appender_append_null(VALUE self) {
     return self;
 }
 
+#ifdef HAVE_DUCKDB_APPEND_DATE
+static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval) {
+    duckdb_date_struct dt_struct;
+    duckdb_date dt;
+    rubyDuckDBAppender *ctx;
+
+    Data_Get_Struct(self, rubyDuckDBAppender, ctx);
+    dt_struct.year = NUM2INT(yearval);
+    dt_struct.month = NUM2INT(monthval);
+    dt_struct.day = NUM2INT(dayval);
+    dt = duckdb_to_date(dt_struct);
+
+    if (duckdb_append_date(ctx->appender, dt) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to append date");
+    }
+    return self;
+}
+#endif
+
 static VALUE appender_flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
@@ -309,6 +333,9 @@ void init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "append_varchar_length", appender_append_varchar_length, 2);
     rb_define_method(cDuckDBAppender, "append_blob", appender_append_blob, 1);
     rb_define_method(cDuckDBAppender, "append_null", appender_append_null, 0);
+#ifdef HAVE_DUCKDB_APPEND_DATE
+    rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
+#endif
     rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
     rb_define_method(cDuckDBAppender, "close", appender_close, 0);
 }
