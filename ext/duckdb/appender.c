@@ -25,8 +25,12 @@ static VALUE appender_append_varchar_length(VALUE self, VALUE val, VALUE len);
 static VALUE appender_append_blob(VALUE self, VALUE val);
 static VALUE appender_append_null(VALUE self);
 
-#ifdef HAVE_DUCKDB_APPENDER_DATE
+#ifdef HAVE_DUCKDB_APPEND_DATE
 static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval);
+#endif
+
+#ifdef HAVE_DUCKDB_APPEND_INTERVAL
+static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros);
 #endif
 
 static VALUE appender_flush(VALUE self);
@@ -292,6 +296,23 @@ static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VA
 }
 #endif
 
+#ifdef HAVE_DUCKDB_APPEND_INTERVAL
+static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros) {
+    duckdb_interval interval;
+    rubyDuckDBAppender *ctx;
+
+    Data_Get_Struct(self, rubyDuckDBAppender, ctx);
+    interval.months = NUM2INT(months);
+    interval.days = NUM2INT(days);
+    interval.micros = NUM2LL(micros);
+
+    if (duckdb_append_interval(ctx->appender, interval) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to append interval");
+    }
+    return self;
+}
+#endif
+
 static VALUE appender_flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
@@ -335,6 +356,9 @@ void init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "append_null", appender_append_null, 0);
 #ifdef HAVE_DUCKDB_APPEND_DATE
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
+#endif
+#ifdef HAVE_DUCKDB_APPEND_INTERVAL
+    rb_define_private_method(cDuckDBAppender, "_append_interval", appender__append_interval, 3);
 #endif
     rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
     rb_define_method(cDuckDBAppender, "close", appender_close, 0);

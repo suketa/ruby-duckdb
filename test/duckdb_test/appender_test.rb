@@ -200,6 +200,24 @@ if defined?(DuckDB::Appender)
             sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month], expected: t.strftime('%Y-%m-%d'))
           }
         end
+
+        def test__append_interval
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 1], expected: '1 month 1 day 00:00:00.000001')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, 1], expected: '1 year 1 month 1 day 00:00:00.000001')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, 45_296_987_654], expected: '1 year 1 month 1 day 12:34:56.987654')
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, 45_296_987_654], expected: '')
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 'a', 45_296_987_654], expected: '')
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 'a'], expected: '')
+          }
+          assert_raises(ArgumentError) {
+            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1], expected: '')
+          }
+        end
       end
 
       def test_append
