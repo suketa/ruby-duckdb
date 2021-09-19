@@ -204,18 +204,38 @@ if defined?(DuckDB::Appender)
         def test__append_interval
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 1], expected: '1 month 1 day 00:00:00.000001')
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, 1], expected: '1 year 1 month 1 day 00:00:00.000001')
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, 45_296_987_654], expected: '1 year 1 month 1 day 12:34:56.987654')
+          micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, micros], expected: '1 year 1 month 1 day 12:34:56.987654')
           assert_raises(TypeError) {
-            sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, 45_296_987_654], expected: '')
+            sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, micros], expected: '')
           }
           assert_raises(TypeError) {
-            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 'a', 45_296_987_654], expected: '')
+            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 'a', micros], expected: '')
           }
           assert_raises(TypeError) {
             sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 'a'], expected: '')
           }
           assert_raises(ArgumentError) {
             sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1], expected: '')
+          }
+        end
+
+        def test__append_time
+          sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1], expected: '01:01:01.000001')
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_time, 'TIME', values: ['a', 1, 1, 1], expected: '')
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_time, 'TIME', values: [1, 'a', 1, 1], expected: '')
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 'a', 1], expected: '')
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 'a'], expected: '')
+          }
+          assert_raises(ArgumentError) {
+            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1], expected: '')
           }
         end
       end
