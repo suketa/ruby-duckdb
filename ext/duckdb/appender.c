@@ -33,6 +33,10 @@ static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VA
 static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros);
 #endif
 
+#ifdef HAVE_DUCKDB_APPEND_TIME
+static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+#endif
+
 static VALUE appender_flush(VALUE self);
 static VALUE appender_close(VALUE self);
 
@@ -313,6 +317,27 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
 }
 #endif
 
+#ifdef HAVE_DUCKDB_APPEND_TIME
+static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
+    duckdb_time_struct time_st;
+    duckdb_time time;
+    rubyDuckDBAppender *ctx;
+
+    Data_Get_Struct(self, rubyDuckDBAppender, ctx);
+    time_st.hour = NUM2INT(hour);
+    time_st.min = NUM2INT(min);
+    time_st.sec = NUM2INT(sec);
+    time_st.micros = NUM2LL(micros);
+
+    time = duckdb_to_time(time_st);
+
+    if (duckdb_append_time(ctx->appender, time) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to append time");
+    }
+    return self;
+}
+#endif
+
 static VALUE appender_flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
@@ -359,6 +384,9 @@ void init_duckdb_appender(void) {
 #endif
 #ifdef HAVE_DUCKDB_APPEND_INTERVAL
     rb_define_private_method(cDuckDBAppender, "_append_interval", appender__append_interval, 3);
+#endif
+#ifdef HAVE_DUCKDB_APPEND_TIME
+    rb_define_private_method(cDuckDBAppender, "_append_time", appender__append_time, 4);
 #endif
     rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
     rb_define_method(cDuckDBAppender, "close", appender_close, 0);
