@@ -327,7 +327,7 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
     time_st.hour = NUM2INT(hour);
     time_st.min = NUM2INT(min);
     time_st.sec = NUM2INT(sec);
-    time_st.micros = NUM2LL(micros);
+    time_st.micros = NUM2INT(micros);
 
     time = duckdb_to_time(time_st);
 
