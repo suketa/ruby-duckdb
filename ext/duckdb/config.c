@@ -37,7 +37,7 @@ static VALUE config_initialize(VALUE self) {
 }
 
 static VALUE config_s_size(VALUE self) {
-    return INT2NUM(duckdb_config_count());
+    return ULONG2NUM(duckdb_config_count());
 }
 
 static VALUE config_s_get_config_flag(VALUE klass, VALUE value) {
