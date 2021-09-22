@@ -238,6 +238,37 @@ if defined?(DuckDB::Appender)
             sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1], expected: '')
           }
         end
+
+        def test__append_timestamp
+          t = Time.now
+          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
+          expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: ['a', t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, 'a', t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, 'a', t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, 'a', t.min, t.sec, t.nsec / 1000], expected: expected)
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, 'a', t.sec, t.nsec / 1000], expected: expected)
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, 'a', t.nsec / 1000], expected: expected)
+          }
+          assert_raises(TypeError) {
+            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, 'a'], expected: expected)
+          }
+          assert_raises(ArgumentError) {
+            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1, 1, 1], expected: '')
+          }
+        end
       end
 
       def test_append
