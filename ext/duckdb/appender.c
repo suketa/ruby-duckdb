@@ -37,6 +37,10 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 #endif
 
+#ifdef HAVE_DUCKDB_APPEND_TIMESTAMP
+static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+#endif
+
 static VALUE appender_flush(VALUE self);
 static VALUE appender_close(VALUE self);
 
@@ -338,6 +342,32 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
 }
 #endif
 
+#ifdef HAVE_DUCKDB_APPEND_TIMESTAMP
+static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
+    duckdb_timestamp_struct timestamp_st;
+    duckdb_timestamp timestamp;
+
+    rubyDuckDBAppender *ctx;
+
+    Data_Get_Struct(self, rubyDuckDBAppender, ctx);
+
+    timestamp_st.date.year = NUM2INT(year);
+    timestamp_st.date.month = NUM2INT(month);
+    timestamp_st.date.day = NUM2INT(day);
+    timestamp_st.time.hour = NUM2INT(hour);
+    timestamp_st.time.min = NUM2INT(min);
+    timestamp_st.time.sec = NUM2INT(sec);
+    timestamp_st.time.micros = NUM2INT(micros);
+
+    timestamp = duckdb_to_timestamp(timestamp_st);
+
+    if (duckdb_append_timestamp(ctx->appender, timestamp) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to append timestamp");
+    }
+    return self;
+}
+#endif
+
 static VALUE appender_flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
@@ -387,6 +417,9 @@ void init_duckdb_appender(void) {
 #endif
 #ifdef HAVE_DUCKDB_APPEND_TIME
     rb_define_private_method(cDuckDBAppender, "_append_time", appender__append_time, 4);
+#endif
+#ifdef HAVE_DUCKDB_APPEND_TIMESTAMP
+    rb_define_private_method(cDuckDBAppender, "_append_timestamp", appender__append_timestamp, 7);
 #endif
     rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
     rb_define_method(cDuckDBAppender, "close", appender_close, 0);
