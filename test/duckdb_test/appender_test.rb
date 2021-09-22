@@ -241,7 +241,7 @@ if defined?(DuckDB::Appender)
 
         def test__append_timestamp
           t = Time.now
-          msec = (t.nsec / 1000).to_s.sub(/0$/, '')
+          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
           expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
           sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
           assert_raises(TypeError) {
