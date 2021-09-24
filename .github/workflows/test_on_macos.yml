@@ -7,7 +7,8 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ruby: ['2.6.8', '2.7.4', '3.0.2', 'head']
+        ruby: ['2.6.8']
+        duckdb: [ '0.2.8', '0.2.9' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -18,11 +19,18 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
 
     - name: Install latest duckdb by brew
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        brew install duckdb
+        brew tap-new duckdb/taps
+        brew extract duckdb duckdb/taps --version $DUCKDB_VERSION
+        brew install duckdb/taps/duckdb@${DUCKDB_VERSION}
+        ls -l /usr/local/include/duckdb.h
+        ls -l /usr/local/lib/duckdb.*
+        # brew install duckdb
 
-    - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
-      run: |
-        ruby -v
-        bundle install --jobs 4 --retry 3
-        bundle exec rake
+    # - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
+    #   run: |
+    #     ruby -v
+    #     bundle install --jobs 4 --retry 3
+    #     bundle exec rake
