@@ -16,10 +16,30 @@ module DuckDB
       RANGE_INT32 = -2_147_483_648..2_147_483_647
       RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
 
+      #
+      # appends huge int value.
+      #
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE numbers (num HUGEINT)')
+      #   appender = con.appender('number')
+      #   appender
+      #     .begin_row
+      #     .append_hugeint(-170_141_183_460_469_231_731_687_303_715_884_105_727)
+      #     .end_row
+      #
       def append_hugeint(value)
         case value
         when Integer
-          append_varchar(value.to_s)
+          if respond_to?(:_append_hugeint, true)
+            half = 1 << 64
+            upper = value / half
+            lower = value - upper * half
+            _append_hugeint(lower, upper)
+          else
+            append_varchar(value.to_s)
+          end
         else
           rb_raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
         end
