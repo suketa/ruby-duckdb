@@ -21,7 +21,7 @@ jobs:
 
     - name: duckdb 0.2.8 cache
       id: duckdb-cache-v0_2_8
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
       with:
         path: duckdb-v0.2.8
         key: ${{ runner.os }}-duckdb-v0_2_8_001
@@ -30,7 +30,7 @@ jobs:
 
     - name: duckdb 0.2.9 cache
       id: duckdb-cache-v0_2_9
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
       with:
         path: duckdb-v0.2.9
         key: ${{ runner.os }}-duckdb-v0_2_9_001
