@@ -147,6 +147,8 @@ if defined?(DuckDB::Appender)
 
       def test_append_hugeint
         sub_test_append_column(:append_hugeint, 'HUGEINT', 18_446_744_073_709_551_615)
+        sub_test_append_column(:append_hugeint, 'HUGEINT', -170_141_183_460_469_231_731_687_303_715_884_105_727)
+        sub_test_append_column(:append_hugeint, 'HUGEINT', 170_141_183_460_469_231_731_687_303_715_884_105_727)
       end
 
       def test_append_varchar

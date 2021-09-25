@@ -1,5 +1,6 @@
 # ChangeLog
 
+- refactoring Append#append_hugeint with duckdb v0.2.9
 - update github actions CI on ubuntu
 - fix to build with duckdb v0.2.9
 - use duckdb_prepare_error when get error message of prepared statement.
