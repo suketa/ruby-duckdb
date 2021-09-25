@@ -269,6 +269,14 @@ if defined?(DuckDB::Appender)
             sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1, 1, 1], expected: '')
           }
         end
+
+        def test__append_hugeint
+          expected = -170_141_183_460_469_231_731_687_303_715_884_105_727
+          sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [1, -9_223_372_036_854_775_808], expected: expected)
+
+          expected = 170_141_183_460_469_231_731_687_303_715_884_105_727
+          sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [18_446_744_073_709_551_615, 9_223_372_036_854_775_807], expected: expected)
+        end
       end
 
       def test_append
