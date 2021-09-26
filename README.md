@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/suketa/ruby-duckdb.svg?branch=master)](https://travis-ci.com/suketa/ruby-duckdb)
 [![](https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu)
 [![](https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS)
+[![](https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows)
 
 ## Description
 
