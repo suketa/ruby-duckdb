@@ -22,7 +22,10 @@ module DuckDBTest
     end
 
     def test_s_open_argument
-      assert_instance_of(DuckDB::Database, DuckDB::Database.open(@path))
+      db = DuckDB::Database.open(@path)
+      assert_instance_of(DuckDB::Database, db)
+      db.close
+
       if defined?(DuckDB::Config)
         assert_raises(TypeError) { DuckDB::Database.open('foo', 'bar') }
       else

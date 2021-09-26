@@ -7,7 +7,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        ruby: ['2.6.7', '2.7.3', '3.0.1', 'head']
+        ruby: ['2.6.8', '2.7.4', '3.0.2', 'head']
+        duckdb: ['0.2.8', '0.2.9']
 
     steps:
     - uses: actions/checkout@v2
@@ -18,8 +19,10 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
 
     - name: download duckdb binary for windows 64bit
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        curl -OL https://github.com/duckdb/duckdb/releases/download/v0.2.6/libduckdb-windows-amd64.zip
+        curl -OL https://github.com/duckdb/duckdb/releases/download/v${env:DUCKDB_VERSION}/libduckdb-windows-amd64.zip
 
     - name: extract zip file
       run: |
@@ -29,9 +32,12 @@ jobs:
       run: |
         bundle install
         bundle exec rake build -- --with-duckdb-include=../../../.. --with-duckdb-lib=../../../..
+    - name: setup duckdb.dll
+      run: |
+        cp duckdb.dll C:/Windows/System32/
 
     # FIXME: rake test fails with LoadError
     # C:/hostedtoolcache/windows/Ruby/2.7.3/x64/lib/ruby/2.7.0/rubygems/core_ext/kernel_require.rb:83:in `require': 126: The specified module could not be found.   - D:/a/ruby-duckdb/ruby-duckdb/lib/duckdb/duckdb_native.so (LoadError)`
-    # - name: rake test
-    #   run: |
-    #     rake test
+    - name: rake test
+      run: |
+        rake test
