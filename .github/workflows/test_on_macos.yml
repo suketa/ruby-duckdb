@@ -19,22 +19,36 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
-    # - name: duckdb cache
-    #   id: duckdb-cache
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: duckdb-v${{ matrix.duckdb }}
-    #     key: ${{ runner.os }}-duckdb-v${{ matrix.duckdb }}
+    - name: duckdb cache
+      id: duckdb-cache
+      uses: actions/cache@v2
+      with:
+        path: /usr/local/Cellar/duckdb@${{ matrix.duckdb }}
+        key: ${{ runner.os }}-duckdb-v${{ matrix.duckdb }}
 
     - name: Install duckdb v${{ matrix.duckdb }} by brew
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
+      if: steps.duckdb-cache.outputs.cache-hit != 'true'
       run: |
         brew tap-new duckdb/taps
         brew extract duckdb duckdb/taps --version $DUCKDB_VERSION
         brew install duckdb/taps/duckdb@$DUCKDB_VERSION
         ls -l /usr/local/include
         ls -l /usr/local/lib
+
+    - name: setup duckdb v${{ matrix.duckdb }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        # if [ ! -L /usr/local/include/duckdb.h ]; then
+          header=`find /usr/local/Cellar/duckdb@$DUCKDB_VERSION -name "duckdb.h"`
+          lib=`find /usr/local/Cellar/duckdb@$DUCKDB_VERSION -name "libduckdb.dylib"`
+          echo $header
+          echo $lib
+        # endif
+
+
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
