@@ -7,8 +7,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        # ruby: ['2.6.8', '2.7.4', '3.0.2', 'head']
-        ruby: ['2.6.8']
+        ruby: ['2.6.8', '2.7.4', '3.0.2', 'head']
         duckdb: ['0.2.8', '0.2.9']
 
     steps:
@@ -34,21 +33,17 @@ jobs:
         brew tap-new duckdb/taps
         brew extract duckdb duckdb/taps --version $DUCKDB_VERSION
         brew install duckdb/taps/duckdb@$DUCKDB_VERSION
-        ls -l /usr/local/include
-        ls -l /usr/local/lib
 
-    - name: setup duckdb v${{ matrix.duckdb }}
+    - name: setup duckdb v${{ matrix.duckdb }} headers and libraries
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        # if [ ! -L /usr/local/include/duckdb.h ]; then
+        if [ ! -L /usr/local/include/duckdb.h ]; then
           header=`find /usr/local/Cellar/duckdb@$DUCKDB_VERSION -name "duckdb.h"`
           lib=`find /usr/local/Cellar/duckdb@$DUCKDB_VERSION -name "libduckdb.dylib"`
-          echo $header
-          echo $lib
-        # endif
-
-
+          ln -s $header /usr/local/include/duckdb.h
+          ln -s $lib /usr/local/lib/libduckdb.dylib
+        fi
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
