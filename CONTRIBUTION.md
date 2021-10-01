@@ -13,6 +13,8 @@ If a related issue doesn't exist, you can open a [new issue](https://github.com/
 3. fork the repository and `git clone` to your local machine.
 4. run `bundle install`
 5. run `rake build`
+   or you might run with C duckdb header and library directories:
+   `rake build -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory`
 6. run `rake test`
 7. create new branch to change the code.
 8. change the code.
