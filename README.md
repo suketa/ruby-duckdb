@@ -19,10 +19,10 @@ You must have [DuckDB](http://www.duckdb.org) engine installed in order to build
 gem install duckdb
 ```
 
-or you must specify the location of the include and lib files:
+or you must specify the location of the C header and library files:
 
 ```
-gem install duckdb -- --with-duckdb-include=/duckdb_include_directory --with-duckdb-lib=/duckdb_library_directory
+gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory
 ```
 
 ## Usage
