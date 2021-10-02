@@ -81,6 +81,23 @@ module DuckDBTest
       assert_includes(DuckDB::Result.ancestors, Enumerable)
     end
 
+    def test_rows_changed
+      DuckDB::Database.open do |db|
+        db.connect do |con|
+          r = con.query('CREATE TABLE t2 (id INT)')
+          assert_equal(0, r.rows_changed)
+          r = con.query('INSERT INTO t2 VALUES (1), (2), (3)')
+          assert_equal(3, r.rows_changed)
+          r = con.query('UPDATE t2 SET id = id + 1 WHERE id > 1')
+          assert_equal(2, r.rows_changed)
+          r = con.query('DELETE FROM t2 WHERE id = 0')
+          assert_equal(0, r.rows_changed)
+          r = con.query('DELETE FROM t2 WHERE id = 4')
+          assert_equal(1, r.rows_changed)
+        end
+      end
+    end
+
     private
 
     def create_data
