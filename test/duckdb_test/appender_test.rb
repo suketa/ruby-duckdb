@@ -204,10 +204,12 @@ if defined?(DuckDB::Appender)
         end
 
         def test__append_interval
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 1], expected: '1 month 1 day 00:00:00.000001')
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, 1], expected: '1 year 1 month 1 day 00:00:00.000001')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [2, 3, 4], expected: '2 months 3 days 00:00:00.000004')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, 4], expected: '1 year 2 months 3 days 00:00:00.000004')
           micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [13, 1, micros], expected: '1 year 1 month 1 day 12:34:56.987654')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, micros], expected: '1 year 2 months 3 days 12:34:56.987654')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [-14, -3, -micros], expected: '-1 years -2 months -3 days -12:34:56.987654')
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 32, micros], expected: '1 year 2 months 32 days 12:34:56.987654')
           assert_raises(TypeError) {
             sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, micros], expected: '')
           }
