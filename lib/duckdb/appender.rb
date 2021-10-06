@@ -23,7 +23,7 @@ module DuckDB
       #   db = DuckDB::Database.open
       #   con = db.connect
       #   con.query('CREATE TABLE numbers (num HUGEINT)')
-      #   appender = con.appender('number')
+      #   appender = con.appender('numbers')
       #   appender
       #     .begin_row
       #     .append_hugeint(-170_141_183_460_469_231_731_687_303_715_884_105_727)
