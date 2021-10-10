@@ -46,6 +46,40 @@ module DuckDB
       end
 
       #
+      # appends date value.
+      #
+      #   require 'date'
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE dates (date_value DATE)')
+      #   appender = con.appender('dates')
+      #   appender.begin_row
+      #   appender.append_date(Date.today)
+      ##  or
+      ##  appender.append_date(Time.now)
+      ##  appender.append_date('2021-10-10')
+      #   appender.end_row
+      #   appender.flush
+      #
+      def append_date(value)
+        case value
+        when Date, Time
+          date = value
+        when String
+          begin
+            date = Date.parse(value)
+          rescue
+            raise(ArgumentError, "Cannot parse 2nd argument `#{value}` to Date.")
+          end
+        else
+          raise(ArgumentError, "2nd argument `#{value}` must be Date, Time or String.")
+        end
+
+        _append_date(date.year, date.month, date.day)
+      end
+
+      #
       # appends value.
       #
       #   require 'duckdb'
