@@ -41,7 +41,7 @@ module DuckDB
             append_varchar(value.to_s)
           end
         else
-          rb_raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+          raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
         end
       end
 
@@ -88,7 +88,7 @@ module DuckDB
         when Date
           append_varchar(value.strftime('%Y-%m-%d'))
         else
-          rb_raise(DuckDB::Error, "not supported type #{value} (value.class)")
+          raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
         end
       end
 

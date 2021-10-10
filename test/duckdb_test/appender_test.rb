@@ -149,6 +149,11 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append_hugeint, 'HUGEINT', 18_446_744_073_709_551_615)
         sub_test_append_column(:append_hugeint, 'HUGEINT', -170_141_183_460_469_231_731_687_303_715_884_105_727)
         sub_test_append_column(:append_hugeint, 'HUGEINT', 170_141_183_460_469_231_731_687_303_715_884_105_727)
+
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column(:append_hugeint, 'HUGEINT', 18.555)
+        }
+        assert_equal("2nd argument `18.555` must be Integer.", e.message)
       end
 
       def test_append_varchar
@@ -307,6 +312,11 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append, 'BLOB', value, nil, expected)
 
         sub_test_append_column(:append, 'VARCHAR', nil, nil, nil)
+
+        e = assert_raises(DuckDB::Error) {
+          sub_test_append_column(:append, 'INTEGER', [127])
+        }
+        assert_equal('not supported type [127] (Array)', e.message)
 
         # FIXME: issue https://github.com/suketa/ruby-duckdb/issues/176
         if LessThanEqualVersion028
