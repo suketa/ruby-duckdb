@@ -89,6 +89,7 @@ if defined?(DuckDB::Appender)
         expected = value if expected.nil?
         r = @con.execute("SELECT col FROM #{table}")
         expected ? assert_equal(expected, r.first.first) : assert_nil(r.first.first)
+      ensure
         teardown
       end
 
