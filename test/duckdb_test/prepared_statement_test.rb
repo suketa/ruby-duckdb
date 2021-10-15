@@ -189,6 +189,12 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.bind_hugeint(1, 170141183460469231731687303715884105727)
       assert_equal(1, stmt.execute.each.size)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_hugeint = $1')
+      e = assert_raises(ArgumentError) {
+        stmt.bind_hugeint(1, 1.5)
+      }
+      assert_equal('2nd argument `1.5` must be Integer.', e.message)
     end
 
     def test_bind_float
@@ -446,6 +452,16 @@ module DuckDBTest
       assert_equal(1, r.each.size)
     ensure
       con.query('DELETE FROM a WHERE id IS NULL')
+    end
+
+    def test_bind_with_unsupported_type
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
+
+      e = assert_raises(DuckDB::Error) {
+        stmt.bind(1, [123])
+      }
+      assert_equal('not supported type `[123]` (Array)', e.message)
     end
   end
 end

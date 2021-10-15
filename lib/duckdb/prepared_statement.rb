@@ -22,7 +22,7 @@ module DuckDB
       when Integer
         bind_varchar(i, value.to_s)
       else
-        rb_raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+        raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
       end
     end
 
@@ -40,7 +40,7 @@ module DuckDB
     def bind(i, value)
       case value
       when NilClass
-        respond_to?(:bind_null) ? bind_null(i) : rb_raise(DuckDB::Error, 'This bind method does not support nil value. Re-compile ruby-duckdb with DuckDB version >= 0.1.1')
+        respond_to?(:bind_null) ? bind_null(i) : raise(DuckDB::Error, 'This bind method does not support nil value. Re-compile ruby-duckdb with DuckDB version >= 0.1.1')
       when Float
         bind_double(i, value)
       when Integer
@@ -63,7 +63,7 @@ module DuckDB
       when Date
         bind_varchar(i, value.strftime('%Y-%m-%d'))
       else
-        rb_raise(DuckDB::Error, "not supported type #{value} (value.class)")
+        raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
       end
     end
 
