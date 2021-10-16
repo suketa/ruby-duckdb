@@ -209,6 +209,26 @@ if defined?(DuckDB::Appender)
           }
         end
 
+        def test_append_date
+          today = Date.today
+          sub_test_append_column2(:append_date, 'DATE', values: [today], expected: today.strftime('%Y-%m-%d'))
+
+          now = Time.now
+          sub_test_append_column2(:append_date, 'DATE', values: [now], expected: now.strftime('%Y-%m-%d'))
+
+          sub_test_append_column2(:append_date, 'DATE', values: ['2021-10-10'], expected: '2021-10-10')
+
+          e = assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_date, 'DATE', values: [20211010], expected: '2021-10-10')
+          }
+          assert_equal('2nd argument `20211010` must be Date, Time or String.', e.message)
+
+          e = assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: '2021-10-10')
+          }
+          assert_equal('Cannot parse 2nd argument `2021-1010` to Date.', e.message)
+        end
+
         def test__append_interval
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [2, 3, 4], expected: '2 months 3 days 00:00:00.000004')
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, 4], expected: '1 year 2 months 3 days 00:00:00.000004')
