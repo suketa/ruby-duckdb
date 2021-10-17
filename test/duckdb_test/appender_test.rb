@@ -221,12 +221,12 @@ if defined?(DuckDB::Appender)
           e = assert_raises(ArgumentError) {
             sub_test_append_column2(:append_date, 'DATE', values: [20211010], expected: '2021-10-10')
           }
-          assert_equal('2nd argument `20211010` must be Date, Time or String.', e.message)
+          assert_equal('Argument `20211010` must be Date, Time or String.', e.message)
 
           e = assert_raises(ArgumentError) {
             sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: '2021-10-10')
           }
-          assert_equal('Cannot parse 2nd argument `2021-1010` to Date.', e.message)
+          assert_equal('Cannot parse argument `2021-1010` to Date.', e.message)
         end
 
         def test__append_interval
@@ -248,6 +248,18 @@ if defined?(DuckDB::Appender)
           assert_raises(ArgumentError) {
             sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1], expected: '')
           }
+        end
+
+        def test_append_itnerval
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.000004S', expected: '2 months 3 days 00:00:00.000004')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.00000401S', expected: '2 months 3 days 00:00:00.000004')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.00004S', expected: '2 months 3 days 00:00:00.00004')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P1Y2M3DT0.000004S', expected: '1 year 2 months 3 days 00:00:00.000004')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P1Y2M3DT12H34M56.987654S', expected: '1 year 2 months 3 days 12:34:56.987654')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P-1Y-2M-3DT-12H-34M-56.987654S', expected: '-1 years -2 months -3 days -12:34:56.987654')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P14M32DT12H34M56.987654S', expected: '1 year 2 months 32 days 12:34:56.987654')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'PT12H34M56.987654S', expected: '12:34:56.987654')
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P3D', expected: '3 days')
         end
 
         def test__append_time
