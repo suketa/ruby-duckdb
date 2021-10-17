@@ -260,6 +260,12 @@ if defined?(DuckDB::Appender)
           sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P14M32DT12H34M56.987654S', expected: '1 year 2 months 32 days 12:34:56.987654')
           sub_test_append_column2(:append_interval, 'INTERVAL', values: 'PT12H34M56.987654S', expected: '12:34:56.987654')
           sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P3D', expected: '3 days')
+          assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_interval, 'INTERVAL', values: 1, expected: '')
+          }
+          assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_interval, 'INTERVAL', values: [1, 1], expected: '')
+          }
         end
 
         def test__append_time

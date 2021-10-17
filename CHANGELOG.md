@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::Appender#append_interval. append_interval is expremental.
 - add DuckDB::Result#rows_changed
 - refactoring DuckDB::Append#append_hugeint with duckdb v0.2.9
 - update github actions CI on ubuntu
