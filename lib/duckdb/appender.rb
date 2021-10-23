@@ -112,6 +112,40 @@ module DuckDB
       end
 
       #
+      # appends timestamp value.
+      #
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE timestamps (timestamp_value TIMESTAMP)')
+      #   appender = con.appender('timestamps')
+      #   appender.begin_row
+      #   appender.append_time(Time.now)
+      #   # or
+      #   # appender.append_time(Date.today)
+      #   # appender.append_time('2021-08-01 01:01:01')
+      #   appender.end_row
+      #   appender.flush
+      #
+      def append_timestamp(value)
+        case value
+        when Time
+          time = value
+        when Date
+          time = value.to_time
+        when String
+          begin
+            time = Time.parse(value)
+          rescue
+            raise(ArgumentError, "Cannot parse argument `#{value.class} #{value}` to Time.")
+          end
+        else
+          raise(ArgumentError, "Argument `#{value.class} #{value}` must be Time or Date or String.")
+        end
+        _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
+      end
+
+      #
       # appends interval.
       # The argument must be ISO8601 duration format.
       # WARNING: This method is expremental.
