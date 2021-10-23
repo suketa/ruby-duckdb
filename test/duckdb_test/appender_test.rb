@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'time'
 
 if defined?(DuckDB::Appender)
   module DuckDBTest
@@ -285,6 +286,22 @@ if defined?(DuckDB::Appender)
           assert_raises(ArgumentError) {
             sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1], expected: '')
           }
+        end
+
+        def test_append_time
+          sub_test_append_column2(:append_time, 'TIME', values: [Time.parse('01:01:01.123456')], expected: '01:01:01.123456')
+          sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: '01:01:01.123456')
+          sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: '01:01:01')
+
+          e = assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_time, 'TIME', values: [101010], expected: '10:10:10')
+          }
+          assert_equal('Argument `101010` must be Time or String.', e.message)
+
+          e = assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_time, 'TIME', values: ["abc"], expected: '10:10:10')
+          }
+          assert_equal('Cannot parse argument `abc` to Time.', e.message)
         end
 
         def test__append_timestamp

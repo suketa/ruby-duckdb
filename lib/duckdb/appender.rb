@@ -1,4 +1,5 @@
 require 'date'
+require 'time'
 
 module DuckDB
   if defined?(DuckDB::Appender)
@@ -76,6 +77,38 @@ module DuckDB
         end
 
         _append_date(date.year, date.month, date.day)
+      end
+
+      #
+      # appends time value.
+      #
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE times (time_value TIME)')
+      #   appender = con.appender('times')
+      #   appender.begin_row
+      #   appender.append_time(Time.now)
+      #   # or
+      #   # appender.append_time('01:01:01')
+      #   appender.end_row
+      #   appender.flush
+      #
+      def append_time(value)
+        case value
+        when Time
+          time = value
+        when String
+          begin
+            time = Time.parse(value)
+          rescue
+            raise(ArgumentError, "Cannot parse argument `#{value}` to Time.")
+          end
+        else
+          raise(ArgumentError, "Argument `#{value}` must be Time or String.")
+        end
+
+        _append_time(time.hour, time.min, time.sec, time.usec)
       end
 
       #
