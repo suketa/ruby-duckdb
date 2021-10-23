@@ -335,6 +335,22 @@ if defined?(DuckDB::Appender)
           }
         end
 
+        def test_append_timestamp
+          t = Time.now
+          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
+          expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [t], expected: expected)
+
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [expected], expected: expected)
+
+          d = Date.today
+          expected = d.strftime('%Y-%m-%d 00:00:00')
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [d], expected: expected)
+
+          dstr = expected.split(' ')[0]
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [dstr], expected: expected)
+        end
+
         def test__append_hugeint
           expected = -170_141_183_460_469_231_731_687_303_715_884_105_727
           sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [1, -9_223_372_036_854_775_808], expected: expected)
