@@ -210,9 +210,17 @@ module DuckDB
         when TrueClass, FalseClass
           append_bool(value)
         when Time
-          append_varchar(value.strftime('%Y-%m-%d %H:%M:%S.%N'))
+          if respond_to?(:append_timestamp)
+            append_timestamp(value)
+          else
+            append_varchar(value.strftime('%Y-%m-%d %H:%M:%S.%N'))
+          end
         when Date
-          append_varchar(value.strftime('%Y-%m-%d'))
+          if respond_to?(:append_date)
+            append_date(value)
+          else
+            append_varchar(value.strftime('%Y-%m-%d'))
+          end
         else
           raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
         end

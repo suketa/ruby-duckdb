@@ -390,7 +390,6 @@ if defined?(DuckDB::Appender)
         }
         assert_equal('not supported type [127] (Array)', e.message)
 
-        # FIXME: issue https://github.com/suketa/ruby-duckdb/issues/176
         if LessThanEqualVersion028
           t = Time.now
           sub_test_append_column(:append, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
@@ -398,6 +397,14 @@ if defined?(DuckDB::Appender)
           sub_test_append_column(:append, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
 
           sub_test_append_column(:append, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
+        else
+          d = Date.today
+          sub_test_append_column(:append, 'DATE', d, nil, d.strftime('%Y-%m-%d'))
+
+          t = Time.now
+          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
+          expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+          sub_test_append_column(:append, 'TIMESTAMP', t, nil, expected)
         end
       end
 
