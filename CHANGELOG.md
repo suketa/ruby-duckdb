@@ -1,9 +1,15 @@
 # ChangeLog
 
+- add DuckDB::Appender#append
+  - breaking change.
+    - append_timestamp is called when the argument is Time object.
+    - append_date is called when the argument is Date object.
 - add DuckDB::Appender#append_timestamp.
 - add DuckDB::Appender#append_interval. append_interval is expremental.
 - add DuckDB::Result#rows_changed
 - refactoring DuckDB::Append#append_hugeint with duckdb v0.2.9
+- test 2 versions of duckdb on github actions macos CI.
+- fix windows CI failes
 - update github actions CI on ubuntu
 - fix to build with duckdb v0.2.9
 - use duckdb_prepare_error when get error message of prepared statement.
