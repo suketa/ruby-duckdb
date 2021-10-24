@@ -1,5 +1,7 @@
 # ChangeLog
 
+# 0.2.9.0
+
 - add DuckDB::Appender#append
   - breaking change.
     - append_timestamp is called when the argument is Time object.
