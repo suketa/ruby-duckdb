@@ -176,7 +176,17 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append_null, 'VARCHAR', nil, nil, nil)
       end
 
-      # FIXME issue https://github.com/suketa/ruby-duckdb/issues/176
+      class Foo
+        def initialize(time)
+          @time = time
+        end
+
+        def to_str
+          @time.strftime('%Y-%m-%d')
+        end
+      end
+
+      # FIXME: issue https://github.com/suketa/ruby-duckdb/issues/176
       if LessThanEqualVersion028
         def test_append_varchar_with_date_column
           t = Time.now
@@ -217,12 +227,15 @@ if defined?(DuckDB::Appender)
           now = Time.now
           sub_test_append_column2(:append_date, 'DATE', values: [now], expected: now.strftime('%Y-%m-%d'))
 
+          foo = Foo.new(now)
+          sub_test_append_column2(:append_date, 'DATE', values: [foo], expected: now.strftime('%Y-%m-%d'))
+
           sub_test_append_column2(:append_date, 'DATE', values: ['2021-10-10'], expected: '2021-10-10')
 
           e = assert_raises(ArgumentError) {
             sub_test_append_column2(:append_date, 'DATE', values: [20211010], expected: '2021-10-10')
           }
-          assert_equal('Argument `20211010` must be Date, Time or String.', e.message)
+          assert_equal('Cannot parse argument `20211010` to Date.', e.message)
 
           e = assert_raises(ArgumentError) {
             sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: '2021-10-10')
