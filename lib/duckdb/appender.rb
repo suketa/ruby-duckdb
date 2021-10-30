@@ -63,18 +63,16 @@ module DuckDB
       #   appender.flush
       #
       def append_date(value)
-        case value
-        when Date, Time
-          date = value
-        when String
-          begin
-            date = Date.parse(value)
-          rescue
-            raise(ArgumentError, "Cannot parse argument `#{value}` to Date.")
-          end
-        else
-          raise(ArgumentError, "Argument `#{value}` must be Date, Time or String.")
-        end
+        date = case value
+               when Date, Time
+                 value
+               else
+                 begin
+                   Date.parse(value)
+                 rescue
+                   raise(ArgumentError, "Cannot parse argument `#{value}` to Date.")
+                 end
+               end
 
         _append_date(date.year, date.month, date.day)
       end
