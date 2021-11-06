@@ -301,10 +301,18 @@ if defined?(DuckDB::Appender)
           }
         end
 
+        class Bar
+          def to_str
+            '01:01:01.123456'
+          end
+        end
+
         def test_append_time
           sub_test_append_column2(:append_time, 'TIME', values: [Time.parse('01:01:01.123456')], expected: '01:01:01.123456')
           sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: '01:01:01.123456')
           sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: '01:01:01')
+          obj = Bar.new
+          sub_test_append_column2(:append_time, 'TIME', values: [obj], expected: '01:01:01.123456')
 
           e = assert_raises(ArgumentError) {
             sub_test_append_column2(:append_time, 'TIME', values: [101010], expected: '10:10:10')
