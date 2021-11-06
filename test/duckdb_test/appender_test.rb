@@ -309,10 +309,10 @@ if defined?(DuckDB::Appender)
           e = assert_raises(ArgumentError) {
             sub_test_append_column2(:append_time, 'TIME', values: [101010], expected: '10:10:10')
           }
-          assert_equal('Argument `101010` must be Time or String.', e.message)
+          assert_equal('Cannot parse argument `101010` to Time.', e.message)
 
           e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_time, 'TIME', values: ["abc"], expected: '10:10:10')
+            sub_test_append_column2(:append_time, 'TIME', values: ['abc'], expected: '10:10:10')
           }
           assert_equal('Cannot parse argument `abc` to Time.', e.message)
         end
