@@ -93,18 +93,16 @@ module DuckDB
       #   appender.flush
       #
       def append_time(value)
-        case value
-        when Time
-          time = value
-        when String
-          begin
-            time = Time.parse(value)
-          rescue
-            raise(ArgumentError, "Cannot parse argument `#{value}` to Time.")
-          end
-        else
-          raise(ArgumentError, "Argument `#{value}` must be Time or String.")
-        end
+        time = case value
+               when Time
+                 value
+               else
+                 begin
+                   Time.parse(value)
+                 rescue
+                   raise(ArgumentError, "Cannot parse argument `#{value}` to Time.")
+                 end
+               end
 
         _append_time(time.hour, time.min, time.sec, time.usec)
       end
