@@ -7,28 +7,26 @@ static void deallocate(void * ctx);
 static VALUE allocate(VALUE klass);
 static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase);
 static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase);
+static VALUE duckdb_database_connect(VALUE self);
+static VALUE duckdb_database_close(VALUE self);
 
-static void close_database(rubyDuckDB *p)
-{
+static void close_database(rubyDuckDB *p) {
     duckdb_close(&(p->db));
 }
 
-static void deallocate(void * ctx)
-{
+static void deallocate(void * ctx) {
     rubyDuckDB *p = (rubyDuckDB *)ctx;
 
     close_database(p);
     xfree(p);
 }
 
-static VALUE allocate(VALUE klass)
-{
+static VALUE allocate(VALUE klass) {
     rubyDuckDB *ctx = xcalloc((size_t)1, sizeof(rubyDuckDB));
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
-static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase)
-{
+static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
     rubyDuckDB *ctx;
     VALUE obj;
 
@@ -50,8 +48,7 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
 }
 
 #ifdef HAVE_DUCKDB_OPEN_EXT
-static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase)
-{
+static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
     rubyDuckDB *ctx;
     VALUE obj;
     rubyDuckDBConfig *ctx_config;
@@ -86,8 +83,7 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
 }
 #endif /* HAVE_DUCKDB_OPEN_EXT */
 
-static VALUE duckdb_database_connect(VALUE self)
-{
+static VALUE duckdb_database_connect(VALUE self) {
     return create_connection(self);
 }
 
@@ -97,16 +93,14 @@ static VALUE duckdb_database_connect(VALUE self)
  *
  *  closes DuckDB database.
  */
-static VALUE duckdb_database_close(VALUE self)
-{
+static VALUE duckdb_database_close(VALUE self) {
     rubyDuckDB *ctx;
     Data_Get_Struct(self, rubyDuckDB, ctx);
     close_database(ctx);
     return self;
 }
 
-void init_duckdb_database(void)
-{
+void init_duckdb_database(void) {
     cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
     rb_define_singleton_method(cDuckDBDatabase, "_open", duckdb_database_s_open, -1);
