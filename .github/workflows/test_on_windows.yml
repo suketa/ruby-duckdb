@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.6.8', '2.7.4', '3.0.2', 'head']
-        duckdb: ['0.2.8', '0.2.9']
+        duckdb: ['0.2.9', '0.3.0']
 
     steps:
     - uses: actions/checkout@v2
@@ -36,8 +36,6 @@ jobs:
       run: |
         cp duckdb.dll C:/Windows/System32/
 
-    # FIXME: rake test fails with LoadError
-    # C:/hostedtoolcache/windows/Ruby/2.7.3/x64/lib/ruby/2.7.0/rubygems/core_ext/kernel_require.rb:83:in `require': 126: The specified module could not be found.   - D:/a/ruby-duckdb/ruby-duckdb/lib/duckdb/duckdb_native.so (LoadError)`
     - name: rake test
       run: |
         rake test
