@@ -1,5 +1,7 @@
 # ChangeLog
 
+- bump duckdb to 0.3.0 in CI.
+
 # 0.2.9.0
 
 - add DuckDB::Appender#append
