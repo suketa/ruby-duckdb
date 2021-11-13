@@ -2,22 +2,25 @@
 
 VALUE cDuckDBConnection;
 
-static void deallocate(void *ctx)
-{
+static void deallocate(void *ctx);
+static VALUE allocate(VALUE klass);
+static VALUE duckdb_connection_disconnect(VALUE self);
+static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase);
+static VALUE duckdb_connection_query_sql(VALUE self, VALUE str);
+
+static void deallocate(void *ctx) {
     rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;
 
     duckdb_disconnect(&(p->con));
     xfree(p);
 }
 
-static VALUE allocate(VALUE klass)
-{
+static VALUE allocate(VALUE klass) {
     rubyDuckDBConnection *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConnection));
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
 
-VALUE create_connection(VALUE oDuckDBDatabase)
-{
+VALUE create_connection(VALUE oDuckDBDatabase) {
     rubyDuckDB *ctxdb;
     rubyDuckDBConnection *ctxcon;
     VALUE obj;
@@ -35,8 +38,7 @@ VALUE create_connection(VALUE oDuckDBDatabase)
     return obj;
 }
 
-static VALUE duckdb_connection_disconnect(VALUE self)
-{
+static VALUE duckdb_connection_disconnect(VALUE self) {
     rubyDuckDBConnection *ctx;
 
     Data_Get_Struct(self, rubyDuckDBConnection, ctx);
@@ -45,8 +47,7 @@ static VALUE duckdb_connection_disconnect(VALUE self)
     return self;
 }
 
-static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase)
-{
+static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase) {
     rubyDuckDBConnection *ctx;
     rubyDuckDB *ctxdb;
 
@@ -63,8 +64,7 @@ static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase)
     return self;
 }
 
-static VALUE duckdb_connection_query_sql(VALUE self, VALUE str)
-{
+static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     rubyDuckDBConnection *ctx;
     rubyDuckDBResult *ctxr;
 
