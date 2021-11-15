@@ -124,20 +124,19 @@ module DuckDB
       #   appender.flush
       #
       def append_timestamp(value)
-        case value
-        when Time
-          time = value
-        when Date
-          time = value.to_time
-        when String
-          begin
-            time = Time.parse(value)
-          rescue
-            raise(ArgumentError, "Cannot parse argument `#{value.class} #{value}` to Time.")
-          end
-        else
-          raise(ArgumentError, "Argument `#{value.class} #{value}` must be Time or Date or String.")
-        end
+        time = case value
+               when Time
+                 value
+               when Date
+                 value.to_time
+               else
+                 begin
+                   Time.parse(value)
+                 rescue
+                   raise(ArgumentError, "Cannot parse argument `#{value}` to Time or Date.")
+                 end
+               end
+
         _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
       end
 
