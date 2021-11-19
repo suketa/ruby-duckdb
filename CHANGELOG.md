@@ -1,5 +1,6 @@
 # ChangeLog
 
+- bump duckdb to 0.3.1 in CI.
 - bump duckdb to 0.3.0 in CI.
 
 # 0.2.9.0
