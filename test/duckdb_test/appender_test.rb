@@ -357,19 +357,33 @@ if defined?(DuckDB::Appender)
         end
 
         def test_append_timestamp
-          t = Time.now
-          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
-          expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [t], expected: expected)
-
+          now = Time.now
+          msec = format('%06d', now.nsec / 1000).to_s.sub(/0+$/, '')
+          expected = now.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [now], expected: expected)
           sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [expected], expected: expected)
+          obj = Bar.new
+          expected = now.strftime('%Y-%m-%d 01:01:01.123456')
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [obj], expected: expected)
 
           d = Date.today
           expected = d.strftime('%Y-%m-%d 00:00:00')
           sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [d], expected: expected)
-
           dstr = expected.split(' ')[0]
           sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [dstr], expected: expected)
+          foo = Foo.new(now)
+          expected = now.strftime('%Y-%m-%d 00:00:00')
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [foo], expected: expected)
+
+          e = assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [20211116], expected: '2021-11-16')
+          }
+          assert_equal('Cannot parse argument `20211116` to Time or Date.', e.message)
+
+          e = assert_raises(ArgumentError) {
+            sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: ['abc'], expected: '10:10:10')
+          }
+          assert_equal('Cannot parse argument `abc` to Time or Date.', e.message)
         end
 
         def test__append_hugeint
