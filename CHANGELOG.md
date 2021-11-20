@@ -1,7 +1,11 @@
 # ChangeLog
 
+# 0.3.1.0
+
 - bump duckdb to 0.3.1 in CI.
 - bump duckdb to 0.3.0 in CI.
+- append_time, append_date, append_timestamp of DuckDB::Appender accept argument
+  having to_str to convert time string.
 
 # 0.2.9.0
 
