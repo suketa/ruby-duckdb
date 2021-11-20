@@ -1,5 +1,7 @@
 # ChangeLog
 
+- check duckdb > 0.1.1 in extconf.rb
+
 # 0.3.1.0
 
 - bump duckdb to 0.3.1 in CI.
