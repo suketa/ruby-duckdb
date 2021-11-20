@@ -2,6 +2,8 @@ require 'mkmf'
 
 dir_config('duckdb')
 if have_library('duckdb')
+  raise 'duckdb >= 0.1.1 is required' unless have_func('duckdb_bind_null')
+
   if have_func('duckdb_nparams(NULL)', 'duckdb.h')
     $defs << '-DHAVE_DUCKDB_NPARAMS_029'
   elsif have_func('duckdb_nparams(NULL, NULL)', 'duckdb.h')
