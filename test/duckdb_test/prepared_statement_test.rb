@@ -32,7 +32,8 @@ module DuckDBTest
         col_double DOUBLE,
         col_varchar VARCHAR,
         col_date DATE,
-        col_timestamp TIMESTAMP
+        col_timestamp TIMESTAMP,
+        col_time TIME
       SQL
 
       sql << (defined?(DuckDB::Blob) ? ', col_blob BLOB' : '')
@@ -54,7 +55,8 @@ module DuckDBTest
         12345.6789,
         'str',
         '#{datestr}',
-        '2019-11-09 12:34:56'
+        '2019-11-09 12:34:56',
+        '12:34:56.123456'
       SQL
 
       sql << (defined?(DuckDB::Blob) ? ", 'blob data'" : '')
@@ -322,6 +324,18 @@ module DuckDBTest
 
       today = PreparedStatementTest.today
       stmt.send(:_bind_date, 1, today.year, today.month, today.day)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test__bind_time
+      con = PreparedStatementTest.con
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
+
+      return unless stmt.respond_to?(:_bind_time, true)
+
+      stmt.send(:_bind_time, 1, 12, 34, 56, 123456)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
     end

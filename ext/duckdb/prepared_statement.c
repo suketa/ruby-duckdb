@@ -23,6 +23,10 @@ static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx);
 static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day);
 #endif
 
+#ifdef HAVE_DUCKDB_BIND_TIME
+static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+#endif
+
 static void deallocate(void *ctx) {
     rubyDuckDBPreparedStatement *p = (rubyDuckDBPreparedStatement *)ctx;
 
@@ -241,6 +245,27 @@ static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE 
 }
 #endif
 
+#ifdef HAVE_DUCKDB_BIND_TIME
+static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros){
+    rubyDuckDBPreparedStatement *ctx;
+    duckdb_time_struct time_st;
+    duckdb_time time;
+
+    idx_t idx = check_index(vidx);
+    time_st.hour = NUM2INT(hour);
+    time_st.min = NUM2INT(min);
+    time_st.sec = NUM2INT(sec);
+    time_st.micros = NUM2INT(micros);
+
+    time = duckdb_to_time(time_st);
+    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    if (duckdb_bind_time(ctx->prepared_statement, idx, time) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+#endif
+
 void init_duckdb_prepared_statement(void) {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
 
@@ -263,5 +288,8 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
 #ifdef HAVE_DUCKDB_BIND_DATE
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", duckdb_prepared_statement__bind_date, 4);
+#endif
+#ifdef HAVE_DUCKDB_BIND_TIME
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_time", duckdb_prepared_statement__bind_time, 5);
 #endif
 }
