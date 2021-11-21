@@ -313,6 +313,19 @@ module DuckDBTest
       con.query('DELETE FROM a WHERE id IS NULL')
     end
 
+    def test__bind_date
+      con = PreparedStatementTest.con
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
+
+      return unless stmt.respond_to?(:_bind_date, true)
+
+      today = PreparedStatementTest.today
+      stmt.send(:_bind_date, 1, today.year, today.month, today.day)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+    end
+
     def test_bind_with_boolean
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')
