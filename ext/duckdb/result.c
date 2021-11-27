@@ -2,6 +2,25 @@
 
 static VALUE cDuckDBResult;
 
+static void deallocate(void *ctx);
+static VALUE allocate(VALUE klass);
+static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+
+#ifdef HAVE_DUCKDB_VALUE_BLOB
+static VALUE to_ruby_obj_string_from_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+#endif
+
+static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE row_array(rubyDuckDBResult *ctx, idx_t row_idx);
+static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj);
+static VALUE duckdb_result_each(VALUE oDuckDBResult);
+static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
+
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
 
