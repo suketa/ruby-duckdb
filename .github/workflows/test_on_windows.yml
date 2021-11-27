@@ -39,3 +39,4 @@ jobs:
     - name: rake test
       run: |
         rake test
+        cat Gemfile.lock

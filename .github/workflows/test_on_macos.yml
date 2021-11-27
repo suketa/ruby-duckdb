@@ -35,3 +35,4 @@ jobs:
         ruby -v
         bundle install --jobs 4 --retry 3
         bundle exec rake
+        cat Gemfile.lock
