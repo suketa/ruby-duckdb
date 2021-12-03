@@ -1,6 +1,6 @@
 # ChangeLog
 
-- bump Ruby 2.6.9, 2.7.5, 3.0.3 in CI (MacOS, Ubuntu only).
+- bump Ruby 2.6.9, 2.7.5, 3.0.3 in CI.
 - check duckdb > 0.1.1 in extconf.rb.
 
 # 0.3.1.0
