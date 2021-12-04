@@ -83,8 +83,7 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     return result;
 }
 
-void init_duckdb_connection(void)
-{
+void init_duckdb_connection(void) {
     cDuckDBConnection = rb_define_class_under(mDuckDB, "Connection", rb_cObject);
     rb_define_alloc_func(cDuckDBConnection, allocate);
 

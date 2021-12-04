@@ -11,16 +11,14 @@ static VALUE config_s_get_config_flag(VALUE self, VALUE value);
 static VALUE config_initialize(VALUE self);
 static VALUE config_set_config(VALUE self, VALUE key, VALUE value);
 
-static void deallocate(void * ctx)
-{
+static void deallocate(void * ctx) {
     rubyDuckDBConfig *p = (rubyDuckDBConfig *)ctx;
 
     duckdb_destroy_config(&(p->config));
     xfree(p);
 }
 
-static VALUE allocate(VALUE klass)
-{
+static VALUE allocate(VALUE klass) {
     rubyDuckDBConfig *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConfig));
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }

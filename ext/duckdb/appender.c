@@ -48,16 +48,14 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender_flush(VALUE self);
 static VALUE appender_close(VALUE self);
 
-static void deallocate(void * ctx)
-{
+static void deallocate(void * ctx) {
     rubyDuckDBAppender *p = (rubyDuckDBAppender *)ctx;
 
     duckdb_appender_destroy(&(p->appender));
     xfree(p);
 }
 
-static VALUE allocate(VALUE klass)
-{
+static VALUE allocate(VALUE klass) {
     rubyDuckDBAppender *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBAppender));
     return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
 }
