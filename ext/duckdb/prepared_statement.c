@@ -232,14 +232,10 @@ static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
 #ifdef HAVE_DUCKDB_BIND_DATE
 static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day) {
     rubyDuckDBPreparedStatement *ctx;
-    duckdb_date_struct dt_struct;
     duckdb_date dt;
     idx_t idx = check_index(vidx);
 
-    dt_struct.year = NUM2INT(year);
-    dt_struct.month = NUM2INT(month);
-    dt_struct.day = NUM2INT(day);
-    dt = duckdb_to_date(dt_struct);
+    dt = to_duckdb_date_from_value(year, month, day);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     if (duckdb_bind_date(ctx->prepared_statement, idx, dt) == DuckDBError) {

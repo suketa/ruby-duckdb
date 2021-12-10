@@ -288,16 +288,12 @@ static VALUE appender_append_null(VALUE self) {
 }
 
 #ifdef HAVE_DUCKDB_APPEND_DATE
-static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval) {
-    duckdb_date_struct dt_struct;
+static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE day) {
     duckdb_date dt;
     rubyDuckDBAppender *ctx;
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
-    dt_struct.year = NUM2INT(yearval);
-    dt_struct.month = NUM2INT(monthval);
-    dt_struct.day = NUM2INT(dayval);
-    dt = duckdb_to_date(dt_struct);
+    dt = to_duckdb_date_from_value(year, month, day);
 
     if (duckdb_append_date(ctx->appender, dt) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append date");

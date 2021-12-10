@@ -8,6 +8,7 @@
 #include "./connection.h"
 #include "./result.h"
 #include "./prepared_statement.h"
+#include "./util.h"
 
 #ifdef HAVE_DUCKDB_VALUE_BLOB
 
