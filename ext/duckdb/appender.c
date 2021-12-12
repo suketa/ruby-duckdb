@@ -321,17 +321,11 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
 
 #ifdef HAVE_DUCKDB_APPEND_TIME
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
-    duckdb_time_struct time_st;
     duckdb_time time;
     rubyDuckDBAppender *ctx;
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
-    time_st.hour = NUM2INT(hour);
-    time_st.min = NUM2INT(min);
-    time_st.sec = NUM2INT(sec);
-    time_st.micros = NUM2INT(micros);
-
-    time = duckdb_to_time(time_st);
+    time = to_duckdb_time_from_value(hour, min, sec, micros);
 
     if (duckdb_append_time(ctx->appender, time) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append time");
