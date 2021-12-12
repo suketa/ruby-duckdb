@@ -248,16 +248,12 @@ static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE 
 #ifdef HAVE_DUCKDB_BIND_TIME
 static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros){
     rubyDuckDBPreparedStatement *ctx;
-    duckdb_time_struct time_st;
     duckdb_time time;
 
     idx_t idx = check_index(vidx);
-    time_st.hour = NUM2INT(hour);
-    time_st.min = NUM2INT(min);
-    time_st.sec = NUM2INT(sec);
-    time_st.micros = NUM2INT(micros);
 
-    time = duckdb_to_time(time_st);
+    time = to_duckdb_time_from_value(hour, min, sec, micros);
+
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     if (duckdb_bind_time(ctx->prepared_statement, idx, time) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
