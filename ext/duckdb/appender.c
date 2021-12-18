@@ -336,22 +336,13 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
 
 #ifdef HAVE_DUCKDB_APPEND_TIMESTAMP
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
-    duckdb_timestamp_struct timestamp_st;
     duckdb_timestamp timestamp;
 
     rubyDuckDBAppender *ctx;
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
 
-    timestamp_st.date.year = NUM2INT(year);
-    timestamp_st.date.month = NUM2INT(month);
-    timestamp_st.date.day = NUM2INT(day);
-    timestamp_st.time.hour = NUM2INT(hour);
-    timestamp_st.time.min = NUM2INT(min);
-    timestamp_st.time.sec = NUM2INT(sec);
-    timestamp_st.time.micros = NUM2INT(micros);
-
-    timestamp = duckdb_to_timestamp(timestamp_st);
+    timestamp = to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
     if (duckdb_append_timestamp(ctx->appender, timestamp) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append timestamp");
