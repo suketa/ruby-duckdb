@@ -10,6 +10,7 @@ if have_library('duckdb')
     $defs << '-DHAVE_DUCKDB_NPARAMS_028'
   end
 
+  # blob is supported by duckdb > 0.2.5 or later
   have_func('duckdb_value_blob', 'duckdb.h')
   have_func('duckdb_bind_blob', 'duckdb.h')
 
