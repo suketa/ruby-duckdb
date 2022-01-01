@@ -37,4 +37,9 @@ duckdb_timestamp to_duckdb_timestamp_from_value(VALUE year, VALUE month, VALUE d
     return duckdb_to_timestamp(timestamp_st);
 }
 
+void to_duckdb_interval_from_value(duckdb_interval* interval, VALUE months, VALUE days, VALUE micros) {
+    interval->months = NUM2INT(months);
+    interval->days = NUM2INT(days);
+    interval->micros = NUM2LL(micros);
+}
 #endif
