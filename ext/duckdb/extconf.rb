@@ -30,6 +30,7 @@ if have_library('duckdb')
   have_func('duckdb_bind_date', 'duckdb.h')
   have_func('duckdb_bind_time', 'duckdb.h')
   have_func('duckdb_bind_timestamp', 'duckdb.h')
+  have_func('duckdb_bind_interval', 'duckdb.h')
 
   create_makefile('duckdb/duckdb_native')
 end

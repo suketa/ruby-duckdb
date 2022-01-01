@@ -37,6 +37,7 @@ module DuckDBTest
       SQL
 
       sql << (defined?(DuckDB::Blob) ? ', col_blob BLOB' : '')
+      sql << (DuckDB::PreparedStatement.private_method_defined?(:_bind_interval) ? ', col_interval INTERVAL' : '')
       sql << ');'
     end
 
@@ -60,6 +61,7 @@ module DuckDBTest
       SQL
 
       sql << (defined?(DuckDB::Blob) ? ", 'blob data'" : '')
+      sql << (DuckDB::PreparedStatement.private_method_defined?(:_bind_interval) ? ",'1 year 2 months 3 days 12:34:56.987654'" : '')
       sql << ');'
     end
 
@@ -348,6 +350,19 @@ module DuckDBTest
       return unless stmt.respond_to?(:_bind_timestamp, true)
 
       stmt.send(:_bind_timestamp, 1, 2019, 11, 9, 12, 34, 56, 0)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test__bind_itnerval
+      con = PreparedStatementTest.con
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_interval = $1')
+
+      return unless stmt.respond_to?(:_bind_interval, true)
+
+      micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
+      stmt.send(:_bind_interval, 1, 14, 3, micros)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
     end
