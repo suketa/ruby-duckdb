@@ -308,9 +308,7 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
     rubyDuckDBAppender *ctx;
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
-    interval.months = NUM2INT(months);
-    interval.days = NUM2INT(days);
-    interval.micros = NUM2LL(micros);
+    to_duckdb_interval_from_value(&interval, months, days, micros);
 
     if (duckdb_append_interval(ctx->appender, interval) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append interval");

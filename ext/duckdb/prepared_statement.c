@@ -290,9 +290,7 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
     idx_t idx = check_index(vidx);
 
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
-    interval.months = NUM2INT(months);
-    interval.days = NUM2INT(days);
-    interval.micros = NUM2LL(micros);
+    to_duckdb_interval_from_value(&interval, months, days, micros);
 
     if (duckdb_bind_interval(ctx->prepared_statement, idx, interval) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
