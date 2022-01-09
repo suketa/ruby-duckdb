@@ -197,11 +197,7 @@ module DuckDB
             append_hugeint(value)
           end
         when String
-          if defined?(DuckDB::Blob)
-            blob?(value) ? append_blob(value) : append_varchar(value)
-          else
-            append_varchar(value)
-          end
+          blob?(value) ? append_blob(value) : append_varchar(value)
         when TrueClass, FalseClass
           append_bool(value)
         when Time

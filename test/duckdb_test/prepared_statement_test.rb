@@ -33,10 +33,10 @@ module DuckDBTest
         col_varchar VARCHAR,
         col_date DATE,
         col_timestamp TIMESTAMP,
-        col_time TIME
+        col_time TIME,
+        col_blob BLOB
       SQL
 
-      sql << (defined?(DuckDB::Blob) ? ', col_blob BLOB' : '')
       sql << (DuckDB::PreparedStatement.private_method_defined?(:_bind_interval) ? ', col_interval INTERVAL' : '')
       sql << ');'
     end
@@ -57,10 +57,10 @@ module DuckDBTest
         'str',
         '#{datestr}',
         '2019-11-09 12:34:56',
-        '12:34:56.123456'
+        '12:34:56.123456',
+        'blob data'
       SQL
 
-      sql << (defined?(DuckDB::Blob) ? ", 'blob data'" : '')
       sql << (DuckDB::PreparedStatement.private_method_defined?(:_bind_interval) ? ",'1 year 2 months 3 days 12:34:56.987654'" : '')
       sql << ');'
     end
@@ -294,7 +294,6 @@ module DuckDBTest
     end
 
     def test_bind_blob
-      skip 'bind_blob is not available. DuckDB version >= 0.2.5 and ruby-duckdb version >= 0.0.12 are required.' unless defined?(DuckDB::Blob)
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
       stmt.bind_blob(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
@@ -478,7 +477,6 @@ module DuckDBTest
     end
 
     def test_bind_with_blob
-      skip 'bind_blob is not available. DuckDB version >= 0.2.5 and ruby-duckdb version >= 0.0.12 are required.' unless defined?(DuckDB::Blob)
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
       stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
