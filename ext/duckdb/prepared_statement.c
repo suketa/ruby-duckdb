@@ -210,7 +210,6 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     return self;
 }
 
-#ifdef HAVE_DUCKDB_VALUE_BLOB
 static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
@@ -221,7 +220,6 @@ static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE b
     }
     return self;
 }
-#endif /* HAVE_DUCKDB_VALUE_BLOB */
 
 static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
@@ -315,13 +313,9 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "bind_float", duckdb_prepared_statement_bind_float, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_double", duckdb_prepared_statement_bind_double, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
-#ifdef HAVE_DUCKDB_VALUE_BLOB
     rb_define_method(cDuckDBPreparedStatement, "bind_blob", duckdb_prepared_statement_bind_blob, 2);
-#endif /* HAVE_DUCKDB_VALUE_BLOB */
     rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
-#ifdef HAVE_DUCKDB_BIND_DATE
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", duckdb_prepared_statement__bind_date, 4);
-#endif
 #ifdef HAVE_DUCKDB_BIND_TIME
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_time", duckdb_prepared_statement__bind_time, 5);
 #endif

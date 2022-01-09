@@ -51,11 +51,7 @@ module DuckDB
           bind_varchar(i, value.to_s)
         end
       when String
-        if defined?(DuckDB::Blob)
           blob?(value) ? bind_blob(i, value) : bind_varchar(i, value)
-        else
-          bind_varchar(i, value)
-        end
       when TrueClass, FalseClass
         bind_bool(i, value)
       when Time
