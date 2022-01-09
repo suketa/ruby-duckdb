@@ -2,17 +2,13 @@ require 'mkmf'
 
 dir_config('duckdb')
 if have_library('duckdb')
-  raise 'duckdb >= 0.1.1 is required' unless have_func('duckdb_bind_null')
+  raise 'duckdb >= 0.2.5 is required' unless have_func('duckdb_value_blob', 'duckdb.h')
 
   if have_func('duckdb_nparams(NULL)', 'duckdb.h')
     $defs << '-DHAVE_DUCKDB_NPARAMS_029'
   elsif have_func('duckdb_nparams(NULL, NULL)', 'duckdb.h')
     $defs << '-DHAVE_DUCKDB_NPARAMS_028'
   end
-
-  # blob is supported by duckdb > 0.2.5 or later
-  have_func('duckdb_value_blob', 'duckdb.h')
-  have_func('duckdb_bind_blob', 'duckdb.h')
 
   have_func('duckdb_appender_create', 'duckdb.h')
   have_func('duckdb_free', 'duckdb.h')
