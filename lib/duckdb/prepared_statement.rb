@@ -26,6 +26,21 @@ module DuckDB
       end
     end
 
+    def bind_date(i, value)
+      case value
+      when Date, Time
+        date = value
+      else
+        begin
+          date = Date.parse(value)
+        rescue => e
+          raise(ArgumentError, "Cannot parse argument value to date. #{e.message}")
+        end
+      end
+
+      _bind_date(i, date.year, date.month, date.day)
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter. The index of first parameter is
     # 1 not 0.

@@ -263,6 +263,20 @@ module DuckDBTest
       end
     end
 
+    class Bar
+      def to_str
+        today = PreparedStatementTest.today
+        day = today.day
+        suffix = if day.between?(11, 13)
+                   "th"
+                 else
+                   { 1 => "st", 2 => "nd", 3 => "rd" }.fetch(day % 10, "th")
+                 end
+
+        "#{today.strftime("%B")}, #{day}#{suffix}, #{today.year}"
+      end
+    end
+
     def test_bind_varchar_error
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_varchar = $1')
@@ -314,6 +328,34 @@ module DuckDBTest
       assert_equal(1, r.each.size)
     ensure
       con.query('DELETE FROM a WHERE id IS NULL')
+    end
+
+    def test_bind_date
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
+      today = PreparedStatementTest.today
+
+      stmt.bind_date(1, today)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_date(1, Time.now)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      date_str = Bar.new.to_str
+      stmt.bind_date(1, date_str)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_date(1, Bar.new)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      e = assert_raises(ArgumentError) {
+        stmt.bind_date(1, Foo.new)
+      }
+      assert(e.message.start_with?("Cannot parse argument value to date."), "Error message not match")
     end
 
     def test__bind_date
