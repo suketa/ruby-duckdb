@@ -1,4 +1,5 @@
 require 'date'
+require_relative './converter'
 
 module DuckDB
   # The DuckDB::PreparedStatement encapsulates connection with DuckDB prepared
@@ -12,6 +13,7 @@ module DuckDB
   #   stmt.bind(1, 'email@example.com')
   #   stmt.execute
   class PreparedStatement
+    include DuckDB::Converter
 
     RANGE_INT16 = -32768..32767
     RANGE_INT32 = -2147483648..2147483647
@@ -41,6 +43,17 @@ module DuckDB
       _bind_date(i, date.year, date.month, date.day)
     end
 
+    def bind_interval(i, value)
+      raise(DuckDB::Error, 'bind_interval is not available with your duckdb version. please install duckdb latest version at first') unless respond_to?(:_bind_interval, true)
+      raise ArgumentError, "Argument `#{value}` must be a string." unless value.is_a?(String)
+
+      hash = iso8601_interval_to_hash(value)
+
+      months, days, micros = hash_to__append_interval_args(hash)
+
+      _bind_interval(i, months, days, micros)
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter. The index of first parameter is
     # 1 not 0.
@@ -66,7 +79,7 @@ module DuckDB
           bind_varchar(i, value.to_s)
         end
       when String
-          blob?(value) ? bind_blob(i, value) : bind_varchar(i, value)
+        blob?(value) ? bind_blob(i, value) : bind_varchar(i, value)
       when TrueClass, FalseClass
         bind_bool(i, value)
       when Time

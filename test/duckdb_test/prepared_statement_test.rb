@@ -408,6 +408,17 @@ module DuckDBTest
       assert_equal(1, result.each.first[0])
     end
 
+    def test_bind_interval
+      con = PreparedStatementTest.con
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_interval = $1')
+
+      return unless stmt.respond_to?(:bind_interval, true)
+      stmt.bind_interval(1, 'P1Y2M3DT12H34M56.987654S')
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+    end
+
     def test_bind_with_boolean
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')
