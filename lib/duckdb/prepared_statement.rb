@@ -68,7 +68,7 @@ module DuckDB
     def bind(i, value)
       case value
       when NilClass
-        respond_to?(:bind_null) ? bind_null(i) : raise(DuckDB::Error, 'This bind method does not support nil value. Re-compile ruby-duckdb with DuckDB version >= 0.1.1')
+        bind_null(i)
       when Float
         bind_double(i, value)
       when Integer

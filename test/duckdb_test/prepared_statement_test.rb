@@ -321,7 +321,6 @@ module DuckDBTest
     def test_bind_null
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id) VALUES ($1)')
-      skip 'bind_null is not defined in DuckDB::PreparedStatement (DuckDB version <= 0.1.1?)' unless stmt.respond_to?(:bind_null)
       stmt.bind_null(1)
       assert_instance_of(DuckDB::Result, stmt.execute)
       r = con.query('SELECT * FROM a WHERE id IS NULL')
@@ -548,8 +547,6 @@ module DuckDBTest
     def test_bind_with_null
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO a(id) VALUES ($1)')
-
-      skip 'bind_null is not defined in DuckDB::PreparedStatement (DuckDB version <= 0.1.1?)' unless stmt.respond_to?(:bind_null)
 
       stmt.bind(1, nil)
       stmt.execute
