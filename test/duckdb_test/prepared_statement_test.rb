@@ -18,6 +18,10 @@ module DuckDBTest
       @today ||= Date.today
     end
 
+    def self.now
+      @now ||=Time.now
+    end
+
     def self.create_table_sql
       sql = <<-SQL
       CREATE TABLE a (
@@ -57,7 +61,7 @@ module DuckDBTest
         'str',
         '#{datestr}',
         '2019-11-09 12:34:56',
-        '12:34:56.123456',
+        '#{now.hour}:#{now.min}:#{now.sec}.#{now.nsec}',
         'blob data'
       SQL
 
@@ -370,6 +374,25 @@ module DuckDBTest
       assert_equal(1, result.each.first[0])
     end
 
+    def test_bind_time
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
+      now = PreparedStatementTest.now
+
+      stmt.bind_time(1, now)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_time(1, now.inspect)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      e = assert_raises(ArgumentError) {
+        stmt.bind_time(1, Foo.new)
+      }
+      assert(e.message.start_with?("Cannot parse argument value to time."), "Error message not match")
+    end
+
     def test__bind_time
       con = PreparedStatementTest.con
 
@@ -377,7 +400,8 @@ module DuckDBTest
 
       return unless stmt.respond_to?(:_bind_time, true)
 
-      stmt.send(:_bind_time, 1, 12, 34, 56, 123456)
+      now = PreparedStatementTest.now
+      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.nsec / 1000)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
     end
