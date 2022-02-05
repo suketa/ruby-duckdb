@@ -55,7 +55,7 @@ module DuckDB
         end
       end
 
-      _bind_time(i, time.hour, time.min, time.sec, 0)
+      _bind_time(i, time.hour, time.min, time.sec, time.nsec / 1000)
     end
 
     def bind_interval(i, value)
