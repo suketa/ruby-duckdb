@@ -18,6 +18,10 @@ module DuckDBTest
       @today ||= Date.today
     end
 
+    def self.now
+      @now ||=Time.now
+    end
+
     def self.create_table_sql
       sql = <<-SQL
       CREATE TABLE a (
@@ -369,6 +373,25 @@ module DuckDBTest
       stmt.send(:_bind_date, 1, today.year, today.month, today.day)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_time
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time <= $1')
+      now = PreparedStatementTest.now
+
+      stmt.bind_time(1, now)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_time(1, now.to_s)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      e = assert_raises(ArgumentError) {
+        stmt.bind_time(1, Foo.new)
+      }
+      assert(e.message.start_with?("Cannot parse argument value to time."), "Error message not match")
     end
 
     def test__bind_time
