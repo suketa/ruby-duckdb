@@ -61,7 +61,7 @@ module DuckDBTest
         'str',
         '#{datestr}',
         '2019-11-09 12:34:56',
-        '12:34:56.123456',
+        '#{now.hour}:#{now.min}:#{now.sec}.#{now.nsec}',
         'blob data'
       SQL
 
@@ -377,14 +377,14 @@ module DuckDBTest
 
     def test_bind_time
       con = PreparedStatementTest.con
-      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time <= $1')
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
       now = PreparedStatementTest.now
 
       stmt.bind_time(1, now)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
-      stmt.bind_time(1, now.to_s)
+      stmt.bind_time(1, now.inspect)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
@@ -401,7 +401,8 @@ module DuckDBTest
 
       return unless stmt.respond_to?(:_bind_time, true)
 
-      stmt.send(:_bind_time, 1, 12, 34, 56, 123456)
+      now = PreparedStatementTest.now
+      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.nsec / 1000)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
     end
