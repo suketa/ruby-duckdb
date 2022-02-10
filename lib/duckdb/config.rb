@@ -34,10 +34,7 @@ module DuckDB
         # configs['default_order'] # => "The order type used when none is specified ([ASC] or DESC)"
         #
         def key_descriptions
-          return @key_descriptions if @key_descriptions
-
-          n = size
-          @key_descriptions = (0...n).each_with_object({}) do |i, hash|
+          @key_descriptions ||= (0...size).each_with_object({}) do |i, hash|
             key, description = key_description(i)
             hash[key] = description
           end
