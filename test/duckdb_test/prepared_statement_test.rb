@@ -403,6 +403,7 @@ module DuckDBTest
       return unless stmt.respond_to?(:_bind_time, true)
 
       now = PreparedStatementTest.now
+
       #FIXME
       # stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.strftime("%6N").to_i)
       # result = stmt.execute
