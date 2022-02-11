@@ -389,16 +389,6 @@ module DuckDBTest
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
-      now = DateTime.parse(PreparedStatementTest.now.inspect)
-
-      stmt.bind_time(1, now)
-      result = stmt.execute
-      assert_equal(1, result.each.first[0])
-
-      stmt.bind_time(1, now.strftime("%F %T.%6N"))
-      result = stmt.execute
-      assert_equal(1, result.each.first[0])
-
       e = assert_raises(ArgumentError) {
         stmt.bind_time(1, Foo.new)
       }
