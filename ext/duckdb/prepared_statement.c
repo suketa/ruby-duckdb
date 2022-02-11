@@ -93,7 +93,7 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
     Data_Get_Struct(result, rubyDuckDBResult, ctxr);
     if (duckdb_execute_prepared(ctx->prepared_statement, &(ctxr->result)) == DuckDBError) {
-        rb_raise(eDuckDBError, "%s", ctxr->result.error_message);
+        rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
     }
     return result;
 }

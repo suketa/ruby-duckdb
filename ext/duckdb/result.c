@@ -78,10 +78,10 @@ static VALUE to_ruby_obj_string_from_blob(duckdb_result *result, idx_t col_idx, 
 static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
     char *p;
     VALUE obj = Qnil;
-    if (result->columns[col_idx].nullmask[row_idx]) {
+    if (duckdb_value_is_null(result, col_idx, row_idx)) {
         return obj;
     }
-    switch(result->columns[col_idx].type) {
+    switch(duckdb_column_type(result, col_idx)) {
     case DUCKDB_TYPE_BOOLEAN:
         return to_ruby_obj_boolean(result, col_idx, row_idx);
     case DUCKDB_TYPE_SMALLINT:
@@ -105,7 +105,7 @@ static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
 #else
             free(p);
 #endif /* HAVE_DUCKDB_FREE */
-            if (result->columns[col_idx].type == DUCKDB_TYPE_HUGEINT) {
+            if (duckdb_column_type(result, col_idx) == DUCKDB_TYPE_HUGEINT) {
                 obj = rb_funcall(obj, rb_intern("to_i"), 0);
             }
         }
@@ -115,8 +115,10 @@ static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
 
 static VALUE row_array(rubyDuckDBResult *ctx, idx_t row_idx) {
     idx_t col_idx;
-    VALUE ary = rb_ary_new2(ctx->result.column_count);
-    for(col_idx = 0; col_idx < ctx->result.column_count; col_idx++) {
+    idx_t column_count = duckdb_column_count(&(ctx->result));
+
+    VALUE ary = rb_ary_new2(column_count);
+    for(col_idx = 0; col_idx < column_count; col_idx++) {
         rb_ary_store(ary, col_idx, to_ruby_obj(&(ctx->result), col_idx, row_idx));
     }
     return ary;
@@ -126,17 +128,19 @@ static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj) 
     rubyDuckDBResult *ctx;
     Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
 
-    return LONG2FIX(ctx->result.row_count);
+    return LONG2FIX(duckdb_row_count(&(ctx->result)));
 }
 
 static VALUE duckdb_result_each(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     idx_t row_idx = 0;
+    idx_t row_count = 0;
 
     RETURN_SIZED_ENUMERATOR(oDuckDBResult, 0, 0, duckdb_result_row_size);
 
     Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
-    for (row_idx = 0; row_idx < ctx->result.row_count; row_idx++) {
+    row_count = duckdb_row_count(&(ctx->result));
+    for (row_idx = 0; row_idx < row_count; row_idx++) {
         rb_yield(row_array(ctx, row_idx));
     }
     return oDuckDBResult;
@@ -167,7 +171,7 @@ static VALUE duckdb_result_each(VALUE oDuckDBResult) {
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
-    return LL2NUM(ctx->result.rows_changed);
+    return LL2NUM(duckdb_rows_changed(&(ctx->result)));
 }
 
 VALUE create_result(void) {
