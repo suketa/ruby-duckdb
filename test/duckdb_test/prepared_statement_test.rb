@@ -403,7 +403,7 @@ module DuckDBTest
 
       now = PreparedStatementTest.now
 
-      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.nsec.to_s[0..5].to_i)
+      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.strftime('%N')[0, 6].to_i)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
     end

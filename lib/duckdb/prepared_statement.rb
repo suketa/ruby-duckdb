@@ -54,7 +54,7 @@ module DuckDB
           raise(ArgumentError, "Cannot parse argument value to time. #{e.message}")
         end
       end
-      usec = time.nsec.to_s[0..5].to_i
+      usec = time.strftime('%N')[0, 6].to_i
       _bind_time(i, time.hour, time.min, time.sec, usec)
     end
 
