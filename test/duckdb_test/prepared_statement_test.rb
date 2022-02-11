@@ -384,7 +384,7 @@ module DuckDBTest
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
-      stmt.bind_time(1, now.strftime('%T.%N'))
+      stmt.bind_time(1, now.strftime('%F %T.%N'))
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
