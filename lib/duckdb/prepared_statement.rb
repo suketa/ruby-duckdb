@@ -45,11 +45,11 @@ module DuckDB
 
     def bind_time(i, value)
       case value
-      when DateTime, Time
+      when Time
         time = value
       else
         begin
-          time = DateTime.parse(value)
+          time = Time.parse(value)
         rescue => e
           raise(ArgumentError, "Cannot parse argument value to time. #{e.message}")
         end
