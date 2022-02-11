@@ -15,7 +15,7 @@ You must have [DuckDB](http://www.duckdb.org) engine installed in order to build
 ## Pre-requisite setup (Linux):
 1. Head over to the [DuckDB](https://duckdb.org/) webpage
 
-2. Download the latest C++ package
+2. Download the latest C++ package release for DuckDB
 
 3. Move the files to their respective location:
     - Extract the `duckdb.h` and `duckdb.hpp` file to `/usr/local/include`
@@ -36,6 +36,7 @@ You must have [DuckDB](http://www.duckdb.org) engine installed in order to build
 ```
 gem install duckdb
 ```
+> this will work fine with the above pre-requisite setup.
 
 or you must specify the location of the C header and library files:
 
