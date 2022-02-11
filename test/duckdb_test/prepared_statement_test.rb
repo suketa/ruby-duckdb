@@ -385,7 +385,7 @@ module DuckDBTest
       # result = stmt.execute
       # assert_equal(1, result.each.first[0])
       # 
-      # stmt.bind_time(1, now.strftime('%F %T.%N'))
+      # stmt.bind_time(1, now.strftime('%F %T.%6N'))
       # result = stmt.execute
       # assert_equal(1, result.each.first[0])
 
@@ -403,6 +403,7 @@ module DuckDBTest
       return unless stmt.respond_to?(:_bind_time, true)
 
       now = PreparedStatementTest.now
+
       #FIXME
       # stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.strftime("%6N").to_i)
       # result = stmt.execute

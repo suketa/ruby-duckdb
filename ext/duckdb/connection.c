@@ -78,7 +78,7 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     }
 
     if (duckdb_query(ctx->con, StringValueCStr(str), &(ctxr->result)) == DuckDBError) {
-        rb_raise(eDuckDBError, "%s", ctxr->result.error_message);
+        rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
     }
     return result;
 }
