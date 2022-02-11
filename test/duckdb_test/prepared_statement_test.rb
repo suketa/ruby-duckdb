@@ -382,26 +382,16 @@ module DuckDBTest
 
       stmt.bind_time(1, now)
       result = stmt.execute
-      assert_equal(1, result.each.first[0])
+      assert_equal(1, result.each.first[0], "now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
 
       stmt.bind_time(1, now.strftime('%F %T.%N'))
       result = stmt.execute
-      assert_equal(1, result.each.first[0])
+      assert_equal(1, result.each.first[0], "now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
 
       e = assert_raises(ArgumentError) {
         stmt.bind_time(1, Foo.new)
       }
       assert(e.message.start_with?("Cannot parse argument value to time."), "Error message not match")
-    rescue StandardError => e
-      puts
-      puts "---------"
-      puts now.nsec
-      puts now.usec
-      puts usec
-      puts now.nsec.to_s
-      puts "---------"
-      puts
-      raise e
     end
 
     def test__bind_time
@@ -417,17 +407,7 @@ module DuckDBTest
       stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, usec)
 
       result = stmt.execute
-      assert_equal(1, result.each.first[0])
-    rescue StandardError => e
-      puts
-      puts "---------"
-      puts now.nsec
-      puts now.usec
-      puts usec
-      puts now.nsec.to_s
-      puts "---------"
-      puts
-      raise e
+      assert_equal(1, result.each.first[0], "now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
     end
 
     def test__bind_timestamp
