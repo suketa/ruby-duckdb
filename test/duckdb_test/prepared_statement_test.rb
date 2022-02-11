@@ -61,7 +61,7 @@ module DuckDBTest
         'str',
         '#{datestr}',
         '2019-11-09 12:34:56',
-        '#{now.hour}:#{now.min}:#{now.sec}.#{now.nsec}',
+        '#{now.strftime('%T.%N')}',
         'blob data'
       SQL
 
@@ -408,7 +408,7 @@ module DuckDBTest
 
       now = PreparedStatementTest.now
 
-      usec = ('0' * 9 + now.nsec.to_s).slice(-9, 9)[0, 6].to_i
+      usec = now.usec
       stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, usec)
 
       result = stmt.execute

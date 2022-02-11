@@ -55,8 +55,7 @@ module DuckDB
         end
       end
 
-      usec = ('0' * 9 + time.nsec.to_s).slice(-9, 9)[0, 6].to_i
-      _bind_time(i, time.hour, time.min, time.sec, usec)
+      _bind_time(i, time.hour, time.min, time.sec, time.usec)
     end
 
     def bind_interval(i, value)
