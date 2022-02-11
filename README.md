@@ -12,6 +12,25 @@ ruby-duckdb is Ruby binding for [DuckDB](http://www.duckdb.org) database engine
 
 You must have [DuckDB](http://www.duckdb.org) engine installed in order to build/use this module.
 
+## Pre-requisite setup (Linux):
+1. Head over to the [DuckDB](https://duckdb.org/) webpage
+
+2. Download the latest C++ package
+
+3. Move the files to their respective location:
+    - Extract the `duckdb.h` and `duckdb.hpp` file to `/usr/local/include`
+    - Extract the `libduckdb.so` file to `/usr/local/lib`
+    
+    ```sh
+    unzip libduckdb-linux-amd64.zip -d libduckdb
+    sudo mv libduckdb/duckdb.* /usr/local/include/
+    sudo mv libduckdb/libduckdb.so /usr/local/lib
+    ```
+4. To create the necessary link, run `ldconfig` as root:
+  
+    ```sh
+    sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked
+    ```
 ## How to Install
 
 ```
