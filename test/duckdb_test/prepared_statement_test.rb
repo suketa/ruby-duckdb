@@ -380,14 +380,13 @@ module DuckDBTest
 
       now = PreparedStatementTest.now
 
-      # FIXME
-      # stmt.bind_time(1, now)
-      # result = stmt.execute
-      # assert_equal(1, result.each.first[0])
-      # 
-      # stmt.bind_time(1, now.strftime('%F %T.%6N'))
-      # result = stmt.execute
-      # assert_equal(1, result.each.first[0])
+      stmt.bind_time(1, now)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+
+      stmt.bind_time(1, now.strftime('%T.%N'))
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
 
       e = assert_raises(ArgumentError) {
         stmt.bind_time(1, Foo.new)
@@ -404,10 +403,9 @@ module DuckDBTest
 
       now = PreparedStatementTest.now
 
-      #FIXME
-      # stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.strftime("%6N").to_i)
-      # result = stmt.execute
-      # assert_equal(1, result.each.first[0])
+      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.nsec.to_s[0..5].to_i)
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
     end
 
     def test__bind_timestamp
