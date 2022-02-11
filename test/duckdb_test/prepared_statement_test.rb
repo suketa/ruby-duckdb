@@ -379,14 +379,17 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
 
       now = PreparedStatementTest.now
+      col_time = con.query('SELECT col_time from a').first.first
 
       stmt.bind_time(1, now)
       result = stmt.execute
-      assert_equal(1, result.each.first[0], "now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_instance_of(Array, result.each.first, "col_time=#{col_time}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_equal(1, result.each.first[0])
 
       stmt.bind_time(1, now.strftime('%F %T.%N'))
       result = stmt.execute
-      assert_equal(1, result.each.first[0], "now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_instance_of(Array, result.each.first, "col_time=#{col_time}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_equal(1, result.each.first[0])
 
       e = assert_raises(ArgumentError) {
         stmt.bind_time(1, Foo.new)
@@ -401,13 +404,16 @@ module DuckDBTest
 
       return unless stmt.respond_to?(:_bind_time, true)
 
+      col_time = con.query('SELECT col_time from a').first.first
+
       now = PreparedStatementTest.now
 
       usec = ('0' * 9 + now.nsec.to_s).slice(-9, 9)[0, 6].to_i
       stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, usec)
 
       result = stmt.execute
-      assert_equal(1, result.each.first[0], "now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_instance_of(Array, result.each.first, "col_time=#{col_time}, usec=#{usec}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_equal(1, result.each.first[0])
     end
 
     def test__bind_timestamp
