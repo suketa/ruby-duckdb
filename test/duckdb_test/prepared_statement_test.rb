@@ -408,6 +408,16 @@ module DuckDBTest
 
       result = stmt.execute
       assert_equal(1, result.each.first[0])
+    rescue StandardError => e
+      puts
+      puts "---------"
+      puts now.nsec
+      puts now.usec
+      puts usec
+      puts now.nsec.to_s
+      puts "---------"
+      puts
+      raise e
     end
 
     def test__bind_timestamp
@@ -420,6 +430,16 @@ module DuckDBTest
       stmt.send(:_bind_timestamp, 1, 2019, 11, 9, 12, 34, 56, 0)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
+    rescue StandardError => e
+      puts
+      puts "---------"
+      puts now.nsec
+      puts now.usec
+      puts usec
+      puts now.nsec.to_s
+      puts "---------"
+      puts
+      raise e
     end
 
     def test__bind_itnerval
