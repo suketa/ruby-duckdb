@@ -19,7 +19,7 @@ module DuckDBTest
     end
 
     def self.now
-      @now ||=Time.now
+      @now ||= Time.now
     end
 
     def self.create_table_sql
@@ -377,6 +377,7 @@ module DuckDBTest
     def test_bind_time
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
+
       now = PreparedStatementTest.now
 
       stmt.bind_time(1, now)
@@ -401,7 +402,7 @@ module DuckDBTest
       return unless stmt.respond_to?(:_bind_time, true)
 
       now = PreparedStatementTest.now
-      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.nsec / 1000)
+      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, now.strftime("%6N").to_i)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
     end
