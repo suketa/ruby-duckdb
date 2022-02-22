@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
     strategy:
       matrix:
         ruby: ['2.6.9', '2.7.5', '3.0.3', '3.1.1', 'mingw', 'head']
@@ -34,7 +34,7 @@ jobs:
 
     - name: extract zip file
       run: |
-        7z x libduckdb-windows-amd64.zip
+        unzip libduckdb-windows-amd64.zip
 
     - name: setup duckdb.dll
       run: |
