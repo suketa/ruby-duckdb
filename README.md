@@ -31,6 +31,14 @@ You must have [DuckDB](http://www.duckdb.org) engine installed in order to build
     ```sh
     sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked
     ```
+## Pre-requisite setup (MacOS):
+
+Using `brew install` is recommended.
+
+```sh
+brew install duckdb
+```
+
 ## How to Install
 
 ```
