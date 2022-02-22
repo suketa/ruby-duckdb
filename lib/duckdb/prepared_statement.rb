@@ -28,6 +28,19 @@ module DuckDB
       end
     end
 
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected date.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE birth_day = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind(1, Date.today)
+    #   #  or you can specify date string.
+    #   # stmt.bind(1, '2021-02-23')
     def bind_date(i, value)
       case value
       when Date, Time
@@ -43,6 +56,19 @@ module DuckDB
       _bind_date(i, date.year, date.month, date.day)
     end
 
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected time value.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE birth_time = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind(1, Time.now)
+    #   #  or you can specify time string.
+    #   # stmt.bind(1, '07:39:45')
     def bind_time(i, value)
       case value
       when Time
@@ -58,6 +84,19 @@ module DuckDB
       _bind_time(i, time.hour, time.min, time.sec, time.usec)
     end
 
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected time value.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE created_at = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind(1, Time.now)
+    #   #  or you can specify timestamp string.
+    #   # stmt.bind(1, '2022-02-23 07:39:45')
     def bind_timestamp(i, value)
       case value
       when Time
@@ -73,6 +112,17 @@ module DuckDB
       _bind_timestamp(i, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
     end
 
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected ISO8601 time interval string.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT value FROM intervals WHERE interval = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind(1, 'P1Y2D')
     def bind_interval(i, value)
       raise(DuckDB::Error, 'bind_interval is not available with your duckdb version. please install duckdb latest version at first') unless respond_to?(:_bind_interval, true)
       raise ArgumentError, "Argument `#{value}` must be a string." unless value.is_a?(String)
@@ -85,8 +135,8 @@ module DuckDB
     end
 
     # binds i-th parameter with SQL prepared statement.
-    # The first argument is index of parameter. The index of first parameter is
-    # 1 not 0.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
     # The second argument value is the value of prepared statement parameter.
     #
     #   require 'duckdb'
