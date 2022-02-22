@@ -34,7 +34,7 @@ jobs:
 
     - name: extract zip file
       run: |
-        7z x libduckdb-windows-amd64.zip
+        unzip libduckdb-windows-amd64.zip
 
     - name: setup duckdb.dll
       run: |
