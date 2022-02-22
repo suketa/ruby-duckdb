@@ -58,6 +58,21 @@ module DuckDB
       _bind_time(i, time.hour, time.min, time.sec, time.usec)
     end
 
+    def bind_timestamp(i, value)
+      case value
+      when Time
+        time = value
+      else
+        begin
+          time = Time.parse(value)
+        rescue => e
+          raise(ArgumentError, "Cannot parse argument value to time. #{e.message}")
+        end
+      end
+
+      _bind_timestamp(i, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
+    end
+
     def bind_interval(i, value)
       raise(DuckDB::Error, 'bind_interval is not available with your duckdb version. please install duckdb latest version at first') unless respond_to?(:_bind_interval, true)
       raise ArgumentError, "Argument `#{value}` must be a string." unless value.is_a?(String)
