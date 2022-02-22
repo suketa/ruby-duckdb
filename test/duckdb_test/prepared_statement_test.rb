@@ -428,6 +428,16 @@ module DuckDBTest
       assert_equal(1, result.each.first[0])
     end
 
+    def test_bind_timestamp
+      con = PreparedStatementTest.con
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_timestamp = $1')
+
+      stmt.bind_timestamp(1, Time.new(2019, 11, 9, 12, 34, 56))
+      result = stmt.execute
+      assert_equal(1, result.each.first[0])
+    end
+
     def test__bind_itnerval
       con = PreparedStatementTest.con
 
