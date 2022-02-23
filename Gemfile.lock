@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    duckdb (0.3.1.0)
+    duckdb (0.3.2.0)
 
 GEM
   remote: https://rubygems.org/
