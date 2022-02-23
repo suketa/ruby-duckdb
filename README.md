@@ -1,8 +1,9 @@
 # ruby-duckdb
 
-[![](https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu)
-[![](https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS)
-[![](https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows)
+[![Ubuntu](https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu)
+[![MacOS](https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS)
+[![Windows](https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg)](https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows)
+[![Gem Version](https://badge.fury.io/rb/duckdb.svg)](https://badge.fury.io/rb/duckdb)
 
 ## Description
 
