@@ -1,5 +1,7 @@
 # ChangeLog
 
+# 0.3.2.0
+
 - bind_time, bind_timestamp, bind_date, bind_timeinterval to DuckDB::PreparedStatement
 - bump duckdb 0.3.2
 - bump Ruby 3.1.1, add Ruby mingw in CI.
