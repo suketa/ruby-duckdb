@@ -1,9 +1,12 @@
 # ChangeLog
 
-- BREAKING CHANGE: drop duckdb <= 0.2.8
+- bind_time, bind_timestamp, bind_date, bind_timeinterval to DuckDB::PreparedStatement
 - bump duckdb 0.3.2
-- bump Ruby 3.1.0, add Ruby mingw in CI.
+- bump Ruby 3.1.1, add Ruby mingw in CI.
 - bump Ruby 2.6.9, 2.7.5, 3.0.3 in CI.
+
+## BREAKING CHANGE
+- drop duckdb <= 0.2.8
 
 # 0.3.1.0
 
