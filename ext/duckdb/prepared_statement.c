@@ -31,10 +31,7 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 #endif
 
-#ifdef HAVE_DUCKDB_BIND_INTERVAL
 static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
-#endif
-
 
 static void deallocate(void *ctx) {
     rubyDuckDBPreparedStatement *p = (rubyDuckDBPreparedStatement *)ctx;
@@ -281,7 +278,6 @@ static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, V
 }
 #endif
 
-#ifdef HAVE_DUCKDB_BIND_INTERVAL
 static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
     rubyDuckDBPreparedStatement *ctx;
@@ -295,7 +291,6 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
     }
     return self;
 }
-#endif
 
 void init_duckdb_prepared_statement(void) {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
@@ -322,7 +317,5 @@ void init_duckdb_prepared_statement(void) {
 #ifdef HAVE_DUCKDB_BIND_TIMESTAMP
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp", duckdb_prepared_statement__bind_timestamp, 8);
 #endif
-#ifdef HAVE_DUCKDB_BIND_INTERVAL
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_interval", duckdb_prepared_statement__bind_interval, 4);
-#endif
 }
