@@ -23,7 +23,7 @@ module DuckDBTest
     end
 
     def self.create_table_sql
-      sql = <<-SQL
+      <<-SQL
       CREATE TABLE a (
         id INTEGER,
         col_boolean BOOLEAN,
@@ -38,16 +38,15 @@ module DuckDBTest
         col_date DATE,
         col_timestamp TIMESTAMP,
         col_time TIME,
-        col_blob BLOB
+        col_blob BLOB,
+        col_interval INTERVAL
+        );
       SQL
-
-      sql << (DuckDB::PreparedStatement.private_method_defined?(:_bind_interval) ? ', col_interval INTERVAL' : '')
-      sql << ');'
     end
 
     def self.insert_sql
       datestr = today.strftime('%Y-%m-%d')
-      sql = <<-SQL
+      <<-SQL
       INSERT INTO a VALUES (
         1,
         True,
@@ -62,11 +61,10 @@ module DuckDBTest
         '#{datestr}',
         '2019-11-09 12:34:56',
         '#{now.strftime('%T.%N')}',
-        'blob data'
+        'blob data',
+        '1 year 2 months 3 days 12:34:56.987654'
+      );
       SQL
-
-      sql << (DuckDB::PreparedStatement.private_method_defined?(:_bind_interval) ? ",'1 year 2 months 3 days 12:34:56.987654'" : '')
-      sql << ');'
     end
 
     def test_class_exist
@@ -443,8 +441,6 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_interval = $1')
 
-      return unless stmt.respond_to?(:_bind_interval, true)
-
       micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
       stmt.send(:_bind_interval, 1, 14, 3, micros)
       result = stmt.execute
@@ -456,7 +452,6 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_interval = $1')
 
-      return unless stmt.respond_to?(:bind_interval, true)
       stmt.bind_interval(1, 'P1Y2M3DT12H34M56.987654S')
       result = stmt.execute
       assert_equal(1, result.each.first[0])

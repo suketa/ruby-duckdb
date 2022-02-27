@@ -124,7 +124,6 @@ module DuckDB
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind(1, 'P1Y2D')
     def bind_interval(i, value)
-      raise(DuckDB::Error, 'bind_interval is not available with your duckdb version. please install duckdb latest version at first') unless respond_to?(:_bind_interval, true)
       raise ArgumentError, "Argument `#{value}` must be a string." unless value.is_a?(String)
 
       hash = iso8601_interval_to_hash(value)
