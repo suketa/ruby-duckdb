@@ -1,7 +1,5 @@
 #include "ruby-duckdb.h"
 
-#ifdef HAVE_DUCKDB_APPENDER_CREATE
-
 static VALUE cDuckDBAppender;
 
 static void deallocate(void *);
@@ -425,4 +423,4 @@ void init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
     rb_define_method(cDuckDBAppender, "close", appender_close, 0);
 }
-#endif /* HAVE_DUCKDB_APPENDER_CREATE */
+

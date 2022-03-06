@@ -11,11 +11,9 @@
 #include "./util.h"
 
 #include "./blob.h"
-#ifdef HAVE_DUCKDB_APPENDER_CREATE
 
 #include "./appender.h"
 
-#endif /* HAVE_DUCKDB_APPENDER_CREATE */
 
 #ifdef HAVE_DUCKDB_CREATE_CONFIG
 
