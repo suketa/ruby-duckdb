@@ -419,8 +419,6 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
-      return unless stmt.respond_to?(:_bind_timestamp, true)
-
       stmt.send(:_bind_timestamp, 1, 2019, 11, 9, 12, 34, 56, 0)
       result = stmt.execute
       assert_equal(1, result.each.first[0])
