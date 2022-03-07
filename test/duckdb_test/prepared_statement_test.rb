@@ -400,8 +400,6 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
 
-      return unless stmt.respond_to?(:_bind_time, true)
-
       col_time = con.query('SELECT col_time from a').first.first
 
       now = PreparedStatementTest.now
