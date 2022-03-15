@@ -10,6 +10,7 @@ Init_duckdb_native(void) {
     init_duckdb_database();
     init_duckdb_connection();
     init_duckdb_result();
+    init_duckdb_column();
     init_duckdb_prepared_statement();
     init_duckdb_blob();
 
