@@ -16,6 +16,7 @@ static VALUE row_array(rubyDuckDBResult *ctx, idx_t row_idx);
 static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj);
 static VALUE duckdb_result_each(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
+static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
@@ -174,6 +175,28 @@ static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
     return LL2NUM(duckdb_rows_changed(&(ctx->result)));
 }
 
+/*
+ *  call-seq:
+ *    result.columns -> DuckDB::Column[]
+ *
+ *  Returns the column class Lists.
+ *
+ */
+static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    idx_t col_idx;
+    idx_t column_count = duckdb_column_count(&(ctx->result));
+
+    VALUE ary = rb_ary_new2(column_count);
+    for(col_idx = 0; col_idx < column_count; col_idx++) {
+        VALUE column = create_column(oDuckDBResult, col_idx);
+        rb_ary_store(ary, col_idx, column);
+    }
+    return ary;
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -184,4 +207,5 @@ void init_duckdb_result(void) {
 
     rb_define_method(cDuckDBResult, "each", duckdb_result_each, 0);
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
+    rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
 }
