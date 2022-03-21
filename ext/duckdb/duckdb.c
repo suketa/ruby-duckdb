@@ -13,11 +13,7 @@ Init_duckdb_native(void) {
     init_duckdb_prepared_statement();
     init_duckdb_blob();
 
-#ifdef HAVE_DUCKDB_APPENDER_CREATE
-
     init_duckdb_appender();
-
-#endif /* HAVE_DUCKDB_APPENDER_CREATE */
 
 #ifdef HAVE_DUCKDB_CREATE_CONFIG
 
