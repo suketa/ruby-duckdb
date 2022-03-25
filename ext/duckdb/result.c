@@ -66,11 +66,7 @@ static VALUE to_ruby_obj_string_from_blob(duckdb_result *result, idx_t col_idx, 
     str = rb_str_new(bval.data, bval.size);
 
     if (bval.data) {
-#ifdef HAVE_DUCKDB_FREE
         duckdb_free(bval.data);
-#else
-        free(bval.data);
-#endif
     }
 
     return str;
@@ -101,11 +97,7 @@ static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
         p = duckdb_value_varchar(result, col_idx, row_idx);
         if (p) {
             obj = rb_str_new2(p);
-#ifdef HAVE_DUCKDB_FREE
             duckdb_free(p);
-#else
-            free(p);
-#endif /* HAVE_DUCKDB_FREE */
             if (duckdb_column_type(result, col_idx) == DUCKDB_TYPE_HUGEINT) {
                 obj = rb_funcall(obj, rb_intern("to_i"), 0);
             }
