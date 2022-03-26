@@ -364,8 +364,6 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
 
-      return unless stmt.respond_to?(:_bind_date, true)
-
       today = PreparedStatementTest.today
       stmt.send(:_bind_date, 1, today.year, today.month, today.day)
       result = stmt.execute

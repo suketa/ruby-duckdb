@@ -98,6 +98,10 @@ module DuckDBTest
       end
     end
 
+    def test_columns
+      assert_instance_of(DuckDB::Column, @result.columns.first)
+    end
+
     private
 
     def create_data
