@@ -35,14 +35,10 @@ module DuckDB
     def append_hugeint(value)
       case value
       when Integer
-        if respond_to?(:_append_hugeint, true)
-          half = 1 << 64
-          upper = value / half
-          lower = value - upper * half
-          _append_hugeint(lower, upper)
-        else
-          append_varchar(value.to_s)
-        end
+        half = 1 << 64
+        upper = value / half
+        lower = value - upper * half
+        _append_hugeint(lower, upper)
       else
         raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
       end
