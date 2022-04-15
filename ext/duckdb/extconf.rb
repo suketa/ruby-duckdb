@@ -16,6 +16,5 @@ have_func('duckdb_append_date', 'duckdb.h')
 have_func('duckdb_append_interval', 'duckdb.h')
 have_func('duckdb_append_time', 'duckdb.h')
 have_func('duckdb_append_timestamp', 'duckdb.h')
-have_func('duckdb_append_hugeint', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')
