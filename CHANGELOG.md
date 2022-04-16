@@ -1,5 +1,8 @@
 # ChangeLog
 
+- bump duckdb 0.3.3
+- bump Ruby 3.1.2, 2.7.6, 3.0.4
+
 # 0.3.2.0
 
 - bind_time, bind_timestamp, bind_date, bind_timeinterval to DuckDB::PreparedStatement
