@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.6.9', '2.7.6', '3.0.4', '3.1.2', 'head']
-        duckdb: ['0.3.2', '0.3.1']
+        duckdb: ['0.3.2', '0.3.3']
 
     steps:
     - uses: actions/checkout@v2
@@ -26,17 +26,31 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
-    - name: download duckdb binary for MacOS 64bit
+    - name: duckdb cache
+      id: duckdb-cache
+      uses: actions/cache@v2
+      with:
+        path: duckdb-v${{ matrix.duckdb }}
+        key: ${{ runner.os }}-duckdb-v${{ matrix.duckdb }}
+
+    - name: Build duckdb ${{ matrix.duckdb }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      if: steps.duckdb-cache.outputs.cache-hit != 'true'
+      run: |
+        git clone -b v$DUCKDB_VERSION https://github.com/cwida/duckdb.git duckdb-tmp-v$DUCKDB_VERSION
+        cd duckdb-tmp-v$DUCKDB_VERSION && make && cd ..
+        rm -rf duckdb-v$DUCKDB_VERSION
+        mkdir -p duckdb-v$DUCKDB_VERSION/build/release/src duckdb-v$DUCKDB_VERSION/src
+        cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.dylib duckdb-v$DUCKDB_VERSION/build/release/src
+        cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
+
+    - name: prepare duckdb header and libraries
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        curl -OL https://github.com/duckdb/duckdb/releases/download/v${DUCKDB_VERSION}/libduckdb-osx-amd64.zip
-
-    - name: extract zip file
-      run: |
-        unzip libduckdb-osx-amd64.zip
-        cp duckdb.h /usr/local/include
-        cp libduckdb.dylib /usr/local/lib
+        cp duckdb-v$DUCKDB_VERSION/src/include/*.h /usr/local/include
+        cp duckdb-v$DUCKDB_VERSION/build/release/src/*.dylib /usr/local/lib
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
