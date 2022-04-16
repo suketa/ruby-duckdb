@@ -42,8 +42,15 @@ jobs:
         cd duckdb-tmp-v$DUCKDB_VERSION && make && cd ..
         rm -rf duckdb-v$DUCKDB_VERSION
         mkdir -p duckdb-v$DUCKDB_VERSION/build/release/src duckdb-v$DUCKDB_VERSION/src
-        cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.so duckdb-v$DUCKDB_VERSION/build/release/src
+        cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.dylib duckdb-v$DUCKDB_VERSION/build/release/src
         cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
+
+    - name: prepare duckdb header and libraries
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        cp duckdb-v$DUCKDB_VERSION/src/include/*.h /usr/local/include
+        cp duckdb-v$DUCKDB_VERSION/build/release/src/*.dylib /usr/local/lib
 
     - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
       run: |
