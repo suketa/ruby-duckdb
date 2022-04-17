@@ -6,6 +6,9 @@ raise 'duckdb library is not found. Install duckdb library file and header file.
 
 raise 'duckdb >= 0.2.9 is required. Install duckdb >= 0.2.9' unless have_func('duckdb_value_is_null', 'duckdb.h')
 
+# ducdb >= 0.3.3 if duckdb_append_data_chunk() is defined.
+have_func('duckdb_append_data_chunk', 'duckdb.h')
+
 have_func('duckdb_free', 'duckdb.h')
 
 have_func('duckdb_create_config', 'duckdb.h')
