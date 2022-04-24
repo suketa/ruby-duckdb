@@ -9,6 +9,7 @@ module DuckDBTest
     end
 
     def test_type
+      DuckDBVersion.duckdb_version
       assert_equal(
         [
           :boolean,
@@ -34,6 +35,7 @@ module DuckDBTest
     end
 
     def test_name
+      DuckDBVersion.duckdb_version
       assert_equal(
         [
           "boolean_col",
