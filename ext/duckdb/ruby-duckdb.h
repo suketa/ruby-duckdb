@@ -3,6 +3,11 @@
 
 #include "ruby.h"
 #include <duckdb.h>
+
+#ifdef HAVE_DUCKDB_APPEND_DATA_CHUNK
+#define HAVE_DUCKDB_HEADER_VERSION_033 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"
