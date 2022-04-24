@@ -71,6 +71,10 @@ VALUE duckdb_column_get_type(VALUE oDuckDBColumn) {
         return ID2SYM(rb_intern("vachar"));
     case DUCKDB_TYPE_BLOB:
         return ID2SYM(rb_intern("blob"));
+#ifdef HAVE_DUCKDB_HEADER_VERSION_033
+    case DUCKDB_TYPE_DECIMAL:
+        return ID2SYM(rb_intern("decimal"));
+#endif
     default:
         return ID2SYM(rb_intern("invalid"));
     }

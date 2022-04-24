@@ -10,52 +10,60 @@ module DuckDBTest
 
     def test_type
       DuckDBVersion.duckdb_version
+      expected = %i[
+        boolean
+        tinyint
+        smallint
+        integer
+        bigint
+        utinyint
+        usmallint
+        uinteger
+        ubigint
+        float
+        double
+        date
+        time
+        timestamp
+        interval
+        hugeint
+        vachar
+      ]
+      if DuckDBVersion.duckdb_version == 'v0.3.3'
+        expected.push(:decimal)
+      end
       assert_equal(
-        [
-          :boolean,
-          :tinyint,
-          :smallint,
-          :integer,
-          :bigint,
-          :utinyint,
-          :usmallint,
-          :uinteger,
-          :ubigint,
-          :float,
-          :double,
-          :date,
-          :time,
-          :timestamp,
-          :interval,
-          :hugeint,
-          :vachar,
-        ],
-        @columns.map(&:type),
+        expected,
+        @columns.map(&:type)
       )
     end
 
     def test_name
       DuckDBVersion.duckdb_version
+      expected = %w[
+        boolean_col
+        tinyint_col
+        smallint_col
+        integer_col
+        bigint_col
+        utinyint_col
+        usmallint_col
+        uinteger_col
+        ubigint_col
+        real_col
+        double_col
+        date_col
+        time_col
+        timestamp_col
+        interval_col
+        hugeint_col
+        varchar_col
+      ]
+      if DuckDBVersion.duckdb_version == 'v0.3.3'
+        expected.push('decimal_col')
+      end
       assert_equal(
-        [
-          "boolean_col",
-          "tinyint_col",
-          "smallint_col",
-          "integer_col",
-          "bigint_col",
-          "utinyint_col",
-          "usmallint_col",
-          "uinteger_col",
-          "ubigint_col",
-          "real_col",
-          "double_col",
-          "date_col",
-          "time_col",
-          "timestamp_col",
-          "interval_col",
-          "hugeint_col",
-          "varchar_col",
-        ],
+        expected,
         @columns.map(&:name),
       )
     end
@@ -71,7 +79,7 @@ module DuckDBTest
     end
 
     def create_table_sql
-      <<-SQL
+      sql = <<-SQL
         CREATE TABLE table1(
           boolean_col BOOLEAN,
           tinyint_col TINYINT,
@@ -90,12 +98,17 @@ module DuckDBTest
           interval_col INTERVAL,
           hugeint_col HUGEINT,
           varchar_col VARCHAR
-        )
       SQL
+
+      if DuckDBVersion.duckdb_version == 'v0.3.3'
+        sql += ', decimal_col DECIMAL'
+      end
+      sql += ')'
+      sql
     end
 
     def insert_sql
-      <<-SQL
+      sql = <<-SQL
         INSERT INTO table1 VALUES
         (
           true,
@@ -115,8 +128,13 @@ module DuckDBTest
           '1 day',
           170141183460469231731687303715884105727,
           'string'
-        )
       SQL
+
+      if DuckDBVersion.duckdb_version == 'v0.3.3'
+        sql += ', 1'
+      end
+      sql += ')'
+      sql
     end
   end
 end
