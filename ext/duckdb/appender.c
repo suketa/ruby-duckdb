@@ -27,9 +27,7 @@ static VALUE appender_append_null(VALUE self);
 static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval);
 #endif
 
-#ifdef HAVE_DUCKDB_APPEND_INTERVAL
 static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros);
-#endif
 
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
@@ -292,7 +290,6 @@ static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE da
 }
 #endif
 
-#ifdef HAVE_DUCKDB_APPEND_INTERVAL
 static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
     rubyDuckDBAppender *ctx;
@@ -305,7 +302,6 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
     }
     return self;
 }
-#endif
 
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_time time;
@@ -394,9 +390,7 @@ void init_duckdb_appender(void) {
 #ifdef HAVE_DUCKDB_APPEND_DATE
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
 #endif
-#ifdef HAVE_DUCKDB_APPEND_INTERVAL
     rb_define_private_method(cDuckDBAppender, "_append_interval", appender__append_interval, 3);
-#endif
     rb_define_private_method(cDuckDBAppender, "_append_time", appender__append_time, 4);
     rb_define_private_method(cDuckDBAppender, "_append_timestamp", appender__append_timestamp, 7);
     rb_define_private_method(cDuckDBAppender, "_append_hugeint", appender__append_hugeint, 2);
