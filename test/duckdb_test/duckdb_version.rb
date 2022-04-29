@@ -6,7 +6,7 @@ module DuckDBTest
       DuckDB::Database.open('version.duckdb') do |db|
         db.connect do |con|
           r = con.query('SELECT VERSION();')
-          @duckdb_version = r.first.first
+          @duckdb_version = Gem::Version.new(r.first.first.sub('v', ''))
         end
       end
     ensure

@@ -9,7 +9,6 @@ module DuckDBTest
     end
 
     def test_type
-      DuckDBVersion.duckdb_version
       expected = %i[
         boolean
         tinyint
@@ -29,7 +28,7 @@ module DuckDBTest
         hugeint
         varchar
       ]
-      if DuckDBVersion.duckdb_version == 'v0.3.3'
+      if DuckDBVersion.duckdb_version >= Gem::Version.new('0.3.3')
         expected.push(:decimal)
       end
       assert_equal(
@@ -59,7 +58,7 @@ module DuckDBTest
         hugeint_col
         varchar_col
       ]
-      if DuckDBVersion.duckdb_version == 'v0.3.3'
+      if DuckDBVersion.duckdb_version >= Gem::Version.new('0.3.3')
         expected.push('decimal_col')
       end
       assert_equal(
@@ -100,7 +99,7 @@ module DuckDBTest
           varchar_col VARCHAR
       SQL
 
-      if DuckDBVersion.duckdb_version == 'v0.3.3'
+      if DuckDBVersion.duckdb_version >= Gem::Version.new('0.3.3')
         sql += ', decimal_col DECIMAL'
       end
       sql += ')'
@@ -130,7 +129,7 @@ module DuckDBTest
           'string'
       SQL
 
-      if DuckDBVersion.duckdb_version == 'v0.3.3'
+      if DuckDBVersion.duckdb_version >= Gem::Version.new('0.3.3')
         sql += ', 1'
       end
       sql += ')'
