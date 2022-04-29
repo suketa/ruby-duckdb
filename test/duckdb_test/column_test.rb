@@ -30,6 +30,7 @@ module DuckDBTest
       ]
       if DuckDBVersion.duckdb_version >= '0.3.3'
         expected.push(:decimal)
+        expected.push(:enum)
       end
       assert_equal(
         expected,
@@ -59,6 +60,7 @@ module DuckDBTest
       ]
       if DuckDBVersion.duckdb_version >= '0.3.3'
         expected.push('decimal_col')
+        expected.push('enum_col')
       end
       assert_equal(
         expected,
@@ -71,9 +73,14 @@ module DuckDBTest
     def create_data
       @@db ||= DuckDB::Database.open # FIXME
       con = @@db.connect
+      con.query(create_type_sql) if DuckDBVersion.duckdb_version >= '0.3.3'
       con.query(create_table_sql)
       con.query(insert_sql)
       con
+    end
+
+    def create_type_sql
+      "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
     end
 
     def create_table_sql
@@ -100,6 +107,7 @@ module DuckDBTest
 
       if DuckDBVersion.duckdb_version >= '0.3.3'
         sql += ', decimal_col DECIMAL'
+        sql += ', enum_col mood'
       end
       sql += ')'
       sql
@@ -130,6 +138,7 @@ module DuckDBTest
 
       if DuckDBVersion.duckdb_version >= '0.3.3'
         sql += ', 1'
+        sql += ', NULL'
       end
       sql += ')'
       sql
