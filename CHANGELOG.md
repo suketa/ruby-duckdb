@@ -1,6 +1,6 @@
 # ChangeLog
 
-- DuckDB::Column#type returns :decimal.
+- DuckDB::Column#type supports :decimal.
 - bump duckdb 0.3.3
 - bump Ruby 3.1.2, 2.7.6, 3.0.4
 
