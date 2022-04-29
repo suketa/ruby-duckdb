@@ -1,8 +1,9 @@
 # ChangeLog
 
+# 0.3.3.0
 - DuckDB::Column#type supports :decimal.
-- bump duckdb 0.3.3
-- bump Ruby 3.1.2, 2.7.6, 3.0.4
+- bump duckdb 0.3.3.
+- bump Ruby 2.6.10, 2.7.6, 3.0.4, 3.1.2.
 
 # 0.3.2.0
 
