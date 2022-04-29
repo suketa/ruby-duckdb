@@ -7,6 +7,7 @@ require 'duckdb/result'
 require 'duckdb/prepared_statement'
 require 'duckdb/appender'
 require 'duckdb/config'
+require 'duckdb/column'
 
 # DuckDB provides Ruby interface of DuckDB.
 module DuckDB

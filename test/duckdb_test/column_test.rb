@@ -27,7 +27,7 @@ module DuckDBTest
         timestamp
         interval
         hugeint
-        vachar
+        varchar
       ]
       if DuckDBVersion.duckdb_version == 'v0.3.3'
         expected.push(:decimal)
