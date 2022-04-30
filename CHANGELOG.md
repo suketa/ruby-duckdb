@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add DuckDB::Result#column_count, DuckDB::Result#column_size(alias of column_count).
+
 # 0.3.4.0
 - bump duckdb 0.3.4
 

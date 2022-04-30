@@ -20,5 +20,7 @@ module DuckDB
   #   end
   class Result
     include Enumerable
+
+    alias column_size column_count
   end
 end

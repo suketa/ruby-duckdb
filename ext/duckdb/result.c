@@ -15,6 +15,7 @@ static VALUE to_ruby_obj(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE row_array(rubyDuckDBResult *ctx, idx_t row_idx);
 static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj);
 static VALUE duckdb_result_each(VALUE oDuckDBResult);
+static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 
@@ -169,6 +170,30 @@ static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
 
 /*
  *  call-seq:
+ *    result.column_count -> Integer
+ *
+ *  Returns the column size of the result.
+ *
+ *    DuckDB::Database.open do |db|
+ *      db.connect do |con|
+ *        r = con.query('CREATE TABLE t2 (id INT, name VARCHAR(128))')
+ *        r = con.query("INSERT INTO t2 VALUES (1, 'Alice'), (2, 'Bob'), (3, 'Catherine')")
+ *        r = con.query('SELECT id FROM t2')
+ *        r.column_count # => 1
+ *        r = con.query('SELECT id, name FROM t2')
+ *        r.column_count # => 2
+ *      end
+ *    end
+ *
+ */
+static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    return LL2NUM(duckdb_column_count(&(ctx->result)));
+}
+
+/*
+ *  call-seq:
  *    result.columns -> DuckDB::Column[]
  *
  *  Returns the column class Lists.
@@ -198,6 +223,7 @@ void init_duckdb_result(void) {
     rb_define_alloc_func(cDuckDBResult, allocate);
 
     rb_define_method(cDuckDBResult, "each", duckdb_result_each, 0);
+    rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
 }

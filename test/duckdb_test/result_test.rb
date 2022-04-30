@@ -98,6 +98,12 @@ module DuckDBTest
       end
     end
 
+    def test_column_count
+      assert_equal(10, @result.column_count)
+      r = @@con.query('SELECT boolean_col, smallint_col from table1')
+      assert_equal(2, r.column_count)
+    end
+
     def test_columns
       assert_instance_of(DuckDB::Column, @result.columns.first)
     end
