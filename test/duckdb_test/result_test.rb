@@ -100,8 +100,10 @@ module DuckDBTest
 
     def test_column_count
       assert_equal(10, @result.column_count)
+      assert_equal(10, @result.column_size)
       r = @@con.query('SELECT boolean_col, smallint_col from table1')
       assert_equal(2, r.column_count)
+      assert_equal(2, r.column_size)
     end
 
     def test_columns
