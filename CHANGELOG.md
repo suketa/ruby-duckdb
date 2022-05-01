@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::Result#row_count, DuckDB::Result#row_size(alias of row_count).
 - add DuckDB::Result#column_count, DuckDB::Result#column_size(alias of column_count).
 
 # 0.3.4.0
