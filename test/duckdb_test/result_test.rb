@@ -106,6 +106,15 @@ module DuckDBTest
       assert_equal(2, r.column_size)
     end
 
+    def test_row_count
+      r = @@con.query('SELECT * FROM table1')
+      assert_equal(2, r.row_count)
+      assert_equal(2, r.row_size)
+      r = @@con.query('SELECT * FROM table1 WHERE boolean_col = true')
+      assert_equal(1, r.row_count)
+      assert_equal(1, r.row_size)
+    end
+
     def test_columns
       assert_instance_of(DuckDB::Column, @result.columns.first)
     end

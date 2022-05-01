@@ -22,5 +22,6 @@ module DuckDB
     include Enumerable
 
     alias column_size column_count
+    alias row_size row_count
   end
 end

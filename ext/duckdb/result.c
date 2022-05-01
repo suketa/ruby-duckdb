@@ -16,6 +16,7 @@ static VALUE row_array(rubyDuckDBResult *ctx, idx_t row_idx);
 static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj);
 static VALUE duckdb_result_each(VALUE oDuckDBResult);
 static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
+static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 
@@ -119,10 +120,7 @@ static VALUE row_array(rubyDuckDBResult *ctx, idx_t row_idx) {
 }
 
 static VALUE duckdb_result_row_size(VALUE oDuckDBResult, VALUE args, VALUE obj) {
-    rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
-
-    return LONG2FIX(duckdb_row_count(&(ctx->result)));
+    return duckdb_result_row_count(oDuckDBResult);
 }
 
 static VALUE duckdb_result_each(VALUE oDuckDBResult) {
@@ -194,6 +192,30 @@ static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
 
 /*
  *  call-seq:
+ *    result.row_count -> Integer
+ *
+ *  Returns the column size of the result.
+ *
+ *    DuckDB::Database.open do |db|
+ *      db.connect do |con|
+ *        r = con.query('CREATE TABLE t2 (id INT, name VARCHAR(128))')
+ *        r = con.query("INSERT INTO t2 VALUES (1, 'Alice'), (2, 'Bob'), (3, 'Catherine')")
+ *        r = con.query('SELECT * FROM t2')
+ *        r.row_count # => 3
+ *        r = con.query('SELECT * FROM t2 where id = 1')
+ *        r.row_count # => 1
+ *      end
+ *    end
+ *
+ */
+static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    return LL2NUM(duckdb_row_count(&(ctx->result)));
+}
+
+/*
+ *  call-seq:
  *    result.columns -> DuckDB::Column[]
  *
  *  Returns the column class Lists.
@@ -224,6 +246,7 @@ void init_duckdb_result(void) {
 
     rb_define_method(cDuckDBResult, "each", duckdb_result_each, 0);
     rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
+    rb_define_method(cDuckDBResult, "row_count", duckdb_result_row_count, 0);
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
 }
