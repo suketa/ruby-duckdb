@@ -1,7 +1,5 @@
 #include "ruby-duckdb.h"
 
-#ifdef HAVE_DUCKDB_APPEND_DATE
-
 duckdb_date to_duckdb_date_from_value(VALUE year, VALUE month, VALUE day) {
     duckdb_date_struct dt_struct;
 
@@ -42,4 +40,3 @@ void to_duckdb_interval_from_value(duckdb_interval* interval, VALUE months, VALU
     interval->days = NUM2INT(days);
     interval->micros = NUM2LL(micros);
 }
-#endif

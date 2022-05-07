@@ -3,16 +3,6 @@ require 'time'
 
 if defined?(DuckDB::Appender)
   module DuckDBTest
-
-    def self.less_than_equal_version_028?
-      db = DuckDB::Database.open
-      con = db.connect
-      r = con.query('SELECT version()')
-      version = r.first.first.sub(/\Av/, '')
-      Gem::Version.new(version) <= Gem::Version.new('0.2.8')
-    end
-    LessThanEqualVersion028 = less_than_equal_version_028?
-
     class AppenderTest < Minitest::Test
       def self.con
         @db ||= DuckDB::Database.open # FIXME
@@ -186,213 +176,195 @@ if defined?(DuckDB::Appender)
         end
       end
 
-      # FIXME: issue https://github.com/suketa/ruby-duckdb/issues/176
-      if LessThanEqualVersion028
-        def test_append_varchar_with_date_column
-          t = Time.now
-          sub_test_append_column(:append_varchar, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
+      def test__append_date
+        t = Time.now
+        sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month, t.day], expected: t.strftime('%Y-%m-%d'))
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_date, 'DATE', values: ['a', t.month, t.day], expected: t.strftime('%Y-%m-%d'))
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_date, 'DATE', values: [t.year, 'a', t.day], expected: t.strftime('%Y-%m-%d'))
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month, 'c'], expected: t.strftime('%Y-%m-%d'))
+        }
+        assert_raises(ArgumentError) {
+          sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month], expected: t.strftime('%Y-%m-%d'))
+        }
+      end
+
+      def test_append_date
+        today = Date.today
+        sub_test_append_column2(:append_date, 'DATE', values: [today], expected: today.strftime('%Y-%m-%d'))
+
+        now = Time.now
+        sub_test_append_column2(:append_date, 'DATE', values: [now], expected: now.strftime('%Y-%m-%d'))
+
+        foo = Foo.new(now)
+        sub_test_append_column2(:append_date, 'DATE', values: [foo], expected: now.strftime('%Y-%m-%d'))
+
+        sub_test_append_column2(:append_date, 'DATE', values: ['2021-10-10'], expected: '2021-10-10')
+
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_date, 'DATE', values: [20211010], expected: '2021-10-10')
+        }
+        assert_equal('Cannot parse argument `20211010` to Date.', e.message)
+
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: '2021-10-10')
+        }
+        assert_equal('Cannot parse argument `2021-1010` to Date.', e.message)
+      end
+
+      def test__append_interval
+        sub_test_append_column2(:_append_interval, 'INTERVAL', values: [2, 3, 4], expected: '2 months 3 days 00:00:00.000004')
+        sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, 4], expected: '1 year 2 months 3 days 00:00:00.000004')
+        micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
+        sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, micros], expected: '1 year 2 months 3 days 12:34:56.987654')
+        sub_test_append_column2(:_append_interval, 'INTERVAL', values: [-14, -3, -micros], expected: '-1 years -2 months -3 days -12:34:56.987654')
+        sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 32, micros], expected: '1 year 2 months 32 days 12:34:56.987654')
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, micros], expected: '')
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 'a', micros], expected: '')
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 'a'], expected: '')
+        }
+        assert_raises(ArgumentError) {
+          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1], expected: '')
+        }
+      end
+
+      def test_append_itnerval
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.000004S', expected: '2 months 3 days 00:00:00.000004')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.00000401S', expected: '2 months 3 days 00:00:00.000004')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.00004S', expected: '2 months 3 days 00:00:00.00004')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P1Y2M3DT0.000004S', expected: '1 year 2 months 3 days 00:00:00.000004')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P1Y2M3DT12H34M56.987654S', expected: '1 year 2 months 3 days 12:34:56.987654')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P-1Y-2M-3DT-12H-34M-56.987654S', expected: '-1 years -2 months -3 days -12:34:56.987654')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P14M32DT12H34M56.987654S', expected: '1 year 2 months 32 days 12:34:56.987654')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'PT12H34M56.987654S', expected: '12:34:56.987654')
+        sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P3D', expected: '3 days')
+        assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: 1, expected: '')
+        }
+        assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_interval, 'INTERVAL', values: [1, 1], expected: '')
+        }
+      end
+
+      def test__append_time
+        sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1], expected: '01:01:01.000001')
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_time, 'TIME', values: ['a', 1, 1, 1], expected: '')
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_time, 'TIME', values: [1, 'a', 1, 1], expected: '')
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 'a', 1], expected: '')
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 'a'], expected: '')
+        }
+        assert_raises(ArgumentError) {
+          sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1], expected: '')
+        }
+      end
+
+      class Bar
+        def to_str
+          '01:01:01.123456'
         end
+      end
 
-        def test_append_varchar_with_time_column
-          t = Time.now
-          sub_test_append_column(:append_varchar, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
-        end
+      def test_append_time
+        sub_test_append_column2(:append_time, 'TIME', values: [Time.parse('01:01:01.123456')], expected: '01:01:01.123456')
+        sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: '01:01:01.123456')
+        sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: '01:01:01')
+        obj = Bar.new
+        sub_test_append_column2(:append_time, 'TIME', values: [obj], expected: '01:01:01.123456')
 
-        def test_append_varchar_with_timestamp_column
-          t = Time.now
-          sub_test_append_column(:append_varchar, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
-        end
-      else
-        def test__append_date
-          t = Time.now
-          sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month, t.day], expected: t.strftime('%Y-%m-%d'))
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_date, 'DATE', values: ['a', t.month, t.day], expected: t.strftime('%Y-%m-%d'))
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_date, 'DATE', values: [t.year, 'a', t.day], expected: t.strftime('%Y-%m-%d'))
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month, 'c'], expected: t.strftime('%Y-%m-%d'))
-          }
-          assert_raises(ArgumentError) {
-            sub_test_append_column2(:_append_date, 'DATE', values: [t.year, t.month], expected: t.strftime('%Y-%m-%d'))
-          }
-        end
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_time, 'TIME', values: [101010], expected: '10:10:10')
+        }
+        assert_equal('Cannot parse argument `101010` to Time.', e.message)
 
-        def test_append_date
-          today = Date.today
-          sub_test_append_column2(:append_date, 'DATE', values: [today], expected: today.strftime('%Y-%m-%d'))
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_time, 'TIME', values: ['abc'], expected: '10:10:10')
+        }
+        assert_equal('Cannot parse argument `abc` to Time.', e.message)
+      end
 
-          now = Time.now
-          sub_test_append_column2(:append_date, 'DATE', values: [now], expected: now.strftime('%Y-%m-%d'))
+      def test__append_timestamp
+        t = Time.now
+        msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
+        expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+        sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: ['a', t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, 'a', t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, 'a', t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, 'a', t.min, t.sec, t.nsec / 1000], expected: expected)
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, 'a', t.sec, t.nsec / 1000], expected: expected)
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, 'a', t.nsec / 1000], expected: expected)
+        }
+        assert_raises(TypeError) {
+          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, 'a'], expected: expected)
+        }
+        assert_raises(ArgumentError) {
+          sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1, 1, 1], expected: '')
+        }
+      end
 
-          foo = Foo.new(now)
-          sub_test_append_column2(:append_date, 'DATE', values: [foo], expected: now.strftime('%Y-%m-%d'))
+      def test_append_timestamp
+        now = Time.now
+        msec = format('%06d', now.nsec / 1000).to_s.sub(/0+$/, '')
+        expected = now.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+        sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [now], expected: expected)
+        sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [expected], expected: expected)
+        obj = Bar.new
+        expected = now.strftime('%Y-%m-%d 01:01:01.123456')
+        sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [obj], expected: expected)
 
-          sub_test_append_column2(:append_date, 'DATE', values: ['2021-10-10'], expected: '2021-10-10')
+        d = Date.today
+        expected = d.strftime('%Y-%m-%d 00:00:00')
+        sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [d], expected: expected)
+        dstr = expected.split(' ')[0]
+        sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [dstr], expected: expected)
+        foo = Foo.new(now)
+        expected = now.strftime('%Y-%m-%d 00:00:00')
+        sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [foo], expected: expected)
 
-          e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_date, 'DATE', values: [20211010], expected: '2021-10-10')
-          }
-          assert_equal('Cannot parse argument `20211010` to Date.', e.message)
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [20211116], expected: '2021-11-16')
+        }
+        assert_equal('Cannot parse argument `20211116` to Time or Date.', e.message)
 
-          e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: '2021-10-10')
-          }
-          assert_equal('Cannot parse argument `2021-1010` to Date.', e.message)
-        end
+        e = assert_raises(ArgumentError) {
+          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: ['abc'], expected: '10:10:10')
+        }
+        assert_equal('Cannot parse argument `abc` to Time or Date.', e.message)
+      end
 
-        def test__append_interval
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [2, 3, 4], expected: '2 months 3 days 00:00:00.000004')
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, 4], expected: '1 year 2 months 3 days 00:00:00.000004')
-          micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 3, micros], expected: '1 year 2 months 3 days 12:34:56.987654')
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [-14, -3, -micros], expected: '-1 years -2 months -3 days -12:34:56.987654')
-          sub_test_append_column2(:_append_interval, 'INTERVAL', values: [14, 32, micros], expected: '1 year 2 months 32 days 12:34:56.987654')
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, micros], expected: '')
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 'a', micros], expected: '')
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 'a'], expected: '')
-          }
-          assert_raises(ArgumentError) {
-            sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1], expected: '')
-          }
-        end
+      def test__append_hugeint
+        expected = -170_141_183_460_469_231_731_687_303_715_884_105_727
+        sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [1, -9_223_372_036_854_775_808], expected: expected)
 
-        def test_append_itnerval
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.000004S', expected: '2 months 3 days 00:00:00.000004')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.00000401S', expected: '2 months 3 days 00:00:00.000004')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P2M3DT0.00004S', expected: '2 months 3 days 00:00:00.00004')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P1Y2M3DT0.000004S', expected: '1 year 2 months 3 days 00:00:00.000004')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P1Y2M3DT12H34M56.987654S', expected: '1 year 2 months 3 days 12:34:56.987654')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P-1Y-2M-3DT-12H-34M-56.987654S', expected: '-1 years -2 months -3 days -12:34:56.987654')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P14M32DT12H34M56.987654S', expected: '1 year 2 months 32 days 12:34:56.987654')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'PT12H34M56.987654S', expected: '12:34:56.987654')
-          sub_test_append_column2(:append_interval, 'INTERVAL', values: 'P3D', expected: '3 days')
-          assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_interval, 'INTERVAL', values: 1, expected: '')
-          }
-          assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_interval, 'INTERVAL', values: [1, 1], expected: '')
-          }
-        end
-
-        def test__append_time
-          sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1], expected: '01:01:01.000001')
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_time, 'TIME', values: ['a', 1, 1, 1], expected: '')
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_time, 'TIME', values: [1, 'a', 1, 1], expected: '')
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 'a', 1], expected: '')
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 'a'], expected: '')
-          }
-          assert_raises(ArgumentError) {
-            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1], expected: '')
-          }
-        end
-
-        class Bar
-          def to_str
-            '01:01:01.123456'
-          end
-        end
-
-        def test_append_time
-          sub_test_append_column2(:append_time, 'TIME', values: [Time.parse('01:01:01.123456')], expected: '01:01:01.123456')
-          sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: '01:01:01.123456')
-          sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: '01:01:01')
-          obj = Bar.new
-          sub_test_append_column2(:append_time, 'TIME', values: [obj], expected: '01:01:01.123456')
-
-          e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_time, 'TIME', values: [101010], expected: '10:10:10')
-          }
-          assert_equal('Cannot parse argument `101010` to Time.', e.message)
-
-          e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_time, 'TIME', values: ['abc'], expected: '10:10:10')
-          }
-          assert_equal('Cannot parse argument `abc` to Time.', e.message)
-        end
-
-        def test__append_timestamp
-          t = Time.now
-          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
-          expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
-          sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: ['a', t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, 'a', t.day, t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, 'a', t.hour, t.min, t.sec, t.nsec / 1000], expected: expected)
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, 'a', t.min, t.sec, t.nsec / 1000], expected: expected)
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, 'a', t.sec, t.nsec / 1000], expected: expected)
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, 'a', t.nsec / 1000], expected: expected)
-          }
-          assert_raises(TypeError) {
-            sub_test_append_column2(:_append_timestamp, 'TIMESTAMP', values: [t.year, t.month, t.day, t.hour, t.min, t.sec, 'a'], expected: expected)
-          }
-          assert_raises(ArgumentError) {
-            sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1, 1, 1], expected: '')
-          }
-        end
-
-        def test_append_timestamp
-          now = Time.now
-          msec = format('%06d', now.nsec / 1000).to_s.sub(/0+$/, '')
-          expected = now.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [now], expected: expected)
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [expected], expected: expected)
-          obj = Bar.new
-          expected = now.strftime('%Y-%m-%d 01:01:01.123456')
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [obj], expected: expected)
-
-          d = Date.today
-          expected = d.strftime('%Y-%m-%d 00:00:00')
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [d], expected: expected)
-          dstr = expected.split(' ')[0]
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [dstr], expected: expected)
-          foo = Foo.new(now)
-          expected = now.strftime('%Y-%m-%d 00:00:00')
-          sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [foo], expected: expected)
-
-          e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [20211116], expected: '2021-11-16')
-          }
-          assert_equal('Cannot parse argument `20211116` to Time or Date.', e.message)
-
-          e = assert_raises(ArgumentError) {
-            sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: ['abc'], expected: '10:10:10')
-          }
-          assert_equal('Cannot parse argument `abc` to Time or Date.', e.message)
-        end
-
-        def test__append_hugeint
-          expected = -170_141_183_460_469_231_731_687_303_715_884_105_727
-          sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [1, -9_223_372_036_854_775_808], expected: expected)
-
-          expected = 170_141_183_460_469_231_731_687_303_715_884_105_727
-          sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [18_446_744_073_709_551_615, 9_223_372_036_854_775_807], expected: expected)
-        end
+        expected = 170_141_183_460_469_231_731_687_303_715_884_105_727
+        sub_test_append_column2(:_append_hugeint, 'HUGEINT', values: [18_446_744_073_709_551_615, 9_223_372_036_854_775_807], expected: expected)
       end
 
       def test_append
@@ -425,22 +397,13 @@ if defined?(DuckDB::Appender)
         }
         assert_equal('not supported type [127] (Array)', e.message)
 
-        if LessThanEqualVersion028
-          t = Time.now
-          sub_test_append_column(:append, 'DATE', t.to_s, nil, t.strftime('%Y-%m-%d'))
+        d = Date.today
+        sub_test_append_column(:append, 'DATE', d, nil, d.strftime('%Y-%m-%d'))
 
-          sub_test_append_column(:append, 'TIME', t.strftime('%H:%M:%S'), nil, t.strftime('%H:%M:%S'))
-
-          sub_test_append_column(:append, 'TIMESTAMP', t.strftime('%Y-%m-%d %H:%M:%S'), nil, t.strftime('%Y-%m-%d %H:%M:%S'))
-        else
-          d = Date.today
-          sub_test_append_column(:append, 'DATE', d, nil, d.strftime('%Y-%m-%d'))
-
-          t = Time.now
-          msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
-          expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
-          sub_test_append_column(:append, 'TIMESTAMP', t, nil, expected)
-        end
+        t = Time.now
+        msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
+        expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+        sub_test_append_column(:append, 'TIMESTAMP', t, nil, expected)
       end
 
       def test_append_row
