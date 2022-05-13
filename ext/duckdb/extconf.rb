@@ -13,6 +13,5 @@ have_func('duckdb_free', 'duckdb.h')
 
 have_func('duckdb_create_config', 'duckdb.h')
 have_func('duckdb_open_ext', 'duckdb.h')
-have_func('duckdb_prepare_error', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')
