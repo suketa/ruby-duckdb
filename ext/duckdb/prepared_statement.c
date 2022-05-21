@@ -47,13 +47,8 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     Data_Get_Struct(con, rubyDuckDBConnection, ctxcon);
 
     if (duckdb_prepare(ctxcon->con, StringValuePtr(query), &(ctx->prepared_statement)) == DuckDBError) {
-#ifdef HAVE_DUCKDB_PREPARE_ERROR
         const char *error = duckdb_prepare_error(ctx->prepared_statement);
         rb_raise(eDuckDBError, "%s", error);
-#else
-        /* TODO: include query parameter information in error message. */
-        rb_raise(eDuckDBError, "failed to prepare statement");
-#endif
     }
     return self;
 }
