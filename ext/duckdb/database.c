@@ -47,7 +47,6 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
     return obj;
 }
 
-#ifdef HAVE_DUCKDB_OPEN_EXT
 static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
     rubyDuckDB *ctx;
     VALUE obj;
@@ -81,7 +80,6 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
     }
     return obj;
 }
-#endif /* HAVE_DUCKDB_OPEN_EXT */
 
 static VALUE duckdb_database_connect(VALUE self) {
     return create_connection(self);
@@ -104,9 +102,7 @@ void init_duckdb_database(void) {
     cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
     rb_define_singleton_method(cDuckDBDatabase, "_open", duckdb_database_s_open, -1);
-#ifdef HAVE_DUCKDB_OPEN_EXT
     rb_define_singleton_method(cDuckDBDatabase, "_open_ext", duckdb_database_s_open_ext, -1);
-#endif
     rb_define_private_method(cDuckDBDatabase, "_connect", duckdb_database_connect, 0);
     rb_define_method(cDuckDBDatabase, "close", duckdb_database_close, 0);
 }
