@@ -18,12 +18,7 @@
 
 #include "./blob.h"
 #include "./appender.h"
-
-#ifdef HAVE_DUCKDB_CREATE_CONFIG
-
 #include "./config.h"
-
-#endif /* HAVE_DUCKDB_CREATE_CONFIG */
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
