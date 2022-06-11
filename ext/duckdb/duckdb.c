@@ -13,12 +13,7 @@ Init_duckdb_native(void) {
     init_duckdb_column();
     init_duckdb_prepared_statement();
     init_duckdb_blob();
-
     init_duckdb_appender();
-
-#ifdef HAVE_DUCKDB_CREATE_CONFIG
-
     init_duckdb_config();
 
-#endif /* HAVE_DUCKDB_CREATE_CONFIG */
 }

@@ -1,7 +1,5 @@
 #include "ruby-duckdb.h"
 
-#ifdef HAVE_DUCKDB_CREATE_CONFIG
-
 VALUE cDuckDBConfig;
 
 static void deallocate(void *);
@@ -73,6 +71,3 @@ void init_duckdb_config(void) {
     rb_define_method(cDuckDBConfig, "initialize", config_initialize, 0);
     rb_define_method(cDuckDBConfig, "set_config", config_set_config, 2);
 }
-
-#endif
-
