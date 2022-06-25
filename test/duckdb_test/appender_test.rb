@@ -160,12 +160,11 @@ if defined?(DuckDB::Appender)
         value = DuckDB::Blob.new("\0\1\2\3\4\5")
         expected = "\0\1\2\3\4\5".force_encoding(Encoding::BINARY)
 
-        # FIXME duckdb v0.4.0 does not work well append_blob
-        if DuckDBVersion.duckdb_version <= '0.3.4'
-          sub_test_append_column(:append_blob, 'BLOB', value, nil, expected)
-        else
-          skip 'skip append_blob test with duckdb >= v0.4.0'
-        end
+        # FIXME  append_blob of duckdb v0.4.0 does not work well
+        data = DuckDBVersion.duckdb_version <= '0.3.4' ? "\0\1\2\3\4\5" : "\1\2\3\4\5"
+        value = DuckDB::Blob.new(data)
+        expected = data.force_encoding(Encoding::BINARY)
+        sub_test_append_column(:append_blob, 'BLOB', value, nil, expected)
       end
 
       def test_append_null
@@ -392,14 +391,12 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append, 'HUGEINT', -18_446_744_073_709_551_616)
         sub_test_append_column(:append, 'VARCHAR', 'foobarbaz')
 
-        value = DuckDB::Blob.new("\0\1\2\3\4\5")
-        expected = "\0\1\2\3\4\5".force_encoding(Encoding::BINARY)
-        # FIXME duckdb v0.4.0 does not work well append_blob
-        if DuckDBVersion.duckdb_version <= '0.3.4'
-          sub_test_append_column(:append, 'BLOB', value, nil, expected)
-        else
-          skip 'skip append_blob test with duckdb >= v0.4.0'
-        end
+        # FIXME  append_blob of duckdb v0.4.0 does not work well
+        data = DuckDBVersion.duckdb_version <= '0.3.4' ? "\0\1\2\3\4\5" : "\1\2\3\4\5"
+        value = DuckDB::Blob.new(data)
+        expected = data.force_encoding(Encoding::BINARY)
+
+        sub_test_append_column(:append, 'BLOB', value, nil, expected)
 
         sub_test_append_column(:append, 'VARCHAR', nil, nil, nil)
 
