@@ -157,13 +157,12 @@ if defined?(DuckDB::Appender)
       end
 
       def test_append_blob
-        value = DuckDB::Blob.new("\0\1\2\3\4\5")
-        expected = "\0\1\2\3\4\5".force_encoding(Encoding::BINARY)
-
-        # FIXME  append_blob of duckdb v0.4.0 does not work well
-        data = DuckDBVersion.duckdb_version <= '0.3.4' ? "\0\1\2\3\4\5" : "\1\2\3\4\5"
+        # duckdb 0.4.0 has append_blob issue.
+        # https://github.com/duckdb/duckdb/issues/3960
+        data =  DuckDBVersion.duckdb_version == '0.4.0' ? "\1\2\3\4\5" : "\0\1\2\3\4\5"
         value = DuckDB::Blob.new(data)
         expected = data.force_encoding(Encoding::BINARY)
+
         sub_test_append_column(:append_blob, 'BLOB', value, nil, expected)
       end
 
@@ -391,8 +390,9 @@ if defined?(DuckDB::Appender)
         sub_test_append_column(:append, 'HUGEINT', -18_446_744_073_709_551_616)
         sub_test_append_column(:append, 'VARCHAR', 'foobarbaz')
 
-        # FIXME  append_blob of duckdb v0.4.0 does not work well
-        data = DuckDBVersion.duckdb_version <= '0.3.4' ? "\0\1\2\3\4\5" : "\1\2\3\4\5"
+        # duckdb 0.4.0 has append_blob issue.
+        # https://github.com/duckdb/duckdb/issues/3960
+        data =  DuckDBVersion.duckdb_version == '0.4.0' ? "\1\2\3\4\5" : "\0\1\2\3\4\5"
         value = DuckDB::Blob.new(data)
         expected = data.force_encoding(Encoding::BINARY)
 
