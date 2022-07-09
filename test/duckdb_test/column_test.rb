@@ -73,13 +73,13 @@ module DuckDBTest
     def create_data
       @@db ||= DuckDB::Database.open # FIXME
       con = @@db.connect
-      con.query(create_type_sql) if DuckDBVersion.duckdb_version >= '0.3.3'
+      con.query(create_type_enum_sql) if DuckDBVersion.duckdb_version >= '0.3.3'
       con.query(create_table_sql)
       con.query(insert_sql)
       con
     end
 
-    def create_type_sql
+    def create_type_enum_sql
       "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
     end
 
