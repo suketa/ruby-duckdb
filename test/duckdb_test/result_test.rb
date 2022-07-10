@@ -119,6 +119,19 @@ module DuckDBTest
       assert_instance_of(DuckDB::Column, @result.columns.first)
     end
 
+    def test__column_type
+      assert_equal(1, @result.send(:_column_type, 0))
+      assert_equal(3, @result.send(:_column_type, 1))
+      assert_equal(4, @result.send(:_column_type, 2))
+      assert_equal(5, @result.send(:_column_type, 3))
+      assert_equal(16, @result.send(:_column_type, 4))
+      assert_equal(10, @result.send(:_column_type, 5))
+      assert_equal(11, @result.send(:_column_type, 6))
+      assert_equal(17, @result.send(:_column_type, 7))
+      assert_equal(13, @result.send(:_column_type, 8))
+      assert_equal(12, @result.send(:_column_type, 9))
+    end
+
     private
 
     def create_data
