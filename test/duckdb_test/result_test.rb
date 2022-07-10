@@ -132,6 +132,11 @@ module DuckDBTest
       assert_equal(12, @result.send(:_column_type, 9))
     end
 
+    def test__is_null
+      assert_equal(false, @result.send(:_null?, 0, 0))
+      assert_equal(true, @result.send(:_null?, 0, 1))
+    end
+
     private
 
     def create_data

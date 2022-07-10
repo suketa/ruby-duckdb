@@ -20,6 +20,7 @@ static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
+static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
@@ -243,6 +244,15 @@ static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
     return LL2NUM(duckdb_column_type(&(ctx->result), NUM2LL(col_idx)));
 }
 
+static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    bool is_null;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    is_null = duckdb_value_is_null(&(ctx->result), NUM2LL(row_idx), NUM2LL(col_idx));
+    return is_null ? Qtrue : Qfalse;
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -257,4 +267,5 @@ void init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
+    rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2);
 }
