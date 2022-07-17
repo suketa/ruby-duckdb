@@ -137,6 +137,10 @@ module DuckDBTest
       assert_equal(true, @result.send(:_null?, 0, 1))
     end
 
+    def test__to_boolean
+      assert_equal(expected_boolean, @result.send(:_to_boolean, 0, 0))
+    end
+
     private
 
     def create_data
