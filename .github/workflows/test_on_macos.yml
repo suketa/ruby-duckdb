@@ -11,7 +11,7 @@ on:
       - reopened
 
 jobs:
-  build:
+  test:
     runs-on: macos-latest
     strategy:
       matrix:
@@ -57,3 +57,10 @@ jobs:
         ruby -v
         bundle install --jobs 4 --retry 3
         bundle exec rake
+
+  post-test:
+    name: All tests passed on macos
+    runs-on: macos-latest
+    needs: test
+    steps:
+      - run: echo ok

@@ -11,7 +11,7 @@ on:
       - reopened
 
 jobs:
-  build:
+  test:
     runs-on: windows-latest
     strategy:
       matrix:
@@ -48,3 +48,10 @@ jobs:
     - name: rake test
       run: |
         rake test
+
+  post-test:
+    name: All tests passed on Windows
+    runs-on: windows-latest
+    needs: test
+    steps:
+      - run: echo ok
