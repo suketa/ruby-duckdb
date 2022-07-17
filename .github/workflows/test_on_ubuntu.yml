@@ -12,8 +12,6 @@ on:
 
 jobs:
   test:
-    name: test_on_ubuntu
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -56,7 +54,7 @@ jobs:
         bundle exec rake -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
 
   post-test:
-    name: All tests passed
+    name: All tests passed on Ubuntu
     runs-on: ubuntu-latest
     needs: test
     steps:
