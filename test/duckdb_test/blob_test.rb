@@ -7,7 +7,7 @@ module DuckDBTest
     end
 
     def test_superclass
-      assert_equal(String, DuckDB::Blob.superclass)
+      assert_equal(Integer, DuckDB::Blob.superclass)
     end
   end
 end
