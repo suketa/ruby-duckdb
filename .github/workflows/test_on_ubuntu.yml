@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    name: test_on_ubuntu
 
     runs-on: ubuntu-latest
     strategy:
