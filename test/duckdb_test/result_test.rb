@@ -134,11 +134,15 @@ module DuckDBTest
 
     def test__is_null
       assert_equal(false, @result.send(:_null?, 0, 0))
-      assert_equal(true, @result.send(:_null?, 0, 1))
+      assert_equal(true, @result.send(:_null?, 1, 0))
     end
 
     def test__to_boolean
       assert_equal(expected_boolean, @result.send(:_to_boolean, 0, 0))
+    end
+
+    def test__to_smallint
+      assert_equal(expected_smallint, @result.send(:_to_smallint, 0, 1))
     end
 
     private
