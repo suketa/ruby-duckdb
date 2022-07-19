@@ -149,6 +149,10 @@ module DuckDBTest
       assert_equal(expected_integer, @result.send(:_to_integer, 0, 2))
     end
 
+    def test__to_bigint
+      assert_equal(expected_bigint, @result.send(:_to_bigint, 0, 3))
+    end
+
     private
 
     def create_data

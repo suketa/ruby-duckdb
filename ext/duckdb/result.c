@@ -24,6 +24,7 @@ static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE co
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
@@ -277,6 +278,13 @@ static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE
     return to_ruby_obj_integer(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
+static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    return to_ruby_obj_bigint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -295,4 +303,5 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2);
     rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2);
     rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
+    rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
 }
