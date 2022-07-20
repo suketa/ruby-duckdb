@@ -27,7 +27,7 @@ module DuckDB
     private
 
     def _to_hugeint(row, col)
-      _to_hugeint_str(row, col).to_i
+      _to_string(row, col).to_i
     end
   end
 end
