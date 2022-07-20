@@ -28,6 +28,7 @@ static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE 
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result__to_string_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
@@ -317,6 +318,13 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
     return Qnil;
 }
 
+static VALUE duckdb_result__to_string_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    return to_ruby_obj_string_from_blob(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -339,4 +347,5 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
     rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
     rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
+    rb_define_private_method(cDuckDBResult, "_to_string_blob", duckdb_result__to_string_blob, 2);
 }

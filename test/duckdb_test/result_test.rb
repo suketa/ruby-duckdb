@@ -28,7 +28,8 @@ module DuckDBTest
         expected_double,
         expected_string,
         expected_date,
-        expected_timestamp
+        expected_timestamp,
+        expected_blob
       ]
       assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
     end
@@ -74,7 +75,7 @@ module DuckDBTest
     end
 
     def test_result_null
-      assert_equal(Array.new(10), @result.reverse_each.first)
+      assert_equal(Array.new(11), @result.reverse_each.first)
     end
 
     def test_including_enumerable
@@ -99,8 +100,8 @@ module DuckDBTest
     end
 
     def test_column_count
-      assert_equal(10, @result.column_count)
-      assert_equal(10, @result.column_size)
+      assert_equal(11, @result.column_count)
+      assert_equal(11, @result.column_size)
       r = @@con.query('SELECT boolean_col, smallint_col from table1')
       assert_equal(2, r.column_count)
       assert_equal(2, r.column_size)
@@ -165,6 +166,10 @@ module DuckDBTest
       assert_equal(expected_double, @result.send(:_to_double, 0, 6))
     end
 
+    def test__to_string_blob
+      assert_equal(expected_blob, @result.send(:_to_string_blob, 0, 10))
+    end
+
     private
 
     def create_data
@@ -187,7 +192,8 @@ module DuckDBTest
           double_col DOUBLE,
           varchar_col VARCHAR,
           date_col DATE,
-          timestamp_col timestamp
+          timestamp_col timestamp,
+          blob_col BLOB
         )
       SQL
     end
@@ -205,9 +211,10 @@ module DuckDBTest
           #{expected_double},
           '#{expected_string}',
           '#{expected_date}',
-          '#{expected_timestamp}'
+          '#{expected_timestamp}',
+          '#{expected_blob}'
         ),
-        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
@@ -249,6 +256,10 @@ module DuckDBTest
 
     def expected_timestamp
       '2019-11-03 12:34:56'
+    end
+
+    def expected_blob
+      'blob'.force_encoding('ASCII-8BIT')
     end
 
     def first_record
