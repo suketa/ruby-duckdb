@@ -25,6 +25,7 @@ static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE
 static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result__to_hugeint_str(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 
@@ -301,6 +302,21 @@ static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE 
     return to_ruby_obj_double(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
+static VALUE duckdb_result__to_hugeint_str(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    char *p;
+    VALUE obj;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    p = duckdb_value_varchar(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+    if (p) {
+        obj = rb_str_new2(p);
+        duckdb_free(p);
+        return obj;
+    }
+    return Qnil;
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -320,6 +336,7 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2);
     rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
     rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
+    rb_define_private_method(cDuckDBResult, "_to_hugeint_str", duckdb_result__to_hugeint_str, 2);
     rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
     rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
 }

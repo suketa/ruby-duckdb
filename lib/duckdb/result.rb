@@ -23,5 +23,11 @@ module DuckDB
 
     alias column_size column_count
     alias row_size row_count
+
+    private
+
+    def _to_hugeint(row, col)
+      _to_hugeint_str(row, col).to_i
+    end
   end
 end

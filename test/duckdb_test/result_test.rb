@@ -153,6 +153,10 @@ module DuckDBTest
       assert_equal(expected_bigint, @result.send(:_to_bigint, 0, 3))
     end
 
+    def test__to_hugeint
+      assert_equal(expected_hugeint, @result.send(:_to_hugeint, 0, 4))
+    end
+
     def test__to_float
       assert_equal(expected_float, @result.send(:_to_float, 0, 5))
     end
