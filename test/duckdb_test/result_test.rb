@@ -166,6 +166,10 @@ module DuckDBTest
       assert_equal(expected_double, @result.send(:_to_double, 0, 6))
     end
 
+    def test__to_string_blob
+      assert_equal(expected_blob, @result.send(:_to_string_blob, 0, 10))
+    end
+
     private
 
     def create_data
@@ -255,7 +259,7 @@ module DuckDBTest
     end
 
     def expected_blob
-      'blob'
+      'blob'.force_encoding('ASCII-8BIT')
     end
 
     def first_record
