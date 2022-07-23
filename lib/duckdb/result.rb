@@ -21,8 +21,41 @@ module DuckDB
   class Result
     include Enumerable
 
+    ToRuby = {
+      1 => :_to_boolean,
+      3 => :_to_smallint,
+      4 => :_to_integer,
+      5 => :_to_bigint,
+      10 => :_to_float,
+      11 => :_to_double,
+      16 => :_to_hugeint,
+      18 => :_to_blob,
+    }
+
+    ToRuby.default = :_to_string
+
     alias column_size column_count
     alias row_size row_count
+
+    def each
+      return to_enum { row_size } unless block_given?
+
+      row_count.times do |row_index|
+        yield row(row_index)
+      end
+    end
+
+    def row(row_index)
+      row = []
+      column_count.times do |col_index|
+        row << (_null?(row_index, col_index) ? nil : to_value(row_index, col_index))
+      end
+      row
+    end
+
+    def to_value(row_index, col_index)
+      send(ToRuby[_column_type(col_index)], row_index, col_index)
+    end
 
     private
 

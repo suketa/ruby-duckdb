@@ -166,8 +166,8 @@ module DuckDBTest
       assert_equal(expected_double, @result.send(:_to_double, 0, 6))
     end
 
-    def test__to_string_blob
-      assert_equal(expected_blob, @result.send(:_to_string_blob, 0, 10))
+    def test__to_blob
+      assert_equal(expected_blob, @result.send(:_to_blob, 0, 10))
     end
 
     private
