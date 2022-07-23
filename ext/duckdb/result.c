@@ -28,6 +28,7 @@ static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE 
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
+static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
@@ -285,6 +286,19 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
     return type;
 }
 
+static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    VALUE size = Qnil;
+    duckdb_logical_type logical_type;
+
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
+    if (logical_type) {
+        size = UINT2NUM(duckdb_enum_dictionary_size(logical_type));
+    }
+    return size;
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -309,4 +323,5 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
     rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2);
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
+    rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
 }
