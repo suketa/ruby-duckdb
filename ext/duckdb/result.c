@@ -6,6 +6,7 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx);
@@ -19,12 +20,14 @@ static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
@@ -46,6 +49,11 @@ static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row
 static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
     int16_t i16val = duckdb_value_int16(result, col_idx, row_idx);
     return INT2FIX(i16val);
+}
+
+static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+    uint8_t ui8val = duckdb_value_uint8(result, col_idx, row_idx);
+    return UINT2NUM(ui8val);
 }
 
 static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
@@ -207,6 +215,13 @@ static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALU
     return to_ruby_obj_smallint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
+static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+
+    return to_ruby_obj_utinyint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+}
+
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
@@ -257,6 +272,19 @@ static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE co
     return to_ruby_obj_blob(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
+static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    VALUE type = Qnil;
+    duckdb_logical_type logical_type;
+
+    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
+    if (logical_type) {
+        type = LL2NUM(duckdb_enum_internal_type(logical_type));
+    }
+    return type;
+}
+
 VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
@@ -273,10 +301,12 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2);
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2);
     rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2);
+    rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2);
     rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
     rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
     rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
     rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
     rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
     rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2);
+    rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
 }
