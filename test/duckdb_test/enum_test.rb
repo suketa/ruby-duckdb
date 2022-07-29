@@ -30,12 +30,19 @@ module DuckDBTest
         SQL
       end
 
-      # FIXME
-      def NG_test_enum_insert_select
+      def setup
         con = self.class.con
         con.query('INSERT INTO enum_test (id, mood) VALUES (1, $1)', 'sad')
-        r = con.query('SELECT * FROM enum_test WHERE id = 1')
-        assert_equal([1, 'sad'], r.first)
+        @result = con.query('SELECT * FROM enum_test WHERE id = 1')
+      end
+
+      def test_result__enum_dictionary_size
+        assert_equal(3, @result.send(:_enum_dictionary_size, 1))
+      end
+
+      # FIXME
+      def NG_test_enum_insert_select
+        assert_equal([1, 'sad'], @result.first)
       end
     end
   end
