@@ -40,9 +40,19 @@ module DuckDBTest
         assert_equal(3, @result.send(:_enum_dictionary_size, 1))
       end
 
+      def test_result__enum_dictionary_value
+        assert_equal('sad', @result.send(:_enum_dictionary_value, 1, 0))
+        assert_equal('ok', @result.send(:_enum_dictionary_value, 1, 1))
+      end
+
       # FIXME
       def NG_test_enum_insert_select
         assert_equal([1, 'sad'], @result.first)
+      end
+
+      def teardown
+        con = self.class.con
+        con.query('DELETE FROM enum_test WHERE id = 1')
       end
     end
   end
