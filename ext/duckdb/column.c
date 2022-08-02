@@ -48,7 +48,7 @@ VALUE duckdb_column_get_name(VALUE oDuckDBColumn) {
     rubyDuckDBResult *ctxresult;
     Data_Get_Struct(result, rubyDuckDBResult, ctxresult);
 
-    return rb_str_new2(duckdb_column_name(&(ctxresult->result), ctx->col));
+    return rb_utf8_str_new_cstr(duckdb_column_name(&(ctxresult->result), ctx->col));
 }
 
 VALUE create_column(VALUE oDuckDBResult, idx_t col) {
