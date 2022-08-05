@@ -260,7 +260,7 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
 
     p = duckdb_value_varchar(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
     if (p) {
-        obj = rb_str_new2(p);
+        obj = rb_utf8_str_new_cstr(p);
         duckdb_free(p);
         return obj;
     }
@@ -311,7 +311,7 @@ static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col
     if (logical_type) {
         p = duckdb_enum_dictionary_value(logical_type, NUM2LL(idx));
         if (p) {
-            value = rb_str_new2(p);
+            value = rb_utf8_str_new_cstr(p);
             duckdb_free(p);
         }
     }

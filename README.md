@@ -21,14 +21,14 @@ You must have [DuckDB](http://www.duckdb.org) engine installed in order to build
 3. Move the files to their respective location:
     - Extract the `duckdb.h` and `duckdb.hpp` file to `/usr/local/include`
     - Extract the `libduckdb.so` file to `/usr/local/lib`
-    
+
     ```sh
     unzip libduckdb-linux-amd64.zip -d libduckdb
     sudo mv libduckdb/duckdb.* /usr/local/include/
     sudo mv libduckdb/libduckdb.so /usr/local/lib
     ```
 4. To create the necessary link, run `ldconfig` as root:
-  
+
     ```sh
     sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked
     ```
@@ -42,20 +42,20 @@ brew install duckdb
 
 ## How to Install
 
-```
+```sh
 gem install duckdb
 ```
 > this will work fine with the above pre-requisite setup.
 
 or you must specify the location of the C header and library files:
 
-```
+```sh
 gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory
 ```
 
 ## Usage
 
-```
+```ruby
 require 'duckdb'
 
 db = DuckDB::Database.open # database in memory
@@ -75,7 +75,7 @@ end
 
 Or, you can use block.
 
-```
+```ruby
 require 'duckdb'
 
 DuckDB::Database.open do |db|
@@ -99,7 +99,7 @@ end
 BLOB is available with DuckDB v0.2.5 or later.
 Use `DuckDB::Blob.new` or use sting#force_encoding(Encoding::BINARY)
 
-```
+```ruby
 require 'duckdb'
 
 DuckDB::Database.open do |db|
@@ -121,7 +121,7 @@ end
 
 Appender class provides Ruby interface of [DuckDB Appender](https://duckdb.org/docs/data/appender)
 
-```
+```ruby
 require 'duckdb'
 require 'benchmark'
 
@@ -183,7 +183,7 @@ end
 
 Config class provides Ruby interface of [DuckDB configuration](https://duckdb.org/docs/api/c/config).
 
-```
+```ruby
 require 'duckdb'
 config = DuckDB::Config.new
 config['default_order'] = 'DESC'

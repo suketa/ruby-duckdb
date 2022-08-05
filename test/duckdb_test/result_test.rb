@@ -247,7 +247,7 @@ module DuckDBTest
     end
 
     def expected_string
-      'string'
+      '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'
     end
 
     def expected_date

@@ -27,6 +27,7 @@ module DuckDBTest
         interval
         hugeint
         varchar
+        varchar
       ]
       if DuckDBVersion.duckdb_version >= '0.3.3'
         expected.push(:decimal)
@@ -57,6 +58,7 @@ module DuckDBTest
         interval_col
         hugeint_col
         varchar_col
+        ủȵȋɕṓ𝓭е_𝒄𝗈ł
       ]
       if DuckDBVersion.duckdb_version >= '0.3.3'
         expected.push('decimal_col')
@@ -64,7 +66,7 @@ module DuckDBTest
       end
       assert_equal(
         expected,
-        @columns.map(&:name),
+        @columns.map(&:name)
       )
     end
 
@@ -80,7 +82,7 @@ module DuckDBTest
     end
 
     def create_type_enum_sql
-      "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
+      "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy', '𝘾𝝾օɭ 😎');"
     end
 
     def create_table_sql
@@ -102,7 +104,8 @@ module DuckDBTest
           timestamp_col timestamp,
           interval_col INTERVAL,
           hugeint_col HUGEINT,
-          varchar_col VARCHAR
+          varchar_col VARCHAR,
+          ủȵȋɕṓ𝓭е_𝒄𝗈ł VARCHAR
       SQL
 
       if DuckDBVersion.duckdb_version >= '0.3.3'
@@ -133,7 +136,8 @@ module DuckDBTest
           '2019-11-03 12:34:56',
           '1 day',
           170141183460469231731687303715884105727,
-          'string'
+          'string',
+          'ȕɲᎥᴄⲟ𝑑ẽ 𝑠τᵲïņ𝕘 😃'
       SQL
 
       if DuckDBVersion.duckdb_version >= '0.3.3'

@@ -46,7 +46,7 @@ static VALUE config_s_get_config_flag(VALUE klass, VALUE value) {
         rb_raise(eDuckDBError, "failed to get config information of index %ld", i);
     }
 
-    return rb_ary_new3(2, rb_str_new2(pkey), rb_str_new2(pdesc));
+    return rb_ary_new3(2, rb_utf8_str_new_cstr(pkey), rb_utf8_str_new_cstr(pdesc));
 }
 
 static VALUE config_set_config(VALUE self, VALUE key, VALUE value) {

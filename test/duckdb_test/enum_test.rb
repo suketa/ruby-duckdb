@@ -17,7 +17,7 @@ module DuckDBTest
 
       def self.create_enum_sql
         <<~SQL
-          CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy')
+          CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy', '𝘾𝝾օɭ 😎')
         SQL
       end
 
@@ -37,12 +37,13 @@ module DuckDBTest
       end
 
       def test_result__enum_dictionary_size
-        assert_equal(3, @result.send(:_enum_dictionary_size, 1))
+        assert_equal(4, @result.send(:_enum_dictionary_size, 1))
       end
 
       def test_result__enum_dictionary_value
         assert_equal('sad', @result.send(:_enum_dictionary_value, 1, 0))
         assert_equal('ok', @result.send(:_enum_dictionary_value, 1, 1))
+        assert_equal('𝘾𝝾օɭ 😎', @result.send(:_enum_dictionary_value, 1, 3))
       end
 
       # FIXME
