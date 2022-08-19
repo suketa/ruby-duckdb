@@ -57,6 +57,14 @@ module DuckDB
       send(ToRuby[_column_type(col_index)], row_index, col_index)
     end
 
+    def enum_dictionary_values(col_index)
+      values = []
+      _enum_dictionary_size(col_index).times do |i|
+        values << _enum_dictionary_value(col_index, i)
+      end
+      values
+    end
+
     private
 
     def _to_hugeint(row, col)
