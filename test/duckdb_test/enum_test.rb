@@ -47,7 +47,7 @@ module DuckDBTest
       end
 
       def test_result_enum_dictionary_values
-        assert_equal(%w[sad ok happy], @result.enum_dictionary_values(1))
+        assert_equal(['sad', 'ok', 'happy', '𝘾𝝾օɭ 😎'], @result.enum_dictionary_values(1))
       end
 
       # FIXME
