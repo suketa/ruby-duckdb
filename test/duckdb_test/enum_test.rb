@@ -8,7 +8,6 @@ module DuckDBTest
         con = @db.connect
         con.query(create_enum_sql)
         con.query(create_table_sql)
-        con.query('INSERT INTO enum_test (id, mood) VALUES (1, $1)', 'sad')
         con
       end
 
@@ -33,6 +32,7 @@ module DuckDBTest
 
       def setup
         con = self.class.con
+        con.query('INSERT INTO enum_test (id, mood) VALUES (1, $1)', 'sad')
         @result = con.query('SELECT * FROM enum_test WHERE id = 1')
       end
 
@@ -46,13 +46,14 @@ module DuckDBTest
         assert_equal('𝘾𝝾օɭ 😎', @result.send(:_enum_dictionary_value, 1, 3))
       end
 
-      def test_result_enum_dictionary_values
-        assert_equal(%w[sad ok happy], @result.enum_dictionary_values(1))
+      # FIXME
+      def NG_test_enum_insert_select
+        assert_equal([1, 'sad'], @result.first)
       end
 
-      # FIXME
-      def ng_test_enum_insert_select
-        assert_equal([1, 'sad'], @result.first)
+      def teardown
+        con = self.class.con
+        con.query('DELETE FROM enum_test WHERE id = 1')
       end
     end
   end

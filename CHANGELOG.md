@@ -1,9 +1,7 @@
 # ChangeLog
 
-- add DuckDB::Result#enum_dictionary_values
 - add DuckDB::Result#row_count, DuckDB::Result#row_size(alias of row_count).
 - add DuckDB::Result#column_count, DuckDB::Result#column_size(alias of column_count).
-- bump duckdb 0.4.0
 
 # 0.3.4.0
 - bump duckdb 0.3.4
