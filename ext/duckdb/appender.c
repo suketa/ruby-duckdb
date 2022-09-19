@@ -53,7 +53,7 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
     }
 
     Data_Get_Struct(self, rubyDuckDBAppender, ctx);
-    Data_Get_Struct(con, rubyDuckDBConnection, ctxcon);
+    ctxcon = get_struct_connection(con);
 
     if (schema != Qnil) {
         pschema = StringValuePtr(schema);
