@@ -7,6 +7,12 @@ static VALUE allocate(VALUE klass);
 static VALUE duckdb_column__type(VALUE oDuckDBColumn);
 static VALUE duckdb_column_get_name(VALUE oDuckDBColumn);
 
+static const rb_data_type_t column_data_type = {
+    "DuckDB/Column",
+    {NULL, deallocate, memsize,},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+};
+
 static void deallocate(void *ctx) {
     rubyDuckDBColumn *p = (rubyDuckDBColumn *)ctx;
 
