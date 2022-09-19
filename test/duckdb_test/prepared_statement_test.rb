@@ -292,9 +292,18 @@ module DuckDBTest
       stmt.bind_varchar(1, PreparedStatementTest.today.strftime('%Y-%m-%d'))
       result = stmt.execute
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_varchar_date_with_invalid_timestamp_string
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
 
       stmt.bind_varchar(1, 'invalid_date_string')
-      assert_raises(DuckDB::Error) { stmt.execute }
+      if DuckDBVersion.duckdb_version < '0.5.0'
+        assert_raises(DuckDB::Error) { stmt.execute }
+      else
+        assert_instance_of(DuckDB::Result, stmt.execute)
+      end
     end
 
     def test_bind_varchar_timestamp
@@ -304,9 +313,18 @@ module DuckDBTest
       stmt.bind_varchar(1, '2019/11/09 12:34:56')
       result = stmt.execute
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_varchar_timestamp_with_invalid_timestamp_string
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind_varchar(1, 'invalid_timestamp_string')
-      assert_raises(DuckDB::Error) { stmt.execute }
+      if DuckDBVersion.duckdb_version < '0.5.0'
+        assert_raises(DuckDB::Error) { stmt.execute }
+      else
+        assert_instance_of(DuckDB::Result, stmt.execute)
+      end
     end
 
     def test_bind_blob
@@ -356,7 +374,7 @@ module DuckDBTest
       e = assert_raises(ArgumentError) {
         stmt.bind_date(1, Foo.new)
       }
-      assert(e.message.start_with?("Cannot parse argument value to date."), "Error message not match")
+      assert(e.message.start_with?('Cannot parse argument value to date.'), 'Error message not match')
     end
 
     def test__bind_date
@@ -379,12 +397,13 @@ module DuckDBTest
 
       stmt.bind_time(1, now)
       result = stmt.execute
-      assert_instance_of(Array, result.each.first, "col_time=#{col_time}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      dump_now = "col_time=#{col_time}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}"
+      assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
       stmt.bind_time(1, now.strftime('%F %T.%N'))
       result = stmt.execute
-      assert_instance_of(Array, result.each.first, "col_time=#{col_time}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
       e = assert_raises(ArgumentError) {
