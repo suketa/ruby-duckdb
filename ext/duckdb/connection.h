@@ -7,6 +7,7 @@ struct _rubyDuckDBConnection {
 
 typedef struct _rubyDuckDBConnection rubyDuckDBConnection;
 
+rubyDuckDBConnection *get_struct_connection(VALUE obj);
 void init_duckdb_connection(void);
 VALUE create_connection(VALUE oDuckDBDatabase);
 
