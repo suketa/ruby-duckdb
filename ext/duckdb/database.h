@@ -7,6 +7,7 @@ struct _rubyDuckDB {
 
 typedef struct _rubyDuckDB rubyDuckDB;
 
+rubyDuckDB *get_struct_database(VALUE obj);
 void init_duckdb_database(void);
 
 #endif

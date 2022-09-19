@@ -5,10 +5,17 @@ VALUE cDuckDBDatabase;
 static void close_database(rubyDuckDB *p);
 static void deallocate(void * ctx);
 static VALUE allocate(VALUE klass);
+static size_t memsize(const void *p);
 static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase);
 static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase);
 static VALUE duckdb_database_connect(VALUE self);
 static VALUE duckdb_database_close(VALUE self);
+
+static const rb_data_type_t database_data_type = {
+    "DuckDB/Database",
+    {0, deallocate, memsize},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+};
 
 static void close_database(rubyDuckDB *p) {
     duckdb_close(&(p->db));
@@ -21,9 +28,19 @@ static void deallocate(void * ctx) {
     xfree(p);
 }
 
+static size_t memsize(const void *p) {
+    return sizeof(rubyDuckDB);
+}
+
 static VALUE allocate(VALUE klass) {
     rubyDuckDB *ctx = xcalloc((size_t)1, sizeof(rubyDuckDB));
-    return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
+    return TypedData_Wrap_Struct(klass, &database_data_type, ctx);
+}
+
+rubyDuckDB *get_struct_database(VALUE obj) {
+    rubyDuckDB *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
+    return ctx;
 }
 
 static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
@@ -40,7 +57,7 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
     }
 
     obj = allocate(cDuckDBDatabase);
-    Data_Get_Struct(obj, rubyDuckDB, ctx);
+    TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
     if (duckdb_open(pfile, &(ctx->db)) == DuckDBError) {
         rb_raise(eDuckDBError, "Failed to open database"); /* FIXME */
     }
@@ -64,7 +81,7 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
     }
 
     obj = allocate(cDuckDBDatabase);
-    Data_Get_Struct(obj, rubyDuckDB, ctx);
+    TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
     if (!NIL_P(config)) {
         if (!rb_obj_is_kind_of(config, cDuckDBConfig)) {
             rb_raise(rb_eTypeError, "The second argument must be DuckDB::Config object.");
@@ -93,7 +110,7 @@ static VALUE duckdb_database_connect(VALUE self) {
  */
 static VALUE duckdb_database_close(VALUE self) {
     rubyDuckDB *ctx;
-    Data_Get_Struct(self, rubyDuckDB, ctx);
+    TypedData_Get_Struct(self, rubyDuckDB, &database_data_type, ctx);
     close_database(ctx);
     return self;
 }

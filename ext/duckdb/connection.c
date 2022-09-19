@@ -25,7 +25,7 @@ VALUE create_connection(VALUE oDuckDBDatabase) {
     rubyDuckDBConnection *ctxcon;
     VALUE obj;
 
-    Data_Get_Struct(oDuckDBDatabase, rubyDuckDB, ctxdb);
+    ctxdb = get_struct_database(oDuckDBDatabase);
 
     obj = allocate(cDuckDBConnection);
     Data_Get_Struct(obj, rubyDuckDBConnection, ctxcon);
@@ -54,7 +54,7 @@ static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase) {
     if (!rb_obj_is_kind_of(oDuckDBDatabase, cDuckDBDatabase)) {
         rb_raise(rb_eTypeError, "The first argument must be DuckDB::Database object.");
     }
-    Data_Get_Struct(oDuckDBDatabase, rubyDuckDB, ctxdb);
+    ctxdb = get_struct_database(oDuckDBDatabase);
     Data_Get_Struct(self, rubyDuckDBConnection, ctx);
 
     if (duckdb_connect(ctxdb->db, &(ctx->con)) == DuckDBError) {
