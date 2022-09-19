@@ -13,7 +13,7 @@ static VALUE duckdb_database_close(VALUE self);
 
 static const rb_data_type_t database_data_type = {
     "DuckDB/Database",
-    {0, deallocate, memsize},
+    {NULL, deallocate, memsize,},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
@@ -86,7 +86,7 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
         if (!rb_obj_is_kind_of(config, cDuckDBConfig)) {
             rb_raise(rb_eTypeError, "The second argument must be DuckDB::Config object.");
         }
-        Data_Get_Struct(config, rubyDuckDBConfig, ctx_config);
+        ctx_config = get_struct_config(config);
         if (duckdb_open_ext(pfile, &(ctx->db), ctx_config->config, &perror) == DuckDBError) {
             rb_raise(eDuckDBError, "Failed to open database %s", perror);
         }

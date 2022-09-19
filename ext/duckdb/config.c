@@ -4,10 +4,17 @@ VALUE cDuckDBConfig;
 
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
+static size_t memsize(const void *p);
 static VALUE config_s_size(VALUE klass);
 static VALUE config_s_get_config_flag(VALUE self, VALUE value);
 static VALUE config_initialize(VALUE self);
 static VALUE config_set_config(VALUE self, VALUE key, VALUE value);
+
+static const rb_data_type_t config_data_type = {
+    "DuckDB/Config",
+    {NULL, deallocate, memsize,},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+};
 
 static void deallocate(void * ctx) {
     rubyDuckDBConfig *p = (rubyDuckDBConfig *)ctx;
@@ -18,13 +25,23 @@ static void deallocate(void * ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBConfig *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConfig));
-    return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
+    return TypedData_Wrap_Struct(klass, &config_data_type, ctx);
+}
+
+static size_t memsize(const void *p) {
+    return sizeof(rubyDuckDBConfig);
+}
+
+rubyDuckDBConfig *get_struct_config(VALUE obj) {
+    rubyDuckDBConfig *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBConfig, &config_data_type, ctx);
+    return ctx;
 }
 
 static VALUE config_initialize(VALUE self) {
     rubyDuckDBConfig *ctx;
 
-    Data_Get_Struct(self, rubyDuckDBConfig, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBConfig, &config_data_type, ctx);
 
     if (duckdb_create_config(&(ctx->config)) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to create config");
@@ -54,7 +71,7 @@ static VALUE config_set_config(VALUE self, VALUE key, VALUE value) {
     const char *pval = StringValuePtr(value);
 
     rubyDuckDBConfig *ctx;
-    Data_Get_Struct(self, rubyDuckDBConfig, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBConfig, &config_data_type, ctx);
 
     if (duckdb_set_config(ctx->config, pkey, pval) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to set config %s => %s", pkey, pval);
