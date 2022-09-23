@@ -1,5 +1,6 @@
 # ChangeLog
 
+- use TypedData_Wrap_Struct, TypedData_Get_Struct
 - bump duckdb 0.5.0
 - fix utf-8 encoding.
 - add DuckDB::Result#enum_dictionary_values
