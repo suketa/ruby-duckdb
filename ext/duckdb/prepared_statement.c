@@ -4,6 +4,7 @@ static VALUE cDuckDBPreparedStatement;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
+static size_t memsize(const void *p);
 static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query);
 static VALUE duckdb_prepared_statement_nparams(VALUE self);
 static VALUE duckdb_prepared_statement_execute(VALUE self);
@@ -23,6 +24,12 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
 
+static const rb_data_type_t prepared_statement_data_type = {
+    "DuckDB/PreparedStatement",
+    {NULL, deallocate, memsize,},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+};
+
 static void deallocate(void *ctx) {
     rubyDuckDBPreparedStatement *p = (rubyDuckDBPreparedStatement *)ctx;
 
@@ -32,7 +39,11 @@ static void deallocate(void *ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBPreparedStatement *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBPreparedStatement));
-    return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
+    return TypedData_Wrap_Struct(klass, &prepared_statement_data_type, ctx);
+}
+
+static size_t memsize(const void *p) {
+    return sizeof(rubyDuckDBPreparedStatement);
 }
 
 static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
@@ -43,7 +54,7 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
         rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
     }
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxcon = get_struct_connection(con);
 
     if (duckdb_prepare(ctxcon->con, StringValuePtr(query), &(ctx->prepared_statement)) == DuckDBError) {
@@ -55,7 +66,7 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
 
 static VALUE duckdb_prepared_statement_nparams(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return rb_int2big(duckdb_nparams(ctx->prepared_statement));
 }
 
@@ -65,7 +76,7 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBResult *ctxr;
     VALUE result = create_result();
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     Data_Get_Struct(result, rubyDuckDBResult, ctxr);
     if (duckdb_execute_prepared(ctx->prepared_statement, &(ctxr->result)) == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
@@ -85,7 +96,7 @@ static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE v
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     if (val != Qtrue && val != Qfalse) {
         rb_raise(rb_eArgError, "binding value must be boolean");
     }
@@ -101,7 +112,7 @@ static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE v
     idx_t idx = check_index(vidx);
     int8_t i8val = (int8_t)NUM2INT(val);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_int8(ctx->prepared_statement, idx, i8val) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -114,7 +125,7 @@ static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE 
     idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_int16(ctx->prepared_statement, idx, i16val) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -127,7 +138,7 @@ static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE 
     idx_t idx = check_index(vidx);
     int32_t i32val = NUM2INT(val);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_int32(ctx->prepared_statement, idx, i32val) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -140,7 +151,7 @@ static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE 
     idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_int64(ctx->prepared_statement, idx, i64val) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -153,7 +164,7 @@ static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE 
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_float(ctx->prepared_statement, idx, (float)dbl) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -166,7 +177,7 @@ static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_double(ctx->prepared_statement, idx, dbl) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -178,7 +189,8 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
     if (duckdb_bind_varchar(ctx->prepared_statement, idx, StringValuePtr(str)) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
     }
@@ -189,7 +201,8 @@ static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE b
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
     if (duckdb_bind_blob(ctx->prepared_statement, idx, (const void *)StringValuePtr(blob), (idx_t)RSTRING_LEN(blob)) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
     }
@@ -200,7 +213,8 @@ static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
     if (duckdb_bind_null(ctx->prepared_statement, idx) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
     }
@@ -214,10 +228,12 @@ static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE 
 
     dt = to_duckdb_date_from_value(year, month, day);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
     if (duckdb_bind_date(ctx->prepared_statement, idx, dt) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
     }
+
     return self;
 }
 
@@ -229,10 +245,12 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
 
     time = to_duckdb_time_from_value(hour, min, sec, micros);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
     if (duckdb_bind_time(ctx->prepared_statement, idx, time) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
     }
+
     return self;
 }
 
@@ -242,7 +260,7 @@ static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, V
     idx_t idx = check_index(vidx);
 
     timestamp = to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_timestamp(ctx->prepared_statement, idx, timestamp) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -255,7 +273,8 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    Data_Get_Struct(self, rubyDuckDBPreparedStatement, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
     to_duckdb_interval_from_value(&interval, months, days, micros);
 
     if (duckdb_bind_interval(ctx->prepared_statement, idx, interval) == DuckDBError) {
