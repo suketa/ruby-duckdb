@@ -34,12 +34,15 @@ static size_t memsize(const void *p) {
  */
 VALUE duckdb_column__type(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
+    rubyDuckDBResult *ctxresult;
+    VALUE result;
+    duckdb_type type;
+
     TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
 
-    VALUE result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
-    rubyDuckDBResult *ctxresult;
-    Data_Get_Struct(result, rubyDuckDBResult, ctxresult);
-    duckdb_type type = duckdb_column_type(&(ctxresult->result), ctx->col);
+    result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
+    ctxresult = get_struct_result(result);
+    type = duckdb_column_type(&(ctxresult->result), ctx->col);
 
     return INT2FIX(type);
 }
@@ -53,20 +56,23 @@ VALUE duckdb_column__type(VALUE oDuckDBColumn) {
  */
 VALUE duckdb_column_get_name(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
+    VALUE result;
+    rubyDuckDBResult *ctxresult;
+
     TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
 
-    VALUE result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
-    rubyDuckDBResult *ctxresult;
-    Data_Get_Struct(result, rubyDuckDBResult, ctxresult);
+    result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
+
+    ctxresult = get_struct_result(result);
 
     return rb_utf8_str_new_cstr(duckdb_column_name(&(ctxresult->result), ctx->col));
 }
 
 VALUE create_column(VALUE oDuckDBResult, idx_t col) {
     VALUE obj;
+    rubyDuckDBColumn *ctx;
 
     obj = allocate(cDuckDBColumn);
-    rubyDuckDBColumn *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBColumn, &column_data_type, ctx);
 
     rb_ivar_set(obj, rb_intern("result"), oDuckDBResult);

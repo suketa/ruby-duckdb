@@ -77,7 +77,7 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     VALUE result = create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-    Data_Get_Struct(result, rubyDuckDBResult, ctxr);
+    ctxr = get_struct_result(result);
     if (duckdb_execute_prepared(ctx->prepared_statement, &(ctxr->result)) == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
     }
