@@ -1,5 +1,7 @@
 # ChangeLog
 
+- update bundle version of Gemfile.lock
+- add ruby ucrt test on Windows
 - use TypedData_Wrap_Struct, TypedData_Get_Struct
 - bump duckdb 0.5.0
 - fix utf-8 encoding.
