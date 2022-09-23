@@ -4,6 +4,7 @@ static VALUE cDuckDBResult;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
+static size_t memsize(const void *p);
 static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
@@ -31,6 +32,12 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
 
+static const rb_data_type_t result_data_type = {
+    "DuckDB/Result",
+    {NULL, deallocate, memsize,},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+};
+
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
 
@@ -40,7 +47,17 @@ static void deallocate(void *ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBResult *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBResult));
-    return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
+    return TypedData_Wrap_Struct(klass, &result_data_type, ctx);
+}
+
+static size_t memsize(const void *p) {
+    return sizeof(rubyDuckDBResult);
+}
+
+rubyDuckDBResult *get_struct_result(VALUE obj) {
+    rubyDuckDBResult *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBResult, &result_data_type, ctx);
+    return ctx;
 }
 
 static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
@@ -114,7 +131,7 @@ static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_id
  */
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_rows_changed(&(ctx->result)));
 }
 
@@ -138,7 +155,7 @@ static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
  */
 static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_column_count(&(ctx->result)));
 }
 
@@ -162,7 +179,7 @@ static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
  */
 static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_row_count(&(ctx->result)));
 }
 
@@ -175,7 +192,7 @@ static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
  */
 static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     idx_t col_idx;
     idx_t column_count = duckdb_column_count(&(ctx->result));
@@ -190,14 +207,14 @@ static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
 
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_column_type(&(ctx->result), NUM2LL(col_idx)));
 }
 
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     bool is_null;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     is_null = duckdb_value_is_null(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
     return is_null ? Qtrue : Qfalse;
@@ -205,49 +222,49 @@ static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE co
 
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_boolean(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx)) ? Qtrue : Qfalse;
 }
 
 static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_smallint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_utinyint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_integer(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_bigint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_float(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_double(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
@@ -256,7 +273,7 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
     rubyDuckDBResult *ctx;
     char *p;
     VALUE obj;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     p = duckdb_value_varchar(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
     if (p) {
@@ -269,7 +286,7 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
 
 static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     return to_ruby_obj_blob(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
@@ -279,7 +296,7 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
     VALUE type = Qnil;
     duckdb_logical_type logical_type;
 
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
     if (logical_type) {
         type = LL2NUM(duckdb_enum_internal_type(logical_type));
@@ -292,7 +309,7 @@ static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_
     VALUE size = Qnil;
     duckdb_logical_type logical_type;
 
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
     if (logical_type) {
         size = UINT2NUM(duckdb_enum_dictionary_size(logical_type));
@@ -306,7 +323,7 @@ static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col
     duckdb_logical_type logical_type;
     char *p;
 
-    Data_Get_Struct(oDuckDBResult, rubyDuckDBResult, ctx);
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
     if (logical_type) {
         p = duckdb_enum_dictionary_value(logical_type, NUM2LL(idx));

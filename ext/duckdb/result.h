@@ -7,6 +7,7 @@ struct _rubyDuckDBResult {
 
 typedef struct _rubyDuckDBResult rubyDuckDBResult;
 
+rubyDuckDBResult *get_struct_result(VALUE obj);
 void init_duckdb_result(void);
 VALUE create_result(void);
 
