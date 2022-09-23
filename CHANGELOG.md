@@ -1,5 +1,7 @@
 # ChangeLog
 
+- bump duckdb 0.5.1
+
 # 0.5.0
 - update bundle version of Gemfile.lock
 - add ruby ucrt test on Windows
