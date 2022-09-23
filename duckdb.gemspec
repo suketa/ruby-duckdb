@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.extensions    = ['ext/duckdb/extconf.rb']
   spec.required_ruby_version = '>= 2.6.0'
 
-  spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'bundler', '~> 2.3'
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rake-compiler'
