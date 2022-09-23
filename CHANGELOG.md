@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.5.0
 - update bundle version of Gemfile.lock
 - add ruby ucrt test on Windows
 - use TypedData_Wrap_Struct, TypedData_Get_Struct
