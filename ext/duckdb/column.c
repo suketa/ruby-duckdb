@@ -4,8 +4,15 @@ static VALUE cDuckDBColumn;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
+static size_t memsize(const void *p);
 static VALUE duckdb_column__type(VALUE oDuckDBColumn);
 static VALUE duckdb_column_get_name(VALUE oDuckDBColumn);
+
+static const rb_data_type_t column_data_type = {
+    "DuckDB/Column",
+    {NULL, deallocate, memsize,},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+};
 
 static void deallocate(void *ctx) {
     rubyDuckDBColumn *p = (rubyDuckDBColumn *)ctx;
@@ -15,7 +22,11 @@ static void deallocate(void *ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBColumn *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBColumn));
-    return Data_Wrap_Struct(klass, NULL, deallocate, ctx);
+    return TypedData_Wrap_Struct(klass, &column_data_type, ctx);
+}
+
+static size_t memsize(const void *p) {
+    return sizeof(rubyDuckDBColumn);
 }
 
 /*
@@ -23,7 +34,7 @@ static VALUE allocate(VALUE klass) {
  */
 VALUE duckdb_column__type(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
-    Data_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, ctx);
+    TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
 
     VALUE result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
     rubyDuckDBResult *ctxresult;
@@ -42,7 +53,7 @@ VALUE duckdb_column__type(VALUE oDuckDBColumn) {
  */
 VALUE duckdb_column_get_name(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
-    Data_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, ctx);
+    TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
 
     VALUE result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
     rubyDuckDBResult *ctxresult;
@@ -56,7 +67,7 @@ VALUE create_column(VALUE oDuckDBResult, idx_t col) {
 
     obj = allocate(cDuckDBColumn);
     rubyDuckDBColumn *ctx;
-    Data_Get_Struct(obj, rubyDuckDBColumn, ctx);
+    TypedData_Get_Struct(obj, rubyDuckDBColumn, &column_data_type, ctx);
 
     rb_ivar_set(obj, rb_intern("result"), oDuckDBResult);
     ctx->col = col;
