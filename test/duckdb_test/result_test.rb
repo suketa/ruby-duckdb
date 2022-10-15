@@ -223,23 +223,23 @@ module DuckDBTest
     end
 
     def expected_smallint
-      32767
+      32_767
     end
 
     def expected_integer
-      2147483647
+      2_147_483_647
     end
 
     def expected_bigint
-      9223372036854775807
+      9_223_372_036_854_775_807
     end
 
     def expected_hugeint
-      170141183460469231731687303715884105727
+      170_141_183_460_469_231_731_687_303_715_884_105_727
     end
 
     def expected_float
-      12345.375
+      12_345.375
     end
 
     def expected_double
