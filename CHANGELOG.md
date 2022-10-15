@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.5.1
 - bump duckdb 0.5.1
 
 # 0.5.0
