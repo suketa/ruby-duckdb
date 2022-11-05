@@ -131,15 +131,15 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
 
-      stmt.bind_int16(1, 32767)
+      stmt.bind_int16(1, 32_767)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
-      stmt.bind_int16(1, 32767)
+      stmt.bind_int16(1, 32_767)
       assert_equal(0, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
-      stmt.bind_int16(1, 32767)
+      stmt.bind_int16(1, 32_767)
       assert_equal(0, stmt.execute.each.size)
     end
 
@@ -147,16 +147,15 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
 
-      stmt.bind_int32(1, 32767)
+      stmt.bind_int32(1, 32_767)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
-      stmt.bind_int32(1, 2147483647)
+      stmt.bind_int32(1, 2_147_483_647)
       assert_equal(1, stmt.execute.each.size)
 
-
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
-      stmt.bind_int32(1, 2147483647)
+      stmt.bind_int32(1, 2_147_483_647)
       assert_equal(0, stmt.execute.each.size)
     end
 
@@ -164,16 +163,16 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
 
-      stmt.bind_int64(1, 32767)
+      stmt.bind_int64(1, 32_767)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
-      stmt.bind_int64(1, 2147483647)
+      stmt.bind_int64(1, 2_147_483_647)
       assert_equal(1, stmt.execute.each.size)
 
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
-      stmt.bind_int64(1, 9223372036854775807)
+      stmt.bind_int64(1, 9_223_372_036_854_775_807)
       assert_equal(1, stmt.execute.each.size)
     end
 
@@ -181,25 +180,23 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
 
-      stmt.bind_hugeint(1, 32767)
+      stmt.bind_hugeint(1, 32_767)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
-      stmt.bind_hugeint(1, 2147483647)
+      stmt.bind_hugeint(1, 2_147_483_647)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_bigint = $1')
-      stmt.bind_hugeint(1, 9223372036854775807)
+      stmt.bind_hugeint(1, 9_223_372_036_854_775_807)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_hugeint = $1')
-      stmt.bind_hugeint(1, 170141183460469231731687303715884105727)
+      stmt.bind_hugeint(1, 170_141_183_460_469_231_731_687_303_715_884_105_727)
       assert_equal(1, stmt.execute.each.size)
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_hugeint = $1')
-      e = assert_raises(ArgumentError) {
-        stmt.bind_hugeint(1, 1.5)
-      }
+      e = assert_raises(ArgumentError) { stmt.bind_hugeint(1, 1.5) }
       assert_equal('2nd argument `1.5` must be Integer.', e.message)
     end
 
@@ -207,10 +204,10 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_real = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_float(0, 12345.375) }
-      assert_raises(DuckDB::Error) { stmt.bind_float(2, 12345.375) }
+      assert_raises(ArgumentError) { stmt.bind_float(0, 12_345.375) }
+      assert_raises(DuckDB::Error) { stmt.bind_float(2, 12_345.375) }
 
-      stmt.bind_float(1, 12345.375)
+      stmt.bind_float(1, 12_345.375)
       assert_equal(1, stmt.execute.each.size)
 
       assert_raises(TypeError) { stmt.bind_float(1, 'invalid_float_val') }
@@ -220,10 +217,10 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_double = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_double(0, 12345.6789) }
-      assert_raises(DuckDB::Error) { stmt.bind_double(2, 12345.6789) }
+      assert_raises(ArgumentError) { stmt.bind_double(0, 12_345.6789) }
+      assert_raises(DuckDB::Error) { stmt.bind_double(2, 12_345.6789) }
 
-      stmt.bind_double(1, 12345.6789)
+      stmt.bind_double(1, 12_345.6789)
       assert_equal(1, stmt.execute.each.size)
 
       assert_raises(TypeError) { stmt.bind_double(1, 'invalid_double_val') }
@@ -270,12 +267,12 @@ module DuckDBTest
         today = PreparedStatementTest.today
         day = today.day
         suffix = if day.between?(11, 13)
-                   "th"
+                   'th'
                  else
-                   { 1 => "st", 2 => "nd", 3 => "rd" }.fetch(day % 10, "th")
+                   { 1 => 'st', 2 => 'nd', 3 => 'rd' }.fetch(day % 10, 'th')
                  end
 
-        "#{today.strftime("%B")}, #{day}#{suffix}, #{today.year}"
+        "#{today.strftime('%B')}, #{day}#{suffix}, #{today.year}"
       end
     end
 
@@ -371,9 +368,7 @@ module DuckDBTest
       result = stmt.execute
       assert_equal(1, result.each.first[0])
 
-      e = assert_raises(ArgumentError) {
-        stmt.bind_date(1, Foo.new)
-      }
+      e = assert_raises(ArgumentError) { stmt.bind_date(1, Foo.new) }
       assert(e.message.start_with?('Cannot parse argument value to date.'), 'Error message not match')
     end
 
@@ -406,10 +401,8 @@ module DuckDBTest
       assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
-      e = assert_raises(ArgumentError) {
-        stmt.bind_time(1, Foo.new)
-      }
-      assert(e.message.start_with?("Cannot parse argument value to time."), "Error message not match")
+      e = assert_raises(ArgumentError) { stmt.bind_time(1, Foo.new) }
+      assert(e.message.start_with?('Cannot parse argument value to time.'), 'Error message not match')
     end
 
     def test__bind_time
@@ -425,7 +418,7 @@ module DuckDBTest
       stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, usec)
 
       result = stmt.execute
-      assert_instance_of(Array, result.each.first, "col_time=#{col_time}, usec=#{usec}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}")
+      assert_instance_of(Array, result.each.first)
       assert_equal(1, result.each.first[0])
     end
 
@@ -488,7 +481,7 @@ module DuckDBTest
       stmt.bind(1, 1)
       assert_equal(0, stmt.execute.each.size)
 
-      stmt.bind(1, 32767)
+      stmt.bind(1, 32_767)
       assert_equal(1, stmt.execute.each.size)
     end
 
@@ -499,7 +492,7 @@ module DuckDBTest
       stmt.bind(1, 1)
       assert_equal(0, stmt.execute.each.size)
 
-      stmt.bind(1, 2147483647)
+      stmt.bind(1, 2_147_483_647)
       assert_equal(1, stmt.execute.each.size)
     end
 
@@ -510,7 +503,7 @@ module DuckDBTest
       stmt.bind(1, 1)
       assert_equal(0, stmt.execute.each.size)
 
-      stmt.bind(1, 9223372036854775807)
+      stmt.bind(1, 9_223_372_036_854_775_807)
       assert_equal(1, stmt.execute.each.size)
     end
 
@@ -518,10 +511,10 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_real = $1')
 
-      stmt.bind(1, 12345.375)
+      stmt.bind(1, 12_345.375)
       assert_equal(1, stmt.execute.each.size)
 
-      stmt.bind(1, 12345.376)
+      stmt.bind(1, 12_345.376)
       assert_equal(0, stmt.execute.each.size)
     end
 
@@ -529,10 +522,10 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_double = $1')
 
-      stmt.bind(1, 12345.6789)
+      stmt.bind(1, 12_345.6789)
       assert_equal(1, stmt.execute.each.size)
 
-      stmt.bind(1, 12345.6788)
+      stmt.bind(1, 12_345.6788)
       assert_equal(0, stmt.execute.each.size)
     end
 
@@ -556,13 +549,14 @@ module DuckDBTest
       stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 0))
       assert_equal(1, stmt.execute.each.size)
 
-      stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 123456))
+      stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 123_456))
       assert_equal(0, stmt.execute.each.size)
 
       con.query("UPDATE a SET col_timestamp = '#{now.strftime('%Y/%m/%d %H:%M:%S.%N')}'")
       stmt.bind(1, now)
       assert_equal(1, stmt.execute.each.size)
-      stmt.bind(1, now.strftime('%Y/%m/%d %H:%M:%S') + ".#{now.nsec + 1000000}")
+
+      stmt.bind(1, now.strftime('%Y/%m/%d %H:%M:%S') + ".#{now.nsec + 1_000_000}")
       assert_equal(0, stmt.execute.each.size)
     ensure
       con.query("UPDATE a SET col_timestamp = '2019/11/09 12:34:56'")
@@ -612,9 +606,7 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_integer = $1')
 
-      e = assert_raises(DuckDB::Error) {
-        stmt.bind(1, [123])
-      }
+      e = assert_raises(DuckDB::Error) { stmt.bind(1, [123]) }
       assert_equal('not supported type `[123]` (Array)', e.message)
     end
   end
