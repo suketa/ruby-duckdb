@@ -32,6 +32,8 @@ module DuckDBTest
       if DuckDBVersion.duckdb_version >= '0.3.3'
         expected.push(:decimal)
         expected.push(:enum)
+        expected.push(:list)
+        expected.push(:list)
       end
       assert_equal(
         expected,
@@ -63,6 +65,8 @@ module DuckDBTest
       if DuckDBVersion.duckdb_version >= '0.3.3'
         expected.push('decimal_col')
         expected.push('enum_col')
+        expected.push('int_list_col')
+        expected.push('varchar_list_col')
       end
       assert_equal(
         expected,
@@ -111,6 +115,8 @@ module DuckDBTest
       if DuckDBVersion.duckdb_version >= '0.3.3'
         sql += ', decimal_col DECIMAL'
         sql += ', enum_col mood'
+        sql += ', int_list_col INT[]'
+        sql += ', varchar_list_col VARCHAR[]'
       end
       sql += ')'
       sql
@@ -143,6 +149,8 @@ module DuckDBTest
       if DuckDBVersion.duckdb_version >= '0.3.3'
         sql += ', 1'
         sql += ', NULL'
+        sql += ', [1, 2, 3]'
+        sql += ", ['a', 'b', 'c']"
       end
       sql += ')'
       sql
