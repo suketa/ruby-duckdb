@@ -62,7 +62,7 @@ rubyDuckDBResult *get_struct_result(VALUE obj) {
 
 static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
     bool bval = duckdb_value_boolean(result, col_idx, row_idx);
-    return bval ? Qtrue : Qnil;
+    return bval ? Qtrue : Qfalse;
 }
 
 static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {

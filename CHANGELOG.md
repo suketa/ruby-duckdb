@@ -1,5 +1,7 @@
 # ChangeLog
 
+- bug fix: reading the boolean column
+
 # 0.5.1
 - bump duckdb 0.5.1
 

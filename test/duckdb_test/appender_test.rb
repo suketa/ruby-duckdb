@@ -89,9 +89,7 @@ if defined?(DuckDB::Appender)
 
       def test_append_bool
         assert_duckdb_appender(true, 'BOOLEAN') { |a| a.append_bool(true) }
-
-        # FIXME
-        # assert_duckdb_appender(false, 'BOOLEAN') { |a| a.append_bool(false) }
+        assert_duckdb_appender(false, 'BOOLEAN') { |a| a.append_bool(false) }
       end
 
       def test_append_int8
