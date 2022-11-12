@@ -60,111 +60,122 @@ if defined?(DuckDB::Appender)
         teardown
       end
 
-      def sub_test_append_column(method, type, value = nil, len = nil, expected = nil)
-        create_appender("col #{type}")
-        @appender.begin_row
-        if method == :append
-          @appender.send(method, value)
-        elsif len
-          @appender.send(method, value, len)
-        elsif value
-          @appender.send(method, value)
+      def sub_assert_equal(expected, actual)
+        if expected.nil?
+          assert_nil(actual)
         else
-          @appender.send(method)
+          assert_equal(expected, actual)
         end
-        @appender.end_row
-        r = @con.execute("SELECT col FROM #{table}")
-        assert_nil(r.first)
-        @appender.flush
-        expected = value if expected.nil?
-        r = @con.execute("SELECT col FROM #{table}")
-        expected ? assert_equal(expected, r.first.first) : assert_nil(r.first.first)
-      ensure
-        teardown
       end
 
-      def sub_test_append_column_(method, type, value)
+      def assert_duckdb_appender(expected, type, &block)
         create_appender("col #{type}")
+
         @appender.begin_row
-        @appender.send(method, value)
+
+        block.call(@appender) if block_given?
+
         @appender.end_row
+
         r = @con.execute("SELECT col FROM #{table}")
         assert_nil(r.first)
         @appender.flush
+
         r = @con.execute("SELECT col FROM #{table}")
-        assert_equal(value, r.first.first)
+        sub_assert_equal(expected, r.first.first)
       ensure
         teardown
       end
 
       def test_append_bool
-        sub_test_append_column_(:append_bool, 'BOOLEAN', true)
+        assert_duckdb_appender(true, 'BOOLEAN') { |a| a.append_bool(true) }
+
+        # FIXME
+        # assert_duckdb_appender(false, 'BOOLEAN') { |a| a.append_bool(false) }
       end
 
       def test_append_int8
-        sub_test_append_column_(:append_int8, 'SMALLINT', 127)
-        sub_test_append_column_(:append_int8, 'INTEGER', 127)
+        assert_duckdb_appender(127, 'SMALLINT') { |a| a.append_int8(127) }
+        assert_duckdb_appender(127, 'INTEGER') { |a| a.append_int8(127) }
       end
 
       def test_append_int8_negative
-        sub_test_append_column_(:append_int8, 'SMALLINT', -128)
+        assert_duckdb_appender(-128, 'INTEGER') { |a| a.append_int8(-128) }
       end
 
       def test_append_utint8
-        sub_test_append_column_(:append_uint8, 'SMALLINT', 255)
+        assert_duckdb_appender(255, 'INTEGER') { |a| a.append_uint8(255) }
       end
 
       def test_append_int16
-        sub_test_append_column_(:append_int16, 'SMALLINT', 32_767)
+        assert_duckdb_appender(32_767, 'SMALLINT') { |a| a.append_int16(32_767) }
       end
 
       def test_append_int16_negative
-        sub_test_append_column_(:append_int16, 'SMALLINT', -32_768)
+        assert_duckdb_appender(-32_768, 'SMALLINT') { |a| a.append_int16(-32_768) }
       end
 
       def test_append_uint16
-        sub_test_append_column_(:append_uint16, 'INTEGER', 65_535)
+        assert_duckdb_appender(65_535, 'INTEGER') { |a| a.append_uint16(65_535) }
       end
 
       def test_append_int32
-        sub_test_append_column_(:append_int32, 'INTEGER', 2_147_483_647)
+        assert_duckdb_appender(2_147_483_647, 'INTEGER') { |a| a.append_int32(2_147_483_647) }
       end
 
       def test_append_int32_negative
-        sub_test_append_column_(:append_int32, 'INTEGER', -2_147_483_648)
+        assert_duckdb_appender(-2_147_483_648, 'INTEGER') { |a| a.append_int32(-2_147_483_648) }
       end
 
       def test_append_uint32
-        sub_test_append_column_(:append_uint32, 'BIGINT', 4_294_967_295)
+        assert_duckdb_appender(4_294_967_295, 'BIGINT') { |a| a.append_uint32(4_294_967_295) }
       end
 
       def test_append_int64
-        sub_test_append_column_(:append_int64, 'BIGINT', 9_223_372_036_854_775_807)
+        assert_duckdb_appender(9_223_372_036_854_775_807, 'BIGINT') do |appender|
+          appender.append_int64(9_223_372_036_854_775_807)
+        end
       end
 
       def test_append_int64_negative
-        sub_test_append_column_(:append_int64, 'BIGINT', -9_223_372_036_854_775_808)
+        assert_duckdb_appender(-9_223_372_036_854_775_808, 'BIGINT') do |appender|
+          appender.append_int64(-9_223_372_036_854_775_808)
+        end
       end
 
       def test_append_uint64
-        sub_test_append_column_(:append_uint64, 'BIGINT', 9_223_372_036_854_775_807)
+        assert_duckdb_appender(9_223_372_036_854_775_807, 'BIGINT') do |appender|
+          appender.append_uint64(9_223_372_036_854_775_807)
+        end
       end
 
       def test_append_hugeint
-        sub_test_append_column_(:append_hugeint, 'HUGEINT', 18_446_744_073_709_551_615)
-        sub_test_append_column_(:append_hugeint, 'HUGEINT', -170_141_183_460_469_231_731_687_303_715_884_105_727)
-        sub_test_append_column_(:append_hugeint, 'HUGEINT', 170_141_183_460_469_231_731_687_303_715_884_105_727)
+        assert_duckdb_appender(18_446_744_073_709_551_615, 'HUGEINT') do |appender|
+          appender.append_hugeint(18_446_744_073_709_551_615)
+        end
 
-        e = assert_raises(ArgumentError) { sub_test_append_column_(:append_hugeint, 'HUGEINT', 18.555) }
+        assert_duckdb_appender(-170_141_183_460_469_231_731_687_303_715_884_105_727, 'HUGEINT') do |appender|
+          appender.append_hugeint(-170_141_183_460_469_231_731_687_303_715_884_105_727)
+        end
+
+        assert_duckdb_appender(170_141_183_460_469_231_731_687_303_715_884_105_727, 'HUGEINT') do |appender|
+          appender.append_hugeint(170_141_183_460_469_231_731_687_303_715_884_105_727)
+        end
+
+        e = assert_raises(ArgumentError) do
+          assert_duckdb_appender(18.555, 'HUGEINT') { |a| a.append_hugeint(18.555) }
+        end
         assert_equal('2nd argument `18.555` must be Integer.', e.message)
       end
 
       def test_append_varchar
-        sub_test_append_column_(:append_varchar, 'VARCHAR', 'foobarbaz')
+        assert_duckdb_appender('foobarbaz', 'VARCHAR') { |a| a.append_varchar('foobarbaz') }
       end
 
       def test_append_varchar_length
-        sub_test_append_column(:append_varchar_length, 'VARCHAR', 'foobarbazbaz', 9, 'foobarbaz')
+        assert_duckdb_appender('foo', 'VARCHAR') do |appender|
+          appender.append_varchar_length('foobarbaz', 3)
+        end
       end
 
       def test_append_blob
@@ -174,11 +185,11 @@ if defined?(DuckDB::Appender)
         value = DuckDB::Blob.new(data)
         expected = data.force_encoding(Encoding::BINARY)
 
-        sub_test_append_column(:append_blob, 'BLOB', value, nil, expected)
+        assert_duckdb_appender(expected, 'BLOB') { |a| a.append_blob(value) }
       end
 
       def test_append_null
-        sub_test_append_column(:append_null, 'VARCHAR', nil, nil, nil)
+        assert_duckdb_appender(nil, 'VARCHAR', &:append_null)
       end
 
       class Foo
@@ -283,9 +294,11 @@ if defined?(DuckDB::Appender)
         assert_raises(TypeError) do
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 'a', micros], expected: '')
         end
+
         assert_raises(TypeError) do
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1, 'a'], expected: '')
         end
+
         assert_raises(ArgumentError) do
           sub_test_append_column2(:_append_interval, 'INTERVAL', values: [1, 1], expected: '')
         end
@@ -500,23 +513,69 @@ if defined?(DuckDB::Appender)
       end
 
       def test_append
-        sub_test_append_column_(:append, 'BOOLEAN', true)
-        sub_test_append_column_(:append, 'SMALLINT', 127)
-        sub_test_append_column_(:append, 'SMALLINT', -128)
-        sub_test_append_column_(:append, 'SMALLINT', 255)
-        sub_test_append_column_(:append, 'SMALLINT', 32_767)
-        sub_test_append_column_(:append, 'SMALLINT', -32_768)
-        sub_test_append_column_(:append, 'INTEGER', -32_769)
-        sub_test_append_column_(:append, 'INTEGER', 65_535)
-        sub_test_append_column_(:append, 'INTEGER', 2_147_483_647)
+        assert_duckdb_appender(true, 'BOOLEAN') do |appender|
+          appender.append(true)
+        end
 
-        sub_test_append_column_(:append, 'INTEGER', -2_147_483_648)
-        sub_test_append_column_(:append, 'BIGINT', 4_294_967_295)
-        sub_test_append_column_(:append, 'BIGINT', 9_223_372_036_854_775_807)
-        sub_test_append_column_(:append, 'BIGINT', -9_223_372_036_854_775_808)
-        sub_test_append_column_(:append, 'HUGEINT', 18_446_744_073_709_551_615)
-        sub_test_append_column_(:append, 'HUGEINT', -18_446_744_073_709_551_616)
-        sub_test_append_column_(:append, 'VARCHAR', 'foobarbaz')
+        assert_duckdb_appender(127, 'SMALLINT') do |appender|
+          appender.append(127)
+        end
+
+        assert_duckdb_appender(-128, 'INTEGER') do |appender|
+          appender.append(-128)
+        end
+
+        assert_duckdb_appender(255, 'SMALLINT') do |appender|
+          appender.append(255)
+        end
+
+        assert_duckdb_appender(32_767, 'SMALLINT') do |appender|
+          appender.append(32_767)
+        end
+
+        assert_duckdb_appender(65_535, 'INTEGER') do |appender|
+          appender.append(65_535)
+        end
+
+        assert_duckdb_appender(-32_768, 'SMALLINT') do |appender|
+          appender.append(-32_768)
+        end
+
+        assert_duckdb_appender(-32_769, 'INTEGER') do |appender|
+          appender.append(-32_769)
+        end
+
+        assert_duckdb_appender(2_147_483_647, 'INTEGER') do |appender|
+          appender.append(2_147_483_647)
+        end
+
+        assert_duckdb_appender(-2_147_483_648, 'INTEGER') do |appender|
+          appender.append(-2_147_483_648)
+        end
+
+        assert_duckdb_appender(4_294_967_295, 'BIGINT') do |appender|
+          appender.append(4_294_967_295)
+        end
+
+        assert_duckdb_appender(9_223_372_036_854_775_807, 'BIGINT') do |appender|
+          appender.append(9_223_372_036_854_775_807)
+        end
+
+        assert_duckdb_appender(-9_223_372_036_854_775_807, 'BIGINT') do |appender|
+          appender.append(-9_223_372_036_854_775_807)
+        end
+
+        assert_duckdb_appender(18_446_744_073_709_551_615, 'HUGEINT') do |appender|
+          appender.append(18_446_744_073_709_551_615)
+        end
+
+        assert_duckdb_appender(-18_446_744_073_709_551_616, 'HUGEINT') do |appender|
+          appender.append(-18_446_744_073_709_551_616)
+        end
+
+        assert_duckdb_appender('foobarbaz', 'VARCHAR') do |appender|
+          appender.append('foobarbaz')
+        end
 
         # duckdb 0.4.0 has append_blob issue.
         # https://github.com/duckdb/duckdb/issues/3960
@@ -524,22 +583,33 @@ if defined?(DuckDB::Appender)
         value = DuckDB::Blob.new(data)
         expected = data.force_encoding(Encoding::BINARY)
 
-        sub_test_append_column(:append, 'BLOB', value, nil, expected)
+        assert_duckdb_appender(expected, 'BLOB') do |appender|
+          appender.append(value)
+        end
 
-        sub_test_append_column(:append, 'VARCHAR', nil, nil, nil)
+        assert_duckdb_appender(nil, 'VARCHAR') do |appender|
+          appender.append(nil)
+        end
 
         e = assert_raises(DuckDB::Error) do
-          sub_test_append_column(:append, 'INTEGER', [127])
+          assert_duckdb_appender(nil, 'VARCHAR') do |appender|
+            appender.append([127])
+          end
         end
         assert_equal('not supported type [127] (Array)', e.message)
 
         d = Date.today
-        sub_test_append_column(:append, 'DATE', d, nil, d.strftime('%Y-%m-%d'))
+
+        assert_duckdb_appender(d.strftime('%Y-%m-%d'), 'DATE') do |appender|
+          appender.append(d)
+        end
 
         t = Time.now
         msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
         expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
-        sub_test_append_column(:append, 'TIMESTAMP', t, nil, expected)
+        assert_duckdb_appender(expected, 'TIMESTAMP') do |appender|
+          appender.append(t)
+        end
       end
 
       def test_append_row
