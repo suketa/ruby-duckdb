@@ -29,7 +29,8 @@ module DuckDBTest
         expected_string,
         expected_date,
         expected_timestamp,
-        expected_blob
+        expected_blob,
+        expected_boolean_false
       ]
       assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
     end
@@ -75,7 +76,7 @@ module DuckDBTest
     end
 
     def test_result_null
-      assert_equal(Array.new(11), @result.reverse_each.first)
+      assert_equal(Array.new(12), @result.reverse_each.first)
     end
 
     def test_including_enumerable
@@ -100,8 +101,8 @@ module DuckDBTest
     end
 
     def test_column_count
-      assert_equal(11, @result.column_count)
-      assert_equal(11, @result.column_size)
+      assert_equal(12, @result.column_count)
+      assert_equal(12, @result.column_size)
       r = @@con.query('SELECT boolean_col, smallint_col from table1')
       assert_equal(2, r.column_count)
       assert_equal(2, r.column_size)
@@ -193,7 +194,8 @@ module DuckDBTest
           varchar_col VARCHAR,
           date_col DATE,
           timestamp_col timestamp,
-          blob_col BLOB
+          blob_col BLOB,
+          boolean_col2 BOOLEAN,
         )
       SQL
     end
@@ -212,14 +214,19 @@ module DuckDBTest
           '#{expected_string}',
           '#{expected_date}',
           '#{expected_timestamp}',
-          '#{expected_blob}'
+          '#{expected_blob}',
+          '#{expected_boolean_false}'
         ),
-        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
     def expected_boolean
       true
+    end
+
+    def expected_boolean_false
+      false
     end
 
     def expected_smallint
