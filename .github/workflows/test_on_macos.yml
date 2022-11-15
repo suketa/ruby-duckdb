@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ruby: ['2.6.10', '2.7.6', '3.0.4', '3.1.2', '3.2.0-preview2', 'head']
+        ruby: ['2.6.10', '2.7.6', '3.0.4', '3.1.2', '3.2.0-preview3', 'head']
         duckdb: ['0.5.1', '0.5.0']
 
     steps:
