@@ -1,18 +1,19 @@
 # ChangeLog
 
-- bump duckdb 0.6.0
+- bump Ruby to 3.2.0rc1
+- bump duckdb to 0.6.0
 
 # 0.5.1.1
 - bug fix: reading the boolean column
 
 # 0.5.1
-- bump duckdb 0.5.1
+- bump duckdb to 0.5.1
 
 # 0.5.0
 - update bundle version of Gemfile.lock
 - add ruby ucrt test on Windows
 - use TypedData_Wrap_Struct, TypedData_Get_Struct
-- bump duckdb 0.5.0
+- bump duckdb to 0.5.0
 - fix utf-8 encoding.
 - add DuckDB::Result#enum_dictionary_values
 - add DuckDB::Result#row_count, DuckDB::Result#row_size(alias of row_count).
@@ -22,19 +23,19 @@
 - bind_varchar does not raised DuckDB::Error when the binding column is date or datetime.
 
 # 0.3.4.0
-- bump duckdb 0.3.4
+- bump duckdb to 0.3.4
 
 # 0.3.3.0
 - DuckDB::Column#type supports :decimal.
-- bump duckdb 0.3.3.
-- bump Ruby 2.6.10, 2.7.6, 3.0.4, 3.1.2.
+- bump duckdb to 0.3.3.
+- bump Ruby to 2.6.10, 2.7.6, 3.0.4, 3.1.2.
 
 # 0.3.2.0
 
 - bind_time, bind_timestamp, bind_date, bind_timeinterval to DuckDB::PreparedStatement
 - bump duckdb 0.3.2
-- bump Ruby 3.1.1, add Ruby mingw in CI.
-- bump Ruby 2.6.9, 2.7.5, 3.0.3 in CI.
+- bump Ruby to 3.1.1, add Ruby mingw in CI.
+- bump Ruby to 2.6.9, 2.7.5, 3.0.3 in CI.
 
 ## BREAKING CHANGE
 - drop duckdb <= 0.2.8
