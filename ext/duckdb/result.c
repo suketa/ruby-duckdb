@@ -271,14 +271,25 @@ static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE 
 
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
+#ifdef HAVE_DUCKDB_H_GE_V060
+    duckdb_string p;
+#else
     char *p;
+#endif
     VALUE obj;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
+#ifdef HAVE_DUCKDB_H_GE_V060
+    p = duckdb_value_string(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+    if (p.data) {
+        obj = rb_utf8_str_new(p.data, p.size);
+        duckdb_free(p.data);
+#else
     p = duckdb_value_varchar(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
     if (p) {
         obj = rb_utf8_str_new_cstr(p);
         duckdb_free(p);
+#endif
         return obj;
     }
     return Qnil;

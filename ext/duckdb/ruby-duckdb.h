@@ -8,6 +8,10 @@
 #define HAVE_DUCKDB_H_GE_V033 1
 #endif
 
+#ifdef HAVE_DUCKDB_VALUE_STRING
+#define HAVE_DUCKDB_H_GE_V060 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"
