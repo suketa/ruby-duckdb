@@ -1,5 +1,6 @@
 # ChangeLog
 
+- implement DuckDB.library_version
 - use duckdb_value_string instead of duckdb_value_varchar if duckdb_value_string is available.
 - bump Ruby to 3.2.0rc1
 - bump duckdb to 0.6.0
