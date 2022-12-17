@@ -28,7 +28,7 @@ jobs:
 
     - name: duckdb cache
       id: duckdb-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: duckdb-v${{ matrix.duckdb }}
         key: ${{ runner.os }}-duckdb-v${{ matrix.duckdb }}
