@@ -1,10 +1,20 @@
 require 'mkmf'
 
+def have_duckdb_library(func)
+  header = find_header('duckdb.h') || find_header('duckdb.h', '/opt/homebrew/include')
+  library = have_func('duckdb', func) || find_library('duckdb', func, '/opt/homebrew/opt/duckdb/lib')
+  header && library
+end
+
 dir_config('duckdb')
 
-raise 'duckdb library is not found. Install duckdb library file and header file.' unless have_library('duckdb')
-
-raise 'duckdb >= 0.2.9 is required. Install duckdb >= 0.2.9' unless have_func('duckdb_value_is_null', 'duckdb.h')
+unless have_duckdb_library('duckdb_value_is_null')
+  msg = 'duckdb >= 0.2.9 is not found. Install duckdb >= 0.2.9 library file and header file.'
+  puts ''
+  puts msg
+  puts ''
+  raise msg
+end
 
 # check duckdb >= 0.3.3
 # ducdb >= 0.3.3 if duckdb_append_data_chunk() is defined.
