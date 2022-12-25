@@ -20,6 +20,17 @@ module DuckDB
     RANGE_INT64 = -9223372036854775808..9223372036854775807
     HALF_HUGEINT = 1 << 64
 
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected Integer value.
+    # This method uses bind_varchar internally.
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE bigint_col = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_hugeint(1, 1_234_567_890_123_456_789_012_345)
     def bind_hugeint(i, value)
       case value
       when Integer
@@ -29,6 +40,17 @@ module DuckDB
       end
     end
 
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected Integer value.
+    # This method uses duckdb_bind_hugeint internally.
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE bigint_col = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_hugeint_internal(1, 1_234_567_890_123_456_789_012_345)
     def bind_hugeint_internal(i, value)
       case value
       when Integer
