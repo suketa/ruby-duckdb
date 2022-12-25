@@ -183,6 +183,13 @@ module DuckDBTest
       assert_equal(1, stmt.execute.each.size)
     end
 
+    def test__bind_hugeint_internal
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_hugeint = $1')
+      stmt.bind_hugeint_internal(1, 170_141_183_460_469_231_731_687_303_715_884_105_727)
+      assert_equal(1, stmt.execute.each.size)
+    end
+
     def test_bind_hugeint
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_smallint = $1')
