@@ -18,11 +18,23 @@ module DuckDB
     RANGE_INT16 = -32768..32767
     RANGE_INT32 = -2147483648..2147483647
     RANGE_INT64 = -9223372036854775808..9223372036854775807
+    HALF_HUGEINT = 1 << 64
 
     def bind_hugeint(i, value)
       case value
       when Integer
         bind_varchar(i, value.to_s)
+      else
+        raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+      end
+    end
+
+    def bind_hugeint_internal(i, value)
+      case value
+      when Integer
+        upper = value / HALF_HUGEINT
+        lower = value - upper * HALF_HUGEINT
+        _bind_hugeint(i, lower, upper)
       else
         raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
       end

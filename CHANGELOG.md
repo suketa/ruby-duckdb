@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::PreparedStatement#bind_hugeint_internal
 - fix gem install error on M1 MacOS
 - implement DuckDB.library_version
 - use duckdb_value_string instead of duckdb_value_varchar if duckdb_value_string is available.
