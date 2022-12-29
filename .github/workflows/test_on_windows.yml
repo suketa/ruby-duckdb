@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        ruby: ['2.6.10', '2.7.6', '3.0.4', '3.1.2', '3.2.0', 'ucrt', 'mingw', 'head']
+        ruby: ['2.6.10', '2.7.6', '3.0.4', '3.1.2', 'ucrt', 'mingw', 'head']
         duckdb: ['0.5.1', '0.6.1']
 
     steps:
