@@ -1,6 +1,19 @@
 module DuckDB
   module Converter
+    HALF_HUGEINT = 1 << 64
+
     private
+
+    def integer_to_hugeint(value)
+      case value
+      when Integer
+        upper = value / HALF_HUGEINT
+        lower = value - upper * HALF_HUGEINT
+        [lower, upper]
+      else
+        raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+      end
+    end
 
     def iso8601_interval_to_hash(value)
       digit = ''

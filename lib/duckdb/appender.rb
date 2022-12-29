@@ -33,15 +33,8 @@ module DuckDB
     #     .end_row
     #
     def append_hugeint(value)
-      case value
-      when Integer
-        half = 1 << 64
-        upper = value / half
-        lower = value - upper * half
-        _append_hugeint(lower, upper)
-      else
-        raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
-      end
+      lower, upper = integer_to_hugeint(value)
+      _append_hugeint(lower, upper)
     end
 
     #
