@@ -15,10 +15,9 @@ module DuckDB
   class PreparedStatement
     include DuckDB::Converter
 
-    RANGE_INT16 = -32768..32767
-    RANGE_INT32 = -2147483648..2147483647
-    RANGE_INT64 = -9223372036854775808..9223372036854775807
-    HALF_HUGEINT = 1 << 64
+    RANGE_INT16 = -32_768..32_767
+    RANGE_INT32 = -2_147_483_648..2_147_483_647
+    RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
 
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
@@ -43,7 +42,7 @@ module DuckDB
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
-    # The second argument value is to expected Integer value.
+    # The second argument value must be Integer value.
     # This method uses duckdb_bind_hugeint internally.
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_database')
@@ -51,15 +50,9 @@ module DuckDB
     #   sql ='SELECT name FROM users WHERE bigint_col = ?'
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind_hugeint_internal(1, 1_234_567_890_123_456_789_012_345)
-    def bind_hugeint_internal(i, value)
-      case value
-      when Integer
-        upper = value / HALF_HUGEINT
-        lower = value - upper * HALF_HUGEINT
-        _bind_hugeint(i, lower, upper)
-      else
-        raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
-      end
+    def bind_hugeint_internal(index, value)
+      lower, upper = integer_to_hugeint(value)
+      _bind_hugeint(index, lower, upper)
     end
 
     # binds i-th parameter with SQL prepared statement.
