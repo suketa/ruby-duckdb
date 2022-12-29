@@ -1,5 +1,6 @@
 # ChangeLog
 
+- bump Ruby to 3.2.0 on CI
 - add DuckDB::PreparedStatement#bind_hugeint_internal
 - fix gem install error on M1 MacOS
 - implement DuckDB.library_version
