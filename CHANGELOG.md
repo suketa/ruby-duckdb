@@ -1,6 +1,8 @@
 # ChangeLog
 
+# 0.6.1
 - bump Ruby to 3.2.0 on CI
+- fix deprected warning (double_heap is deprecated in GC.verify_compaction_references) with Ruby 3.2.0 on CI
 - bump duckdb to 0.6.1 on CI
 - add DuckDB::PreparedStatement#bind_hugeint_internal
 - fix gem install error on M1 MacOS
