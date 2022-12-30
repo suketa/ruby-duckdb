@@ -1,12 +1,16 @@
 # ChangeLog
 
 - bump Ruby to 3.2.0 on CI
+- bump duckdb to 0.6.1 on CI
 - add DuckDB::PreparedStatement#bind_hugeint_internal
 - fix gem install error on M1 MacOS
 - implement DuckDB.library_version
 - use duckdb_value_string instead of duckdb_value_varchar if duckdb_value_string is available.
 - bump Ruby to 3.2.0rc1
 - bump duckdb to 0.6.0
+
+## Breaking Change
+- drop duckdb <= 0.4.x. ruby-duckdb supports duckdb >= 0.5.0
 
 # 0.5.1.1
 - bug fix: reading the boolean column
