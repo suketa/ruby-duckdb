@@ -25,7 +25,7 @@ static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALU
 static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_hugeint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result__to_hugeint_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -262,7 +262,7 @@ static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE 
     return to_ruby_obj_bigint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
-static VALUE duckdb_result__to_hugeint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+static VALUE duckdb_result__to_hugeint_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
@@ -379,7 +379,7 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2);
     rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
     rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
-    rb_define_private_method(cDuckDBResult, "_to_hugeint", duckdb_result__to_hugeint, 2);
+    rb_define_private_method(cDuckDBResult, "_to_hugeint_internal", duckdb_result__to_hugeint_internal, 2);
     rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
     rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
     rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
