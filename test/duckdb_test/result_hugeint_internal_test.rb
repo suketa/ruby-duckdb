@@ -20,7 +20,7 @@ module DuckDBTest
     def do_result_hugeint_internal_test(value, lower, upper)
       prepare_test_value(value)
       result = @con.query('SELECT hugeint_value FROM hugeints')
-      assert_equal([lower, upper], result.send(:_to_hugeint_internal, 0, 0))
+      assert_equal([lower, upper], result.send(:__to_hugeint_internal, 0, 0))
     end
 
     def test_result_internal_positive1
