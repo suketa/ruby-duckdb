@@ -326,7 +326,7 @@ static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_id
         obj = rb_utf8_str_new(p.data, p.size);
         duckdb_free(p.data);
 #else
-    p = duckdb_value_varchar(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+    p = duckdb_value_varchar_internal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
     if (p) {
         obj = rb_utf8_str_new_cstr(p);
         duckdb_free(p);
