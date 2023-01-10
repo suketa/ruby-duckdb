@@ -29,6 +29,7 @@ static VALUE duckdb_result___to_hugeint_internal(VALUE oDuckDBResult, VALUE row_
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+/* static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx); */
 static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
