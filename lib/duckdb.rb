@@ -1,4 +1,5 @@
 require 'duckdb/duckdb_native'
+require 'duckdb/library_version'
 require 'duckdb/version'
 require 'duckdb/converter'
 require 'duckdb/database'
