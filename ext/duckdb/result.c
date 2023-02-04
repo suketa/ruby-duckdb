@@ -11,6 +11,7 @@ static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t ro
 static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
+static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx);
@@ -26,6 +27,7 @@ static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALU
 static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result___to_hugeint_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
+static VALUE duckdb_result___to_decimal_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -91,6 +93,11 @@ static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_
 static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
     duckdb_hugeint hugeint = duckdb_value_hugeint(result, col_idx, row_idx);
     return rb_ary_new3(2, rb_int2big(hugeint.lower), rb_int2big(hugeint.upper));
+}
+
+static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+    duckdb_decimal decimal = duckdb_value_decimal(result, col_idx, row_idx);
+    return rb_ary_new3(4, rb_int2big(decimal.value.lower), rb_int2big(decimal.value.upper), rb_int2big(decimal.width), rb_int2big(decimal.scale));
 }
 
 static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
@@ -270,6 +277,13 @@ static VALUE duckdb_result___to_hugeint_internal(VALUE oDuckDBResult, VALUE row_
     return to_ruby_obj_hugeint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
+static VALUE duckdb_result___to_decimal_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
+    rubyDuckDBResult *ctx;
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+
+    return to_ruby_obj_decimal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
+}
+
 static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
@@ -405,6 +419,7 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
     rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
     rb_define_private_method(cDuckDBResult, "__to_hugeint_internal", duckdb_result___to_hugeint_internal, 2);
+    rb_define_private_method(cDuckDBResult, "__to_decimal_internal", duckdb_result___to_decimal_internal, 2);
     rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
     rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
     rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
