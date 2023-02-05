@@ -39,6 +39,7 @@ jobs:
     - name: setup duckdb.dll
       run: |
         cp duckdb.dll C:/Windows/SysWOW64
+        cp duckdb.dll C:/Windows/System32
         mkdir -p c:/usr/local/include
         cp *.h c:/usr/local/include
         mkdir -p c:/usr/local/lib
@@ -53,7 +54,7 @@ jobs:
         pwd
     - name: run test
       run: |
-        bundle exec rake build -- --with-duckdb-include=../../../.. --with-duckdb-lib=../../../..
+        bundle exec rake build
 
     - name: rake test
       run: |
