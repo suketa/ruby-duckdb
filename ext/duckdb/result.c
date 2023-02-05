@@ -1,5 +1,6 @@
 #include "ruby-duckdb.h"
 
+
 static VALUE cDuckDBResult;
 
 static void deallocate(void *ctx);
