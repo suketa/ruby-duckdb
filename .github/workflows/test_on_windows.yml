@@ -49,8 +49,10 @@ jobs:
         bundle install
         ls -l ../../../..
     - name: pwd
+      run: |
         pwd
-    - name:
+    - name: run test
+      run: |
         bundle exec rake build -- --with-duckdb-include=../../../.. --with-duckdb-lib=../../../..
 
     - name: rake test
