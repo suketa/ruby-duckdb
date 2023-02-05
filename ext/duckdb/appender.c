@@ -5,6 +5,7 @@ static VALUE cDuckDBAppender;
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+
 static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
 static VALUE appender_begin_row(VALUE self);
 static VALUE appender_end_row(VALUE self);
