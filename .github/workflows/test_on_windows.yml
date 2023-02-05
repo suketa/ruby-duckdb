@@ -38,11 +38,12 @@ jobs:
 
     - name: setup duckdb.dll
       run: |
-        cp duckdb.dll C:/Windows/System32/
+        cp duckdb.dll C:/Windows/SysWOW64
 
     - name: Build with Rake with Ruby ${{ matrix.ruby }}
       run: |
         bundle install
+        ls -l ../../../..
         bundle exec rake build -- --with-duckdb-include=../../../.. --with-duckdb-lib=../../../..
 
     - name: rake test
