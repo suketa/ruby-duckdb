@@ -54,7 +54,7 @@ jobs:
         pwd
     - name: run test
       run: |
-        bundle exec rake build
+        bundle exec rake build -- --with-duckdb-dir=c:/usr/local
 
     - name: rake test
       run: |
