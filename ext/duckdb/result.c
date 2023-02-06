@@ -92,7 +92,7 @@ static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_
 
 static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
     duckdb_hugeint hugeint = duckdb_value_hugeint(result, col_idx, row_idx);
-    return rb_ary_new3(2, rb_int2big(hugeint.lower), rb_int2big(hugeint.upper));
+    return rb_ary_new3(2, ULL2NUM(hugeint.lower), LL2NUM(hugeint.upper));
 }
 
 static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
