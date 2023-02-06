@@ -45,7 +45,7 @@ module DuckDBTest
     end
 
     def test_result_to_decimal_positive6
-      do_result_to_decimal_test([-123_456, -1, 38, 8], '-0.00123456')
+      do_result_to_decimal_test([18_446_744_073_709_428_160, -1, 38, 8], '-0.00123456')
     end
 
     def test_result_to_decimal_positive7
@@ -53,7 +53,7 @@ module DuckDBTest
     end
 
     def test_result_to_decimal_positive8
-      do_result_to_decimal_test([-6_634_324_952_100_531_253, -12_715_950_804, 38, 8], '-2345678901234567890123.45678901')
+      do_result_to_decimal_test([11_812_419_121_609_020_363, -12_715_950_804, 38, 8], '-2345678901234567890123.45678901')
     end
   end
 end
