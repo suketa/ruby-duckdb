@@ -1,0 +1,7 @@
+version: '3'
+services:
+  ubuntu:
+    build: .
+    working_dir: /root/ruby-duckdb
+    volumes:
+      - .:/root/ruby-duckdb
