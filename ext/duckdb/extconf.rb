@@ -2,7 +2,7 @@ require 'mkmf'
 
 def duckdb_library_available?(func)
   header = find_header('duckdb.h') || find_header('duckdb.h', '/opt/homebrew/include')
-  library = have_func('duckdb', func) || find_library('duckdb', func, '/opt/homebrew/opt/duckdb/lib')
+  library = have_func(func, 'duckdb') || find_library('duckdb', func, '/opt/homebrew/opt/duckdb/lib')
   header && library
 end
 
