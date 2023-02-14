@@ -1,7 +1,12 @@
 version: '3'
 services:
   ubuntu:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - RUBY_VERSION
+        - DUCKDB_VERSION
     working_dir: /root/ruby-duckdb
     volumes:
       - .:/root/ruby-duckdb
