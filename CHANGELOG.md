@@ -1,5 +1,15 @@
 # ChangeLog
+
+# 0.7.0
+- bump duckdb to 0.7.0
+- fix have_func argument order
+- remove unused variable in test
 - add DuckDB::LIBRARY_VERSION
+- add DuckDB::Result#_to_string_internal
+- add DuckDB::Result#__to_hugeint_internal
+- add DuckDB::Result#__to_decimal_internal
+- add Ruby 3.2.1 on CI test
+- add Ruby mswin on CI test
 
 # 0.6.1
 - bump Ruby to 3.2.0 on CI
