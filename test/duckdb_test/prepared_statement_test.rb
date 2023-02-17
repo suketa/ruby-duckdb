@@ -424,8 +424,6 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
 
-      col_time = con.query('SELECT col_time from a').first.first
-
       now = PreparedStatementTest.now
 
       usec = now.usec
