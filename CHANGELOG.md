@@ -10,6 +10,8 @@
 - add DuckDB::Result#__to_decimal_internal
 - add Ruby 3.2.1 on CI test
 - add Ruby mswin on CI test
+## Breaking Change
+- drop Ruby 2.6
 
 # 0.6.1
 - bump Ruby to 3.2.0 on CI
