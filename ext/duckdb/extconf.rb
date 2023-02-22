@@ -22,13 +22,10 @@ dir_config('duckdb')
 
 check_duckdb_library('duckdb_pending_prepared', '0.5.0')
 
-# check duckdb >= 0.3.3
-# ducdb >= 0.3.3 if duckdb_append_data_chunk() is defined.
-have_func('duckdb_append_data_chunk', 'duckdb.h')
-
 # check duckdb >= 0.6.0
 have_func('duckdb_value_string', 'duckdb.h')
 
-have_func('duckdb_free', 'duckdb.h')
+# check duckdb >= 0.7.0
+have_func('duckdb_extract_statements', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')
