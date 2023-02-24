@@ -68,7 +68,7 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
 static VALUE duckdb_prepared_statement_nparams(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-    return rb_int2big(duckdb_nparams(ctx->prepared_statement));
+    return ULL2NUM(duckdb_nparams(ctx->prepared_statement));
 }
 
 
@@ -86,7 +86,7 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
 }
 
 static idx_t check_index(VALUE vidx) {
-    idx_t idx = FIX2INT(vidx);
+    idx_t idx = NUM2ULL(vidx);
     if (idx <= 0) {
         rb_raise(rb_eArgError, "index of parameter must be greater than 0");
     }
