@@ -6,7 +6,9 @@ ARG DUCKDB_VERSION=0.6.1
 RUN apt update -qq && \
     apt install -y build-essential curl git wget
 
-RUN wget -O duckdb.zip "https://github.com/duckdb/duckdb/releases/download/v$DUCKDB_VERSION/libduckdb-linux-amd64.zip"
+COPY getduckdb.sh .
+RUN ./getduckdb.sh
+
 RUN unzip duckdb.zip -d libduckdb
 RUN mv libduckdb/duckdb.* /usr/local/include
 RUN mv libduckdb/libduckdb.so /usr/local/lib
