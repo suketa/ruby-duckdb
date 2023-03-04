@@ -1,5 +1,8 @@
 # ChangeLog
 
+- bump duckdb to 0.7.1
+- fix docker build error on M1 Mac
+
 # 0.7.0
 - bump duckdb to 0.7.0
 - fix have_func argument order
