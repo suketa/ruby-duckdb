@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.7.1
 - bump duckdb to 0.7.1
 - fix docker build error on M1 Mac
 
