@@ -6,7 +6,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    minitest (5.17.0)
+    minitest (5.18.0)
     rake (13.0.6)
     rake-compiler (1.2.1)
       rake
@@ -21,3 +21,6 @@ DEPENDENCIES
   minitest (~> 5.0)
   rake (~> 13.0)
   rake-compiler
+
+BUNDLED WITH
+   2.4.8
