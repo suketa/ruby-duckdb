@@ -24,3 +24,6 @@ DEPENDENCIES
   rake (~> 13.0)
   rake-compiler
   stackprof
+
+BUNDLED WITH
+   2.4.9
