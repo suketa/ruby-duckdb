@@ -28,7 +28,7 @@ module DuckDB
       5 => :_to_bigint,
       10 => :_to_float,
       11 => :_to_double,
-      16 => :_to_hugeint,
+      16 => :_to_hugeint_internal,
       18 => :_to_blob,
     }
 
@@ -69,6 +69,11 @@ module DuckDB
 
     def _to_hugeint(row, col)
       _to_string(row, col).to_i
+    end
+
+    def _to_hugeint_internal(row, col)
+      lower, upper = __to_hugeint_internal(row, col)
+      upper * Converter::HALF_HUGEINT + lower
     end
   end
 end

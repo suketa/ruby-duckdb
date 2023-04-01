@@ -56,11 +56,11 @@ jobs:
     - name: Build with Ruby ${{ matrix.ruby }}
       run: |
         bundle install --jobs 4 --retry 3
-        bundle exec rake build
+        rake build
 
     - name: run test with Ruby ${{ matrix.ruby }}
       run: |
-        bundle exec rake test
+        rake test
 
   post-test:
     name: All tests passed on macos
