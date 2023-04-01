@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['2.7.7', '3.0.5', '3.1.3', '3.2.1', 'head']
+        # ruby: ['2.7.7', '3.0.5', '3.1.3', '3.2.1']
         duckdb: ['0.7.1', '0.6.1']
 
     steps:
@@ -52,11 +53,14 @@ jobs:
         cp duckdb-v$DUCKDB_VERSION/src/include/*.h /usr/local/include
         cp duckdb-v$DUCKDB_VERSION/build/release/src/*.dylib /usr/local/lib
 
-    - name: Build and test with Rake with Ruby ${{ matrix.ruby }}
+    - name: Build with Ruby ${{ matrix.ruby }}
       run: |
-        ruby -v
         bundle install --jobs 4 --retry 3
-        bundle exec rake
+        bundle exec rake build
+
+    - name: run test with Ruby ${{ matrix.ruby }}
+      run: |
+        bundle exec rake test
 
   post-test:
     name: All tests passed on macos
