@@ -22,11 +22,19 @@ module DuckDBTest
       prepare_test_value(value)
       result = @con.query('SELECT decimal_value FROM decimals')
       assert_equal(value, result.first.first)
+      assert_instance_of(BigDecimal, result.first.first)
     end
 
-    # FIXME: Expected: 1.23456789, but Actual: "1.23456789"
-    def NG_test_result_to_decimal_positive1
+    def test_result_to_decimal_positive1
       do_result_to_decimal_test(1.23456789)
+    end
+
+    def test_result_to_decimal_positive2
+      do_result_to_decimal_test(123.456789)
+    end
+
+    def test_result_to_decimal_positive3
+      do_result_to_decimal_test(123_456_789)
     end
   end
 end

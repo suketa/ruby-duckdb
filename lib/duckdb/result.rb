@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require 'bigdecimal'
+
 module DuckDB
   # The Result class encapsulates a execute result of DuckDB database.
   #
@@ -30,6 +34,7 @@ module DuckDB
       11 => :_to_double,
       16 => :_to_hugeint_internal,
       18 => :_to_blob,
+      19 => :_to_decimal_internal
     }
 
     ToRuby.default = :_to_string
@@ -74,6 +79,17 @@ module DuckDB
     def _to_hugeint_internal(row, col)
       lower, upper = __to_hugeint_internal(row, col)
       upper * Converter::HALF_HUGEINT + lower
+    end
+
+    def _to_decimal(row, col)
+      BigDecimal(_to_string(row, col))
+    end
+
+    def _to_decimal_internal(row, col)
+      lower, upper, _width, scale = __to_decimal_internal(row, col)
+      v = (upper * Converter::HALF_HUGEINT + lower).to_s
+      v[-scale, 0] = '.'
+      BigDecimal(v)
     end
   end
 end
