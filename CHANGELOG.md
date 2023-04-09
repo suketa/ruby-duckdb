@@ -1,7 +1,7 @@
 # ChangeLog
 
 - add DuckDB::Result#_to_decimal_internal
-- add DuckDB::Result#__to_hugeint_internal
+- add DuckDB::Result#_to_hugeint_internal
 
 ## Breaking Change
 - DuckDB::Result returns BigDecimal object instead of String object if the column type is DECIMAL.
