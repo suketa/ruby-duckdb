@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'duckdb/duckdb_native'
 require 'duckdb/library_version'
 require 'duckdb/version'
