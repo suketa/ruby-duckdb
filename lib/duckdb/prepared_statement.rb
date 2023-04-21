@@ -1,4 +1,5 @@
 require 'date'
+require 'bigdecimal'
 require_relative './converter'
 
 module DuckDB
@@ -192,6 +193,8 @@ module DuckDB
         bind_varchar(i, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
       when Date
         bind_varchar(i, value.strftime('%Y-%m-%d'))
+      when BigDecimal
+        bind_varchar(i, value.to_s('F'))
       else
         raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
       end

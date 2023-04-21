@@ -17,7 +17,7 @@ module DuckDBTest
     end
 
     # FIXME: @prepared.bind(1, BigDecimal('1.0')) should not raise DuckDB::Error.
-    def NG_test_decimal
+    def test_decimal
       prepare_test_value(1.0)
       r = @prepared.bind(1, BigDecimal('1.0')).execute
       assert_equal(1.0, r.first.first)
