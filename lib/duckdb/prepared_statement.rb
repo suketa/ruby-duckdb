@@ -1,4 +1,5 @@
 require 'date'
+require 'bigdecimal'
 require_relative './converter'
 
 module DuckDB
