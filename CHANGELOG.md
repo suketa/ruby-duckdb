@@ -1,5 +1,7 @@
 # ChangeLog
 
+# 0.8.0
+- bump duckdb to 0.8.0
 - add DuckDB::Result#_to_decimal_internal
 - add DuckDB::Result#_to_hugeint_internal
 
