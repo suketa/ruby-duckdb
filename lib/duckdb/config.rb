@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DuckDB
   if defined?(DuckDB::Config)
     # The DuckDB::Config encapsulates DuckDB Configuration.

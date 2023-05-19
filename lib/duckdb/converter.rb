@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DuckDB
   module Converter
     HALF_HUGEINT = 1 << 64
