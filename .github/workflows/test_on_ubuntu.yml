@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['2.7.8', '3.0.6', '3.1.4', '3.2.2', 'head']
+        ruby: ['2.7.8', '3.0.6', '3.1.4', '3.2.2', '3.3.0-preview1', 'head']
         duckdb: ['0.7.1', '0.8.0']
 
     steps:
@@ -25,6 +25,7 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
 
     - name: duckdb cache
       id: duckdb-cache
