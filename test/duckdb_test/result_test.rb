@@ -32,6 +32,7 @@ module DuckDBTest
         expected_blob,
         expected_boolean_false,
         expected_list,
+        expected_nested_list
       ]
       assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
     end
@@ -77,7 +78,7 @@ module DuckDBTest
     end
 
     def test_result_null
-      assert_equal(Array.new(13), @result.reverse_each.first)
+      assert_equal(Array.new(14), @result.reverse_each.first)
     end
 
     def test_including_enumerable
@@ -102,8 +103,8 @@ module DuckDBTest
     end
 
     def test_column_count
-      assert_equal(13, @result.column_count)
-      assert_equal(13, @result.column_size)
+      assert_equal(14, @result.column_count)
+      assert_equal(14, @result.column_size)
       r = @con.query('SELECT boolean_col, smallint_col from table1')
       assert_equal(2, r.column_count)
       assert_equal(2, r.column_size)
@@ -202,6 +203,7 @@ module DuckDBTest
           blob_col BLOB,
           boolean_col2 BOOLEAN,
           list INTEGER[],
+          nested_list INTEGER[][]
         )
       SQL
     end
@@ -223,8 +225,9 @@ module DuckDBTest
           '#{expected_blob}',
           '#{expected_boolean_false}',
           #{expected_list},
+          #{expected_nested_list}
         ),
-        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
