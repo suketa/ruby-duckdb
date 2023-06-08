@@ -5,37 +5,13 @@ static VALUE cDuckDBResult;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx);
-static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
-static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
-static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
-static VALUE duckdb_result_columns(VALUE oDuckDBResult);
-static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result___to_hugeint_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result___to_decimal_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
+static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
+static VALUE vector_blob(void* vector_data, idx_t row_idx);
+static VALUE vector_date(void *vector_data, idx_t row_idx);
+static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
+static VALUE vector_list(duckdb_vector vector, idx_t row_idx);
+static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
+static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
 
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
@@ -51,6 +27,7 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
+    // FIXME do I need to allocate the columns pointer separately?
     rubyDuckDBResult *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBResult));
     return TypedData_Wrap_Struct(klass, &result_data_type, ctx);
 }
@@ -59,344 +36,38 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBResult);
 }
 
+static VALUE rb_duckdb_rows(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+
+    idx_t col_count = duckdb_column_count(&(ctx->result));
+    idx_t chunk_count = duckdb_result_chunk_count(ctx->result);
+
+    RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
+
+    for (idx_t chunk_idx = 0; chunk_idx < chunk_count; ++chunk_idx) {
+        duckdb_data_chunk data = duckdb_result_get_chunk(ctx->result, chunk_idx);
+        idx_t row_count = duckdb_data_chunk_get_size(data);
+
+        for (idx_t row_idx = 0; row_idx < row_count; ++row_idx) {
+            VALUE result = rb_ary_new2(col_count);
+
+            for (idx_t col_idx = 0; col_idx < col_count; ++col_idx) {
+                duckdb_vector vector = duckdb_data_chunk_get_vector(data, col_idx);
+                VALUE val = vector_value(vector, row_idx);
+                rb_ary_push(result, val);
+            }
+            rb_yield(result);
+        }
+    }
+
+    return Qnil;
+}
+
 rubyDuckDBResult *get_struct_result(VALUE obj) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBResult, &result_data_type, ctx);
     return ctx;
-}
-
-static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    bool bval = duckdb_value_boolean(result, col_idx, row_idx);
-    return bval ? Qtrue : Qfalse;
-}
-
-static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    int16_t i16val = duckdb_value_int16(result, col_idx, row_idx);
-    return INT2FIX(i16val);
-}
-
-static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    uint8_t ui8val = duckdb_value_uint8(result, col_idx, row_idx);
-    return UINT2NUM(ui8val);
-}
-
-static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    int32_t i32val = duckdb_value_int32(result, col_idx, row_idx);
-    return INT2NUM(i32val);
-}
-
-static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    int64_t i64val = duckdb_value_int64(result, col_idx, row_idx);
-    return LL2NUM(i64val);
-}
-
-static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    duckdb_hugeint hugeint = duckdb_value_hugeint(result, col_idx, row_idx);
-    return rb_ary_new3(2, ULL2NUM(hugeint.lower), LL2NUM(hugeint.upper));
-}
-
-static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    duckdb_decimal decimal = duckdb_value_decimal(result, col_idx, row_idx);
-    return rb_ary_new3(4, ULL2NUM(decimal.value.lower), LL2NUM(decimal.value.upper), UINT2NUM(decimal.width), UINT2NUM(decimal.scale));
-}
-
-static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    float fval = duckdb_value_float(result, col_idx, row_idx);
-    return DBL2NUM(fval);
-}
-
-static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    double dval = duckdb_value_double(result, col_idx, row_idx);
-    return DBL2NUM(dval);
-}
-
-static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-    VALUE str;
-    duckdb_blob bval = duckdb_value_blob(result, col_idx, row_idx);
-    str = rb_str_new(bval.data, bval.size);
-
-    if (bval.data) {
-        duckdb_free(bval.data);
-    }
-
-    return str;
-}
-
-/*
- *  call-seq:
- *    result.rows_changed -> integer
- *
- *  Returns the count of rows changed.
- *
- *    DuckDB::Database.open do |db|
- *      db.connect do |con|
- *        r = con.query('CREATE TABLE t2 (id INT)')
- *        r.rows_changed # => 0
- *        r = con.query('INSERT INTO t2 VALUES (1), (2), (3)')
- *        r.rows_changed # => 3
- *        r = con.query('UPDATE t2 SET id = id + 1 WHERE id > 1')
- *        r.rows_changed # => 2
- *        r = con.query('DELETE FROM t2 WHERE id = 0')
- *        r.rows_changed # => 0
- *        r = con.query('DELETE FROM t2 WHERE id = 4')
- *        r.rows_changed # => 1
- *      end
- *    end
- *
- */
-static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    return LL2NUM(duckdb_rows_changed(&(ctx->result)));
-}
-
-/*
- *  call-seq:
- *    result.column_count -> Integer
- *
- *  Returns the column size of the result.
- *
- *    DuckDB::Database.open do |db|
- *      db.connect do |con|
- *        r = con.query('CREATE TABLE t2 (id INT, name VARCHAR(128))')
- *        r = con.query("INSERT INTO t2 VALUES (1, 'Alice'), (2, 'Bob'), (3, 'Catherine')")
- *        r = con.query('SELECT id FROM t2')
- *        r.column_count # => 1
- *        r = con.query('SELECT id, name FROM t2')
- *        r.column_count # => 2
- *      end
- *    end
- *
- */
-static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    return LL2NUM(duckdb_column_count(&(ctx->result)));
-}
-
-/*
- *  call-seq:
- *    result.row_count -> Integer
- *
- *  Returns the column size of the result.
- *
- *    DuckDB::Database.open do |db|
- *      db.connect do |con|
- *        r = con.query('CREATE TABLE t2 (id INT, name VARCHAR(128))')
- *        r = con.query("INSERT INTO t2 VALUES (1, 'Alice'), (2, 'Bob'), (3, 'Catherine')")
- *        r = con.query('SELECT * FROM t2')
- *        r.row_count # => 3
- *        r = con.query('SELECT * FROM t2 where id = 1')
- *        r.row_count # => 1
- *      end
- *    end
- *
- */
-static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    return LL2NUM(duckdb_row_count(&(ctx->result)));
-}
-
-/*
- *  call-seq:
- *    result.columns -> DuckDB::Column[]
- *
- *  Returns the column class Lists.
- *
- */
-static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    idx_t col_idx;
-    idx_t column_count = duckdb_column_count(&(ctx->result));
-
-    VALUE ary = rb_ary_new2(column_count);
-    for(col_idx = 0; col_idx < column_count; col_idx++) {
-        VALUE column = create_column(oDuckDBResult, col_idx);
-        rb_ary_store(ary, col_idx, column);
-    }
-    return ary;
-}
-
-static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    return LL2NUM(duckdb_column_type(&(ctx->result), NUM2LL(col_idx)));
-}
-
-static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    bool is_null;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    is_null = duckdb_value_is_null(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    return is_null ? Qtrue : Qfalse;
-}
-
-static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_boolean(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx)) ? Qtrue : Qfalse;
-}
-
-static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_smallint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_utinyint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_integer(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_bigint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result___to_hugeint_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_hugeint(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result___to_decimal_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_decimal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__to_float(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_float(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__to_double(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_double(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-#ifdef HAVE_DUCKDB_H_GE_V060
-    duckdb_string p;
-#else
-    char *p;
-#endif
-    VALUE obj;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-#ifdef HAVE_DUCKDB_H_GE_V060
-    p = duckdb_value_string(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    if (p.data) {
-        obj = rb_utf8_str_new(p.data, p.size);
-        duckdb_free(p.data);
-#else
-    p = duckdb_value_varchar(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    if (p) {
-        obj = rb_utf8_str_new_cstr(p);
-        duckdb_free(p);
-#endif
-        return obj;
-    }
-    return Qnil;
-}
-
-static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-#ifdef HAVE_DUCKDB_H_GE_V060
-    duckdb_string p;
-#else
-    char *p;
-#endif
-    VALUE obj;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-#ifdef HAVE_DUCKDB_H_GE_V060
-    p = duckdb_value_string_internal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    if (p.data) {
-        obj = rb_utf8_str_new(p.data, p.size);
-#else
-    p = duckdb_value_varchar_internal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    if (p) {
-        obj = rb_utf8_str_new_cstr(p);
-#endif
-        return obj;
-    }
-    return Qnil;
-}
-
-static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_blob(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-}
-
-static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    VALUE type = Qnil;
-    duckdb_logical_type logical_type;
-
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
-    if (logical_type) {
-        type = LL2NUM(duckdb_enum_internal_type(logical_type));
-    }
-    return type;
-}
-
-static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    VALUE size = Qnil;
-    duckdb_logical_type logical_type;
-
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
-    if (logical_type) {
-        size = UINT2NUM(duckdb_enum_dictionary_size(logical_type));
-    }
-    return size;
-}
-
-static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx) {
-    rubyDuckDBResult *ctx;
-    VALUE value = Qnil;
-    duckdb_logical_type logical_type;
-    char *p;
-
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
-    if (logical_type) {
-        p = duckdb_enum_dictionary_value(logical_type, NUM2LL(idx));
-        if (p) {
-            value = rb_utf8_str_new_cstr(p);
-            duckdb_free(p);
-        }
-    }
-    return value;
 }
 
 VALUE create_result(void) {
@@ -407,25 +78,145 @@ void init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
     rb_define_alloc_func(cDuckDBResult, allocate);
 
-    rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
-    rb_define_method(cDuckDBResult, "row_count", duckdb_result_row_count, 0);
-    rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
-    rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
-    rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
-    rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2);
-    rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2);
-    rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2);
-    rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2);
-    rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
-    rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
-    rb_define_private_method(cDuckDBResult, "__to_hugeint_internal", duckdb_result___to_hugeint_internal, 2);
-    rb_define_private_method(cDuckDBResult, "__to_decimal_internal", duckdb_result___to_decimal_internal, 2);
-    rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
-    rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
-    rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
-    rb_define_private_method(cDuckDBResult, "_to_string_internal", duckdb_result__to_string_internal, 2);
-    rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2);
-    rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
-    rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
-    rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
+    /* rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0); */
+    /* rb_define_method(cDuckDBResult, "row_count", duckdb_result_row_count, 0); */
+    /* rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0); */
+    /* rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0); */
+    rb_define_method(cDuckDBResult, "each", rb_duckdb_rows, 0);
+}
+
+static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
+    uint64_t *validity = duckdb_vector_get_validity(vector);
+    if (!duckdb_validity_row_is_valid(validity, row_idx)) {
+        return Qnil;
+    }
+
+    // FIXME - we need to free this logical type
+    duckdb_logical_type ty = duckdb_vector_get_column_type(vector);
+    duckdb_type type_id = duckdb_get_type_id(ty);
+    void* vector_data = duckdb_vector_get_data(vector);
+
+    switch(type_id) {
+        case DUCKDB_TYPE_INVALID:
+            return Qnil;
+        case DUCKDB_TYPE_BOOLEAN:
+            return (((bool*) vector_data)[row_idx]) ? Qtrue : Qfalse;
+        case DUCKDB_TYPE_TINYINT:
+            return LL2NUM(((int8_t *) vector_data)[row_idx]);
+        case DUCKDB_TYPE_SMALLINT:
+            return LL2NUM(((int16_t *) vector_data)[row_idx]);
+        case DUCKDB_TYPE_INTEGER:
+            return LL2NUM(((int32_t *) vector_data)[row_idx]);
+        case DUCKDB_TYPE_BIGINT:
+            return LL2NUM(((int64_t *) vector_data)[row_idx]);
+        case DUCKDB_TYPE_HUGEINT:
+            // not done
+        case DUCKDB_TYPE_FLOAT:
+            return rb_float_new((((float *) vector_data)[row_idx]));
+        case DUCKDB_TYPE_DOUBLE:
+            return rb_float_new((((double *) vector_data)[row_idx]));
+        case DUCKDB_TYPE_DATE:
+            return vector_date(vector_data, row_idx);
+        case DUCKDB_TYPE_TIMESTAMP:
+            return vector_timestamp(vector_data, row_idx);
+        case DUCKDB_TYPE_INTERVAL:
+            // not done
+        case DUCKDB_TYPE_VARCHAR:
+        case DUCKDB_TYPE_BLOB:
+            return vector_blob(vector_data, row_idx);
+        case DUCKDB_TYPE_DECIMAL:
+            return vector_decimal(ty, vector_data, row_idx);
+        case DUCKDB_TYPE_LIST:
+            return vector_list(vector, row_idx);
+        case DUCKDB_TYPE_MAP:
+        case DUCKDB_TYPE_STRUCT:
+            return vector_struct(ty, vector, row_idx);
+        case DUCKDB_TYPE_UUID:
+            // this is the same as the hugeint, we just flip the sign bit
+        default:
+            return Qnil;
+    }
+}
+
+const int stringInlineLength = 12;
+
+static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
+    duckdb_timestamp ts = ((duckdb_timestamp *)vector_data)[row_idx];
+    return rb_time_new(ts.micros, 0);
+}
+
+static VALUE vector_blob(void* vector_data, idx_t row_idx) {
+    duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
+    if(duckdb_string_is_inlined(s)) {
+        return rb_str_new2(s.value.inlined.inlined);
+    } else {
+        return rb_str_new2(s.value.pointer.ptr);
+    }
+}
+
+static VALUE vector_date(void *vector_data, idx_t row_idx) {
+    duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
+    VALUE cTime = rb_const_get(rb_cObject, rb_intern("Time"));
+    VALUE time = rb_funcall(
+        cTime,
+        rb_intern("new"),
+        LL2NUM(date.year),  // Year
+        LL2NUM(date.month), // Month
+        LL2NUM(date.day),   // Day
+        0,                  // Hour
+        0,                  // Min
+        0,                  // Sec
+        0                   // Zone - UTC
+    );
+    return time;
+}
+
+static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
+    uint8_t scale = duckdb_decimal_scale(ty);
+    uint8_t width = duckdb_decimal_scale(ty);
+    duckdb_hugeint value;
+    switch(duckdb_decimal_internal_type(ty)) {
+        case DUCKDB_TYPE_SMALLINT:
+            value.lower = ((uint16_t *) vector_data)[row_idx];
+        case DUCKDB_TYPE_INTEGER:
+            value.lower = ((uint64_t *) vector_data)[row_idx];
+        case DUCKDB_TYPE_BIGINT:
+            value.lower = ((uint64_t *) vector_data)[row_idx];
+        case DUCKDB_TYPE_HUGEINT:
+            value = ((duckdb_hugeint *) vector_data)[row_idx];
+        default:
+            return 0;
+    }
+    duckdb_decimal decimal = { width, scale, value };
+    /* return float64(C.duckdb_decimal_to_double(decimal)), nil */
+    // we need to pass the digits to big decimal for this to work
+    return rb_funcall(rb_mKernel,rb_intern("BigDecimal"), duckdb_decimal_to_double(decimal), 0);
+}
+
+static VALUE vector_list(duckdb_vector vector, idx_t row_idx) {
+   // Lists are stored as vectors within vectors
+   duckdb_vector child_vector = duckdb_list_vector_get_child(vector);
+   void* vector_data = duckdb_vector_get_data(vector);
+   duckdb_list_entry list_entry = ((duckdb_list_entry *)vector_data)[row_idx];
+   VALUE converted = rb_ary_new2(list_entry.length);
+
+   for (idx_t i = list_entry.offset; i < list_entry.offset + list_entry.length; ++i) {
+       VALUE child = vector_value(child_vector, i);
+       rb_ary_push(converted, child);
+   }
+
+   return converted;
+}
+
+static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
+    VALUE hash = rb_hash_new();
+    idx_t child_count = duckdb_struct_type_child_count(ty);
+    for (idx_t i = 0; i < child_count; ++i) {
+        VALUE key = rb_str_new2(duckdb_struct_type_child_name(ty, i));
+        duckdb_vector child_vector = duckdb_struct_vector_get_child(vector, i);
+        VALUE value = vector_value(child_vector, i);
+        rb_hash_aset(hash, key, value);
+    }
+
+    return hash;
 }
