@@ -18,6 +18,9 @@ def check_duckdb_library(func, version)
   raise msg
 end
 
+CONFIG['optflags'] = "-O0"
+CONFIG['debugflags'] = "-ggdb3"
+
 dir_config('duckdb')
 
 check_duckdb_library('duckdb_pending_prepared', '0.5.0')
