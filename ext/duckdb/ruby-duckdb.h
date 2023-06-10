@@ -4,12 +4,12 @@
 #include "ruby.h"
 #include <duckdb.h>
 
-#ifdef HAVE_DUCKDB_VALUE_STRING
-#define HAVE_DUCKDB_H_GE_V060 1
-#endif
-
 #ifdef HAVE_DUCKDB_EXTRACT_STATEMENTS
 #define HAVE_DUCKDB_H_GE_V070 1
+#endif
+
+#ifdef HAVE_DUCKDB_STRING_IS_INLINED
+#define HAVE_DUCKDB_H_GE_V080 1
 #endif
 
 #include "./error.h"

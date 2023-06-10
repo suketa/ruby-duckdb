@@ -20,12 +20,12 @@ end
 
 dir_config('duckdb')
 
-check_duckdb_library('duckdb_pending_prepared', '0.5.0')
-
-# check duckdb >= 0.6.0
-have_func('duckdb_value_string', 'duckdb.h')
+check_duckdb_library('duckdb_extract_statements', '0.7.0')
 
 # check duckdb >= 0.7.0
 have_func('duckdb_extract_statements', 'duckdb.h')
+
+# check duckdb >= 0.8.0
+have_func('duckdb_string_is_inlined', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')
