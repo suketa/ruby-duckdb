@@ -160,14 +160,16 @@ static VALUE vector_date(void *vector_data, idx_t row_idx) {
     VALUE time = rb_funcall(
         cTime,
         rb_intern("new"),
+        7,
         LL2NUM(date.year),  // Year
         LL2NUM(date.month), // Month
         LL2NUM(date.day),   // Day
-        0,                  // Hour
-        0,                  // Min
-        0,                  // Sec
-        0                   // Zone - UTC
+        LL2NUM(0),                  // Hour
+        LL2NUM(0),                  // Min
+        LL2NUM(0),                  // Sec
+        LL2NUM(0)                   // Zone - UTC
     );
+
     return time;
 }
 
