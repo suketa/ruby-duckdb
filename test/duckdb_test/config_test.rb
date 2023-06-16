@@ -39,14 +39,24 @@ module DuckDBTest
 
     def test_set_config
       config = DuckDB::Config.new
-      config.set_config('access_mode', 'READ_ONLY')
+      assert_instance_of(DuckDB::Config, config.set_config('access_mode', 'READ_ONLY'))
 
       assert_raises(DuckDB::Error) do
         config.set_config('access_mode', 'INVALID_VALUE')
       end
+    end
 
-      assert_raises(DuckDB::Error) do
-        config.set_config('invalid-key', 'READ_ONLY')
+    def test_set_invalid_option
+      config = DuckDB::Config.new
+      if Gem::Version.new('0.8.1') <= DuckDB::LIBRARY_VERSION
+        assert_instance_of(DuckDB::Config, config.set_config('aaa_invalid_option', 'READ_ONLY'))
+        assert_raises(DuckDB::Error) do
+          DuckDB::Database.open(nil, config)
+        end
+      else
+        assert_raises(DuckDB::Error) do
+          config.set_config('aaa_invalid_option', 'READ_ONLY')
+        end
       end
     end
   end

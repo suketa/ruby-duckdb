@@ -1,5 +1,10 @@
 # ChangeLog
 
+## Breaking Change
+
+- DuckDB::Config.set_config does not raise exception when invalid key specified.
+  Instead, DuckDB::Database.open raises DuckDB::Error with invalid key configuration.
+
 # 0.8.0
 - bump duckdb to 0.8.0
 - add DuckDB::Result#_to_decimal_internal
