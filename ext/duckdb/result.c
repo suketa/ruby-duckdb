@@ -36,6 +36,8 @@ static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE co
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
+static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
+static VALUE duckdb_result_stream_each(VALUE oDuckDBResult);
 
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
@@ -383,6 +385,89 @@ VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
 
+static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
+    uint64_t *validity;
+    duckdb_logical_type ty;
+    duckdb_type type_id;
+    void* vector_data;
+    VALUE obj = Qnil;
+
+    validity = duckdb_vector_get_validity(vector);
+    if (!duckdb_validity_row_is_valid(validity, row_idx)) {
+        return Qnil;
+    }
+
+    ty = duckdb_vector_get_column_type(vector);
+    type_id = duckdb_get_type_id(ty);
+    vector_data = duckdb_vector_get_data(vector);
+
+    switch(type_id) {
+        case DUCKDB_TYPE_INVALID:
+            obj = Qnil;
+            break;
+        case DUCKDB_TYPE_BOOLEAN:
+            obj = (((bool*) vector_data)[row_idx]) ? Qtrue : Qfalse;
+            break;
+        case DUCKDB_TYPE_TINYINT:
+            obj = INT2FIX(((int8_t *) vector_data)[row_idx]);
+            break;
+        case DUCKDB_TYPE_SMALLINT:
+            obj = INT2FIX(((int16_t *) vector_data)[row_idx]);
+            break;
+        case DUCKDB_TYPE_INTEGER:
+            obj = INT2NUM(((int32_t *) vector_data)[row_idx]);
+            break;
+        case DUCKDB_TYPE_BIGINT:
+            obj = LL2NUM(((int64_t *) vector_data)[row_idx]);
+            break;
+        default:
+            obj = Qnil;
+    }
+
+    duckdb_destroy_logical_type(&ty);
+    return obj;
+}
+
+static VALUE duckdb_result_stream_each(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    VALUE row;
+    idx_t col_count;
+    idx_t row_count;
+    idx_t chunk_count;
+    idx_t col_idx;
+    idx_t row_idx;
+    idx_t chunk_idx;
+    duckdb_data_chunk chunk;
+    duckdb_vector vector;
+    VALUE val;
+
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+
+    col_count = duckdb_column_count(&(ctx->result));
+    chunk_count = duckdb_result_chunk_count(ctx->result);
+
+    fprintf(stderr, "col_count: %ld\n", col_count);
+    fprintf(stderr, "chunk_count: %ld\n", chunk_count);
+
+    RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
+
+    for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
+        chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
+        row_count = duckdb_data_chunk_get_size(chunk);
+        for (row_idx = 0; row_idx < row_count; row_idx++) {
+            row = rb_ary_new2(col_count);
+            for (col_idx = 0; col_idx < col_count; col_idx++) {
+                vector = duckdb_data_chunk_get_vector(chunk, col_idx);
+                val = vector_value(vector, row_idx);
+                rb_ary_store(row, col_idx, val);
+            }
+            rb_yield(row);
+        }
+        duckdb_destroy_data_chunk(&chunk);
+    }
+    return Qnil;
+}
+
 void init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
     rb_define_alloc_func(cDuckDBResult, allocate);
@@ -408,4 +493,5 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
+    rb_define_method(cDuckDBResult, "stream_each", duckdb_result_stream_each, 0);
 }
