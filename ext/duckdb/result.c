@@ -477,6 +477,25 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
             );
 }
 
+static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
+    duckdb_type type = duckdb_enum_internal_type(ty);
+    uint8_t index;
+    char *p;
+    VALUE value = Qnil;
+
+    switch(type) {
+        case DUCKDB_TYPE_UTINYINT:
+            index = ((uint8_t *) vector_data)[row_idx];
+            p = duckdb_enum_dictionary_value(ty, index);
+            value = rb_utf8_str_new_cstr(p);
+            duckdb_free(p);
+            break;
+        default:
+            rb_warn("Unknown enum internal type %d", type);
+    }
+    return value;
+}
+
 static VALUE vector_list(duckdb_vector vector, idx_t row_idx) {
    // Lists are stored as vectors within vectors
    duckdb_vector child_vector = duckdb_list_vector_get_child(vector);
@@ -566,6 +585,9 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
             break;
         case DUCKDB_TYPE_DECIMAL:
             obj = vector_decimal(ty, vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_ENUM:
+            obj = vector_enum(ty, vector_data, row_idx);
             break;
         case DUCKDB_TYPE_LIST:
             obj = vector_list(vector_data, row_idx);
