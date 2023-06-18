@@ -428,7 +428,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
     return obj;
 }
 
-static VALUE duckdb_result_stream_each(VALUE oDuckDBResult) {
+static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     VALUE row;
     idx_t col_count;
@@ -493,5 +493,5 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
-    rb_define_method(cDuckDBResult, "stream_each", duckdb_result_stream_each, 0);
+    rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
 }
