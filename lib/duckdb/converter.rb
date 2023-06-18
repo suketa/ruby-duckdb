@@ -4,6 +4,38 @@ module DuckDB
   module Converter
     HALF_HUGEINT = 1 << 64
 
+    module_function
+
+    def _to_date(year, month, day)
+      Time.new(year, month, day)
+    end
+
+    def _to_time(year, month, day, hour, minute, second, microsecond)
+      Time.local(year, month, day, hour, minute, second, microsecond)
+    end
+
+    def _to_hugeint_from_vector(lower, upper)
+      upper * Converter::HALF_HUGEINT + lower
+    end
+
+    def _to_decimal_from_vector(width, scale, lower, upper)
+      v = (upper * Converter::HALF_HUGEINT + lower).to_s
+      v[-scale, 0] = '.'
+      BigDecimal(v)
+    end
+
+    def _to_interval_from_vector(months, days, micros)
+      hash = { year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0 }
+      hash[:year] = months / 12
+      hash[:month] = months % 12
+      hash[:day] = days
+      hash[:hour] = micros / 3600_000_000
+      hash[:min] = (micros % 3600_000_000) / 60_000_000
+      hash[:sec] = (micros % 60_000_000) / 1_000_000
+      hash[:usec] = micros % 1_000_000
+      hash
+    end
+
     private
 
     def integer_to_hugeint(value)

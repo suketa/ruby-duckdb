@@ -42,11 +42,25 @@ module DuckDB
     alias column_size column_count
     alias row_size row_count
 
-    def each
-      return to_enum { row_size } unless block_given?
+    def self.use_chunk_each=(val)
+      raise DuckDB::Error, 'chunk_each is not available. Try to rebuild ruby-duckdb with duckdb >= 0.8.0.' unless instance_methods.include?(:chunk_each)
 
-      row_count.times do |row_index|
-        yield row(row_index)
+      @use_chunk_each = val
+    end
+
+    def self.use_chunk_each?
+      !!@use_chunk_each
+    end
+
+    def each
+      if self.class.use_chunk_each?
+        chunk_each { |row| yield row }
+      else
+        return to_enum { row_size } unless block_given?
+
+        row_count.times do |row_index|
+          yield row(row_index)
+        end
       end
     end
 

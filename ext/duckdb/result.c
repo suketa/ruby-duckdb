@@ -36,8 +36,11 @@ static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE co
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
+
+#ifdef HAVE_DUCKDB_H_GE_V080
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
-static VALUE duckdb_result_stream_each(VALUE oDuckDBResult);
+static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
+#endif
 
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
@@ -385,6 +388,123 @@ VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
 
+#ifdef HAVE_DUCKDB_H_GE_V080
+static VALUE vector_date(void *vector_data, idx_t row_idx) {
+    duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
+    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
+
+    return rb_funcall(mConverter, rb_intern("_to_date"), 3,
+            INT2FIX(date.year),
+            INT2FIX(date.month),
+            INT2FIX(date.day)
+            );
+}
+
+static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
+    duckdb_timestamp_struct data = duckdb_from_timestamp(((duckdb_timestamp *)vector_data)[row_idx]);
+    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
+    return rb_funcall(mConverter, rb_intern("_to_time"), 7,
+            INT2FIX(data.date.year),
+            INT2FIX(data.date.month),
+            INT2FIX(data.date.day),
+            INT2FIX(data.time.hour),
+            INT2FIX(data.time.min),
+            INT2FIX(data.time.sec),
+            INT2NUM(data.time.micros)
+            );
+}
+
+static VALUE vector_interval(void* vector_data, idx_t row_idx) {
+    duckdb_interval data = ((duckdb_interval *)vector_data)[row_idx];
+    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
+    return rb_funcall(mConverter, rb_intern("_to_interval_from_vector"), 3,
+            INT2NUM(data.months),
+            INT2NUM(data.days),
+            LL2NUM(data.micros)
+            );
+}
+
+static VALUE vector_blob(void* vector_data, idx_t row_idx) {
+    duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
+    if(duckdb_string_is_inlined(s)) {
+        return rb_str_new(s.value.inlined.inlined, s.value.inlined.length);
+    } else {
+        return rb_str_new(s.value.pointer.ptr, s.value.pointer.length);
+    }
+}
+
+static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
+    duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
+    if(duckdb_string_is_inlined(s)) {
+        return rb_str_new(s.value.inlined.inlined, s.value.inlined.length);
+    } else {
+        return rb_str_new(s.value.pointer.ptr, s.value.pointer.length);
+    }
+}
+
+static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
+    duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
+    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
+    return rb_funcall(mConverter, rb_intern("_to_hugeint_from_vector"), 2,
+            ULL2NUM(hugeint.lower),
+            LL2NUM(hugeint.upper)
+            );
+}
+
+static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
+    uint8_t width = duckdb_decimal_width(ty);
+    uint8_t scale = duckdb_decimal_scale(ty);
+    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
+    duckdb_type type = duckdb_decimal_internal_type(ty);
+    duckdb_hugeint value;
+
+    value.upper = 0;
+    value.lower = 0;
+
+    switch(duckdb_decimal_internal_type(ty)) {
+        case DUCKDB_TYPE_HUGEINT:
+            value = ((duckdb_hugeint *) vector_data)[row_idx];
+            break;
+        default:
+            rb_warn("Unknown decimal internal type %d", type);
+    }
+
+    return rb_funcall(mConverter, rb_intern("_to_decimal_from_vector"), 4,
+            INT2FIX(width),
+            INT2FIX(scale),
+            ULL2NUM(value.lower),
+            LL2NUM(value.upper),
+            );
+}
+
+static VALUE vector_list(duckdb_vector vector, idx_t row_idx) {
+   // Lists are stored as vectors within vectors
+   duckdb_vector child_vector = duckdb_list_vector_get_child(vector);
+   void* vector_data = duckdb_vector_get_data(vector);
+   duckdb_list_entry list_entry = ((duckdb_list_entry *)vector_data)[row_idx];
+   VALUE converted = rb_ary_new2(list_entry.length);
+
+   for (idx_t i = list_entry.offset; i < list_entry.offset + list_entry.length; ++i) {
+       VALUE child = vector_value(child_vector, i);
+       rb_ary_store(converted, i - list_entry.offset, child);
+   }
+
+   return converted;
+}
+
+static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
+    VALUE hash = rb_hash_new();
+    idx_t child_count = duckdb_struct_type_child_count(ty);
+    for (idx_t i = 0; i < child_count; ++i) {
+        VALUE key = rb_str_new2(duckdb_struct_type_child_name(ty, i));
+        duckdb_vector child_vector = duckdb_struct_vector_get_child(vector, i);
+        VALUE value = vector_value(child_vector, i);
+        rb_hash_aset(hash, key, value);
+    }
+
+    return hash;
+}
+
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
     uint64_t *validity;
     duckdb_logical_type ty;
@@ -420,7 +540,45 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
         case DUCKDB_TYPE_BIGINT:
             obj = LL2NUM(((int64_t *) vector_data)[row_idx]);
             break;
+        case DUCKDB_TYPE_HUGEINT:
+            obj = vector_hugeint(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_FLOAT:
+            obj = DBL2NUM((((float *) vector_data)[row_idx]));
+            break;
+        case DUCKDB_TYPE_DOUBLE:
+            obj = DBL2NUM((((double *) vector_data)[row_idx]));
+            break;
+        case DUCKDB_TYPE_DATE:
+            obj = vector_date(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_TIMESTAMP:
+            obj = vector_timestamp(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_INTERVAL:
+            obj = vector_interval(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_VARCHAR:
+            obj = vector_varchar(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_BLOB:
+            obj = vector_blob(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_DECIMAL:
+            obj = vector_decimal(ty, vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_LIST:
+            obj = vector_list(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_MAP:
+        case DUCKDB_TYPE_STRUCT:
+            obj = vector_struct(ty, vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_UUID:
+            obj = vector_hugeint(vector_data, row_idx);
+            break;
         default:
+            rb_warn("Unknown type %d", type_id);
             obj = Qnil;
     }
 
@@ -446,9 +604,6 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     col_count = duckdb_column_count(&(ctx->result));
     chunk_count = duckdb_result_chunk_count(ctx->result);
 
-    fprintf(stderr, "col_count: %ld\n", col_count);
-    fprintf(stderr, "chunk_count: %ld\n", chunk_count);
-
     RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
 
     for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
@@ -467,6 +622,7 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     }
     return Qnil;
 }
+#endif
 
 void init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
@@ -493,5 +649,7 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
+#ifdef HAVE_DUCKDB_H_GE_V080
     rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
+#endif
 }
