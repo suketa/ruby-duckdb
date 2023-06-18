@@ -473,7 +473,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
             INT2FIX(width),
             INT2FIX(scale),
             ULL2NUM(value.lower),
-            LL2NUM(value.upper),
+            LL2NUM(value.upper)
             );
 }
 
