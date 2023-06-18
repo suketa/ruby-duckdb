@@ -38,6 +38,16 @@ static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
 
 #ifdef HAVE_DUCKDB_H_GE_V080
+static VALUE vector_date(void *vector_data, idx_t row_idx);
+static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
+static VALUE vector_interval(void* vector_data, idx_t row_idx);
+static VALUE vector_blob(void* vector_data, idx_t row_idx);
+static VALUE vector_varchar(void* vector_data, idx_t row_idx);
+static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
+static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
+static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
+static VALUE vector_list(duckdb_vector vector, idx_t row_idx);
+static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
 #endif
@@ -487,8 +497,10 @@ static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_id
         case DUCKDB_TYPE_UTINYINT:
             index = ((uint8_t *) vector_data)[row_idx];
             p = duckdb_enum_dictionary_value(ty, index);
-            value = rb_utf8_str_new_cstr(p);
-            duckdb_free(p);
+            if (p) {
+                value = rb_utf8_str_new_cstr(p);
+                duckdb_free(p);
+            }
             break;
         default:
             rb_warn("Unknown enum internal type %d", type);
