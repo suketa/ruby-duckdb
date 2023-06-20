@@ -47,6 +47,7 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
+static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
@@ -511,39 +512,67 @@ static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_id
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
     // Lists are stored as vectors within vectors
 
-    rb_raise(eDuckDBError, "ruby-duckdb does not support List yet");
-    return Qnil;
-    /*
-     * FIXME: The following code does not work well.
-     *        We need to get the child element from the vector.
-     */
-#if 0 // FIXME
     VALUE ary = Qnil;
     VALUE element = Qnil;
     idx_t i;
 
+    // rb_warn("ruby-duckdb does not support List yet");
+
     duckdb_logical_type child_logical_type = duckdb_list_type_child_type(ty);
-    duckdb_type child_type = duckdb_get_type_id(child_logical_type);
+    // duckdb_type child_type = duckdb_get_type_id(child_logical_type);
 
     duckdb_list_entry list_entry = ((duckdb_list_entry *)vector)[row_idx];
     ary = rb_ary_new2(list_entry.length);
+
     for (i = list_entry.offset; i < list_entry.offset + list_entry.length; ++i) {
-        // FIXME: How to get the child element?
+        /*
+         * FIXME: How to get the child element?
+         */
+        // element = ???
         rb_ary_store(ary, i - list_entry.offset, element);
     }
     duckdb_destroy_logical_type(&child_logical_type);
     return ary;
-#endif
+}
+
+static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
+    VALUE hash = rb_hash_new();
+
+    duckdb_logical_type key_logical_type = duckdb_map_type_key_type(ty);
+    duckdb_logical_type value_logical_type = duckdb_map_type_value_type(ty);
+    // duckdb_type key_type = duckdb_get_type_id(key_logical_type);
+    // duckdb_type value_type = duckdb_get_type_id(value_logical_type);
+
+    /*
+     * FIXME: How to get key and value?
+     *
+     * rb_hash_aset(hash, key, value);
+     */
+    duckdb_destroy_logical_type(&key_logical_type);
+    duckdb_destroy_logical_type(&value_logical_type);
+    return hash;
 }
 
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
     VALUE hash = rb_hash_new();
+    VALUE value = Qnil;
+    VALUE key = Qnil;
+    char *p;
+
     idx_t child_count = duckdb_struct_type_child_count(ty);
+
     for (idx_t i = 0; i < child_count; ++i) {
-        VALUE key = rb_str_new2(duckdb_struct_type_child_name(ty, i));
-        duckdb_vector child_vector = duckdb_struct_vector_get_child(vector, i);
-        VALUE value = vector_value(child_vector, i);
-        rb_hash_aset(hash, key, value);
+        p = duckdb_struct_type_child_name(ty, i);
+        if (p) {
+            key = rb_str_new2(p);
+            // FIXME
+            // How to get Struct values?
+            // value = ???
+            // duckdb_vector child_vector = duckdb_struct_vector_get_child(vector, i);
+            // VALUE value = vector_value(child_vector, i);
+            rb_hash_aset(hash, key, value);
+            duckdb_free(p);
+        }
     }
 
     return hash;
@@ -618,6 +647,8 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
             obj = vector_list(ty, vector_data, row_idx);
             break;
         case DUCKDB_TYPE_MAP:
+            obj = vector_map(ty, vector_data, row_idx);
+            break;
         case DUCKDB_TYPE_STRUCT:
             obj = vector_struct(ty, vector_data, row_idx);
             break;
