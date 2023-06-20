@@ -29,11 +29,16 @@ module DuckDB
       hash[:year] = months / 12
       hash[:month] = months % 12
       hash[:day] = days
-      hash[:hour] = micros / 3600_000_000
-      hash[:min] = (micros % 3600_000_000) / 60_000_000
+      hash[:hour] = micros / 3_600_000_000
+      hash[:min] = (micros % 3_600_000_000) / 60_000_000
       hash[:sec] = (micros % 60_000_000) / 1_000_000
       hash[:usec] = micros % 1_000_000
       hash
+    end
+
+    def _to_uuid_from_vector(lower, upper)
+      str = ((upper * Converter::HALF_HUGEINT) + lower).to_s(16).rjust(32, '0')
+      "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
     end
 
     private

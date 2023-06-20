@@ -49,6 +49,7 @@ static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_id
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
+static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
 #endif
@@ -578,6 +579,15 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
     return hash;
 }
 
+static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
+    duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
+    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
+    return rb_funcall(mConverter, rb_intern("_to_uuid_from_vector"), 2,
+            ULL2NUM(hugeint.lower),
+            LL2NUM(hugeint.upper ^ ((int64_t)1 << 63))
+            );
+}
+
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
     uint64_t *validity;
     duckdb_logical_type ty;
@@ -653,7 +663,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
             obj = vector_struct(ty, vector_data, row_idx);
             break;
         case DUCKDB_TYPE_UUID:
-            obj = vector_hugeint(vector_data, row_idx);
+            obj = vector_uuid(vector_data, row_idx);
             break;
         default:
             rb_warn("Unknown type %d", type_id);
