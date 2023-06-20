@@ -43,7 +43,7 @@ module DuckDB
     alias row_size row_count
 
     def self.use_chunk_each=(val)
-      raise DuckDB::Error, 'chunk_each is not available. Try to rebuild ruby-duckdb with duckdb >= 0.8.0.' unless instance_methods.include?(:chunk_each)
+      raise DuckDB::Error, 'chunk_each is not available. Install duckdb >= 0.8.0 and rerun `gem install duckdb`.' unless instance_methods.include?(:chunk_each)
 
       @use_chunk_each = val
     end
