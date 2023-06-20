@@ -37,7 +37,7 @@ module DuckDB
     end
 
     def _to_uuid_from_vector(lower, upper)
-      str = ((upper * Converter::HALF_HUGEINT) + lower).to_s(16).rjust(32, '0')
+      str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
       "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
     end
 
