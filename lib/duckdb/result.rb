@@ -54,6 +54,8 @@ module DuckDB
 
     def each
       if self.class.use_chunk_each?
+        return chunk_each unless block_given?
+
         chunk_each { |row| yield row }
       else
         return to_enum { row_size } unless block_given?
