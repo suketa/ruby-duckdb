@@ -448,9 +448,9 @@ static VALUE vector_blob(void* vector_data, idx_t row_idx) {
 static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
     duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
     if(duckdb_string_is_inlined(s)) {
-        return rb_str_new(s.value.inlined.inlined, s.value.inlined.length);
+        return rb_utf8_str_new(s.value.inlined.inlined, s.value.inlined.length);
     } else {
-        return rb_str_new(s.value.pointer.ptr, s.value.pointer.length);
+        return rb_utf8_str_new(s.value.pointer.ptr, s.value.pointer.length);
     }
 }
 
