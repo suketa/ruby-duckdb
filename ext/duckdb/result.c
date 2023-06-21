@@ -584,7 +584,7 @@ static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
     VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
     return rb_funcall(mConverter, rb_intern("_to_uuid_from_vector"), 2,
             ULL2NUM(hugeint.lower),
-            LL2NUM(hugeint.upper ^ ((int64_t)1 << 63))
+            LL2NUM(hugeint.upper)
             );
 }
 
