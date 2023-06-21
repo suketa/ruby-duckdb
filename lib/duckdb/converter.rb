@@ -3,6 +3,7 @@
 module DuckDB
   module Converter
     HALF_HUGEINT = 1 << 64
+    FLIP_HUGEINT = 1 << 63
 
     module_function
 
@@ -15,11 +16,11 @@ module DuckDB
     end
 
     def _to_hugeint_from_vector(lower, upper)
-      upper * Converter::HALF_HUGEINT + lower
+      (upper * HALF_HUGEINT) + lower
     end
 
-    def _to_decimal_from_vector(width, scale, lower, upper)
-      v = (upper * Converter::HALF_HUGEINT + lower).to_s
+    def _to_decimal_from_vector(_width, scale, lower, upper)
+      v = _to_hugeint_from_vector(lower, upper).to_s
       v[-scale, 0] = '.'
       BigDecimal(v)
     end
@@ -37,6 +38,9 @@ module DuckDB
     end
 
     def _to_uuid_from_vector(lower, upper)
+      upper = upper ^ FLIP_HUGEINT
+      upper += HALF_HUGEINT if upper.negative?
+
       str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
       "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
     end
