@@ -1,5 +1,21 @@
 # ChangeLog
 
+- add `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each=`, `DuckDB::Result#use_chunk_each?`
+  The current behavior of `DuckDB::Result#each` is same as older version.
+  But `DuckDB::Result#each` behavior will be changed like as `DuckDB::Result#chunk_each` in near future release.
+  And there are some breaking changes.
+  Write `DuckdDB::Result.use_chunk_each = true` if you want to try new behavior.
+    ```
+    DuckDB::Result.use_chunk_each = true
+
+    result = con.query('SELECT ....')
+    result.each do |record| # <= each method behavior is same as DuckDB::Result#chunk_each
+      ...
+    end
+    ```
+- support enum type in DuckDB::Result#chunk_each.
+- support uuid type in DuckDB::Result#chunk_each.
+
 ## Breaking Change
 
 - DuckDB::Config.set_config does not raise exception when invalid key specified.

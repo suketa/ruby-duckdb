@@ -1,8 +1,51 @@
 # frozen_string_literal: true
 
+require 'date'
+
 module DuckDB
   module Converter
     HALF_HUGEINT = 1 << 64
+    FLIP_HUGEINT = 1 << 63
+
+    module_function
+
+    def _to_date(year, month, day)
+      Date.new(year, month, day)
+    end
+
+    def _to_time(year, month, day, hour, minute, second, microsecond)
+      Time.local(year, month, day, hour, minute, second, microsecond)
+    end
+
+    def _to_hugeint_from_vector(lower, upper)
+      (upper * HALF_HUGEINT) + lower
+    end
+
+    def _to_decimal_from_vector(_width, scale, lower, upper)
+      v = _to_hugeint_from_vector(lower, upper).to_s
+      v[-scale, 0] = '.'
+      BigDecimal(v)
+    end
+
+    def _to_interval_from_vector(months, days, micros)
+      hash = { year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0 }
+      hash[:year] = months / 12
+      hash[:month] = months % 12
+      hash[:day] = days
+      hash[:hour] = micros / 3_600_000_000
+      hash[:min] = (micros % 3_600_000_000) / 60_000_000
+      hash[:sec] = (micros % 60_000_000) / 1_000_000
+      hash[:usec] = micros % 1_000_000
+      hash
+    end
+
+    def _to_uuid_from_vector(lower, upper)
+      upper = upper ^ FLIP_HUGEINT
+      upper += HALF_HUGEINT if upper.negative?
+
+      str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
+      "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
+    end
 
     private
 
