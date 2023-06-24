@@ -59,7 +59,6 @@ module DuckDBTest
         assert_equal(['sad', 'ok', 'happy', '𝘾𝝾օɭ 😎'], @result.enum_dictionary_values(1))
       end
 
-      # FIXME
       def test_enum_insert_select
         if DuckDB::Result.instance_methods.include?(:chunk_each)
           assert_equal([1, 'sad'], @result.first)
