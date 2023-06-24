@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'date'
+
 module DuckDB
   module Converter
     HALF_HUGEINT = 1 << 64
@@ -8,7 +10,7 @@ module DuckDB
     module_function
 
     def _to_date(year, month, day)
-      Time.new(year, month, day)
+      Date.new(year, month, day)
     end
 
     def _to_time(year, month, day, hour, minute, second, microsecond)
