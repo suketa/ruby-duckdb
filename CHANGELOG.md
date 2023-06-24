@@ -15,6 +15,7 @@
       ...
     end
     ```
+  Thanks to @stephenprater.
 - support enum type in DuckDB::Result#chunk_each.
 - support uuid type in DuckDB::Result#chunk_each.
 
