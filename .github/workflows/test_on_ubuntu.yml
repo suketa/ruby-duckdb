@@ -58,6 +58,9 @@ jobs:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
         rake test
+    - name: check valgrind
+      run: |
+        valgrind --version
 
   post-test:
     name: All tests passed on Ubuntu
