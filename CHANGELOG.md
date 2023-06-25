@@ -1,5 +1,10 @@
 # ChangeLog
 
+- fix memory leak of:
+  - `DuckDB::Result#_enum_dictionary_value`
+  - `DuckDB::Result#_enum_dictionary_size`
+  - `DuckDB::Result#_enum_internal_type`
+
 # 0.8.1
 - bump duckdb to 0.8.1
 - add `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each=`, `DuckDB::Result#use_chunk_each?`
