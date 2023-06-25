@@ -7,6 +7,8 @@ ruby_memcheck_avaiable = begin
 
 require 'rake/testtask'
 
+puts "ruby_memcheck_avaiable: #{ruby_memcheck_avaiable}"
+
 if ruby_memcheck_avaiable
   RubyMemcheck.config(
     binary_name: 'duckdb/duckdb_native',
