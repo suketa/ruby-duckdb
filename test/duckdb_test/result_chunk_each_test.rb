@@ -21,10 +21,10 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
       ENUM_SQL = "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
       TEST_TABLES = [
         #      DB Type  ,  DB declartion                 String Rep                                  Ruby Type             Ruby Value
-        [:ok, 'BOOLEAN' , 'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
-        [:ok, 'TINYINT' , 'TINYINT',                     1,                                          Integer,              1                                                   ],
-        [:ok, 'TINYINT' , 'TINYINT',                     127,                                        Integer,              127                                                 ],
-        [:ok, 'TINYINT' , 'TINYINT',                     -128,                                       Integer,              -128                                                ],
+        [:ok, 'BOOLEAN',  'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
+        [:ok, 'TINYINT',  'TINYINT',                     1,                                          Integer,              1                                                   ],
+        [:ok, 'TINYINT',  'TINYINT',                     127,                                        Integer,              127                                                 ],
+        [:ok, 'TINYINT',  'TINYINT',                     -128,                                       Integer,              -128                                                ],
         [:ok, 'SMALLINT', 'SMALLINT',                    32767,                                      Integer,              32_767                                              ],
         [:ok, 'INTEGER',  'INTEGER',                     2147483647,                                 Integer,              2_147_483_647                                       ],
         [:ok, 'BIGINT',   'BIGINT',                      9223372036854775807,                        Integer,              9_223_372_036_854_775_807                           ],
