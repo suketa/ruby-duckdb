@@ -2,6 +2,7 @@ require 'bundler/gem_tasks'
 require 'rake/testtask'
 ruby_memcheck_avaiable = begin
                            require 'ruby_memcheck'
+                           true
                          rescue LoadError
                            false
                          end
