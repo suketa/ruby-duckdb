@@ -1,13 +1,11 @@
 require 'bundler/gem_tasks'
+require 'rake/testtask'
 ruby_memcheck_avaiable = begin
                            require 'ruby_memcheck'
                          rescue LoadError
                            false
                          end
 
-require 'rake/testtask'
-
-puts "ruby_memcheck_avaiable: #{ruby_memcheck_avaiable}"
 
 if ruby_memcheck_avaiable
   RubyMemcheck.config(
