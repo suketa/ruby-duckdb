@@ -61,6 +61,7 @@ module DuckDBTest
 
       def test_enum_insert_select
         if DuckDB::Result.instance_methods.include?(:chunk_each)
+          # TODO: fix memory leak during chunk_each (dubkdb_result_get_chunk)
           assert_equal([1, 'sad'], @result.first)
         end
       end

@@ -362,6 +362,7 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
     if (logical_type) {
         type = LL2NUM(duckdb_enum_internal_type(logical_type));
     }
+    duckdb_destroy_logical_type(&logical_type);
     return type;
 }
 
@@ -375,6 +376,7 @@ static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_
     if (logical_type) {
         size = UINT2NUM(duckdb_enum_dictionary_size(logical_type));
     }
+    duckdb_destroy_logical_type(&logical_type);
     return size;
 }
 
@@ -393,6 +395,7 @@ static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col
             duckdb_free(p);
         }
     }
+    duckdb_destroy_logical_type(&logical_type);
     return value;
 }
 
