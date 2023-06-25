@@ -1,19 +1,41 @@
-require "bundler/gem_tasks"
-require "rake/testtask"
+require 'bundler/gem_tasks'
+require 'rake/testtask'
+ruby_memcheck_avaiable = begin
+                           require 'ruby_memcheck'
+                           true
+                         rescue LoadError
+                           false
+                         end
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList["test/**/*_test.rb"]
+
+if ruby_memcheck_avaiable
+  RubyMemcheck.config(
+    binary_name: 'duckdb/duckdb_native',
+    valgrind_options: ['--max-threads=1000']
+  )
 end
 
-require "rake/extensiontask"
+test_config = lambda do |t|
+  t.libs << 'test'
+  t.libs << 'lib'
+  t.test_files = FileList['test/**/*_test.rb']
+end
 
-task :build => :compile
+Rake::TestTask.new(test: :compile, &test_config)
 
-Rake::ExtensionTask.new("duckdb_native") do |ext|
+if ruby_memcheck_avaiable
+  namespace :test do
+    RubyMemcheck::TestTask.new(valgrind: :compile, &test_config)
+  end
+end
+
+require 'rake/extensiontask'
+
+task build: :compile
+
+Rake::ExtensionTask.new('duckdb_native') do |ext|
   ext.ext_dir = 'ext/duckdb'
-  ext.lib_dir = "lib/duckdb"
+  ext.lib_dir = 'lib/duckdb'
 end
 
-task :default => [:clobber, :compile, :test]
+task default: %i[clobber compile test]
