@@ -1,12 +1,13 @@
 # ChangeLog
 
+- Result#chunk_each supports UTINYINT.
 - fix memory leak of:
   - `DuckDB::Result#_enum_dictionary_value`
   - `DuckDB::Result#_enum_dictionary_size`
   - `DuckDB::Result#_enum_internal_type`
 
 # 0.8.1
-- bump duckdb to 0.8.1
+- bump duckdb to 0.8.1.
 - add `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each=`, `DuckDB::Result#use_chunk_each?`
   The current behavior of `DuckDB::Result#each` is same as older version.
   But `DuckDB::Result#each` behavior will be changed like as `DuckDB::Result#chunk_each` in near future release.

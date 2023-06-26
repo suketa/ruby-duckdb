@@ -21,8 +21,10 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
       ENUM_SQL = "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
       TEST_TABLES = [
         #      DB Type  ,  DB declartion                 String Rep                                  Ruby Type             Ruby Value
-        [:ok, 'BOOLEAN' , 'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
-        [:ok, 'TINYINT' , 'TINYINT',                     1,                                          Integer,              1                                                   ],
+        [:ok, 'BOOLEAN',  'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
+        [:ok, 'TINYINT',  'TINYINT',                     1,                                          Integer,              1                                                   ],
+        [:ok, 'TINYINT',  'TINYINT',                     127,                                        Integer,              127                                                 ],
+        [:ok, 'TINYINT',  'TINYINT',                     -128,                                       Integer,              -128                                                ],
         [:ok, 'SMALLINT', 'SMALLINT',                    32767,                                      Integer,              32_767                                              ],
         [:ok, 'INTEGER',  'INTEGER',                     2147483647,                                 Integer,              2_147_483_647                                       ],
         [:ok, 'BIGINT',   'BIGINT',                      9223372036854775807,                        Integer,              9_223_372_036_854_775_807                           ],
@@ -37,6 +39,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'BLOB',     'BLOB',                        "'blob'",                                   String,               String.new('blob', encoding: 'ASCII-8BIT')          ],
         [:ok, 'ENUM',     'mood',                        "'happy'",                                  String,               'happy'                                             ],
         [:ok, 'UUID',     'UUID',                        "'#{UUID}'",                                String,               UUID                                                ],
+        [:ok, 'UTINYINT', 'UTINYINT',                    255,                                        Integer,              255                                                 ],
         # FIXME: LIST, MAP STRUCT values are always nil
         [:ng, 'LIST',     'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
         [:ng, 'LIST',     'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
