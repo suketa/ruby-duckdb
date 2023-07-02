@@ -36,6 +36,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'UINTEGER',  'UINTEGER',                    4294967295,                                 Integer,              4_294_967_295                                       ],
         [:ok, 'UBIGINT',   'UBIGINT',                     18446744073709551615,                       Integer,              18_446_744_073_709_551_615                          ],
         [:ok, 'HUGEINT',   'HUGEINT',                     170141183460469231731687303715884105727,    Integer,              170_141_183_460_469_231_731_687_303_715_884_105_727 ],
+        [:ok, 'HUGEINT',   'HUGEINT',                     -170141183460469231731687303715884105727,   Integer,             -170_141_183_460_469_231_731_687_303_715_884_105_727 ],
         [:ok, 'FLOAT',     'FLOAT',                       12345.375,                                  Float,                12_345.375                                          ],
         [:ok, 'DOUBLE',    'DOUBLE',                      123.456789,                                 Float,                123.456789                                          ],
         [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56'",                    Time,                 Time.new(2019,11,3,12,34,56)                        ],
