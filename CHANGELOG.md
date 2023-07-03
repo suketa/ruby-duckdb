@@ -1,6 +1,10 @@
 # ChangeLog
 
-- DuckDB::Result#chunk_each supports UTINYINT, USMALLINT.
+- DuckDB::Result#chunk_each supports:
+  - UTINYINT
+  - USMALLINT
+  - UINTEGER
+  - UBIGINT
 - fix memory leak of:
   - `DuckDB::Result#_enum_dictionary_value`
   - `DuckDB::Result#_enum_dictionary_size`

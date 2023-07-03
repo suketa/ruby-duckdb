@@ -632,6 +632,12 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
         case DUCKDB_TYPE_USMALLINT:
             obj = INT2FIX(((uint16_t *) vector_data)[row_idx]);
             break;
+        case DUCKDB_TYPE_UINTEGER:
+            obj = UINT2NUM(((uint32_t *) vector_data)[row_idx]);
+            break;
+        case DUCKDB_TYPE_UBIGINT:
+            obj = ULL2NUM(((uint64_t *) vector_data)[row_idx]);
+            break;
         case DUCKDB_TYPE_HUGEINT:
             obj = vector_hugeint(vector_data, row_idx);
             break;
