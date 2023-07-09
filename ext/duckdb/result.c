@@ -406,9 +406,8 @@ VALUE create_result(void) {
 #ifdef HAVE_DUCKDB_H_GE_V080
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
     duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
-    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
 
-    return rb_funcall(mConverter, rb_intern("_to_date"), 3,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_date"), 3,
             INT2FIX(date.year),
             INT2FIX(date.month),
             INT2FIX(date.day)
@@ -417,8 +416,7 @@ static VALUE vector_date(void *vector_data, idx_t row_idx) {
 
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
     duckdb_timestamp_struct data = duckdb_from_timestamp(((duckdb_timestamp *)vector_data)[row_idx]);
-    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
-    return rb_funcall(mConverter, rb_intern("_to_time"), 7,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_time"), 7,
             INT2FIX(data.date.year),
             INT2FIX(data.date.month),
             INT2FIX(data.date.day),
@@ -431,8 +429,7 @@ static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
 
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
     duckdb_interval data = ((duckdb_interval *)vector_data)[row_idx];
-    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
-    return rb_funcall(mConverter, rb_intern("_to_interval_from_vector"), 3,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_interval_from_vector"), 3,
             INT2NUM(data.months),
             INT2NUM(data.days),
             LL2NUM(data.micros)
@@ -459,8 +456,7 @@ static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
 
 static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
-    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
-    return rb_funcall(mConverter, rb_intern("_to_hugeint_from_vector"), 2,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_hugeint_from_vector"), 2,
             ULL2NUM(hugeint.lower),
             LL2NUM(hugeint.upper)
             );
@@ -469,7 +465,6 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
     uint8_t width = duckdb_decimal_width(ty);
     uint8_t scale = duckdb_decimal_scale(ty);
-    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
     duckdb_type type = duckdb_decimal_internal_type(ty);
     duckdb_hugeint value;
 
@@ -484,7 +479,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
             rb_warn("Unknown decimal internal type %d", type);
     }
 
-    return rb_funcall(mConverter, rb_intern("_to_decimal_from_vector"), 4,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_vector"), 4,
             INT2FIX(width),
             INT2FIX(scale),
             ULL2NUM(value.lower),
@@ -584,8 +579,7 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
-    VALUE mConverter = rb_const_get(mDuckDB, rb_intern("Converter"));
-    return rb_funcall(mConverter, rb_intern("_to_uuid_from_vector"), 2,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_uuid_from_vector"), 2,
             ULL2NUM(hugeint.lower),
             LL2NUM(hugeint.upper)
             );

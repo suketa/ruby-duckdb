@@ -19,6 +19,7 @@
 #include "./column.h"
 #include "./prepared_statement.h"
 #include "./util.h"
+#include "./converter.h"
 
 #include "./blob.h"
 #include "./appender.h"
@@ -30,5 +31,6 @@ extern VALUE cDuckDBConnection;
 extern VALUE cDuckDBBlob;
 extern VALUE cDuckDBConfig;
 extern VALUE eDuckDBError;
+extern VALUE mDuckDBConverter;
 
 #endif

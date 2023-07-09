@@ -23,4 +23,5 @@ Init_duckdb_native(void) {
     init_duckdb_blob();
     init_duckdb_appender();
     init_duckdb_config();
+    init_duckdb_converter();
 }
