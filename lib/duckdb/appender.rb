@@ -2,7 +2,7 @@
 
 require 'date'
 require 'time'
-require_relative './converter'
+require_relative 'converter'
 
 module DuckDB
   # The DuckDB::Appender encapsulates DuckDB Appender.
@@ -194,17 +194,9 @@ module DuckDB
       when TrueClass, FalseClass
         append_bool(value)
       when Time
-        if respond_to?(:append_timestamp)
-          append_timestamp(value)
-        else
-          append_varchar(value.strftime('%Y-%m-%d %H:%M:%S.%N'))
-        end
+        append_timestamp(value)
       when Date
-        if respond_to?(:append_date)
-          append_date(value)
-        else
-          append_varchar(value.strftime('%Y-%m-%d'))
-        end
+        append_date(value)
       else
         raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
       end
