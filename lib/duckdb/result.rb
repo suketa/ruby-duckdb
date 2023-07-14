@@ -94,7 +94,7 @@ module DuckDB
 
     def _to_hugeint_internal(row, col)
       lower, upper = __to_hugeint_internal(row, col)
-      upper * Converter::HALF_HUGEINT + lower
+      (upper << Converter::HALF_HUGEINT_BIT) + lower
     end
 
     def _to_decimal(row, col)
