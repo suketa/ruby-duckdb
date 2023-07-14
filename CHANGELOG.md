@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.8.1.1
 - DuckDB::Result#chunk_each supports:
   - UTINYINT
   - USMALLINT
