@@ -36,5 +36,13 @@ module DuckDBTest
     def test_result_to_decimal_positive3
       do_result_to_decimal_test(123_456_789)
     end
+
+    def test_result_to_decimal_zero
+      do_result_to_decimal_test(0)
+    end
+
+    def test_result_to_decimal_one
+      do_result_to_decimal_test(1)
+    end
   end
 end

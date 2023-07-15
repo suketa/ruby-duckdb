@@ -3,5 +3,5 @@
 module DuckDB
   # The version string of ruby-duckdb.
   # Currently, ruby-duckdb is NOT semantic versioning.
-  VERSION = '0.8.1.1'
+  VERSION = '0.8.1.2'
 end
