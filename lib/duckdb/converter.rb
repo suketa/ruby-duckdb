@@ -102,7 +102,7 @@ module DuckDB
     end
 
     def hash_to__append_interval_args(hash)
-      months = hash['Y'] * 12 + hash['M']
+      months = (hash['Y'] * 12) + hash['M']
       days = hash['D']
       micros = (hash['H'] * 3600 + hash['TM'] * 60 + hash['S']) * 1_000_000 + hash['MS']
       [months, days, micros]
