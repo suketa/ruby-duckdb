@@ -102,10 +102,8 @@ module DuckDB
     end
 
     def _to_decimal_internal(row, col)
-      lower, upper, _width, scale = __to_decimal_internal(row, col)
-      v = (upper * Converter::HALF_HUGEINT + lower).to_s
-      v[-scale, 0] = '.' unless v == '0'
-      BigDecimal(v)
+      lower, upper, width, scale = __to_decimal_internal(row, col)
+      Converter._to_decimal_from_vector(width, scale, lower, upper)
     end
   end
 end
