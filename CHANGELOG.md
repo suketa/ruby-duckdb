@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 0.8.1.3
+- Fix BigDecimal conversion.
+
 # 0.8.1.2
 - Fix BigDecimal conversion when the value is 0.
   Thanks to shreeve.

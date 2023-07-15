@@ -44,5 +44,17 @@ module DuckDBTest
     def test_result_to_decimal_one
       do_result_to_decimal_test(1)
     end
+
+    def test_result_to_decimal_positive4
+      do_result_to_decimal_test(0.00000001)
+    end
+
+    def test_result_to_decimal_positive5
+      do_result_to_decimal_test(0.00000123)
+    end
+
+    def test_result_to_decimal_positive6
+      do_result_to_decimal_test(0.1)
+    end
   end
 end

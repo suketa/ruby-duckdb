@@ -23,7 +23,8 @@ module DuckDB
 
     def _to_decimal_from_vector(_width, scale, lower, upper)
       v = _to_hugeint_from_vector(lower, upper).to_s
-      v[-scale, 0] = '.' unless v == '0'
+      v = v.rjust(scale + 1, '0') if v.length < scale
+      v[-scale, 0] = '.'
       BigDecimal(v)
     end
 
