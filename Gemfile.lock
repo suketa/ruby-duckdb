@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    duckdb (0.8.1.1)
+    duckdb (0.8.1.2)
 
 GEM
   remote: https://rubygems.org/
@@ -9,10 +9,10 @@ GEM
     benchmark-ips (2.12.0)
     mini_portile2 (2.8.2)
     minitest (5.18.1)
-    nokogiri (1.15.2)
+    nokogiri (1.15.3)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.15.2-x86_64-linux)
+    nokogiri (1.15.3-x86_64-linux)
       racc (~> 1.4)
     racc (1.7.1)
     rake (13.0.6)
@@ -37,4 +37,4 @@ DEPENDENCIES
   stackprof
 
 BUNDLED WITH
-   2.4.10
+   2.4.17

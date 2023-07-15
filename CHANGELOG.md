@@ -1,5 +1,9 @@
 # ChangeLog
 
+# 0.8.1.2
+- Fix BigDecimal conversion when the value is 0.
+  Thanks to shreeve.
+
 # 0.8.1.1
 - DuckDB::Result#chunk_each supports:
   - UTINYINT
