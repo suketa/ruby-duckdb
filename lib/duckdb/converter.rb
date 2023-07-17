@@ -4,7 +4,8 @@ require 'date'
 
 module DuckDB
   module Converter
-    HALF_HUGEINT = 1 << 64
+    HALF_HUGEINT_BIT = 64
+    HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
     FLIP_HUGEINT = 1 << 63
 
     module_function
@@ -18,7 +19,7 @@ module DuckDB
     end
 
     def _to_hugeint_from_vector(lower, upper)
-      (upper * HALF_HUGEINT) + lower
+      (upper << HALF_HUGEINT_BIT) + lower
     end
 
     def _to_decimal_from_vector(_width, scale, lower, upper)
@@ -53,8 +54,8 @@ module DuckDB
     def integer_to_hugeint(value)
       case value
       when Integer
-        upper = value / HALF_HUGEINT
-        lower = value - upper * HALF_HUGEINT
+        upper = value >> HALF_HUGEINT_BIT
+        lower = value - (upper << HALF_HUGEINT_BIT)
         [lower, upper]
       else
         raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
@@ -104,7 +105,7 @@ module DuckDB
     def hash_to__append_interval_args(hash)
       months = (hash['Y'] * 12) + hash['M']
       days = hash['D']
-      micros = (hash['H'] * 3600 + hash['TM'] * 60 + hash['S']) * 1_000_000 + hash['MS']
+      micros = (((hash['H'] * 3600) + (hash['TM'] * 60) + hash['S']) * 1_000_000) + hash['MS']
       [months, days, micros]
     end
   end
