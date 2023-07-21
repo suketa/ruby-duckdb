@@ -63,43 +63,20 @@ module DuckDB
     end
 
     def iso8601_interval_to_hash(value)
-      digit = ''
-      time = false
       hash = {}
-      hash.default = 0
-
-      value.each_char do |c|
-        if '-0123456789.'.include?(c)
-          digit += c
-        elsif c == 'T'
-          time = true
-          digit = ''
-        elsif c == 'M'
-          m_interval_to_hash(hash, digit, time)
-          digit = ''
-        elsif c == 'S'
-          s_interval_to_hash(hash, digit)
-          digit = ''
-        elsif 'YDH'.include?(c)
-          hash[c] = digit.to_i
-          digit = ''
-        elsif c != 'P'
-          raise ArgumentError, "The argument `#{value}` can't be parse."
-        end
+      if /(-{0,1})P(-{0,1}\d+Y){0,1}(-{0,1}\d+M){0,1}(-{0,1}\d+D){0,1}T{0,1}(-{0,1}\d+H){0,1}(-{0,1}\d+M){0,1}((-{0,1}\d+)\.{0,1}(\d*)S){0,1}/ =~ value
+        hash['Y'] = Regexp.last_match[2].to_i
+        hash['M'] = Regexp.last_match[3].to_i
+        hash['D'] = Regexp.last_match[4].to_i
+        hash['H'] = Regexp.last_match[5].to_i
+        hash['TM'] = Regexp.last_match[6].to_i
+        hash['S'] = Regexp.last_match[8].to_i
+        hash['MS'] = Regexp.last_match[9].to_s.ljust(6, '0')[0, 6].to_i
+        hash['MS'] *= -1 if hash['S'].negative?
+      else
+        raise ArgumentError, "The argument `#{value}` can't be parse."
       end
       hash
-    end
-
-    def m_interval_to_hash(hash, digit, time)
-      key = time ? 'TM' : 'M'
-      hash[key] = digit.to_i
-    end
-
-    def s_interval_to_hash(hash, digit)
-      sec, msec = digit.split('.')
-      hash['S'] = sec.to_i
-      hash['MS'] = "#{msec}000000"[0, 6].to_i
-      hash['MS'] *= -1 if hash['S'].negative?
     end
 
     def hash_to__append_interval_args(hash)
