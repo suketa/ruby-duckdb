@@ -150,13 +150,16 @@ module DuckDB
     #     .flush
     #
     def append_interval(value)
-      raise ArgumentError, "Argument `#{value}` must be a string." unless value.is_a?(String)
+      value = case value
+              when String
+                Interval.iso8601_parse(value)
+              when Interval
+                value
+              else
+                raise ArgumentError, "Argument `#{value}` must be a string or DuckDB::Interval"
+              end
 
-      hash = iso8601_interval_to_hash(value)
-
-      months, days, micros = hash_to__append_interval_args(hash)
-
-      _append_interval(months, days, micros)
+      _append_interval(value.interval_months, value.interval_days, value.interval_micros)
     end
 
     #

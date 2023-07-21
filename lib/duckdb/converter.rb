@@ -62,29 +62,5 @@ module DuckDB
         raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
       end
     end
-
-    def iso8601_interval_to_hash(value)
-      hash = {}
-      if /(-{0,1})P(-{0,1}\d+Y){0,1}(-{0,1}\d+M){0,1}(-{0,1}\d+D){0,1}T{0,1}(-{0,1}\d+H){0,1}(-{0,1}\d+M){0,1}((-{0,1}\d+)\.{0,1}(\d*)S){0,1}/ =~ value
-        hash['Y'] = Regexp.last_match[2].to_i
-        hash['M'] = Regexp.last_match[3].to_i
-        hash['D'] = Regexp.last_match[4].to_i
-        hash['H'] = Regexp.last_match[5].to_i
-        hash['TM'] = Regexp.last_match[6].to_i
-        hash['S'] = Regexp.last_match[8].to_i
-        hash['MS'] = Regexp.last_match[9].to_s.ljust(6, '0')[0, 6].to_i
-        hash['MS'] *= -1 if hash['S'].negative?
-      else
-        raise ArgumentError, "The argument `#{value}` can't be parse."
-      end
-      hash
-    end
-
-    def hash_to__append_interval_args(hash)
-      months = (hash['Y'] * 12) + hash['M']
-      days = hash['D']
-      micros = (((hash['H'] * 3600) + (hash['TM'] * 60) + hash['S']) * 1_000_000) + hash['MS']
-      [months, days, micros]
-    end
   end
 end

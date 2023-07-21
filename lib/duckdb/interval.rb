@@ -15,6 +15,8 @@ module DuckDB
           sec: sec,
           usec: usec
         )
+      else
+        raise ArgumentError, "The argument `#{value}` can't be parse."
       end
     end
 
@@ -39,6 +41,18 @@ module DuckDB
         @min == other.min &&
         @sec == other.sec &&
         @usec == other.usec
+    end
+
+    def interval_months
+      @interval_months ||= (year * 12) + month
+    end
+
+    def interval_days
+      @interval_days ||= day
+    end
+
+    def interval_micros
+      @interval_micros ||= (((hour * 3600) + (min * 60) + sec) * 1_000_000) + usec
     end
   end
 end
