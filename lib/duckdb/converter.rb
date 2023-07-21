@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'date'
+require_relative 'interval'
 
 module DuckDB
   module Converter
@@ -30,15 +31,15 @@ module DuckDB
     end
 
     def _to_interval_from_vector(months, days, micros)
-      hash = { year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0 }
-      hash[:year] = months / 12
-      hash[:month] = months % 12
-      hash[:day] = days
-      hash[:hour] = micros / 3_600_000_000
-      hash[:min] = (micros % 3_600_000_000) / 60_000_000
-      hash[:sec] = (micros % 60_000_000) / 1_000_000
-      hash[:usec] = micros % 1_000_000
-      hash
+      interval = Interval.new
+      interval.year = months / 12
+      interval.month = months % 12
+      interval.day = days
+      interval.hour = micros / 3_600_000_000
+      interval.min = (micros % 3_600_000_000) / 60_000_000
+      interval.sec = (micros % 60_000_000) / 1_000_000
+      interval.usec = micros % 1_000_000
+      interval
     end
 
     def _to_uuid_from_vector(lower, upper)
