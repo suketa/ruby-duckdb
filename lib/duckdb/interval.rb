@@ -1,7 +1,7 @@
 module DuckDB
   class Interval
     ISO8601_REGEXP = Regexp.compile(
-      '(-{0,1})P
+      '(?<negativ>-{0,1})P
       (?<year>-{0,1}\d+Y){0,1}
       (?<month>-{0,1}\d+M){0,1}
       (?<day>-{0,1}\d+D){0,1}
@@ -44,16 +44,46 @@ module DuckDB
 
       private
 
-      def matched_to_i(m)
-        year = m[:year].to_i
-        month = m[:month].to_i
-        day = m[:day].to_i
-        hour = m[:hour].to_i
-        min = m[:min].to_i
-        sec = m[:sec].to_i
-        usec = m[:usec].to_s.ljust(6, '0')[0, 6].to_i
+      def matched_to_i(matched)
+        sign = to_sign(matched)
+        sec = to_sec(matched)
+        usec = to_usec(matched)
         usec *= -1 if sec.negative?
-        [year, month, day, hour, min, sec, usec]
+        [
+          to_year(matched), to_month(matched), to_day(matched), to_hour(matched), to_min(matched), sec, usec
+        ].map { |v| v * sign }
+      end
+
+      def to_sign(matched)
+        matched[:negativ] == '-' ? -1 : 1
+      end
+
+      def to_year(matched)
+        matched[:year].to_i
+      end
+
+      def to_month(matched)
+        matched[:month].to_i
+      end
+
+      def to_day(matched)
+        matched[:day].to_i
+      end
+
+      def to_hour(matched)
+        matched[:hour].to_i
+      end
+
+      def to_min(matched)
+        matched[:min].to_i
+      end
+
+      def to_sec(matched)
+        matched[:sec].to_i
+      end
+
+      def to_usec(matched)
+        matched[:usec].to_s.ljust(6, '0')[0, 6].to_i
       end
     end
 
