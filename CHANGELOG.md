@@ -1,5 +1,8 @@
 # ChangeLog
 
+## Breaking Change
+- DuckDB::Result#chunck_each returns DuckDB::Interval class when the column type is INTERVAL.
+
 # 0.8.1.3
 - Fix BigDecimal conversion.
 

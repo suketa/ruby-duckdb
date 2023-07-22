@@ -41,7 +41,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'DOUBLE',    'DOUBLE',                      123.456789,                                 Float,                123.456789                                          ],
         [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56'",                    Time,                 Time.new(2019,11,3,12,34,56)                        ],
         [:ok, 'DATE',      'DATE',                        "'2019-11-03'",                             Date,                 Date.new(2019,11,3)                                 ],
-        [:ok, 'NTERVAL',   'INTERVAL',                    "'2 days ago'",                             Hash,                 { year: 0, month: 0, day: -2, hour: 0, min: 0, sec: 0, usec: 0 }],
+        [:ok, 'INTERVAL',  'INTERVAL',                    "'2 days ago'",                             DuckDB::Interval,     DuckDB::Interval.new(interval_days: -2)             ],
         [:ok, 'VARCHAR',   'VARCHAR',                     "'hello'",                                  String,               'hello'                                             ],
         [:ok, 'VARCHAR',   'VARCHAR',                     "'𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'",                      String,               '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'                                 ],
         [:ok, 'BLOB',      'BLOB',                        "'blob'",                                   String,               String.new('blob', encoding: 'ASCII-8BIT')          ],

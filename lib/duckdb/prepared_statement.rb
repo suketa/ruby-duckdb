@@ -152,13 +152,8 @@ module DuckDB
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind(1, 'P1Y2D')
     def bind_interval(i, value)
-      raise ArgumentError, "Argument `#{value}` must be a string." unless value.is_a?(String)
-
-      hash = iso8601_interval_to_hash(value)
-
-      months, days, micros = hash_to__append_interval_args(hash)
-
-      _bind_interval(i, months, days, micros)
+      value = Interval.to_interval(value)
+      _bind_interval(i, value.interval_months, value.interval_days, value.interval_micros)
     end
 
     # binds i-th parameter with SQL prepared statement.

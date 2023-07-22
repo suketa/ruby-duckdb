@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'date'
+require_relative 'interval'
 
 module DuckDB
   module Converter
@@ -30,15 +31,7 @@ module DuckDB
     end
 
     def _to_interval_from_vector(months, days, micros)
-      hash = { year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0 }
-      hash[:year] = months / 12
-      hash[:month] = months % 12
-      hash[:day] = days
-      hash[:hour] = micros / 3_600_000_000
-      hash[:min] = (micros % 3_600_000_000) / 60_000_000
-      hash[:sec] = (micros % 60_000_000) / 1_000_000
-      hash[:usec] = micros % 1_000_000
-      hash
+      Interval.new(interval_months: months, interval_days: days, interval_micros: micros)
     end
 
     def _to_uuid_from_vector(lower, upper)
@@ -60,30 +53,6 @@ module DuckDB
       else
         raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
       end
-    end
-
-    def iso8601_interval_to_hash(value)
-      hash = {}
-      if /(-{0,1})P(-{0,1}\d+Y){0,1}(-{0,1}\d+M){0,1}(-{0,1}\d+D){0,1}T{0,1}(-{0,1}\d+H){0,1}(-{0,1}\d+M){0,1}((-{0,1}\d+)\.{0,1}(\d*)S){0,1}/ =~ value
-        hash['Y'] = Regexp.last_match[2].to_i
-        hash['M'] = Regexp.last_match[3].to_i
-        hash['D'] = Regexp.last_match[4].to_i
-        hash['H'] = Regexp.last_match[5].to_i
-        hash['TM'] = Regexp.last_match[6].to_i
-        hash['S'] = Regexp.last_match[8].to_i
-        hash['MS'] = Regexp.last_match[9].to_s.ljust(6, '0')[0, 6].to_i
-        hash['MS'] *= -1 if hash['S'].negative?
-      else
-        raise ArgumentError, "The argument `#{value}` can't be parse."
-      end
-      hash
-    end
-
-    def hash_to__append_interval_args(hash)
-      months = (hash['Y'] * 12) + hash['M']
-      days = hash['D']
-      micros = (((hash['H'] * 3600) + (hash['TM'] * 60) + hash['S']) * 1_000_000) + hash['MS']
-      [months, days, micros]
     end
   end
 end
