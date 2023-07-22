@@ -1,22 +1,35 @@
 module DuckDB
   class Interval
-    def self.iso8601_parse(value)
-      if /(-{0,1})P(-{0,1}\d+Y){0,1}(-{0,1}\d+M){0,1}(-{0,1}\d+D){0,1}T{0,1}(-{0,1}\d+H){0,1}(-{0,1}\d+M){0,1}((-{0,1}\d+)\.{0,1}(\d*)S){0,1}/ =~ value
-        sec = Regexp.last_match[8].to_i
-        usec = Regexp.last_match[9].to_s.ljust(6, '0')[0, 6].to_i
-        usec *= -1 if sec.negative?
+    class << self
+      def iso8601_parse(value)
+        if /(-{0,1})P(-{0,1}\d+Y){0,1}(-{0,1}\d+M){0,1}(-{0,1}\d+D){0,1}T{0,1}(-{0,1}\d+H){0,1}(-{0,1}\d+M){0,1}((-{0,1}\d+)\.{0,1}(\d*)S){0,1}/ =~ value
+          sec = Regexp.last_match[8].to_i
+          usec = Regexp.last_match[9].to_s.ljust(6, '0')[0, 6].to_i
+          usec *= -1 if sec.negative?
 
-        Interval.new(
-          year: Regexp.last_match[2].to_i,
-          month: Regexp.last_match[3].to_i,
-          day: Regexp.last_match[4].to_i,
-          hour: Regexp.last_match[5].to_i,
-          min: Regexp.last_match[6].to_i,
-          sec: sec,
-          usec: usec
-        )
-      else
-        raise ArgumentError, "The argument `#{value}` can't be parse."
+          Interval.new(
+            year: Regexp.last_match[2].to_i,
+            month: Regexp.last_match[3].to_i,
+            day: Regexp.last_match[4].to_i,
+            hour: Regexp.last_match[5].to_i,
+            min: Regexp.last_match[6].to_i,
+            sec: sec,
+            usec: usec
+          )
+        else
+          raise ArgumentError, "The argument `#{value}` can't be parse."
+        end
+      end
+
+      def to_interval(value)
+        case value
+        when String
+          iso8601_parse(value)
+        when Interval
+          value
+        else
+          raise ArgumentError, "The argument `#{value}` can't be parse."
+        end
       end
     end
 

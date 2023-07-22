@@ -152,15 +152,7 @@ module DuckDB
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind(1, 'P1Y2D')
     def bind_interval(i, value)
-      value = case value
-              when String
-                Interval.iso8601_parse(value)
-              when Interval
-                value
-              else
-                raise ArgumentError, "Argument `#{value}` must be a string or DuckDB::Interval"
-              end
-
+      value = Interval.to_interval(value)
       _bind_interval(i, value.interval_months, value.interval_days, value.interval_micros)
     end
 
