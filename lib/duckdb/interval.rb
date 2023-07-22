@@ -1,24 +1,34 @@
 module DuckDB
   class Interval
+    ISO8601_REGEXP = Regexp.compile(
+      '(-{0,1})P
+      (?<year>-{0,1}\d+Y){0,1}
+      (?<month>-{0,1}\d+M){0,1}
+      (?<day>-{0,1}\d+D){0,1}
+      T{0,1}
+      (?<hour>-{0,1}\d+H){0,1}
+      (?<min>-{0,1}\d+M){0,1}
+      ((?<sec>-{0,1}\d+)\.{0,1}(?<usec>\d*)S){0,1}',
+      Regexp::EXTENDED
+    )
+
     class << self
       def iso8601_parse(value)
-        if /(-{0,1})P(-{0,1}\d+Y){0,1}(-{0,1}\d+M){0,1}(-{0,1}\d+D){0,1}T{0,1}(-{0,1}\d+H){0,1}(-{0,1}\d+M){0,1}((-{0,1}\d+)\.{0,1}(\d*)S){0,1}/ =~ value
-          sec = Regexp.last_match[8].to_i
-          usec = Regexp.last_match[9].to_s.ljust(6, '0')[0, 6].to_i
-          usec *= -1 if sec.negative?
+        m = ISO8601_REGEXP.match(value)
 
-          Interval.new(
-            year: Regexp.last_match[2].to_i,
-            month: Regexp.last_match[3].to_i,
-            day: Regexp.last_match[4].to_i,
-            hour: Regexp.last_match[5].to_i,
-            min: Regexp.last_match[6].to_i,
-            sec: sec,
-            usec: usec
-          )
-        else
-          raise ArgumentError, "The argument `#{value}` can't be parse."
-        end
+        raise ArgumentError, "The argument `#{value}` can't be parse." if m.nil?
+
+        year, month, day, hour, min, sec, usec = matched_to_i(m)
+
+        mk_interval(year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec)
+      end
+
+      def mk_interval(year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0)
+        Interval.new(
+          interval_months: (year * 12) + month,
+          interval_days: day,
+          interval_micros: (((hour * 3600) + (min * 60) + sec) * 1_000_000) + usec
+        )
       end
 
       def to_interval(value)
@@ -31,41 +41,35 @@ module DuckDB
           raise ArgumentError, "The argument `#{value}` can't be parse."
         end
       end
+
+      private
+
+      def matched_to_i(m)
+        year = m[:year].to_i
+        month = m[:month].to_i
+        day = m[:day].to_i
+        hour = m[:hour].to_i
+        min = m[:min].to_i
+        sec = m[:sec].to_i
+        usec = m[:usec].to_s.ljust(6, '0')[0, 6].to_i
+        usec *= -1 if sec.negative?
+        [year, month, day, hour, min, sec, usec]
+      end
     end
 
-    attr_accessor :year, :month, :day, :hour, :min, :sec, :usec
+    attr_reader :interval_months, :interval_days, :interval_micros
 
-    def initialize(year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0)
-      @year = year
-      @month = month
-      @day = day
-      @hour = hour
-      @min = min
-      @sec = sec
-      @usec = usec
+    def initialize(interval_months: 0, interval_days: 0, interval_micros: 0)
+      @interval_months = interval_months
+      @interval_days = interval_days
+      @interval_micros = interval_micros
     end
 
     def ==(other)
       other.is_a?(Interval) &&
-        @year == other.year &&
-        @month == other.month &&
-        @day == other.day &&
-        @hour == other.hour &&
-        @min == other.min &&
-        @sec == other.sec &&
-        @usec == other.usec
-    end
-
-    def interval_months
-      @interval_months ||= (year * 12) + month
-    end
-
-    def interval_days
-      @interval_days ||= day
-    end
-
-    def interval_micros
-      @interval_micros ||= (((hour * 3600) + (min * 60) + sec) * 1_000_000) + usec
+        @interval_months == other.interval_months &&
+        @interval_days == other.interval_days &&
+        @interval_micros == other.interval_micros
     end
   end
 end

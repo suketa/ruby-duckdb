@@ -31,15 +31,7 @@ module DuckDB
     end
 
     def _to_interval_from_vector(months, days, micros)
-      interval = Interval.new
-      interval.year = months / 12
-      interval.month = months % 12
-      interval.day = days
-      interval.hour = micros / 3_600_000_000
-      interval.min = (micros % 3_600_000_000) / 60_000_000
-      interval.sec = (micros % 60_000_000) / 1_000_000
-      interval.usec = micros % 1_000_000
-      interval
+      Interval.new(interval_months: months, interval_days: days, interval_micros: micros)
     end
 
     def _to_uuid_from_vector(lower, upper)
