@@ -1,4 +1,28 @@
 module DuckDB
+  # Interval class represents DuckDB's interval type value.
+  #
+  # The usage is as follows:
+  #   require 'duckdb'
+  #
+  #   interval = DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 14706123456)
+  #   interval = DuckDB::Interval.mk_interval(year: 1, month: 2, day: 3, hour: 4, min: 5, sec: 6, usec: 123456)
+  #   interval = DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
+  #
+  #   db = DuckDB::Database.open # database in memory
+  #   con = db.connect
+  #
+  #   con.execute('CREATE TABLE users (value INTERVAL)')
+  #
+  #   require 'duckdb'
+  #   db = DuckDB::Database.open
+  #   con = db.connect
+  #   con.query('CREATE TABLE intervals (interval_value INTERVAL)')
+  #   appender = con.appender('intervals')
+  #   appender
+  #     .begin_row
+  #     .append_interval(interval)
+  #     .end_row
+  #     .flush
   class Interval
     ISO8601_REGEXP = Regexp.compile(
       '(?<negativ>-{0,1})P
@@ -13,6 +37,10 @@ module DuckDB
     )
 
     class << self
+      # Parse the ISO8601 format string and return the Interval object.
+      #
+      #  DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
+      #  => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def iso8601_parse(value)
         m = ISO8601_REGEXP.match(value)
 
