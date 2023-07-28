@@ -1,12 +1,17 @@
+# frozen_string_literal: true
+
 module DuckDB
   # Interval class represents DuckDB's interval type value.
   #
   # The usage is as follows:
+  #
   #   require 'duckdb'
   #
   #   interval = DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 14706123456)
-  #   interval = DuckDB::Interval.mk_interval(year: 1, month: 2, day: 3, hour: 4, min: 5, sec: 6, usec: 123456)
-  #   interval = DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
+  #   # or
+  #   # interval = DuckDB::Interval.mk_interval(year: 1, month: 2, day: 3, hour: 4, min: 5, sec: 6, usec: 123456)
+  #   # or
+  #   # interval = DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
   #
   #   db = DuckDB::Database.open # database in memory
   #   con = db.connect
@@ -37,10 +42,10 @@ module DuckDB
     )
 
     class << self
-      # Parse the ISO8601 format string and return the Interval object.
+      # parses the ISO8601 format string and return the Interval object.
       #
-      #  DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
-      #  => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
+      #   DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
+      #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def iso8601_parse(value)
         m = ISO8601_REGEXP.match(value)
 
@@ -51,6 +56,10 @@ module DuckDB
         mk_interval(year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec)
       end
 
+      # creates the Interval object.
+      #
+      #   DuckDB::Interval.mk_interval(year: 1, month: 2, day: 3, hour: 4, min: 5, sec: 6, usec: 123456)
+      #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def mk_interval(year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0)
         Interval.new(
           interval_months: (year * 12) + month,
@@ -59,6 +68,18 @@ module DuckDB
         )
       end
 
+      # Convert the value to the Interval object.
+      # The value can be String or Interval object.
+      # If the value is String, it is parsed as ISO8601 format.
+      # If the value is Interval object, it is returned as is.
+      # Otherwise, ArgumentError is raised.
+      #
+      #   DuckDB::Interval.to_interval('P1Y2M3DT4H5M6.123456S')
+      #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
+      #
+      #   interval = DuckDB::Interval.to_interval('P1Y2M3DT4H5M6.123456S')
+      #   DuckDB::Interval.to_interval(interval)
+      #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def to_interval(value)
         case value
         when String
@@ -77,9 +98,10 @@ module DuckDB
         sec = to_sec(matched)
         usec = to_usec(matched)
         usec *= -1 if sec.negative?
-        [
+        value = [
           to_year(matched), to_month(matched), to_day(matched), to_hour(matched), to_min(matched), sec, usec
-        ].map { |v| v * sign }
+        ]
+        sign.positive? ? value : value.map { |v| v * sign }
       end
 
       def to_sign(matched)
@@ -117,6 +139,12 @@ module DuckDB
 
     attr_reader :interval_months, :interval_days, :interval_micros
 
+    # creates the Interval object.
+    # The arguments are the number of months, days, and microseconds.
+    # The default value is 0.
+    #
+    #   DuckDB::Interval.new(interval_months: 1, interval_days: 2, interval_micros: 3)
+    #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=1, @interval_days=2, @interval_micros=3>
     def initialize(interval_months: 0, interval_days: 0, interval_micros: 0)
       @interval_months = interval_months
       @interval_days = interval_days
