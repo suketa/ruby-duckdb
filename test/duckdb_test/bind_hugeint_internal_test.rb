@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module DuckDBTest
-  class DuckDBBindHugeintInternalTest < MiniTest::Test
+  class DuckDBBindHugeintInternalTest < Minitest::Test
     def setup
       @db = DuckDB::Database.open
       @con = @db.connect
