@@ -4,8 +4,16 @@ VALUE mDuckDB;
 
 static VALUE duckdb_s_library_version(VALUE self);
 
+/*
+ * call-seq:
+ *   DuckDB.library_version -> String
+ *
+ * Returns the version of the DuckDB library.
+ *
+ *   DuckDB.library_version # => "0.2.0"
+ */
 static VALUE duckdb_s_library_version(VALUE self) {
-  return rb_str_new2(duckdb_library_version());
+    return rb_str_new2(duckdb_library_version());
 }
 
 void
