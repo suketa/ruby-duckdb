@@ -190,6 +190,12 @@ if defined?(DuckDB::Appender)
         assert_duckdb_appender(nil, 'VARCHAR', &:append_null)
       end
 
+      def test_append_interval
+        value = DuckDB::Interval.new(interval_months: 1)
+        expected = '1 month'
+        assert_duckdb_appender(expected, 'INTERVAL') { |a| a.append_interval(value) }
+      end
+
       class Foo
         def initialize(time)
           @time = time
@@ -608,6 +614,10 @@ if defined?(DuckDB::Appender)
         assert_duckdb_appender(expected, 'TIMESTAMP') do |appender|
           appender.append(t)
         end
+
+        value = DuckDB::Interval.new(interval_months: 1)
+        expected = '1 month'
+        assert_duckdb_appender(expected, 'INTERVAL') { |a| a.append(value) }
       end
 
       def test_append_row

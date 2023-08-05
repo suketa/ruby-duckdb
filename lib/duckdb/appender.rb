@@ -192,6 +192,8 @@ module DuckDB
         append_timestamp(value)
       when Date
         append_date(value)
+      when DuckDB::Interval
+        append_interval(value)
       else
         raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
       end
