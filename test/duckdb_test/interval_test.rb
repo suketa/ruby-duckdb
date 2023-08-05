@@ -12,6 +12,23 @@ module DuckDBTest
         DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.000007S')
       )
       assert_equal(
+        DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -14_706_700_000),
+        DuckDB::Interval.iso8601_parse('-P1Y2M3DT4H5M6.7S')
+      )
+      assert_equal(
+        DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -14_706_000_007),
+        DuckDB::Interval.iso8601_parse('-P1Y2M3DT4H5M6.000007S')
+      )
+      assert_equal(
+        DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -14_706_700_000),
+        DuckDB::Interval.iso8601_parse('P-1Y-2M-3DT-4H-5M-6.7S')
+      )
+      assert_equal(
+        DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -14_706_000_007),
+        DuckDB::Interval.iso8601_parse('P-1Y-2M-3DT-4H-5M-6.000007S')
+      )
+
+      assert_equal(
         DuckDB::Interval.new(interval_months: 12),
         DuckDB::Interval.iso8601_parse('P1Y')
       )
@@ -52,6 +69,22 @@ module DuckDBTest
         DuckDB::Interval.mk_interval(year: 1, month: 2, day: 3, hour: 4, min: 5, sec: 6, usec: 7)
       )
       assert_equal(
+        DuckDB::Interval.new(interval_months: 0, interval_days: 0, interval_micros: 0),
+        DuckDB::Interval.mk_interval(year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0)
+      )
+      assert_equal(
+        DuckDB::Interval.new,
+        DuckDB::Interval.mk_interval
+      )
+      assert_equal(
+        DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -14_706_700_000),
+        DuckDB::Interval.mk_interval(year: -1, month: -2, day: -3, hour: -4, min: -5, sec: -6, usec: -700_000)
+      )
+      assert_equal(
+        DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -14_706_000_007),
+        DuckDB::Interval.mk_interval(year: -1, month: -2, day: -3, hour: -4, min: -5, sec: -6, usec: -7)
+      )
+      assert_equal(
         DuckDB::Interval.new(interval_months: 12),
         DuckDB::Interval.mk_interval(year: 1)
       )
@@ -82,7 +115,11 @@ module DuckDBTest
     end
 
     def test_initialize
-      assert_instance_of(DuckDB::Interval, DuckDB::Interval.new)
+      interval = DuckDB::Interval.new
+      assert_instance_of(DuckDB::Interval, interval)
+      assert_equal(0, interval.interval_months)
+      assert_equal(0, interval.interval_days)
+      assert_equal(0, interval.interval_micros)
     end
   end
 end
