@@ -51,7 +51,7 @@ module DuckDB
         lower = value - (upper << HALF_HUGEINT_BIT)
         [lower, upper]
       else
-        raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
+        raise(ArgumentError, "The argument `#{value}` must be Integer.")
       end
     end
   end
