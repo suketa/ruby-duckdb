@@ -8,8 +8,8 @@
 2. Build and access to docker container
 
 ```
-docker-compose build ubuntu
-docker-compose run --rm ubuntu bash
+docker compose build ubuntu
+docker compose run --rm ubuntu bash
 ```
 
 In case you want custom ruby or duckdb versions, use `--build-arg` options
