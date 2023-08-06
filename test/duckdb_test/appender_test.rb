@@ -163,7 +163,7 @@ if defined?(DuckDB::Appender)
         e = assert_raises(ArgumentError) do
           assert_duckdb_appender(18.555, 'HUGEINT') { |a| a.append_hugeint(18.555) }
         end
-        assert_equal('2nd argument `18.555` must be Integer.', e.message)
+        assert_equal('The argument `18.555` must be Integer.', e.message)
       end
 
       def test_append_varchar
