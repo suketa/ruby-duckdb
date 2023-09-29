@@ -58,7 +58,7 @@ module DuckDB
 
         chunk_each { |row| yield row }
       else
-        warn('this `each` behavior will be deprecated in the future. set `Result.use_chunk_each = true` to use new `each` behavior.', category: :deprecated)
+        warn('this `each` behavior will be deprecated in the future. set `Result.use_chunk_each = true` to use new `each` behavior.')
         return to_enum { row_size } unless block_given?
 
         row_count.times do |row_index|
