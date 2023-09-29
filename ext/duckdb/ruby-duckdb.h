@@ -12,6 +12,10 @@
 #define HAVE_DUCKDB_H_GE_V080 1
 #endif
 
+#ifdef HAVE_DUCKDB_BIND_PARAMETER_INDEX
+#define HAVE_DUCKDB_H_GE_V090 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"
