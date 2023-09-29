@@ -1,6 +1,9 @@
 # ChangeLog
 
 ## Breaking Change
+- deprecation warning when DuckDB::Result.each calling with `DuckDB::Result.use_chunk_each` is false.
+  The `each` behavior will be same as `DuckDB::Result.chunk_each` in the future.
+  set `DuckDB::Result.use_chunk_each = true` to suppress the warning.
 - DuckDB::Result#chunck_each returns DuckDB::Interval class when the column type is INTERVAL.
 
 # 0.8.1.3
