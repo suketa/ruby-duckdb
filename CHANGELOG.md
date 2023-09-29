@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 0.9.0
+- bump duckdb to 0.9.0.
+
 ## Breaking Change
 - deprecation warning when DuckDB::Result.each calling with `DuckDB::Result.use_chunk_each` is false.
   The `each` behavior will be same as `DuckDB::Result.chunk_each` in the future.
