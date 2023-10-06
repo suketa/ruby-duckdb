@@ -9,6 +9,11 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
 static VALUE duckdb_prepared_statement_nparams(VALUE self);
 static VALUE duckdb_prepared_statement_execute(VALUE self);
 static idx_t check_index(VALUE vidx);
+
+#ifdef HAVE_DUCKDB_H_GE_V090
+static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name);
+#endif
+
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
 static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val);
 static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val);
@@ -92,6 +97,20 @@ static idx_t check_index(VALUE vidx) {
     }
     return idx;
 }
+
+#ifdef HAVE_DUCKDB_H_GE_V090
+static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
+    rubyDuckDBPreparedStatement *ctx;
+    idx_t idx;
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    if (duckdb_bind_parameter_index(ctx->prepared_statement, &idx, StringValuePtr(name)) == DuckDBError) {;
+        rb_raise(rb_eArgError, "parameter '%s' not found", StringValuePtr(name));
+    }
+    return ULL2NUM(idx);
+}
+#endif
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
@@ -308,6 +327,11 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
+
+#ifdef HAVE_DUCKDB_H_GE_V090
+    rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", duckdb_prepared_statement_bind_parameter_index, 1);
+#endif
+
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int8", duckdb_prepared_statement_bind_int8, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);

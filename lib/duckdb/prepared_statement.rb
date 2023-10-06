@@ -1,6 +1,6 @@
 require 'date'
 require 'bigdecimal'
-require_relative './converter'
+require_relative 'converter'
 
 module DuckDB
   # The DuckDB::PreparedStatement encapsulates connection with DuckDB prepared
@@ -167,35 +167,55 @@ module DuckDB
     #   sql ='SELECT name, email FROM users WHERE email = ?'
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind(1, 'email@example.com')
-    def bind(i, value)
+    def bind(index, value)
+      case index
+      when Integer
+        bind_with_index(index, value)
+      when String
+        bind_with_name(index, value)
+      when Symbol
+        bind_with_name(index.to_s, value)
+      else
+        raise(ArgumentError, "1st argument `#{index}` must be Integer or String or Symbol.")
+      end
+    end
+
+    private
+
+    def bind_with_index(index, value)
       case value
       when NilClass
-        bind_null(i)
+        bind_null(index)
       when Float
-        bind_double(i, value)
+        bind_double(index, value)
       when Integer
         case value
         when RANGE_INT64
-          bind_int64(i, value)
+          bind_int64(index, value)
         else
-          bind_varchar(i, value.to_s)
+          bind_varchar(index, value.to_s)
         end
       when String
-        blob?(value) ? bind_blob(i, value) : bind_varchar(i, value)
+        blob?(value) ? bind_blob(index, value) : bind_varchar(index, value)
       when TrueClass, FalseClass
-        bind_bool(i, value)
+        bind_bool(index, value)
       when Time
-        bind_varchar(i, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
+        bind_varchar(index, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
       when Date
-        bind_varchar(i, value.strftime('%Y-%m-%d'))
+        bind_varchar(index, value.strftime('%Y-%m-%d'))
       when BigDecimal
-        bind_varchar(i, value.to_s('F'))
+        bind_varchar(index, value.to_s('F'))
       else
         raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
       end
     end
 
-    private
+    def bind_with_name(name, value)
+      raise DuckDB::Error, 'not supported binding with name' unless respond_to?(:bind_parameter_index)
+
+      i = bind_parameter_index(name)
+      bind_with_index(i, value)
+    end
 
     def blob?(value)
       value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
