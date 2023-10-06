@@ -12,7 +12,6 @@ module DuckDB
     # executes sql with args.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
-    # The parameters must be '?' in SQL statement.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_file')
@@ -20,6 +19,11 @@ module DuckDB
     #   users = con.query('SELECT * FROM users')
     #   sql = 'SELECT * FROM users WHERE name = ? AND email = ?'
     #   dave = con.query(sql, 'Dave', 'dave@example.com')
+    #
+    #   # or You can use named parameter.
+    #
+    #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
+    #   dave = con.query(sql, name: 'Dave', email: 'dave@example.com')
     #
     def query(sql, *args, **hash)
       return query_sql(sql) if args.empty? && hash.empty?

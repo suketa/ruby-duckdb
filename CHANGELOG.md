@@ -1,5 +1,8 @@
 # ChangeLog
 
+- add `DuckDB::PreparedStatement#bind_parameter_index`.
+- DuckDB::Connection#query accepts SQL with named parameter.
+
 # 0.9.0
 - bump duckdb to 0.9.0.
 
