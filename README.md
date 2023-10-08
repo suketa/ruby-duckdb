@@ -94,6 +94,17 @@ DuckDB::Database.open do |db|
 end
 ```
 
+### using bind variables
+
+You can use bind variables.
+
+```ruby
+con.query('SELECT * FROM users WHERE name = ? AND email = ?', 'Alice', 'alice@example.com')
+# or
+con.query('SELECT * FROM users WHERE name = $name AND email = $email', name: 'Alice', email: 'alice@example.com')
+```
+
+
 ### using BLOB column
 
 BLOB is available with DuckDB v0.2.5 or later.
