@@ -12,7 +12,9 @@ static idx_t check_index(VALUE vidx);
 
 #ifdef HAVE_DUCKDB_H_GE_V090
 static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name);
+#ifdef HAVE_DUCKDB_PARAMETER_NAME
 static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx);
+#endif
 #endif
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
@@ -112,6 +114,7 @@ static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE na
     return ULL2NUM(idx);
 }
 
+#ifdef HAVE_DUCKDB_PARAMETER_NAME
 static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     VALUE vname;
@@ -128,7 +131,8 @@ static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     duckdb_free((void *)name);
     return vname;
 }
-#endif
+#endif /* HAVE_DUCKDB_PARAMETER_NAME */
+#endif /* HAVE_DUCKDB_H_GE_V090 */
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
@@ -348,7 +352,9 @@ void init_duckdb_prepared_statement(void) {
 
 #ifdef HAVE_DUCKDB_H_GE_V090
     rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", duckdb_prepared_statement_bind_parameter_index, 1);
+#ifdef HAVE_DUCKDB_PARAMETER_NAME
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
+#endif
 #endif
 
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
