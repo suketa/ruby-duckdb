@@ -31,4 +31,6 @@ have_func('duckdb_string_is_inlined', 'duckdb.h')
 # check duckdb >= 0.9.0
 have_func('duckdb_bind_parameter_index', 'duckdb.h')
 
+have_func('duckdb_parameter_name', 'duckdb.h')
+
 create_makefile('duckdb/duckdb_native')
