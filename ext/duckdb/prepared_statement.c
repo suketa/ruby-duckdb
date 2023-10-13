@@ -12,6 +12,7 @@ static idx_t check_index(VALUE vidx);
 
 #ifdef HAVE_DUCKDB_H_GE_V090
 static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name);
+static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx);
 #endif
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
@@ -109,6 +110,23 @@ static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE na
         rb_raise(rb_eArgError, "parameter '%s' not found", StringValuePtr(name));
     }
     return ULL2NUM(idx);
+}
+
+static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
+    rubyDuckDBPreparedStatement *ctx;
+    VALUE vname;
+    const char *name;
+    idx_t idx = check_index(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    name = duckdb_parameter_name(ctx->prepared_statement, idx);
+    if (name == NULL) {
+        rb_raise(eDuckDBError, "fail to get name of %llu parameter", (unsigned long long)idx);
+    }
+    vname = rb_str_new2(name);
+    duckdb_free((void *)name);
+    return vname;
 }
 #endif
 
@@ -330,6 +348,7 @@ void init_duckdb_prepared_statement(void) {
 
 #ifdef HAVE_DUCKDB_H_GE_V090
     rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", duckdb_prepared_statement_bind_parameter_index, 1);
+    rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
 #endif
 
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);

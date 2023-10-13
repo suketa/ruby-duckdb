@@ -115,6 +115,19 @@ module DuckDBTest
       assert_equal(2, stmt.bind_parameter_index('col_boolean'))
     end
 
+    def test_bind_parameter_name
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $id AND col_boolean = $col_boolean AND id = $id')
+
+      skip unless stmt.respond_to?(:parameter_name)
+
+      assert_equal('id', stmt.parameter_name(1))
+      assert_equal('col_boolean', stmt.parameter_name(2))
+
+      assert_raises(ArgumentError) { stmt.parameter_name(0) }
+      assert_raises(DuckDB::Error) { stmt.parameter_name(3) }
+    end
+
     def test_bind_bool
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')

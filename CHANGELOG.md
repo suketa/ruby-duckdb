@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add `DuckDB::PreparedStatement#parameter_name`.
+
 # 0.9.0.1
 
 - add `DuckDB::PreparedStatement#bind_parameter_index`.
