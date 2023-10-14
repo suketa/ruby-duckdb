@@ -25,7 +25,7 @@ module DuckDB
   class Result
     include Enumerable
 
-    TO_METHODS = {
+    TO_METHODS = Hash.new(:_to_string).merge(
       1 => :_to_boolean,
       3 => :_to_smallint,
       4 => :_to_integer,
@@ -35,9 +35,7 @@ module DuckDB
       16 => :_to_hugeint_internal,
       18 => :_to_blob,
       19 => :_to_decimal_internal
-    }.tap do |h|
-      h.default = :_to_string
-    end.freeze
+    ).freeze
 
     alias column_size column_count
     alias row_size row_count
