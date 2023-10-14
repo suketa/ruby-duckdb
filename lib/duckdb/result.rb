@@ -25,7 +25,7 @@ module DuckDB
   class Result
     include Enumerable
 
-    ToRuby = {
+    TO_METHODS = Hash.new(:_to_string).merge(
       1 => :_to_boolean,
       3 => :_to_smallint,
       4 => :_to_integer,
@@ -35,9 +35,7 @@ module DuckDB
       16 => :_to_hugeint_internal,
       18 => :_to_blob,
       19 => :_to_decimal_internal
-    }
-
-    ToRuby.default = :_to_string
+    ).freeze
 
     alias column_size column_count
     alias row_size row_count
@@ -76,7 +74,7 @@ module DuckDB
     end
 
     def to_value(row_index, col_index)
-      send(ToRuby[_column_type(col_index)], row_index, col_index)
+      send(TO_METHODS[_column_type(col_index)], row_index, col_index)
     end
 
     def enum_dictionary_values(col_index)
