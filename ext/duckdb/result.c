@@ -37,7 +37,6 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
 
-#ifdef HAVE_DUCKDB_H_GE_V080
 static VALUE vector_date(void *vector_data, idx_t row_idx);
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
 static VALUE vector_interval(void* vector_data, idx_t row_idx);
@@ -52,7 +51,6 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
-#endif
 
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
@@ -403,7 +401,6 @@ VALUE create_result(void) {
     return allocate(cDuckDBResult);
 }
 
-#ifdef HAVE_DUCKDB_H_GE_V080
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
     duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
 
@@ -719,7 +716,6 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     }
     return Qnil;
 }
-#endif
 
 void init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
@@ -746,7 +742,5 @@ void init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
-#ifdef HAVE_DUCKDB_H_GE_V080
     rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
-#endif
 }
