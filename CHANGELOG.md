@@ -1,5 +1,7 @@
 # ChangeLog
 
+- drop duckdb v0.7.x.
+
 # 0.9.1
 - add `DuckDB::PreparedStatement#parameter_name`.
 - bump duckdb to 0.9.1.
