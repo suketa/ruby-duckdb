@@ -20,13 +20,8 @@ end
 
 dir_config('duckdb')
 
-check_duckdb_library('duckdb_extract_statements', '0.7.0')
-
-# check duckdb >= 0.7.0
-have_func('duckdb_extract_statements', 'duckdb.h')
-
 # check duckdb >= 0.8.0
-have_func('duckdb_string_is_inlined', 'duckdb.h')
+check_duckdb_library('duckdb_string_is_inlined', '0.8.0')
 
 # check duckdb >= 0.9.0
 have_func('duckdb_bind_parameter_index', 'duckdb.h')
