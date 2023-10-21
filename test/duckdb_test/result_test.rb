@@ -8,6 +8,10 @@ module DuckDBTest
       @ary = first_record
     end
 
+    def test_s_new
+      assert_raises(DuckDB::Error) { DuckDB::Result.new.each.to_a }
+    end
+
     def test_result
       assert_instance_of(DuckDB::Result, @result)
     end
