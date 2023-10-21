@@ -5,6 +5,7 @@ static VALUE cDuckDBPendingResult;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement);
 
 static const rb_data_type_t pending_result_data_type = {
     "DuckDB/PendingResult",
@@ -28,18 +29,25 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBPendingResult);
 }
 
+static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement) {
+    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+    rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
+
+    if (duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result)) == DuckDBError) {
+        rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
+    }
+    return self;
+}
+
 rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
     rubyDuckDBPendingResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
     return ctx;
 }
 
-VALUE create_pending_result(void) {
-    return allocate(cDuckDBPendingResult);
-};
-
 void init_duckdb_pending_result(void) {
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
+    rb_define_method(cDuckDBPendingResult, "initialize", duckdb_pending_result_initialize, 1);
 
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
 }

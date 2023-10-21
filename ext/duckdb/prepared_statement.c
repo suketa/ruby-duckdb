@@ -16,7 +16,6 @@ static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE na
 static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx);
 #endif
 #endif
-static VALUE duckdb_prepared_statement_pending_prepare(VALUE self);
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
 static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val);
@@ -134,19 +133,6 @@ static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
 }
 #endif /* HAVE_DUCKDB_PARAMETER_NAME */
 #endif /* HAVE_DUCKDB_H_GE_V090 */
-
-static VALUE duckdb_prepared_statement_pending_prepare(VALUE self) {
-    rubyDuckDBPreparedStatement *ctx;
-    rubyDuckDBPendingResult *ctxr;
-    VALUE result = create_pending_result();
-
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-    ctxr = get_struct_pending_result(result);
-    if (duckdb_pending_prepared(ctx->prepared_statement, &(ctxr->pending_result)) == DuckDBError) {
-        rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctxr->pending_result));
-    }
-    return result;
-}
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
@@ -355,6 +341,12 @@ static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VAL
     return self;
 }
 
+rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self) {
+    rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    return ctx;
+}
+
 void init_duckdb_prepared_statement(void) {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
 
@@ -370,8 +362,6 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
 #endif
 #endif
-    rb_define_method(cDuckDBPreparedStatement, "pending_prepared", duckdb_prepared_statement_pending_prepare, 0);
-
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int8", duckdb_prepared_statement_bind_int8, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);
