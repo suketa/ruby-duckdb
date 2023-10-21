@@ -28,6 +28,16 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBPendingResult);
 }
 
+rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
+    rubyDuckDBPendingResult *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
+    return ctx;
+}
+
+VALUE create_pending_result(void) {
+    return allocate(cDuckDBPendingResult);
+};
+
 void init_duckdb_pending_result(void) {
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
 

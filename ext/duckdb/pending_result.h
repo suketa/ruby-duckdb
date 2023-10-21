@@ -7,5 +7,7 @@ struct _rubyDuckDBPendingResult {
 
 typedef struct _rubyDuckDBPendingResult rubyDuckDBPendingResult;
 
+rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj);
+VALUE create_pending_result(void);
 void init_duckdb_pending_result(void);
 #endif
