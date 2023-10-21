@@ -341,6 +341,12 @@ static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VAL
     return self;
 }
 
+rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self) {
+    rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    return ctx;
+}
+
 void init_duckdb_prepared_statement(void) {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
 
@@ -356,7 +362,6 @@ void init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
 #endif
 #endif
-
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int8", duckdb_prepared_statement_bind_int8, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);

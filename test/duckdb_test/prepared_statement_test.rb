@@ -103,6 +103,13 @@ module DuckDBTest
       assert_equal(1, stmt.nparams)
     end
 
+    def test_pending_prepared
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
+      pending = stmt.pending_prepared
+      assert_instance_of(DuckDB::PendingResult, pending)
+    end
+
     def test_bind_parameter_index
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $id')

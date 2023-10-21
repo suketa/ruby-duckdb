@@ -20,6 +20,10 @@ module DuckDB
     RANGE_INT32 = -2_147_483_648..2_147_483_647
     RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
 
+    def pending_prepared
+      PendingResult.new(self)
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
