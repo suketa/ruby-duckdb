@@ -1,6 +1,8 @@
 # ChangeLog
 
 - drop duckdb v0.7.x.
+- add DuckDB::PreparedStatement#pending_prepared.
+- add DuckDB::PendingResult class.
 
 # 0.9.1
 - add `DuckDB::PreparedStatement#parameter_name`.
