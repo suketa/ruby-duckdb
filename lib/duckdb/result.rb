@@ -40,14 +40,20 @@ module DuckDB
     alias column_size column_count
     alias row_size row_count
 
-    def self.use_chunk_each=(val)
-      raise DuckDB::Error, 'chunk_each is not available. Install duckdb >= 0.8.0 and rerun `gem install duckdb`.' unless instance_methods.include?(:chunk_each)
+    class << self
+      def new
+        raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
+      end
 
-      @use_chunk_each = val
-    end
+      def use_chunk_each=(val)
+        raise DuckDB::Error, 'chunk_each is not available. Install duckdb >= 0.8.0 and rerun `gem install duckdb`.' unless instance_methods.include?(:chunk_each)
 
-    def self.use_chunk_each?
-      !!@use_chunk_each
+        @use_chunk_each = val
+      end
+
+      def use_chunk_each?
+        !!@use_chunk_each
+      end
     end
 
     def each
@@ -56,7 +62,7 @@ module DuckDB
 
         chunk_each { |row| yield row }
       else
-        warn('this `each` behavior will be deprecated in the future. set `Result.use_chunk_each = true` to use new `each` behavior.')
+        warn('this `each` behavior will be deprecated in the future. set `DuckDB::Result.use_chunk_each = true` to use new `each` behavior.')
         return to_enum { row_size } unless block_given?
 
         row_count.times do |row_index|
