@@ -6,6 +6,8 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement);
+static VALUE duckdb_pending_result_execute_task(VALUE self);
+static VALUE duckdb_pending_result__state(VALUE self);
 
 static const rb_data_type_t pending_result_data_type = {
     "DuckDB/PendingResult",
@@ -22,6 +24,7 @@ static void deallocate(void *ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBPendingResult *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBPendingResult));
+    ctx->state = DUCKDB_PENDING_RESULT_NOT_READY;
     return TypedData_Wrap_Struct(klass, &pending_result_data_type, ctx);
 }
 
@@ -39,6 +42,17 @@ static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedS
     return self;
 }
 
+static VALUE duckdb_pending_result_execute_task(VALUE self) {
+    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+    ctx->state = duckdb_pending_execute_task(ctx->pending_result);
+    return Qnil;
+}
+
+static VALUE duckdb_pending_result__state(VALUE self) {
+    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+    return INT2FIX(ctx->state);
+}
+
 rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
     rubyDuckDBPendingResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
@@ -47,7 +61,9 @@ rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
 
 void init_duckdb_pending_result(void) {
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
-    rb_define_method(cDuckDBPendingResult, "initialize", duckdb_pending_result_initialize, 1);
-
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
+
+    rb_define_method(cDuckDBPendingResult, "initialize", duckdb_pending_result_initialize, 1);
+    rb_define_method(cDuckDBPendingResult, "execute_task", duckdb_pending_result_execute_task, 0);
+    rb_define_private_method(cDuckDBPendingResult, "_state", duckdb_pending_result__state, 0);
 }

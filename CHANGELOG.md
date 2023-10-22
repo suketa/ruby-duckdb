@@ -1,8 +1,12 @@
 # ChangeLog
 
-- drop duckdb v0.7.x.
-- add DuckDB::PreparedStatement#pending_prepared.
+- change default branch to main from master.
 - add DuckDB::PendingResult class.
+- add DuckDB::PendingResult#state.
+- add DuckDB::PendingResult#execute_task.
+- add DuckDB::PreparedStatement#pending_prepared.
+- drop duckdb v0.7.x.
+
 
 # 0.9.1
 - add `DuckDB::PreparedStatement#parameter_name`.
