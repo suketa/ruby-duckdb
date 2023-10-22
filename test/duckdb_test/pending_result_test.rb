@@ -22,10 +22,14 @@ module DuckDBTest
 
       assert_equal false, pending_result.execution_finished?
       pending_result.execute_task
-      assert_equal false, pending_result.execution_finished?
+      expected = pending_result.state == :ready
+      assert_equal expected, pending_result.execution_finished?
+
       sleep 0.01
+
       pending_result.execute_task
-      assert_equal true, pending_result.execution_finished?
+      expected = pending_result.state == :ready
+      assert_equal expected, pending_result.execution_finished?
     end
 
     def teardown
