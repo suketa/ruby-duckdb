@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBPendingResult {
     duckdb_pending_result pending_result;
+    duckdb_pending_state state;
 };
 
 typedef struct _rubyDuckDBPendingResult rubyDuckDBPendingResult;
