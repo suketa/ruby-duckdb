@@ -4,6 +4,7 @@ module DuckDBTest
       @db = DuckDB::Database.open
       @con = @db.connect
       @con.query('CREATE TABLE int_vals (int_val INTEGER)')
+      @con.query('INSERT INTO int_vals VALUES (1), (2), (3), (4), (5)')
       @stmt = @con.prepared_statement('SELECT * FROM int_vals')
     end
 
@@ -30,6 +31,16 @@ module DuckDBTest
       pending_result.execute_task
       expected = pending_result.state == :ready
       assert_equal expected, pending_result.execution_finished?
+    end
+
+    def test_execute_pending
+      pending_result = @stmt.pending_prepared
+      while pending_result.state == :not_ready
+        sleep 0.01
+        pending_result.execute_task
+      end
+      assert_equal :ready, pending_result.state
+      assert_equal [[1], [2], [3], [4], [5]], pending_result.execute_pending.to_a
     end
 
     def teardown

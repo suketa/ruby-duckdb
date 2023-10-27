@@ -4,9 +4,11 @@
 - add DuckDB::PendingResult class.
 - add DuckDB::PendingResult#state.
 - add DuckDB::PendingResult#execute_task.
+- add DuckDB::PendingResult#execute_pending.
 - add DuckDB::PreparedStatement#pending_prepared.
-- drop duckdb v0.7.x.
 
+## Breaking Changes
+- drop duckdb v0.7.x.
 
 # 0.9.1
 - add `DuckDB::PreparedStatement#parameter_name`.
@@ -19,7 +21,7 @@
 # 0.9.0
 - bump duckdb to 0.9.0.
 
-## Breaking Change
+## Breaking Changes
 - deprecation warning when DuckDB::Result.each calling with `DuckDB::Result.use_chunk_each` is false.
   The `each` behavior will be same as `DuckDB::Result.chunk_each` in the future.
   set `DuckDB::Result.use_chunk_each = true` to suppress the warning.
@@ -62,7 +64,7 @@
 - support enum type in DuckDB::Result#chunk_each.
 - support uuid type in DuckDB::Result#chunk_each.
 
-## Breaking Change
+## Breaking Changes
 
 - DuckDB::Config.set_config does not raise exception when invalid key specified.
   Instead, DuckDB::Database.open raises DuckDB::Error with invalid key configuration.
@@ -72,7 +74,7 @@
 - add DuckDB::Result#_to_decimal_internal
 - add DuckDB::Result#_to_hugeint_internal
 
-## Breaking Change
+## Breaking Changes
 - DuckDB::Result returns BigDecimal object instead of String object if the column type is DECIMAL.
 
 # 0.7.1
@@ -89,7 +91,7 @@
 - add DuckDB::Result#__to_decimal_internal
 - add Ruby 3.2.1 on CI test
 - add Ruby mswin on CI test
-## Breaking Change
+## Breaking Changes
 - drop Ruby 2.6
 
 # 0.6.1
@@ -103,7 +105,7 @@
 - bump Ruby to 3.2.0rc1
 - bump duckdb to 0.6.0
 
-## Breaking Change
+## Breaking Changes
 - drop duckdb <= 0.4.x. ruby-duckdb supports duckdb >= 0.5.0
 
 # 0.5.1.1
@@ -122,7 +124,7 @@
 - add DuckDB::Result#row_count, DuckDB::Result#row_size(alias of row_count).
 - add DuckDB::Result#column_count, DuckDB::Result#column_size(alias of column_count).
 
-## Breaking Change
+## Breaking Changes
 - bind_varchar does not raised DuckDB::Error when the binding column is date or datetime.
 
 # 0.3.4.0
