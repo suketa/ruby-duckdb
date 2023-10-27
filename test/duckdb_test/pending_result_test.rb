@@ -32,6 +32,16 @@ module DuckDBTest
       assert_equal expected, pending_result.execution_finished?
     end
 
+    def test_execute_pending
+      pending_result = @stmt.pending_prepared
+      while pending_result.state == :not_ready
+        sleep 0.01
+        pending_result.execute_task
+      end
+      assert_equal :ready, pending_result.state
+      assert_equal [], pending_result.execute_pending.to_a
+    end
+
     def teardown
       @con.close
       @db.close
