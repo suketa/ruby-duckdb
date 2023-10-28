@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.9.1.1
 - change default branch to main from master.
 - add DuckDB::PendingResult class.
 - add DuckDB::PendingResult#state.

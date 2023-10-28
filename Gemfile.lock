@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    duckdb (0.9.1)
+    duckdb (0.9.1.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
     benchmark-ips (2.12.0)
-    mini_portile2 (2.8.4)
+    mini_portile2 (2.8.5)
     minitest (5.20.0)
     nokogiri (1.15.4)
       mini_portile2 (~> 2.8.2)
@@ -15,7 +15,7 @@ GEM
     nokogiri (1.15.4-x86_64-linux)
       racc (~> 1.4)
     racc (1.7.1)
-    rake (13.0.6)
+    rake (13.1.0)
     rake-compiler (1.2.5)
       rake
     ruby_memcheck (2.2.0)
