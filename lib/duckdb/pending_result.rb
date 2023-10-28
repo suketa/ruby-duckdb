@@ -19,7 +19,7 @@ module DuckDB
   #   end
   #   result = pending_result.execute_pending
   class PendingResult
-    STATE = %i[ready not_ready error no_tasks].freeze
+    STATES = %i[ready not_ready error no_tasks].freeze
 
     # returns the state of the pending result.
     # The result can be :ready, :not_ready, :error, :no_tasks.
@@ -33,7 +33,7 @@ module DuckDB
     #
     # @return [Symbol] :ready, :not_ready, :error, :no_tasks
     def state
-      STATE[_state]
+      STATES[_state]
     end
   end
 end
