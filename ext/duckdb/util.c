@@ -1,6 +1,6 @@
 #include "ruby-duckdb.h"
 
-duckdb_date to_duckdb_date_from_value(VALUE year, VALUE month, VALUE day) {
+duckdb_date rbduckdb_to_duckdb_date_from_value(VALUE year, VALUE month, VALUE day) {
     duckdb_date_struct dt_struct;
 
     dt_struct.year = NUM2INT(year);
@@ -10,7 +10,7 @@ duckdb_date to_duckdb_date_from_value(VALUE year, VALUE month, VALUE day) {
     return duckdb_to_date(dt_struct);
 }
 
-duckdb_time to_duckdb_time_from_value(VALUE hour, VALUE min, VALUE sec, VALUE micros) {
+duckdb_time rbduckdb_to_duckdb_time_from_value(VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_time_struct time_st;
 
     time_st.hour = NUM2INT(hour);
@@ -21,7 +21,7 @@ duckdb_time to_duckdb_time_from_value(VALUE hour, VALUE min, VALUE sec, VALUE mi
     return duckdb_to_time(time_st);
 }
 
-duckdb_timestamp to_duckdb_timestamp_from_value(VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
+duckdb_timestamp rbduckdb_to_duckdb_timestamp_from_value(VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp_struct timestamp_st;
 
     timestamp_st.date.year = NUM2INT(year);
@@ -35,7 +35,7 @@ duckdb_timestamp to_duckdb_timestamp_from_value(VALUE year, VALUE month, VALUE d
     return duckdb_to_timestamp(timestamp_st);
 }
 
-void to_duckdb_interval_from_value(duckdb_interval* interval, VALUE months, VALUE days, VALUE micros) {
+void rbduckdb_to_duckdb_interval_from_value(duckdb_interval* interval, VALUE months, VALUE days, VALUE micros) {
     interval->months = NUM2INT(months);
     interval->days = NUM2INT(days);
     interval->micros = NUM2LL(micros);

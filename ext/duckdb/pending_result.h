@@ -9,5 +9,5 @@ struct _rubyDuckDBPendingResult {
 typedef struct _rubyDuckDBPendingResult rubyDuckDBPendingResult;
 
 rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj);
-void init_duckdb_pending_result(void);
+void rbduckdb_init_duckdb_pending_result(void);
 #endif

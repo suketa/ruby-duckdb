@@ -22,15 +22,15 @@ Init_duckdb_native(void) {
 
     rb_define_singleton_method(mDuckDB, "library_version", duckdb_s_library_version, 0);
 
-    init_duckdb_error();
-    init_duckdb_database();
-    init_duckdb_connection();
-    init_duckdb_result();
-    init_duckdb_column();
-    init_duckdb_prepared_statement();
-    init_duckdb_pending_result();
-    init_duckdb_blob();
-    init_duckdb_appender();
-    init_duckdb_config();
-    init_duckdb_converter();
+    rbduckdb_init_duckdb_error();
+    rbduckdb_init_duckdb_database();
+    rbduckdb_init_duckdb_connection();
+    rbduckdb_init_duckdb_result();
+    rbduckdb_init_duckdb_column();
+    rbduckdb_init_duckdb_prepared_statement();
+    rbduckdb_init_duckdb_pending_result();
+    rbduckdb_init_duckdb_blob();
+    rbduckdb_init_duckdb_appender();
+    rbduckdb_init_duckdb_config();
+    rbduckdb_init_duckdb_converter();
 }

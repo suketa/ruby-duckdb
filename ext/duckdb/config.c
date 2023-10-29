@@ -79,7 +79,7 @@ static VALUE config_set_config(VALUE self, VALUE key, VALUE value) {
     return self;
 }
 
-void init_duckdb_config(void) {
+void rbduckdb_init_duckdb_config(void) {
     cDuckDBConfig = rb_define_class_under(mDuckDB, "Config", rb_cObject);
     rb_define_alloc_func(cDuckDBConfig, allocate);
     rb_define_singleton_method(cDuckDBConfig, "size", config_s_size, 0);

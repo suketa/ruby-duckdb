@@ -229,7 +229,7 @@ static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
 
     VALUE ary = rb_ary_new2(column_count);
     for(col_idx = 0; col_idx < column_count; col_idx++) {
-        VALUE column = create_column(oDuckDBResult, col_idx);
+        VALUE column = rbduckdb_create_column(oDuckDBResult, col_idx);
         rb_ary_store(ary, col_idx, column);
     }
     return ary;
@@ -397,7 +397,7 @@ static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col
     return value;
 }
 
-VALUE create_result(void) {
+VALUE rbduckdb_create_result(void) {
     return allocate(cDuckDBResult);
 }
 
@@ -717,7 +717,7 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     return Qnil;
 }
 
-void init_duckdb_result(void) {
+void rbduckdb_init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
     rb_define_alloc_func(cDuckDBResult, allocate);
 

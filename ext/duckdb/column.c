@@ -68,7 +68,7 @@ VALUE duckdb_column_get_name(VALUE oDuckDBColumn) {
     return rb_utf8_str_new_cstr(duckdb_column_name(&(ctxresult->result), ctx->col));
 }
 
-VALUE create_column(VALUE oDuckDBResult, idx_t col) {
+VALUE rbduckdb_create_column(VALUE oDuckDBResult, idx_t col) {
     VALUE obj;
     rubyDuckDBColumn *ctx;
 
@@ -81,7 +81,7 @@ VALUE create_column(VALUE oDuckDBResult, idx_t col) {
     return obj;
 }
 
-void init_duckdb_column(void) {
+void rbduckdb_init_duckdb_column(void) {
     cDuckDBColumn = rb_define_class_under(mDuckDB, "Column", rb_cObject);
     rb_define_alloc_func(cDuckDBColumn, allocate);
 

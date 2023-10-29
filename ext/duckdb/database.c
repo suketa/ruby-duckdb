@@ -37,7 +37,7 @@ static VALUE allocate(VALUE klass) {
     return TypedData_Wrap_Struct(klass, &database_data_type, ctx);
 }
 
-rubyDuckDB *get_struct_database(VALUE obj) {
+rubyDuckDB *rbduckdb_get_struct_database(VALUE obj) {
     rubyDuckDB *ctx;
     TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
     return ctx;
@@ -99,7 +99,7 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
 }
 
 static VALUE duckdb_database_connect(VALUE self) {
-    return create_connection(self);
+    return rbduckdb_create_connection(self);
 }
 
 /*
@@ -115,7 +115,7 @@ static VALUE duckdb_database_close(VALUE self) {
     return self;
 }
 
-void init_duckdb_database(void) {
+void rbduckdb_init_duckdb_database(void) {
     cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
     rb_define_singleton_method(cDuckDBDatabase, "_open", duckdb_database_s_open, -1);

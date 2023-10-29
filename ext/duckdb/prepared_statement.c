@@ -83,7 +83,7 @@ static VALUE duckdb_prepared_statement_nparams(VALUE self) {
 static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
-    VALUE result = create_result();
+    VALUE result = rbduckdb_create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
@@ -268,7 +268,7 @@ static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE 
     duckdb_date dt;
     idx_t idx = check_index(vidx);
 
-    dt = to_duckdb_date_from_value(year, month, day);
+    dt = rbduckdb_to_duckdb_date_from_value(year, month, day);
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
@@ -285,7 +285,7 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
 
     idx_t idx = check_index(vidx);
 
-    time = to_duckdb_time_from_value(hour, min, sec, micros);
+    time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, micros);
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
@@ -301,7 +301,7 @@ static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, V
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    timestamp = to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
+    timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_bind_timestamp(ctx->prepared_statement, idx, timestamp) == DuckDBError) {
@@ -317,7 +317,7 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
-    to_duckdb_interval_from_value(&interval, months, days, micros);
+    rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
 
     if (duckdb_bind_interval(ctx->prepared_statement, idx, interval) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
@@ -347,7 +347,7 @@ rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self) {
     return ctx;
 }
 
-void init_duckdb_prepared_statement(void) {
+void rbduckdb_init_duckdb_prepared_statement(void) {
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
 
     rb_define_alloc_func(cDuckDBPreparedStatement, allocate);
