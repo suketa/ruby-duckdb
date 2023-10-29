@@ -8,7 +8,7 @@ struct _rubyDuckDBColumn {
 
 typedef struct _rubyDuckDBColumn rubyDuckDBColumn;
 
-void init_duckdb_column(void);
-VALUE create_column(VALUE oDuckDBResult, idx_t col);
+void rbduckdb_init_duckdb_column(void);
+VALUE rbduckdb_create_column(VALUE oDuckDBResult, idx_t col);
 
 #endif

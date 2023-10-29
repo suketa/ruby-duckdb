@@ -285,7 +285,7 @@ static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE da
     rubyDuckDBAppender *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    dt = to_duckdb_date_from_value(year, month, day);
+    dt = rbduckdb_to_duckdb_date_from_value(year, month, day);
 
     if (duckdb_append_date(ctx->appender, dt) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append date");
@@ -298,7 +298,7 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
     rubyDuckDBAppender *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    to_duckdb_interval_from_value(&interval, months, days, micros);
+    rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
 
     if (duckdb_append_interval(ctx->appender, interval) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append interval");
@@ -311,7 +311,7 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
     rubyDuckDBAppender *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    time = to_duckdb_time_from_value(hour, min, sec, micros);
+    time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, micros);
 
     if (duckdb_append_time(ctx->appender, time) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append time");
@@ -326,7 +326,7 @@ static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VAL
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    timestamp = to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
+    timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
     if (duckdb_append_timestamp(ctx->appender, timestamp) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to append timestamp");
@@ -369,7 +369,7 @@ static VALUE appender_close(VALUE self) {
     return self;
 }
 
-void init_duckdb_appender(void) {
+void rbduckdb_init_duckdb_appender(void) {
     cDuckDBAppender = rb_define_class_under(mDuckDB, "Appender", rb_cObject);
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);

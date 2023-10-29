@@ -64,7 +64,7 @@ static VALUE duckdb_pending_result_execution_finished_p(VALUE self) {
 static VALUE duckdb_pending_result_execute_pending(VALUE self) {
     rubyDuckDBPendingResult *ctx;
     rubyDuckDBResult *ctxr;
-    VALUE result = create_result();
+    VALUE result = rbduckdb_create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
     ctxr = get_struct_result(result);
@@ -85,7 +85,7 @@ rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
     return ctx;
 }
 
-void init_duckdb_pending_result(void) {
+void rbduckdb_init_duckdb_pending_result(void) {
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
 
