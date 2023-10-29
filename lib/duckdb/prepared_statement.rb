@@ -24,21 +24,43 @@ module DuckDB
       PendingResult.new(self)
     end
 
+    # binds all parameters with SQL prepared statement.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE id = ?'
+    #   # or
+    #   # sql ='SELECT name FROM users WHERE id = $id'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_args([1])
+    #   # or
+    #   # stmt.bind_args(id: 1)
+    def bind_args(*args, **kwargs)
+      args.each.with_index(1) do |arg, i|
+        bind(i, arg)
+      end
+      kwargs.each do |key, value|
+        bind(key, value)
+      end
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
     # The second argument value is to expected Integer value.
     # This method uses bind_varchar internally.
+    #
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_database')
     #   con = db.connect
     #   sql ='SELECT name FROM users WHERE bigint_col = ?'
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind_hugeint(1, 1_234_567_890_123_456_789_012_345)
-    def bind_hugeint(i, value)
+    def bind_hugeint(index, value)
       case value
       when Integer
-        bind_varchar(i, value.to_s)
+        bind_varchar(index, value.to_s)
       else
         raise(ArgumentError, "2nd argument `#{value}` must be Integer.")
       end
@@ -49,6 +71,7 @@ module DuckDB
     # The index of first parameter is 1 not 0.
     # The second argument value must be Integer value.
     # This method uses duckdb_bind_hugeint internally.
+    #
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_database')
     #   con = db.connect
@@ -73,7 +96,7 @@ module DuckDB
     #   stmt.bind(1, Date.today)
     #   #  or you can specify date string.
     #   # stmt.bind(1, '2021-02-23')
-    def bind_date(i, value)
+    def bind_date(index, value)
       case value
       when Date, Time
         date = value
@@ -85,7 +108,7 @@ module DuckDB
         end
       end
 
-      _bind_date(i, date.year, date.month, date.day)
+      _bind_date(index, date.year, date.month, date.day)
     end
 
     # binds i-th parameter with SQL prepared statement.
@@ -101,7 +124,7 @@ module DuckDB
     #   stmt.bind(1, Time.now)
     #   #  or you can specify time string.
     #   # stmt.bind(1, '07:39:45')
-    def bind_time(i, value)
+    def bind_time(index, value)
       case value
       when Time
         time = value
@@ -113,7 +136,7 @@ module DuckDB
         end
       end
 
-      _bind_time(i, time.hour, time.min, time.sec, time.usec)
+      _bind_time(index, time.hour, time.min, time.sec, time.usec)
     end
 
     # binds i-th parameter with SQL prepared statement.
@@ -129,7 +152,7 @@ module DuckDB
     #   stmt.bind(1, Time.now)
     #   #  or you can specify timestamp string.
     #   # stmt.bind(1, '2022-02-23 07:39:45')
-    def bind_timestamp(i, value)
+    def bind_timestamp(index, value)
       case value
       when Time
         time = value
@@ -141,7 +164,7 @@ module DuckDB
         end
       end
 
-      _bind_timestamp(i, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
+      _bind_timestamp(index, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
     end
 
     # binds i-th parameter with SQL prepared statement.
@@ -155,9 +178,9 @@ module DuckDB
     #   sql ='SELECT value FROM intervals WHERE interval = ?'
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind(1, 'P1Y2D')
-    def bind_interval(i, value)
+    def bind_interval(index, value)
       value = Interval.to_interval(value)
-      _bind_interval(i, value.interval_months, value.interval_days, value.interval_micros)
+      _bind_interval(index, value.interval_months, value.interval_days, value.interval_micros)
     end
 
     # binds i-th parameter with SQL prepared statement.
