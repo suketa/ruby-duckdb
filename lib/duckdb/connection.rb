@@ -25,16 +25,11 @@ module DuckDB
     #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
     #   dave = con.query(sql, name: 'Dave', email: 'dave@example.com')
     #
-    def query(sql, *args, **hash)
-      return query_sql(sql) if args.empty? && hash.empty?
+    def query(sql, *args, **kwargs)
+      return query_sql(sql) if args.empty? && kwargs.empty?
 
       stmt = PreparedStatement.new(self, sql)
-      args.each.with_index(1) do |arg, i|
-        stmt.bind(i, arg)
-      end
-      hash.each do |key, value|
-        stmt.bind(key, value)
-      end
+      stmt.bind_args(*args, **kwargs)
       stmt.execute
     end
 
