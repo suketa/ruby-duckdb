@@ -47,6 +47,47 @@ module DuckDBTest
       assert_instance_of(DuckDB::PendingResult, pending_result)
     end
 
+    def test_async_query_with_valid_params
+      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a')
+      pending_result = @con.async_query('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
+      pending_result.execute_task
+      sleep 0.1
+      result = pending_result.execute_pending
+      assert_equal(1, result.each.first[0])
+      assert_equal('a', result.each.first[1])
+    end
+
+    def test_async_query_with_valid_hash_params
+      skip unless DuckDB::PreparedStatement.method_defined?(:bind_parameter_index)
+
+      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)
+
+      pending_result = @con.async_query(
+        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2',
+        col2: 'a',
+        col1: 1
+      )
+      pending_result.execute_task
+      sleep 0.1
+      result = pending_result.execute_pending
+      assert_equal([1, 'a'], result.each.first)
+    end
+
+    def test_async_query_with_invalid_params
+      assert_raises(DuckDB::Error) { @con.async_query('foo', 'bar') }
+
+      assert_raises(ArgumentError) { @con.async_query }
+
+      assert_raises(TypeError) { @con.async_query(1) }
+
+      assert_raises(DuckDB::Error) do
+        invalid_sql = 'CREATE TABLE table1 ('
+        @con.async_query(invalid_sql)
+      end
+    end
+
     def test_execute
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::Result, @con.execute('INSERT INTO t VALUES(?, ?)', 1, 'a'))
