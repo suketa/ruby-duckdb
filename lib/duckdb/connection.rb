@@ -33,6 +33,12 @@ module DuckDB
       stmt.execute
     end
 
+    def async_query(sql, *, **)
+      stmt = PreparedStatement.new(self, sql)
+      stmt.bind_args(*, **)
+      stmt.pending_prepared
+    end
+
     #
     # connects DuckDB database
     # The first argument is DuckDB::Database object
@@ -78,6 +84,7 @@ module DuckDB
     end
 
     alias execute query
+    alias async_execute async_query
     alias open connect
     alias close disconnect
   end
