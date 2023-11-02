@@ -20,6 +20,8 @@ module DuckDBTest
     end
 
     def test_query_with_valid_hash_params
+      skip unless DuckDB::PreparedStatement.method_defined?(:bind_parameter_index)
+
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::Result, @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1))
       r = @con.query('SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2', col2: 'a', col1: 1)
