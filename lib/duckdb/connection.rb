@@ -33,9 +33,9 @@ module DuckDB
       stmt.execute
     end
 
-    def async_query(sql, *, **)
+    def async_query(sql, *args, **kwargs)
       stmt = PreparedStatement.new(self, sql)
-      stmt.bind_args(*, **)
+      stmt.bind_args(*args, **kwargs)
       stmt.pending_prepared
     end
 
