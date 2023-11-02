@@ -33,6 +33,24 @@ module DuckDB
       stmt.execute
     end
 
+    #
+    # executes sql with args asynchronously.
+    # The first argument sql must be SQL string.
+    # The rest arguments are parameters of SQL string.
+    # This method returns DuckDB::PendingResult object.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_file')
+    #   con = db.connect
+    #   pending_result = con.async_query('SELECT * FROM users')
+    #   sql = 'SELECT * FROM users WHERE name = ? AND email = ?'
+    #   pending_result = con.async_query(sql, 'Dave', 'dave@example.com')
+    #
+    #   # or You can use named parameter.
+    #
+    #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
+    #   pending_result = con.async_query(sql, name: 'Dave', email: 'dave@example.com')
+    #
     def async_query(sql, *args, **kwargs)
       stmt = PreparedStatement.new(self, sql)
       stmt.bind_args(*args, **kwargs)
