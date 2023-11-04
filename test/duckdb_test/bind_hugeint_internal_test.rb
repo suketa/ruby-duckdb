@@ -52,7 +52,7 @@ module DuckDBTest
       exception = assert_raises(ArgumentError) do
         do_bind_internal_test('170141183460469231731687303715884105727')
       end
-      assert_equal('The argument `170141183460469231731687303715884105727` must be Integer.', exception.message)
+      assert_equal('The argument `"170141183460469231731687303715884105727"` must be Integer.', exception.message)
     end
 
     def teardown

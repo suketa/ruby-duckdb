@@ -97,16 +97,7 @@ module DuckDB
     #   #  or you can specify date string.
     #   # stmt.bind(1, '2021-02-23')
     def bind_date(index, value)
-      case value
-      when Date, Time
-        date = value
-      else
-        begin
-          date = Date.parse(value)
-        rescue => e
-          raise(ArgumentError, "Cannot parse argument value to date. #{e.message}")
-        end
-      end
+      date = _parse_date(value)
 
       _bind_date(index, date.year, date.month, date.day)
     end
@@ -125,16 +116,7 @@ module DuckDB
     #   #  or you can specify time string.
     #   # stmt.bind(1, '07:39:45')
     def bind_time(index, value)
-      case value
-      when Time
-        time = value
-      else
-        begin
-          time = Time.parse(value)
-        rescue => e
-          raise(ArgumentError, "Cannot parse argument value to time. #{e.message}")
-        end
-      end
+      time = _parse_time(value)
 
       _bind_time(index, time.hour, time.min, time.sec, time.usec)
     end
@@ -153,16 +135,7 @@ module DuckDB
     #   #  or you can specify timestamp string.
     #   # stmt.bind(1, '2022-02-23 07:39:45')
     def bind_timestamp(index, value)
-      case value
-      when Time
-        time = value
-      else
-        begin
-          time = Time.parse(value)
-        rescue => e
-          raise(ArgumentError, "Cannot parse argument value to time. #{e.message}")
-        end
-      end
+      time = _parse_time(value)
 
       _bind_timestamp(index, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
     end
