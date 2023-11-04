@@ -96,6 +96,29 @@ module DuckDBTest
       assert_equal('a', r.each.first[1])
     end
 
+    def test_query_progress
+      skip unless DuckDB::Connection.method_defined?(:query_progress)
+
+      @con.query('SET threads=1')
+      @con.query('CREATE TABLE tbl as SELECT range a, mod(range, 10) b FROM range(10000)')
+      @con.query('CREATE TABLE tbl2 as SELECT range a, FROM range(10000)')
+      @con.query('SET ENABLE_PROGRESS_BAR=true')
+      @con.query('SET ENABLE_PROGRESS_BAR_PRINT=false')
+      assert_equal(-1, @con.query_progress)
+      pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
+      assert_equal(0, @con.query_progress)
+
+      pending_result.execute_task while @con.query_progress.zero?
+      assert(@con.query_progress.positive?, 'query_progress should be positive')
+
+      # test interrupt
+      @con.interrupt
+      while pending_result.state == :not_ready
+        pending_result.execute_task
+        assert(pending_result.state != :ready, 'pending_result.state should not be :ready')
+      end
+    end
+
     def test_disconnect
       @con.disconnect
       exception = assert_raises(DuckDB::Error) do
