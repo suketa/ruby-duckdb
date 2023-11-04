@@ -415,7 +415,7 @@ module DuckDBTest
       assert_equal(1, result.each.first[0])
 
       e = assert_raises(ArgumentError) { stmt.bind_date(1, Foo.new) }
-      assert(e.message.start_with?('Cannot parse argument value to date.'), 'Error message not match')
+      assert_match(/Cannot parse `#<DuckDBTest::PreparedStatementTest::Foo/, e.message)
     end
 
     def test__bind_date
@@ -448,7 +448,7 @@ module DuckDBTest
       assert_equal(1, result.each.first[0])
 
       e = assert_raises(ArgumentError) { stmt.bind_time(1, Foo.new) }
-      assert(e.message.start_with?('Cannot parse argument value to time.'), 'Error message not match')
+      assert_match(/Cannot parse `#<DuckDBTest::PreparedStatementTest::Foo/, e.message)
     end
 
     def test__bind_time

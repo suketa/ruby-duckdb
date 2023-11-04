@@ -42,6 +42,32 @@ module DuckDB
       "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
     end
 
+    def _parse_date(value)
+      case value
+      when Date, Time
+        value
+      else
+        begin
+          Date.parse(value)
+        rescue StandardError => e
+          raise(ArgumentError, "Cannot parse `#{value.inspect}` to Date object. #{e.message}")
+        end
+      end
+    end
+
+    def _parse_time(value)
+      case value
+      when Time
+        value
+      else
+        begin
+          Time.parse(value)
+        rescue StandardError => e
+          raise(ArgumentError, "Cannot parse `#{value.inspect}` to Time object. #{e.message}")
+        end
+      end
+    end
+
     private
 
     def integer_to_hugeint(value)
@@ -51,7 +77,7 @@ module DuckDB
         lower = value - (upper << HALF_HUGEINT_BIT)
         [lower, upper]
       else
-        raise(ArgumentError, "The argument `#{value}` must be Integer.")
+        raise(ArgumentError, "The argument `#{value.inspect}` must be Integer.")
       end
     end
   end
