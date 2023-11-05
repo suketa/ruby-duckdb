@@ -48,6 +48,17 @@ static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedS
     return self;
 }
 
+/*
+ * call-seq:
+ *   pending_result.execute_task -> nil
+ *
+ * Executes the task in the pending result.
+ *
+ *  db = DuckDB::Database.open
+ *  conn = db.connect
+ *  pending_result = conn.async_query("slow query")
+ *  pending_result.execute_task
+ */
 static VALUE duckdb_pending_result_execute_task(VALUE self) {
     rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
     ctx->state = duckdb_pending_execute_task(ctx->pending_result);
@@ -61,6 +72,18 @@ static VALUE duckdb_pending_result_execution_finished_p(VALUE self) {
 }
 #endif
 
+/*
+ * call-seq:
+ *   pending_result.execute_pending -> DuckDB::Result
+ *
+ * Get DuckDB::Result object after query execution finished.
+ *
+ *  db = DuckDB::Database.open
+ *  conn = db.connect
+ *  pending_result = conn.async_query("slow query")
+ *  pending_result.execute_task while pending_result.state != :ready
+ *  result = pending_result.execute_pending # => DuckDB::Result
+ */
 static VALUE duckdb_pending_result_execute_pending(VALUE self) {
     rubyDuckDBPendingResult *ctx;
     rubyDuckDBResult *ctxr;

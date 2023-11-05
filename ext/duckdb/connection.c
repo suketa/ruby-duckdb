@@ -57,7 +57,6 @@ VALUE rbduckdb_create_connection(VALUE oDuckDBDatabase) {
         rb_raise(eDuckDBError, "connection error");
     }
 
-    // rb_ivar_set(obj, rb_intern("database"), oDuckDBDatabase);
     return obj;
 }
 
@@ -69,16 +68,47 @@ static VALUE duckdb_connection_disconnect(VALUE self) {
 
     return self;
 }
+
 #ifdef HAVE_DUCKDB_H_GE_V090
+/*
+ * call-seq:
+ *   connection.interrupt -> nil
+ *
+ * Interrupts the currently running query.
+ *
+ *  db = DuckDB::Database.open
+ *  conn = db.connect
+ *  con.query('SET ENABLE_PROGRESS_BAR=true')
+ *  con.query('SET ENABLE_PROGRESS_BAR_PRINT=false')
+ *  pending_result = con.async_query('slow query')
+ *
+ *  pending_result.execute_task
+ *  con.interrupt # => nil
+ */
 static VALUE duckdb_connection_interrupt(VALUE self) {
     rubyDuckDBConnection *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
     duckdb_interrupt(ctx->con);
 
-    return self;
+    return Qnil;
 }
 
+/*
+ * Returns the progress of the currently running query.
+ *
+ *  require 'duckdb'
+ *
+ *  db = DuckDB::Database.open
+ *  conn = db.connect
+ *  con.query('SET ENABLE_PROGRESS_BAR=true')
+ *  con.query('SET ENABLE_PROGRESS_BAR_PRINT=false')
+ *  con.query_progress # => -1.0
+ *  pending_result = con.async_query('slow query')
+ *  con.query_progress # => 0.0
+ *  pending_result.execute_task
+ *  con.query_progress # => Float
+ */
 static VALUE duckdb_connection_query_progress(VALUE self) {
     rubyDuckDBConnection *ctx;
     double progress;
