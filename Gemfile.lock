@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    duckdb (0.9.1.1)
+    duckdb (0.9.1.2)
 
 GEM
   remote: https://rubygems.org/
@@ -14,7 +14,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.15.4-x86_64-linux)
       racc (~> 1.4)
-    racc (1.7.1)
+    racc (1.7.3)
     rake (13.1.0)
     rake-compiler (1.2.5)
       rake
