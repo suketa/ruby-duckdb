@@ -1,38 +1,64 @@
+# frozen_string_literal: true
+
 require 'mkmf'
 
-def duckdb_library_available?(func)
-  header = find_header('duckdb.h') ||
-           find_header('duckdb.h', '/opt/homebrew/include')
-  library = have_library('duckdb') ||
-            have_library('duckdb', '/opt/homebrew/lib') ||
-            have_library('duckdb', '/opt/homebrew/opt/duckdb/lib')
-  func = have_func(func, 'duckdb.h') || find_library('duckdb', func, '/opt/homebrew/opt/duckdb/lib')
-  header && library && func
+DUCKDB_REQUIRED_VERSION = '0.8.0'
+
+def check_duckdb_header(header, version)
+  found = find_header(
+    header,
+    '/opt/homebrew/include',
+    '/opt/homebrew/opt/duckdb/include',
+    '/opt/local/include'
+  )
+  return if found
+
+  msg = "#{header} is not found. Install duckdb v#{version} #{header}."
+  print_message(msg)
+  raise msg
 end
 
-def check_duckdb_library(func, version)
-  return if duckdb_library_available?(func)
+def check_duckdb_library(library, func, version)
+  found = find_library(
+    library,
+    func,
+    '/opt/homebrew/lib',
+    '/opt/homebrew/opt/duckdb/lib',
+    '/opt/local/lib'
+  )
+  return if found
 
-  msg = "duckdb >= #{version} is not found. Install duckdb >= #{version} library and header file."
-  puts ''
-  puts '*' * 80
-  puts msg
-  puts '*' * 80
-  puts ''
+  library_name = duckdb_library_name(library)
+  msg = "#{library_name} is not found. Install duckdb v#{version} #{library_name}."
+  print_message(msg)
   raise msg
+end
+
+def duckdb_library_name(library)
+  "lib#{library}.(so|dylib|dll)"
+end
+
+def print_message(msg)
+  print <<~END_OF_MESSAGE
+
+    #{'*' * 80}
+    #{msg}
+    #{'*' * 80}
+
+  END_OF_MESSAGE
 end
 
 dir_config('duckdb')
 
-# have_library('duckdb')
-have_library('duckdb_static')
+check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
 
 # check duckdb >= 0.8.0
-check_duckdb_library('duckdb_string_is_inlined', '0.8.0')
+check_duckdb_library('duckdb', 'duckdb_string_is_inlined', DUCKDB_REQUIRED_VERSION)
 
 # check duckdb >= 0.9.0
 have_func('duckdb_bind_parameter_index', 'duckdb.h')
 
+# duckdb_parameter_name is not found on Windows.
 have_func('duckdb_parameter_name', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')
