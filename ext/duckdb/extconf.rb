@@ -13,7 +13,7 @@ def check_duckdb_header(header, version)
   )
   return if found
 
-  msg = "#{header} is not found. Install duckdb v#{version} #{header}."
+  msg = "#{header} is not found. Install #{header} of duckdb >= #{version}."
   print_message(msg)
   raise msg
 end
@@ -29,7 +29,7 @@ def check_duckdb_library(library, func, version)
   return if found
 
   library_name = duckdb_library_name(library)
-  msg = "#{library_name} is not found. Install duckdb v#{version} #{library_name}."
+  msg = "#{library_name} is not found. Install #{library_name} of duckdb >= #{version}."
   print_message(msg)
   raise msg
 end
