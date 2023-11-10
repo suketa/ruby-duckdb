@@ -1,9 +1,13 @@
 require 'mkmf'
 
 def duckdb_library_available?(func)
-  header = find_header('duckdb.h') || find_header('duckdb.h', '/opt/homebrew/include')
-  library = have_func(func, 'duckdb.h') || find_library('duckdb', func, '/opt/homebrew/opt/duckdb/lib')
-  header && library
+  header = find_header('duckdb.h') ||
+           find_header('duckdb.h', '/opt/homebrew/include')
+  library = have_library('duckdb') ||
+            have_library('duckdb', '/opt/homebrew/lib') ||
+            have_library('duckdb', '/opt/homebrew/opt/duckdb/lib')
+  func = have_func(func, 'duckdb.h') || find_library('duckdb', func, '/opt/homebrew/opt/duckdb/lib')
+  header && library && func
 end
 
 def check_duckdb_library(func, version)
@@ -19,6 +23,9 @@ def check_duckdb_library(func, version)
 end
 
 dir_config('duckdb')
+
+# have_library('duckdb')
+have_library('duckdb_static')
 
 # check duckdb >= 0.8.0
 check_duckdb_library('duckdb_string_is_inlined', '0.8.0')
