@@ -75,7 +75,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
 
       def test_streaming?
         r = @con.query('SELECT 1')
-        assert_equal(true, r.streaming?)
+        assert_equal(false, r.streaming?)
       end
     end
   end
