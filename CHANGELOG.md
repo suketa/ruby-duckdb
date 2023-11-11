@@ -1,5 +1,7 @@
 # ChangeLog
 
+- add DuckDB::Result#streaming?.
+
 # 0.9.1.2
 - add DuckDB::Connection#interrupt, DuckDB::Connection#query_progress
 - add DuckDB::Connection#async_query, alias method async_execute.

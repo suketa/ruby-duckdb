@@ -19,6 +19,8 @@ static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
+static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult);
+
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -233,6 +235,19 @@ static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
         rb_ary_store(ary, col_idx, column);
     }
     return ary;
+}
+
+/*
+ *  call-seq:
+ *    result.streaming? -> Boolean
+ *
+ *  Returns true if the result is streaming, otherwise false.
+ *
+ */
+static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+    return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
 }
 
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
@@ -725,6 +740,7 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "row_count", duckdb_result_row_count, 0);
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
+    rb_define_method(cDuckDBResult, "streaming?", duckdb_result_streaming_p, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
     rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2);
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2);
