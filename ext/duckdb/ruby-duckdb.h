@@ -29,5 +29,6 @@ extern VALUE cDuckDBBlob;
 extern VALUE cDuckDBConfig;
 extern VALUE eDuckDBError;
 extern VALUE mDuckDBConverter;
+extern VALUE cDuckDBPreparedStatement;
 
 #endif
