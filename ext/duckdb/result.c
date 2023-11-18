@@ -20,7 +20,9 @@ static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult);
+static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
 
+static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -52,7 +54,6 @@ static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
-static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
 
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
@@ -248,6 +249,76 @@ static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
+}
+
+static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    VALUE row;
+    idx_t col_count;
+    idx_t row_count;
+    idx_t chunk_count;
+    idx_t col_idx;
+    idx_t row_idx;
+    idx_t chunk_idx;
+    duckdb_data_chunk chunk;
+    duckdb_vector vector;
+    VALUE val;
+
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+
+    col_count = duckdb_column_count(&(ctx->result));
+    chunk_count = duckdb_result_chunk_count(ctx->result);
+
+    RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
+
+    for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
+        chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
+        row_count = duckdb_data_chunk_get_size(chunk);
+        for (row_idx = 0; row_idx < row_count; row_idx++) {
+            row = rb_ary_new2(col_count);
+            for (col_idx = 0; col_idx < col_count; col_idx++) {
+                vector = duckdb_data_chunk_get_vector(chunk, col_idx);
+                val = vector_value(vector, row_idx);
+                rb_ary_store(row, col_idx, val);
+            }
+            rb_yield(row);
+        }
+        duckdb_destroy_data_chunk(&chunk);
+    }
+    return Qnil;
+}
+
+static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    duckdb_data_chunk chunk;
+    duckdb_vector vector;
+    VALUE val;
+    idx_t col_count;
+    idx_t row_count;
+    idx_t col_idx;
+    idx_t row_idx;
+    VALUE row;
+
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+
+    RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
+
+    col_count = duckdb_column_count(&(ctx->result));
+
+    while((chunk = duckdb_stream_fetch_chunk(ctx->result)) != NULL) {
+        row_count = duckdb_data_chunk_get_size(chunk);
+        for (row_idx = 0; row_idx < row_count; row_idx++) {
+            row = rb_ary_new2(col_count);
+            for (col_idx = 0; col_idx < col_count; col_idx++) {
+                vector = duckdb_data_chunk_get_vector(chunk, col_idx);
+                val = vector_value(vector, row_idx);
+                rb_ary_store(row, col_idx, val);
+            }
+            rb_yield(row);
+        }
+        duckdb_destroy_data_chunk(&chunk);
+    }
+    return Qnil;
 }
 
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
@@ -695,43 +766,6 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
     return obj;
 }
 
-static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-    VALUE row;
-    idx_t col_count;
-    idx_t row_count;
-    idx_t chunk_count;
-    idx_t col_idx;
-    idx_t row_idx;
-    idx_t chunk_idx;
-    duckdb_data_chunk chunk;
-    duckdb_vector vector;
-    VALUE val;
-
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    col_count = duckdb_column_count(&(ctx->result));
-    chunk_count = duckdb_result_chunk_count(ctx->result);
-
-    RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
-
-    for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
-        chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
-        row_count = duckdb_data_chunk_get_size(chunk);
-        for (row_idx = 0; row_idx < row_count; row_idx++) {
-            row = rb_ary_new2(col_count);
-            for (col_idx = 0; col_idx < col_count; col_idx++) {
-                vector = duckdb_data_chunk_get_vector(chunk, col_idx);
-                val = vector_value(vector, row_idx);
-                rb_ary_store(row, col_idx, val);
-            }
-            rb_yield(row);
-        }
-        duckdb_destroy_data_chunk(&chunk);
-    }
-    return Qnil;
-}
-
 void rbduckdb_init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
     rb_define_alloc_func(cDuckDBResult, allocate);
@@ -741,6 +775,8 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
     rb_define_method(cDuckDBResult, "streaming?", duckdb_result_streaming_p, 0);
+    rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
+    rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
     rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2);
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2);
@@ -758,5 +794,4 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
-    rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
 }
