@@ -57,7 +57,7 @@ jobs:
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        rake test
+        env RUBYOPT=-W:deprecated rake test
 
   post-test:
     name: All tests passed on Ubuntu
