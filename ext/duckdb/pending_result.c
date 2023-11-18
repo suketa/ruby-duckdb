@@ -54,7 +54,6 @@ static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self)
 
     if (!NIL_P(streaming_p) && streaming_p == Qtrue) {
         state = duckdb_pending_prepared_streaming(stmt->prepared_statement, &(ctx->pending_result));
-        rb_raise(rb_eArgError, "streaming is not supported yet");
     } else {
         state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
     }

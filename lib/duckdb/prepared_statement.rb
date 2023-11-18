@@ -24,6 +24,10 @@ module DuckDB
       PendingResult.new(self)
     end
 
+    def pending_prepared_stream
+      PendingResult.new(self, true)
+    end
+
     # binds all parameters with SQL prepared statement.
     #
     #   require 'duckdb'

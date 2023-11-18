@@ -23,6 +23,7 @@ static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult);
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
 
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
+static void yield_rows(duckdb_data_chunk chunk, idx_t col_count);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -253,16 +254,10 @@ static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
 
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    VALUE row;
     idx_t col_count;
-    idx_t row_count;
     idx_t chunk_count;
-    idx_t col_idx;
-    idx_t row_idx;
     idx_t chunk_idx;
     duckdb_data_chunk chunk;
-    duckdb_vector vector;
-    VALUE val;
 
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
@@ -273,16 +268,7 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
 
     for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
         chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
-        row_count = duckdb_data_chunk_get_size(chunk);
-        for (row_idx = 0; row_idx < row_count; row_idx++) {
-            row = rb_ary_new2(col_count);
-            for (col_idx = 0; col_idx < col_count; col_idx++) {
-                vector = duckdb_data_chunk_get_vector(chunk, col_idx);
-                val = vector_value(vector, row_idx);
-                rb_ary_store(row, col_idx, val);
-            }
-            rb_yield(row);
-        }
+        yield_rows(chunk, col_count);
         duckdb_destroy_data_chunk(&chunk);
     }
     return Qnil;
@@ -291,13 +277,7 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     duckdb_data_chunk chunk;
-    duckdb_vector vector;
-    VALUE val;
     idx_t col_count;
-    idx_t row_count;
-    idx_t col_idx;
-    idx_t row_idx;
-    VALUE row;
 
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
@@ -306,19 +286,30 @@ static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
     col_count = duckdb_column_count(&(ctx->result));
 
     while((chunk = duckdb_stream_fetch_chunk(ctx->result)) != NULL) {
-        row_count = duckdb_data_chunk_get_size(chunk);
-        for (row_idx = 0; row_idx < row_count; row_idx++) {
-            row = rb_ary_new2(col_count);
-            for (col_idx = 0; col_idx < col_count; col_idx++) {
-                vector = duckdb_data_chunk_get_vector(chunk, col_idx);
-                val = vector_value(vector, row_idx);
-                rb_ary_store(row, col_idx, val);
-            }
-            rb_yield(row);
-        }
+        yield_rows(chunk, col_count);
         duckdb_destroy_data_chunk(&chunk);
     }
     return Qnil;
+}
+
+static void yield_rows(duckdb_data_chunk chunk, idx_t col_count) {
+    idx_t row_count;
+    idx_t row_idx;
+    idx_t col_idx;
+    duckdb_vector vector;
+    VALUE row;
+    VALUE val;
+
+    row_count = duckdb_data_chunk_get_size(chunk);
+    for (row_idx = 0; row_idx < row_count; row_idx++) {
+        row = rb_ary_new2(col_count);
+        for (col_idx = 0; col_idx < col_count; col_idx++) {
+            vector = duckdb_data_chunk_get_vector(chunk, col_idx);
+            val = vector_value(vector, row_idx);
+            rb_ary_store(row, col_idx, val);
+        }
+        rb_yield(row);
+    }
 }
 
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
@@ -491,32 +482,32 @@ static VALUE vector_date(void *vector_data, idx_t row_idx) {
     duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
 
     return rb_funcall(mDuckDBConverter, rb_intern("_to_date"), 3,
-            INT2FIX(date.year),
-            INT2FIX(date.month),
-            INT2FIX(date.day)
-            );
+                      INT2FIX(date.year),
+                      INT2FIX(date.month),
+                      INT2FIX(date.day)
+                      );
 }
 
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
     duckdb_timestamp_struct data = duckdb_from_timestamp(((duckdb_timestamp *)vector_data)[row_idx]);
     return rb_funcall(mDuckDBConverter, rb_intern("_to_time"), 7,
-            INT2FIX(data.date.year),
-            INT2FIX(data.date.month),
-            INT2FIX(data.date.day),
-            INT2FIX(data.time.hour),
-            INT2FIX(data.time.min),
-            INT2FIX(data.time.sec),
-            INT2NUM(data.time.micros)
-            );
+                      INT2FIX(data.date.year),
+                      INT2FIX(data.date.month),
+                      INT2FIX(data.date.day),
+                      INT2FIX(data.time.hour),
+                      INT2FIX(data.time.min),
+                      INT2FIX(data.time.sec),
+                      INT2NUM(data.time.micros)
+                      );
 }
 
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
     duckdb_interval data = ((duckdb_interval *)vector_data)[row_idx];
     return rb_funcall(mDuckDBConverter, rb_intern("_to_interval_from_vector"), 3,
-            INT2NUM(data.months),
-            INT2NUM(data.days),
-            LL2NUM(data.micros)
-            );
+                      INT2NUM(data.months),
+                      INT2NUM(data.days),
+                      LL2NUM(data.micros)
+                      );
 }
 
 static VALUE vector_blob(void* vector_data, idx_t row_idx) {
@@ -540,9 +531,9 @@ static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
 static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
     return rb_funcall(mDuckDBConverter, rb_intern("_to_hugeint_from_vector"), 2,
-            ULL2NUM(hugeint.lower),
-            LL2NUM(hugeint.upper)
-            );
+                      ULL2NUM(hugeint.lower),
+                      LL2NUM(hugeint.upper)
+                      );
 }
 
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
@@ -563,11 +554,11 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
     }
 
     return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_vector"), 4,
-            INT2FIX(width),
-            INT2FIX(scale),
-            ULL2NUM(value.lower),
-            LL2NUM(value.upper)
-            );
+                      INT2FIX(width),
+                      INT2FIX(scale),
+                      ULL2NUM(value.lower),
+                      LL2NUM(value.upper)
+                      );
 }
 
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
@@ -663,9 +654,9 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
     return rb_funcall(mDuckDBConverter, rb_intern("_to_uuid_from_vector"), 2,
-            ULL2NUM(hugeint.lower),
-            LL2NUM(hugeint.upper)
-            );
+                      ULL2NUM(hugeint.lower),
+                      LL2NUM(hugeint.upper)
+                      );
 }
 
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
@@ -703,7 +694,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
         case DUCKDB_TYPE_BIGINT:
             obj = LL2NUM(((int64_t *) vector_data)[row_idx]);
             break;
-	    case DUCKDB_TYPE_UTINYINT:
+        case DUCKDB_TYPE_UTINYINT:
             obj = INT2FIX(((uint8_t *) vector_data)[row_idx]);
             break;
         case DUCKDB_TYPE_USMALLINT:
