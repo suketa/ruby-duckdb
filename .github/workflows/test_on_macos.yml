@@ -59,7 +59,7 @@ jobs:
 
     - name: run test with Ruby ${{ matrix.ruby }}
       run: |
-        rake test
+        env RUBYOPT=-W:deprecated rake test
 
   post-test:
     name: All tests passed on macos
