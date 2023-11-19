@@ -105,11 +105,7 @@ module DuckDBTest
       sleep 0.1
       result = pending_result.execute_pending
       assert(result.streaming?)
-      result.each do |row|
-        assert_equal([1, 'a'], row)
-      end
-      # assert_equal(1, result.each.first[0])
-      # assert_equal('a', result.each.first[1])
+      assert_equal([1, 'a'], result.each.first)
     end
 
     def test_execute
