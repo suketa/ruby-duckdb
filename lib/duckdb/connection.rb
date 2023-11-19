@@ -57,6 +57,12 @@ module DuckDB
       stmt.pending_prepared
     end
 
+    def async_query_stream(sql, *args, **kwargs)
+      stmt = PreparedStatement.new(self, sql)
+      stmt.bind_args(*args, **kwargs)
+      stmt.pending_prepared_stream
+    end
+
     #
     # connects DuckDB database
     # The first argument is DuckDB::Database object

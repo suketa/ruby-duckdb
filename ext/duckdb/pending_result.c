@@ -5,7 +5,7 @@ static VALUE cDuckDBPendingResult;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement);
+static VALUE duckdb_pending_result_initialize(int argc, VALUE *args, VALUE self);
 static VALUE duckdb_pending_result_execute_task(VALUE self);
 static VALUE duckdb_pending_result_execute_pending(VALUE self);
 
@@ -38,11 +38,27 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBPendingResult);
 }
 
-static VALUE duckdb_pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement) {
+static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self) {
+    VALUE oDuckDBPreparedStatement;
+    VALUE streaming_p = Qfalse;
+    duckdb_state state;
+
+    rb_scan_args(argc, argv, "11", &oDuckDBPreparedStatement, &streaming_p);
+
+    if (rb_obj_is_kind_of(oDuckDBPreparedStatement, cDuckDBPreparedStatement) != Qtrue) {
+        rb_raise(rb_eTypeError, "1st argument must be DuckDB::PreparedStatement");
+    }
+
     rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
     rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
 
-    if (duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result)) == DuckDBError) {
+    if (!NIL_P(streaming_p) && streaming_p == Qtrue) {
+        state = duckdb_pending_prepared_streaming(stmt->prepared_statement, &(ctx->pending_result));
+    } else {
+        state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
+    }
+
+    if (state == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
     }
     return self;
@@ -112,7 +128,7 @@ void rbduckdb_init_duckdb_pending_result(void) {
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
 
-    rb_define_method(cDuckDBPendingResult, "initialize", duckdb_pending_result_initialize, 1);
+    rb_define_method(cDuckDBPendingResult, "initialize", duckdb_pending_result_initialize, -1);
     rb_define_method(cDuckDBPendingResult, "execute_task", duckdb_pending_result_execute_task, 0);
     rb_define_method(cDuckDBPendingResult, "execute_pending", duckdb_pending_result_execute_pending, 0);
 
