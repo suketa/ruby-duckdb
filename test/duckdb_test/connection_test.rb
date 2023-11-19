@@ -7,6 +7,10 @@ module DuckDBTest
       @con = @db.connect
     end
 
+    def teardown
+      DuckDB::Result.use_chunk_each = false
+    end
+
     def test_query
       assert_instance_of(DuckDB::Result, @con.query('CREATE TABLE table1 (id INTEGER)'))
     end
@@ -54,8 +58,7 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.1
       result = pending_result.execute_pending
-      assert_equal(1, result.each.first[0])
-      assert_equal('a', result.each.first[1])
+      assert_equal([1, 'a'], result.each.first)
     end
 
     def test_async_query_with_valid_hash_params
@@ -86,6 +89,27 @@ module DuckDBTest
         invalid_sql = 'CREATE TABLE table1 ('
         @con.async_query(invalid_sql)
       end
+    end
+
+    def test_async_query_stream
+      pending_result = @con.async_query_stream('CREATE TABLE table1 (id INTEGER)')
+      assert_instance_of(DuckDB::PendingResult, pending_result)
+    end
+
+    def test_async_query_stream_with_valid_params
+      DuckDB::Result.use_chunk_each = true
+      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a')
+      pending_result = @con.async_query_stream('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
+      pending_result.execute_task
+      sleep 0.1
+      result = pending_result.execute_pending
+      assert(result.streaming?)
+      result.each do |row|
+        assert_equal([1, 'a'], row)
+      end
+      # assert_equal(1, result.each.first[0])
+      # assert_equal('a', result.each.first[1])
     end
 
     def test_execute
