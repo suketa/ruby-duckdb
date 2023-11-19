@@ -25,6 +25,8 @@ module DuckDB
     end
 
     def pending_prepared_stream
+      raise DuckDB::Error, 'DuckDB::Result.use_chunk_each must be true.' unless DuckDB::Result.use_chunk_each?
+
       PendingResult.new(self, true)
     end
 

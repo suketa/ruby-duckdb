@@ -92,6 +92,7 @@ module DuckDBTest
     end
 
     def test_async_query_stream
+      DuckDB::Result.use_chunk_each = true
       pending_result = @con.async_query_stream('CREATE TABLE table1 (id INTEGER)')
       assert_instance_of(DuckDB::PendingResult, pending_result)
     end
@@ -107,6 +108,45 @@ module DuckDBTest
       assert(result.streaming?)
       assert_equal([1, 'a'], result.each.first)
     end
+
+    def test_async_query_stream_with_invalid_params
+      DuckDB::Result.use_chunk_each = true
+      assert_raises(DuckDB::Error) { @con.async_query_stream('foo', 'bar') }
+
+      assert_raises(ArgumentError) { @con.async_query_stream }
+
+      assert_raises(TypeError) { @con.async_query_stream(1) }
+
+      assert_raises(DuckDB::Error) do
+        invalid_sql = 'CREATE TABLE table1 ('
+        @con.async_query_stream(invalid_sql)
+      end
+    end
+
+    def test_async_query_stream_without_chunk_each
+      DuckDB::Result.use_chunk_each = false
+      assert_raises(DuckDB::Error) { @con.async_query_stream('SELECT 1') }
+    end
+
+    def test_async_query_stream_with_valid_hash_params
+      skip unless DuckDB::PreparedStatement.method_defined?(:bind_parameter_index)
+
+      DuckDB::Result.use_chunk_each = true
+
+      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+      @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)
+
+      pending_result = @con.async_query_stream(
+        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2',
+        col2: 'a',
+        col1: 1
+      )
+      pending_result.execute_task
+      sleep 0.1
+      result = pending_result.execute_pending
+      assert_equal([1, 'a'], result.each.first)
+    end
+
 
     def test_execute
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
