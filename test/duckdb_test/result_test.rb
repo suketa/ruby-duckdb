@@ -3,8 +3,8 @@ require 'test_helper'
 module DuckDBTest
   class ResultTest < Minitest::Test
     def setup
-      @@con ||= create_data
-      @result = @@con.query('SELECT * from table1')
+      @con ||= create_data
+      @result = @con.query('SELECT * from table1')
       @ary = first_record
     end
 
@@ -34,7 +34,9 @@ module DuckDBTest
         expected_date,
         expected_timestamp,
         expected_blob,
-        expected_boolean_false
+        expected_boolean_false,
+        expected_list,
+        expected_nested_list
       ]
       assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
     end
@@ -80,7 +82,7 @@ module DuckDBTest
     end
 
     def test_result_null
-      assert_equal(Array.new(12), @result.reverse_each.first)
+      assert_equal(Array.new(14), @result.reverse_each.first)
     end
 
     def test_including_enumerable
@@ -105,18 +107,18 @@ module DuckDBTest
     end
 
     def test_column_count
-      assert_equal(12, @result.column_count)
-      assert_equal(12, @result.column_size)
-      r = @@con.query('SELECT boolean_col, smallint_col from table1')
+      assert_equal(14, @result.column_count)
+      assert_equal(14, @result.column_size)
+      r = @con.query('SELECT boolean_col, smallint_col from table1')
       assert_equal(2, r.column_count)
       assert_equal(2, r.column_size)
     end
 
     def test_row_count
-      r = @@con.query('SELECT * FROM table1')
+      r = @con.query('SELECT * FROM table1')
       assert_equal(2, r.row_count)
       assert_equal(2, r.row_size)
-      r = @@con.query('SELECT * FROM table1 WHERE boolean_col = true')
+      r = @con.query('SELECT * FROM table1 WHERE boolean_col = true')
       assert_equal(1, r.row_count)
       assert_equal(1, r.row_size)
     end
@@ -182,8 +184,8 @@ module DuckDBTest
     private
 
     def create_data
-      @@db ||= DuckDB::Database.open # FIXME
-      con = @@db.connect
+      @db ||= DuckDB::Database.open # FIXME
+      con = @db.connect
       con.query(create_table_sql)
       con.query(insert_sql)
       con
@@ -204,6 +206,8 @@ module DuckDBTest
           timestamp_col timestamp,
           blob_col BLOB,
           boolean_col2 BOOLEAN,
+          list INTEGER[],
+          nested_list INTEGER[][]
         )
       SQL
     end
@@ -223,9 +227,11 @@ module DuckDBTest
           '#{expected_date}',
           '#{expected_timestamp}',
           '#{expected_blob}',
-          '#{expected_boolean_false}'
+          '#{expected_boolean_false}',
+          #{expected_list},
+          #{expected_nested_list}
         ),
-        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
@@ -275,6 +281,14 @@ module DuckDBTest
 
     def expected_blob
       'blob'.force_encoding('ASCII-8BIT')
+    end
+
+    def expected_list
+      [1, 2]
+    end
+
+    def expected_nested_list
+      [[1, 2], [3, 4]]
     end
 
     def first_record
