@@ -119,7 +119,7 @@ result = pending_result.execute_pending
 result.each.first
 ```
 
-Here is [the benchmark]('./benchmark/async_query.rb').
+Here is [the benchmark](./benchmark/async_query.rb).
 
 ### using BLOB column
 
