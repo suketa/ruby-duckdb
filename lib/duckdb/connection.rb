@@ -42,14 +42,12 @@ module DuckDB
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_file')
     #   con = db.connect
-    #   pending_result = con.async_query('SELECT * FROM users')
-    #   sql = 'SELECT * FROM users WHERE name = ? AND email = ?'
-    #   pending_result = con.async_query(sql, 'Dave', 'dave@example.com')
-    #
-    #   # or You can use named parameter.
     #
     #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
     #   pending_result = con.async_query(sql, name: 'Dave', email: 'dave@example.com')
+    #   pending_result.execute_task while pending_result.state == :not_ready
+    #   result = pending_result.execute_pending
+    #   result.each.first
     #
     def async_query(sql, *args, **kwargs)
       stmt = PreparedStatement.new(self, sql)
@@ -57,6 +55,24 @@ module DuckDB
       stmt.pending_prepared
     end
 
+    #
+    # executes sql with args asynchronously and provides streaming result.
+    # The first argument sql must be SQL string.
+    # The rest arguments are parameters of SQL string.
+    # This method returns DuckDB::PendingResult object.
+    #
+    #   require 'duckdb'
+    #   DuckDB::Result.use_chunk_each = true # must be true
+    #   db = DuckDB::Database.open('duckdb_file')
+    #   con = db.connect
+    #
+    #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
+    #   pending_result = con.async_query_stream(sql, name: 'Dave', email: 'dave@example.com')
+    #
+    #   pending_result.execute_task while pending_result.state == :not_ready
+    #   result = pending_result.execute_pending
+    #   result.each.first
+    #
     def async_query_stream(sql, *args, **kwargs)
       stmt = PreparedStatement.new(self, sql)
       stmt.bind_args(*args, **kwargs)
