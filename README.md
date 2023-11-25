@@ -104,10 +104,25 @@ con.query('SELECT * FROM users WHERE name = ? AND email = ?', 'Alice', 'alice@ex
 con.query('SELECT * FROM users WHERE name = $name AND email = $email', name: 'Alice', email: 'alice@example.com')
 ```
 
+### using async query
+
+You can use async query.
+
+```ruby
+DuckDB::Result.use_chunk_each = true # must be true.
+...
+
+pending_result = con.async_query_stream('SLOW QUERY')
+pending_result.execute_task while pending_result.state == :not_ready
+
+result = pending_result.execute_pending
+result.each.first
+```
+
+Here is [the benchmark]('./benchmark/async_query.rb').
 
 ### using BLOB column
 
-BLOB is available with DuckDB v0.2.5 or later.
 Use `DuckDB::Blob.new` or use sting#force_encoding(Encoding::BINARY)
 
 ```ruby
@@ -119,6 +134,7 @@ DuckDB::Database.open do |db|
     stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO blob_table VALUES ($1)')
 
     stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
+    #  or
     # stmt.bind(1, "\0\1\2\3\4\5".force_encoding(Encoding::BINARY))
     stmt.execute
 
