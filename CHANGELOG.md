@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.9.2
 - add DuckDB::Connection#async_query_stream
 - DuckDB::PendingResult accepts second argument. If the second argument is
   true, PendingResult#execute_pending returns streaming DuckDB::Result object.
