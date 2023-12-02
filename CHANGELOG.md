@@ -1,5 +1,7 @@
 # ChangeLog
 
+- drop Ruby 2.7.x.
+
 # 0.9.2
 - add DuckDB::Connection#async_query_stream
 - DuckDB::PendingResult accepts second argument. If the second argument is
