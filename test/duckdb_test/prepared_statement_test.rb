@@ -135,6 +135,16 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.parameter_name(3) }
     end
 
+    def test_bind_index_number
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $2')
+      stmt.bind(2, 1)
+
+      exception = assert_raises(DuckDB::Error) { stmt.execute }
+      expected = 'Binder Error: Parameter/argument count mismatch for prepared statement. Expected 2, got 1'
+      assert_equal(expected, exception.message)
+    end
+
     def test_bind_bool
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_boolean = $1')
