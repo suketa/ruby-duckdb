@@ -11,4 +11,12 @@ if defined?(GC.verify_compaction_references) == 'method'
   end
 end
 
+module DuckDBTest
+  def duckdb_library_version
+    Gem::Version.new(DuckDB::LIBRARY_VERSION)
+  end
+
+  module_function :duckdb_library_version
+end
+
 require 'minitest/autorun'
