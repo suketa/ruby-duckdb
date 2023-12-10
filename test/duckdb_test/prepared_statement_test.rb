@@ -136,7 +136,7 @@ module DuckDBTest
     end
 
     def test_bind_index_number_exception
-      skip if ::DuckDBTest.duckdb_library_version < '0.9.0'
+      skip if ::DuckDBTest.duckdb_library_version < Gem::Version.new('0.9.0')
 
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $2')
