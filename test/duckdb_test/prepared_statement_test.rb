@@ -135,13 +135,16 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.parameter_name(3) }
     end
 
-    def test_bind_index_number
+    def test_bind_index_number_exception
+      skip if ::DuckDBTest.duckdb_library_version < '0.9.0'
+
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $2')
       stmt.bind(2, 1)
 
       exception = assert_raises(DuckDB::Error) { stmt.execute }
       expected = 'Binder Error: Parameter/argument count mismatch for prepared statement. Expected 2, got 1'
+
       assert_equal(expected, exception.message)
     end
 
