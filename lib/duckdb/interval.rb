@@ -157,5 +157,9 @@ module DuckDB
         @interval_days == other.interval_days &&
         @interval_micros == other.interval_micros
     end
+
+    def eql?(other)
+      self == other
+    end
   end
 end
