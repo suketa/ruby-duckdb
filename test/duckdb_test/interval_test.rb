@@ -121,5 +121,17 @@ module DuckDBTest
       assert_equal(0, interval.interval_days)
       assert_equal(0, interval.interval_micros)
     end
+
+    def test_equality
+      interval1 = DuckDB::Interval.new
+      interval2 = DuckDB::Interval.new
+      assert_equal(interval1, interval2)
+    end
+
+    def test_eql?
+      interval1 = DuckDB::Interval.new
+      interval2 = DuckDB::Interval.new
+      assert_equal(true, interval1.eql?(interval2))
+    end
   end
 end

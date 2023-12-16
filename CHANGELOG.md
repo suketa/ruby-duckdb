@@ -1,5 +1,6 @@
 # ChangeLog
 
+- add DuckDB::Interval#eql?
 - drop Ruby 2.7.x.
 
 # 0.9.2
