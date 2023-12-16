@@ -10,7 +10,6 @@ module DuckDBTest
     end
 
     def teardown
-      DuckDB::Result.use_chunk_each = false
     end
 
     def test_query
@@ -94,13 +93,11 @@ module DuckDBTest
     end
 
     def test_async_query_stream
-      DuckDB::Result.use_chunk_each = true
       pending_result = @con.async_query_stream('CREATE TABLE table1 (id INTEGER)')
       assert_instance_of(DuckDB::PendingResult, pending_result)
     end
 
     def test_async_query_stream_with_valid_params
-      DuckDB::Result.use_chunk_each = true
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a')
       pending_result = @con.async_query_stream('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
@@ -112,7 +109,6 @@ module DuckDBTest
     end
 
     def test_async_query_stream_with_invalid_params
-      DuckDB::Result.use_chunk_each = true
       assert_raises(DuckDB::Error) { @con.async_query_stream('foo', 'bar') }
 
       assert_raises(ArgumentError) { @con.async_query_stream }
@@ -128,12 +124,12 @@ module DuckDBTest
     def test_async_query_stream_without_chunk_each
       DuckDB::Result.use_chunk_each = false
       assert_raises(DuckDB::Error) { @con.async_query_stream('SELECT 1') }
+    ensure
+      DuckDB::Result.use_chunk_each = true
     end
 
     def test_async_query_stream_with_valid_hash_params
       skip unless DuckDB::PreparedStatement.method_defined?(:bind_parameter_index)
-
-      DuckDB::Result.use_chunk_each = true
 
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)

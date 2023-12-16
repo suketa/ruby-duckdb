@@ -53,13 +53,13 @@ module DuckDB
     alias column_size column_count
     alias row_size row_count
 
+    @use_chunk_each = true
+
     class << self
+      attr_writer :use_chunk_each
+
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
-      end
-
-      def use_chunk_each=(val)
-        @use_chunk_each = val
       end
 
       def use_chunk_each?
