@@ -60,7 +60,7 @@ module DuckDBTest
         'str',
         '#{datestr}',
         '2019-11-09 12:34:56',
-        '#{now.strftime('%T.%N')}',
+        '12:34:56.000001',
         'blob data',
         '1 year 2 months 3 days 12:34:56.987654'
       );
@@ -81,7 +81,7 @@ module DuckDBTest
         'str',
         self.class.today,
         Time.parse('2019-11-09 12:34:56'),
-        nil,
+        Time.local(self.class.now.year, self.class.now.month, self.class.now.day, 12, 34, 56, 1),
         'blob data',
         DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654)
       ]
@@ -475,13 +475,14 @@ module DuckDBTest
       now = PreparedStatementTest.now
       col_time = con.query('SELECT col_time from a').first.first
 
-      stmt.bind_time(1, now)
+      bind_val = Time.local(1970, 1, 1, 12, 34, 56, 1)
+      stmt.bind_time(1, bind_val)
       result = stmt.execute
-      dump_now = "col_time=#{col_time}, now.usec=#{now.usec}, now.nsec=#{now.nsec}, now.strftime('%N')=#{now.strftime('%N')}"
+      dump_now = "data=#{col_time}, data.usec=#{col_time.usec} bind_val=#{bind_val}, bind_val.usec=#{bind_val.usec}"
       assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
-      stmt.bind_time(1, now.strftime('%F %T.%N'))
+      stmt.bind_time(1, bind_val.strftime('%F %T.%N'))
       result = stmt.execute
       assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
@@ -495,10 +496,7 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
 
-      now = PreparedStatementTest.now
-
-      usec = now.usec
-      stmt.send(:_bind_time, 1, now.hour, now.min, now.sec, usec)
+      stmt.send(:_bind_time, 1, 12, 34, 56, 1)
 
       result = stmt.execute
       assert_instance_of(Array, result.each.first)
