@@ -39,8 +39,10 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'HUGEINT',   'HUGEINT',                     -170141183460469231731687303715884105727,   Integer,             -170_141_183_460_469_231_731_687_303_715_884_105_727 ],
         [:ok, 'FLOAT',     'FLOAT',                       12345.375,                                  Float,                12_345.375                                          ],
         [:ok, 'DOUBLE',    'DOUBLE',                      123.456789,                                 Float,                123.456789                                          ],
-        [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56'",                    Time,                 Time.new(2019,11,3,12,34,56)                        ],
-        [:ok, 'TIME',      'TIME',                        "'12:34:56'",                               Time,                 Time.parse('12:34:56')                              ],
+        [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56.000001'",             Time,                 Time.local(2019, 11, 3, 12, 34, 56, 1)              ],
+        [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56.00001'",              Time,                 Time.local(2019, 11, 3, 12, 34, 56, 10)             ],
+        [:ok, 'TIME',      'TIME',                        "'12:34:56.000001'",                        Time,                 Time.parse('12:34:56.000001')                       ],
+        [:ok, 'TIME',      'TIME',                        "'12:34:56.00001'",                         Time,                 Time.parse('12:34:56.00001')                        ],
         [:ok, 'DATE',      'DATE',                        "'2019-11-03'",                             Date,                 Date.new(2019,11,3)                                 ],
         [:ok, 'INTERVAL',  'INTERVAL',                    "'2 days ago'",                             DuckDB::Interval,     DuckDB::Interval.new(interval_days: -2)             ],
         [:ok, 'VARCHAR',   'VARCHAR',                     "'hello'",                                  String,               'hello'                                             ],
@@ -70,7 +72,10 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
           @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
           res = @con.query('SELECT * FROM tests').to_a[0][0]
           if db_type == 'TIME'
-            assert_equal(ruby_val.strftime('%H:%M:%S'), res.strftime('%H:%M:%S'))
+            assert_equal(
+              [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
+              [res.hour, res.min, res.sec, res.usec]
+            )
           else
             assert_equal(ruby_val, res)
           end
