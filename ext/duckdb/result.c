@@ -44,6 +44,7 @@ static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col
 
 static VALUE vector_date(void *vector_data, idx_t row_idx);
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
+static VALUE vector_time(void* vector_data, idx_t row_idx);
 static VALUE vector_interval(void* vector_data, idx_t row_idx);
 static VALUE vector_blob(void* vector_data, idx_t row_idx);
 static VALUE vector_varchar(void* vector_data, idx_t row_idx);
@@ -501,6 +502,17 @@ static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
                       );
 }
 
+static VALUE vector_time(void* vector_data, idx_t row_idx) {
+    duckdb_time_struct data = duckdb_from_time(((duckdb_time *)vector_data)[row_idx]);
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_time_from_duckdb_time"), 4,
+                      INT2FIX(data.hour),
+                      INT2FIX(data.min),
+                      INT2FIX(data.sec),
+                      INT2NUM(data.micros)
+                      );
+}
+
+
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
     duckdb_interval data = ((duckdb_interval *)vector_data)[row_idx];
     return rb_funcall(mDuckDBConverter, rb_intern("_to_interval_from_vector"), 3,
@@ -720,6 +732,9 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
             break;
         case DUCKDB_TYPE_TIMESTAMP:
             obj = vector_timestamp(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_TIME:
+            obj = vector_time(vector_data, row_idx);
             break;
         case DUCKDB_TYPE_INTERVAL:
             obj = vector_interval(vector_data, row_idx);

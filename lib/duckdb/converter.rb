@@ -19,6 +19,18 @@ module DuckDB
       Time.local(year, month, day, hour, minute, second, microsecond)
     end
 
+    def _to_time_from_duckdb_time(hour, minute, second, microsecond)
+      Time.parse(
+        format(
+          '%<hour>02d:%<minute>02d:%<second>02d.%<microsecond>06d',
+          hour: hour,
+          minute: minute,
+          second: second,
+          microsecond: microsecond
+        )
+      )
+    end
+
     def _to_hugeint_from_vector(lower, upper)
       (upper << HALF_HUGEINT_BIT) + lower
     end

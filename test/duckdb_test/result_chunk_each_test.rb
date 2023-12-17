@@ -40,6 +40,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'FLOAT',     'FLOAT',                       12345.375,                                  Float,                12_345.375                                          ],
         [:ok, 'DOUBLE',    'DOUBLE',                      123.456789,                                 Float,                123.456789                                          ],
         [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56'",                    Time,                 Time.new(2019,11,3,12,34,56)                        ],
+        [:ok, 'TIME',      'TIME',                        "'12:34:56'",                               Time,                 Time.parse('12:34:56')                              ],
         [:ok, 'DATE',      'DATE',                        "'2019-11-03'",                             Date,                 Date.new(2019,11,3)                                 ],
         [:ok, 'INTERVAL',  'INTERVAL',                    "'2 days ago'",                             DuckDB::Interval,     DuckDB::Interval.new(interval_days: -2)             ],
         [:ok, 'VARCHAR',   'VARCHAR',                     "'hello'",                                  String,               'hello'                                             ],
@@ -68,7 +69,11 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
           @con.query("CREATE TABLE tests (col #{db_declaration})")
           @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
           res = @con.query('SELECT * FROM tests').to_a[0][0]
-          assert_equal(ruby_val, res)
+          if db_type == 'TIME'
+            assert_equal(ruby_val.strftime('%H:%M:%S'), res.strftime('%H:%M:%S'))
+          else
+            assert_equal(ruby_val, res)
+          end
           assert_equal(klass, res.class)
         end
       end
