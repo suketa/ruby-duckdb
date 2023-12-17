@@ -2,6 +2,8 @@
 
 - support Time column DuckDB#Result#chunk_each
 - add DuckDB::Interval#eql?
+
+## Breaking Changes
 - drop Ruby 2.7.x.
 
 # 0.9.2
