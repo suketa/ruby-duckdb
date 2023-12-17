@@ -23,10 +23,10 @@ module DuckDB
       Time.parse(
         format(
           '%<hour>02d:%<minute>02d:%<second>02d.%<microsecond>06d',
-          hour: hour,
-          minute: minute,
-          second: second,
-          microsecond: microsecond
+          hour:,
+          minute:,
+          second:,
+          microsecond:
         )
       )
     end
