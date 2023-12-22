@@ -1,26 +1,26 @@
 # ChangeLog
 
-- support Time column DuckDB#Result#chunk_each
-- add DuckDB::Interval#eql?
+- support Time column in `DuckDB#Result#chunk_each`.
+- add `DuckDB::Interval#eql?`.
 
 # 0.9.2
-- add DuckDB::Connection#async_query_stream
-- DuckDB::PendingResult accepts second argument. If the second argument is
-  true, PendingResult#execute_pending returns streaming DuckDB::Result object.
-- add DuckDB::PreparedStatement#pending_prepared_stream
-- add DuckDB::Result#streaming?.
+- add `DuckDB::Connection#async_query_stream`.
+- `DuckDB::PendingResult` accepts second argument. If the second argument is
+  true, `PendingResult#execute_pending` returns streaming `DuckDB::Result` object.
+- add `DuckDB::PreparedStatement#pending_prepared_stream`
+- add `DuckDB::Result#streaming?`.
 
 # 0.9.1.2
-- add DuckDB::Connection#interrupt, DuckDB::Connection#query_progress
-- add DuckDB::Connection#async_query, alias method async_execute.
+- add `DuckDB::Connection#interrupt`, `DuckDB::Connection#query_progress`.
+- add `DuckDB::Connection#async_query`, alias method `async_execute`.
 
 # 0.9.1.1
 - change default branch to main from master.
-- add DuckDB::PendingResult class.
-- add DuckDB::PendingResult#state.
-- add DuckDB::PendingResult#execute_task.
-- add DuckDB::PendingResult#execute_pending.
-- add DuckDB::PreparedStatement#pending_prepared.
+- add `DuckDB::PendingResult` class.
+- add `DuckDB::PendingResult#state`.
+- add `DuckDB::PendingResult#execute_task`.
+- add `DuckDB::PendingResult#execute_pending`.
+- add `DuckDB::PreparedStatement#pending_prepared`.
 
 ## Breaking Changes
 - drop duckdb v0.7.x.
@@ -31,16 +31,16 @@
 
 # 0.9.0.1
 - add `DuckDB::PreparedStatement#bind_parameter_index`.
-- DuckDB::Connection#query accepts SQL with named bind parameters.
+- `DuckDB::Connection#query` accepts SQL with named bind parameters.
 
 # 0.9.0
 - bump duckdb to 0.9.0.
 
 ## Breaking Changes
-- deprecation warning when DuckDB::Result.each calling with `DuckDB::Result.use_chunk_each` is false.
+- deprecation warning when `DuckDB::Result.each` calling with `DuckDB::Result.use_chunk_each` is false.
   The `each` behavior will be same as `DuckDB::Result.chunk_each` in the future.
   set `DuckDB::Result.use_chunk_each = true` to suppress the warning.
-- DuckDB::Result#chunk_each returns DuckDB::Interval class when the column type is INTERVAL.
+- `DuckDB::Result#chunk_each` returns `DuckDB::Interval` class when the column type is INTERVAL.
 
 # 0.8.1.3
 - Fix BigDecimal conversion.
@@ -67,7 +67,7 @@
   But `DuckDB::Result#each` behavior will be changed like as `DuckDB::Result#chunk_each` in near future release.
   And there are some breaking changes.
   Write `DuckdDB::Result.use_chunk_each = true` if you want to try new behavior.
-    ```
+    ```ruby
     DuckDB::Result.use_chunk_each = true
 
     result = con.query('SELECT ....')
