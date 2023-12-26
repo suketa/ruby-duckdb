@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.9.2.2
 - bump Ruby to 3.3.0 on CI.
 
 ## Breaking changes
