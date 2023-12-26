@@ -1,5 +1,8 @@
 # ChangeLog
 
+## Breaking changes
+- drop Ruby 2.7.
+
 # 0.9.2.1
 - support Time column in `DuckDB#Result#chunk_each`.
 - add `DuckDB::Interval#eql?`.
