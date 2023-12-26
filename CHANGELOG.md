@@ -1,5 +1,7 @@
 # ChangeLog
 
+- bump Ruby to 3.3.0 on CI.
+
 ## Breaking changes
 - drop Ruby 2.7.
 
