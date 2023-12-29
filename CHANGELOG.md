@@ -1,5 +1,6 @@
 # ChangeLog
 
+# 0.9.2.3
 - fix bigdecimal warning with Ruby 3.3.0.
 
 # 0.9.2.2
