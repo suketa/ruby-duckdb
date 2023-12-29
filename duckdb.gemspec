@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.extensions    = ['ext/duckdb/extconf.rb']
   spec.required_ruby_version = '>= 3.0.0'
+  spec.add_dependency 'bigdecimal', '>= 3.1.4'
 
   spec.add_development_dependency 'bundler', '~> 2.3'
   spec.add_development_dependency 'minitest', '~> 5.0'
