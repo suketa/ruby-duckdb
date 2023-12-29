@@ -1,5 +1,7 @@
 # ChangeLog
 
+- fix bigdecimal warning with Ruby 3.3.0.
+
 # 0.9.2.2
 - bump Ruby to 3.3.0 on CI.
 
