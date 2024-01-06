@@ -114,7 +114,7 @@ module DuckDB
 
     def _to_decimal_internal(row, col)
       lower, upper, width, scale = __to_decimal_internal(row, col)
-      Converter._to_decimal_from_vector(width, scale, lower, upper)
+      Converter._to_decimal_from_hugeint(width, scale, upper, lower)
     end
   end
 end

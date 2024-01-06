@@ -35,8 +35,13 @@ module DuckDB
       (upper << HALF_HUGEINT_BIT) + lower
     end
 
-    def _to_decimal_from_vector(_width, scale, lower, upper)
-      v = _to_hugeint_from_vector(lower, upper).to_s
+    def _to_decimal_from_hugeint(width, scale, upper, lower)
+      v = _to_hugeint_from_vector(lower, upper)
+      _to_decimal_from_value(width, scale, v)
+    end
+
+    def _to_decimal_from_value(_width, scale, value)
+      v = value.to_s
       v = v.rjust(scale + 1, '0') if v.length < scale
       v[-scale, 0] = '.'
       BigDecimal(v)

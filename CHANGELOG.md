@@ -1,5 +1,7 @@
 # ChangeLog
 
+- fix Decimal type conversion.
+
 # 0.9.2.3
 - fix bigdecimal warning with Ruby 3.3.0.
 

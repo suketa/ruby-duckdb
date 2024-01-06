@@ -561,15 +561,22 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
         case DUCKDB_TYPE_HUGEINT:
             value = ((duckdb_hugeint *) vector_data)[row_idx];
             break;
+        case DUCKDB_TYPE_SMALLINT:
+            value.upper = ((int16_t *) vector_data)[row_idx];
+            return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_value"), 3,
+                              INT2FIX(width),
+                              INT2FIX(scale),
+                              INT2FIX(value.upper)
+                              );
         default:
             rb_warn("Unknown decimal internal type %d", type);
     }
 
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_vector"), 4,
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_hugeint"), 4,
                       INT2FIX(width),
                       INT2FIX(scale),
-                      ULL2NUM(value.lower),
-                      LL2NUM(value.upper)
+                      LL2NUM(value.upper),
+                      ULL2NUM(value.lower)
                       );
 }
 
