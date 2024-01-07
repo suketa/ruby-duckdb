@@ -35,8 +35,8 @@ module DuckDB
       (upper << HALF_HUGEINT_BIT) + lower
     end
 
-    def _to_decimal_from_hugeint(width, scale, upper, lower)
-      v = _to_hugeint_from_vector(lower, upper)
+    def _to_decimal_from_hugeint(width, scale, upper, lower = nil)
+      v = lower.nil? ? upper : _to_hugeint_from_vector(lower, upper)
       _to_decimal_from_value(width, scale, v)
     end
 

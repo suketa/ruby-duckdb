@@ -549,48 +549,40 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
-    uint8_t width = duckdb_decimal_width(ty);
-    uint8_t scale = duckdb_decimal_scale(ty);
+    VALUE width = INT2FIX(duckdb_decimal_width(ty));
+    VALUE scale = INT2FIX(duckdb_decimal_scale(ty));
     duckdb_type type = duckdb_decimal_internal_type(ty);
     duckdb_hugeint value;
+    VALUE upper = Qnil;
+    VALUE lower = Qnil;
 
     value.upper = 0;
     value.lower = 0;
 
-    switch(duckdb_decimal_internal_type(ty)) {
+    switch(type) {
         case DUCKDB_TYPE_HUGEINT:
             value = ((duckdb_hugeint *) vector_data)[row_idx];
+            upper = LL2NUM(value.upper);
+            lower = ULL2NUM(value.lower);
             break;
         case DUCKDB_TYPE_SMALLINT:
-            value.upper = ((int16_t *) vector_data)[row_idx];
-            return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_value"), 3,
-                              INT2FIX(width),
-                              INT2FIX(scale),
-                              INT2FIX(value.upper)
-                              );
+            upper = INT2FIX(((int16_t *) vector_data)[row_idx]);
+            break;
         case DUCKDB_TYPE_INTEGER:
-            value.upper = ((int32_t *) vector_data)[row_idx];
-            return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_value"), 3,
-                              INT2FIX(width),
-                              INT2FIX(scale),
-                              INT2NUM(value.upper)
-                              );
+            upper = INT2NUM(((int32_t *) vector_data)[row_idx]);
+            break;
         case DUCKDB_TYPE_BIGINT:
-            value.upper = ((int64_t *) vector_data)[row_idx];
-            return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_value"), 3,
-                              INT2FIX(width),
-                              INT2FIX(scale),
-                              LL2NUM(value.upper)
-                              );
+            upper = LL2NUM(((int64_t *) vector_data)[row_idx]);
+            break;
         default:
             rb_warn("Unknown decimal internal type %d", type);
     }
 
     return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_hugeint"), 4,
-                      INT2FIX(width),
-                      INT2FIX(scale),
-                      LL2NUM(value.upper),
-                      ULL2NUM(value.lower)
+                      width,
+                      scale,
+                      upper,
+                      lower
                       );
 }
 
