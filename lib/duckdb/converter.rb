@@ -43,7 +43,7 @@ module DuckDB
     def _to_decimal_from_value(_width, scale, value)
       v = value.to_s
       v = v.rjust(scale + 1, '0') if v.length < scale
-      v[-scale, 0] = '.'
+      v[-scale, 0] = '.' if scale.positive?
       BigDecimal(v)
     end
 
