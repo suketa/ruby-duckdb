@@ -568,6 +568,20 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
                               INT2FIX(scale),
                               INT2FIX(value.upper)
                               );
+        case DUCKDB_TYPE_INTEGER:
+            value.upper = ((int32_t *) vector_data)[row_idx];
+            return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_value"), 3,
+                              INT2FIX(width),
+                              INT2FIX(scale),
+                              INT2NUM(value.upper)
+                              );
+        case DUCKDB_TYPE_BIGINT:
+            value.upper = ((int64_t *) vector_data)[row_idx];
+            return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_value"), 3,
+                              INT2FIX(width),
+                              INT2FIX(scale),
+                              LL2NUM(value.upper)
+                              );
         default:
             rb_warn("Unknown decimal internal type %d", type);
     }
