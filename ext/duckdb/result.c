@@ -1,6 +1,13 @@
 #include "ruby-duckdb.h"
 
 static VALUE cDuckDBResult;
+static ID id__to_date;
+static ID id__to_time;
+static ID id__to_time_from_duckdb_time;
+static ID id__to_interval_from_vector;
+static ID id__to_hugeint_from_vector;
+static ID id__to_decimal_from_hugeint;
+static ID id__to_uuid_from_vector;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -482,7 +489,7 @@ VALUE rbduckdb_create_result(void) {
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
     duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
 
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_date"), 3,
+    return rb_funcall(mDuckDBConverter, id__to_date, 3,
                       INT2FIX(date.year),
                       INT2FIX(date.month),
                       INT2FIX(date.day)
@@ -491,7 +498,7 @@ static VALUE vector_date(void *vector_data, idx_t row_idx) {
 
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
     duckdb_timestamp_struct data = duckdb_from_timestamp(((duckdb_timestamp *)vector_data)[row_idx]);
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_time"), 7,
+    return rb_funcall(mDuckDBConverter, id__to_time, 7,
                       INT2FIX(data.date.year),
                       INT2FIX(data.date.month),
                       INT2FIX(data.date.day),
@@ -504,7 +511,7 @@ static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
 
 static VALUE vector_time(void* vector_data, idx_t row_idx) {
     duckdb_time_struct data = duckdb_from_time(((duckdb_time *)vector_data)[row_idx]);
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_time_from_duckdb_time"), 4,
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time, 4,
                       INT2FIX(data.hour),
                       INT2FIX(data.min),
                       INT2FIX(data.sec),
@@ -515,7 +522,7 @@ static VALUE vector_time(void* vector_data, idx_t row_idx) {
 
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
     duckdb_interval data = ((duckdb_interval *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_interval_from_vector"), 3,
+    return rb_funcall(mDuckDBConverter, id__to_interval_from_vector, 3,
                       INT2NUM(data.months),
                       INT2NUM(data.days),
                       LL2NUM(data.micros)
@@ -542,7 +549,7 @@ static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
 
 static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_hugeint_from_vector"), 2,
+    return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
                       ULL2NUM(hugeint.lower),
                       LL2NUM(hugeint.upper)
                       );
@@ -578,7 +585,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
             rb_warn("Unknown decimal internal type %d", type);
     }
 
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_decimal_from_hugeint"), 4,
+    return rb_funcall(mDuckDBConverter, id__to_decimal_from_hugeint, 4,
                       width,
                       scale,
                       upper,
@@ -678,7 +685,7 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, rb_intern("_to_uuid_from_vector"), 2,
+    return rb_funcall(mDuckDBConverter, id__to_uuid_from_vector, 2,
                       ULL2NUM(hugeint.lower),
                       LL2NUM(hugeint.upper)
                       );
@@ -787,6 +794,14 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
 
 void rbduckdb_init_duckdb_result(void) {
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
+    id__to_date = rb_intern("_to_date");
+    id__to_time = rb_intern("_to_time");
+    id__to_time_from_duckdb_time = rb_intern("_to_time_from_duckdb_time");
+    id__to_interval_from_vector = rb_intern("_to_interval_from_vector");
+    id__to_hugeint_from_vector = rb_intern("_to_hugeint_from_vector");
+    id__to_decimal_from_hugeint = rb_intern("_to_decimal_from_hugeint");
+    id__to_uuid_from_vector = rb_intern("_to_uuid_from_vector");
+
     rb_define_alloc_func(cDuckDBResult, allocate);
 
     rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
