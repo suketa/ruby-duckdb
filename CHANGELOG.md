@@ -1,32 +1,36 @@
-# ChangeLog
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## Unreleased
 
 - fix Decimal type conversion.
 
-# 0.9.2.3
+# 0.9.2.3 - 2023-12-29
 - fix bigdecimal warning with Ruby 3.3.0.
 
-# 0.9.2.2
+# 0.9.2.2 - 2023-12-26
 - bump Ruby to 3.3.0 on CI.
 
 ## Breaking changes
 - drop Ruby 2.7.
 
-# 0.9.2.1
+# 0.9.2.1 - 2023-12-24
 - support Time column in `DuckDB#Result#chunk_each`.
 - add `DuckDB::Interval#eql?`.
 
-# 0.9.2
+# 0.9.2 - 2023-11-26
 - add `DuckDB::Connection#async_query_stream`.
 - `DuckDB::PendingResult` accepts second argument. If the second argument is
   true, `PendingResult#execute_pending` returns streaming `DuckDB::Result` object.
 - add `DuckDB::PreparedStatement#pending_prepared_stream`
 - add `DuckDB::Result#streaming?`.
 
-# 0.9.1.2
+# 0.9.1.2 - 2023-11-05
 - add `DuckDB::Connection#interrupt`, `DuckDB::Connection#query_progress`.
 - add `DuckDB::Connection#async_query`, alias method `async_execute`.
 
-# 0.9.1.1
+# 0.9.1.1 - 2023-10-29
 - change default branch to main from master.
 - add `DuckDB::PendingResult` class.
 - add `DuckDB::PendingResult#state`.
@@ -37,15 +41,15 @@
 ## Breaking Changes
 - drop duckdb v0.7.x.
 
-# 0.9.1
+# 0.9.1 - 2023-10-14
 - add `DuckDB::PreparedStatement#parameter_name`.
 - bump duckdb to 0.9.1.
 
-# 0.9.0.1
+# 0.9.0.1 - 2023-10-08
 - add `DuckDB::PreparedStatement#bind_parameter_index`.
 - `DuckDB::Connection#query` accepts SQL with named bind parameters.
 
-# 0.9.0
+# 0.9.0 - 2023-09-30
 - bump duckdb to 0.9.0.
 
 ## Breaking Changes
