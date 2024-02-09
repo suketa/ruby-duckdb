@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 - fix Decimal type conversion.
+- bundle update to bump nokogiri from 1.16.0 to 1.16.2.
 
 # 0.9.2.3 - 2023-12-29
 - fix bigdecimal warning with Ruby 3.3.0.
