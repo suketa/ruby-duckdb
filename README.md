@@ -7,32 +7,34 @@
 
 ## Description
 
-ruby-duckdb is Ruby binding for [DuckDB](http://www.duckdb.org) database engine
+This gem `duckdb` is Ruby client for the [DuckDB](https://www.duckdb.org) database engine.
 
 ## Requirement
 
-You must have [DuckDB](http://www.duckdb.org) engine installed in order to build/use this module.
+You must have [DuckDB](https://www.duckdb.org) engine installed in order to use this gem.
 
 ## Pre-requisite setup (Linux):
-1. Head over to the [DuckDB](https://duckdb.org/) webpage
+1. Head over to the [DuckDB](https://duckdb.org/) webpage.
 
-2. Download the latest C++ package release for DuckDB
+2. Download the latest C++ package release for DuckDB.
 
 3. Move the files to their respective location:
-    - Extract the `duckdb.h` and `duckdb.hpp` file to `/usr/local/include`
-    - Extract the `libduckdb.so` file to `/usr/local/lib`
+    - Extract the `duckdb.h` and `duckdb.hpp` file to `/usr/local/include`.
+    - Extract the `libduckdb.so` file to `/usr/local/lib`.
 
     ```sh
     unzip libduckdb-linux-amd64.zip -d libduckdb
     sudo mv libduckdb/duckdb.* /usr/local/include/
     sudo mv libduckdb/libduckdb.so /usr/local/lib
     ```
+
 4. To create the necessary link, run `ldconfig` as root:
 
     ```sh
     sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked
     ```
-## Pre-requisite setup (MacOS):
+
+## Pre-requisite setup (macOS):
 
 Using `brew install` is recommended.
 
@@ -40,14 +42,15 @@ Using `brew install` is recommended.
 brew install duckdb
 ```
 
-## How to Install
+## How to install
 
 ```sh
 gem install duckdb
 ```
-> this will work fine with the above pre-requisite setup.
 
-or you must specify the location of the C header and library files:
+After you've run the above pre-requisite setup, this should work fine.
+
+If it doesn't, you may habe to specify the location of the C header and library files:
 
 ```sh
 gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory
@@ -69,7 +72,7 @@ con.query("INSERT into users VALUES(3, 'Cathy')")
 
 result = con.query('SELECT * from users')
 result.each do |row|
-  p row
+  puts row
 end
 ```
 
@@ -88,13 +91,13 @@ DuckDB::Database.open do |db|
 
     result = con.query('SELECT * from users')
     result.each do |row|
-      p row
+      puts row
     end
   end
 end
 ```
 
-### using bind variables
+### Using bind variables
 
 You can use bind variables.
 
@@ -104,12 +107,12 @@ con.query('SELECT * FROM users WHERE name = ? AND email = ?', 'Alice', 'alice@ex
 con.query('SELECT * FROM users WHERE name = $name AND email = $email', name: 'Alice', email: 'alice@example.com')
 ```
 
-### using async query
+### Using async query
 
 You can use async query.
 
 ```ruby
-DuckDB::Result.use_chunk_each = true # must be true.
+DuckDB::Result.use_chunk_each = true
 ...
 
 pending_result = con.async_query_stream('SLOW QUERY')
@@ -121,9 +124,9 @@ result.each.first
 
 Here is [the benchmark](./benchmark/async_query.rb).
 
-### using BLOB column
+### Using BLOB column
 
-Use `DuckDB::Blob.new` or use sting#force_encoding(Encoding::BINARY)
+Use `DuckDB::Blob.new` or use string#force_encoding(Encoding::BINARY)
 
 ```ruby
 require 'duckdb'
@@ -134,12 +137,12 @@ DuckDB::Database.open do |db|
     stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO blob_table VALUES ($1)')
 
     stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
-    #  or
+    # or
     # stmt.bind(1, "\0\1\2\3\4\5".force_encoding(Encoding::BINARY))
     stmt.execute
 
     result = con.query('SELECT binary_data FROM blob_table')
-    p result.first.first
+    puts result.first.first
   end
 end
 ```
@@ -212,14 +215,17 @@ Config class provides Ruby interface of [DuckDB configuration](https://duckdb.or
 
 ```ruby
 require 'duckdb'
+
 config = DuckDB::Config.new
 config['default_order'] = 'DESC'
+
 db = DuckDB::Database.open(nil, config)
+
 con = db.connect
 con.query('CREATE TABLE numbers (number INTEGER)')
 con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
 
-# number is ordered by descending.
-r = con.query('SELECT number FROM numbers ORDER BY number')
-r.first.first # => 4
+# number is ordered by descending
+res = con.query('SELECT number FROM numbers ORDER BY number')
+res.first.first # => 4
 ```
