@@ -40,16 +40,18 @@ module DuckDB
     alias column_size column_count
     alias row_size row_count
 
+    @use_chunk_each = true
+
     class << self
+      attr_writer :use_chunk_each
+
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
       end
 
-      def use_chunk_each=(val)
-        raise DuckDB::Error, 'chunk_each is not available. Install duckdb >= 0.8.0 and rerun `gem install duckdb`.' unless instance_methods.include?(:chunk_each)
-
-        @use_chunk_each = val
-      end
+      # def use_chunk_each=(val)
+      #   @use_chunk_each = val
+      # end
 
       def use_chunk_each?
         !!@use_chunk_each

@@ -32,17 +32,11 @@ module DuckDBTest
       end
 
       def setup
-        if DuckDB::Result.instance_methods.include?(:chunk_each)
-          DuckDB::Result.use_chunk_each = true
-        end
         con = self.class.con
         @result = con.query('SELECT * FROM enum_test WHERE id = 1')
       end
 
       def teardown
-        if DuckDB::Result.instance_methods.include?(:chunk_each)
-          DuckDB::Result.use_chunk_each = false
-        end
       end
 
       def test_result__enum_dictionary_size

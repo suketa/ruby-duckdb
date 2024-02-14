@@ -7,13 +7,11 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
   module DuckDBTest
     class ResultChunkEach < Minitest::Test
       def setup
-        DuckDB::Result.use_chunk_each = true
         @db = DuckDB::Database.open
         @con = @db.connect
       end
 
       def teardown
-        DuckDB::Result.use_chunk_each = false
         @db.close
       end
 
