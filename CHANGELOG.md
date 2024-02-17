@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ## Breaking changes
 
-- `DuckDB::Connection#query_progress` returns `DuckDB::QueryProgress` object only when duckdb version is 0.10.0.
+- `DuckDB::Connection#query_progress` returns `DuckDB::QueryProgress` object only when duckdb library version is 0.10.0.
   - The available methods are `DuckDB::QueryProgress#percentage`, `DuckDB::QueryProgress#rows_processed`, `DuckDB::QueryProgress#total_rows_to_process`.
 
 # 0.9.2.3 - 2023-12-29
