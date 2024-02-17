@@ -164,12 +164,25 @@ module DuckDBTest
       @con.query('CREATE TABLE tbl2 as SELECT range a, FROM range(10000)')
       @con.query('SET ENABLE_PROGRESS_BAR=true')
       @con.query('SET ENABLE_PROGRESS_BAR_PRINT=false')
-      assert_equal(-1, @con.query_progress)
-      pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
-      assert_equal(0, @con.query_progress)
 
-      pending_result.execute_task while @con.query_progress.zero?
-      assert(@con.query_progress.positive?, 'query_progress should be positive')
+      if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
+        assert_equal(-1, @con.query_progress.percentage)
+        pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
+        assert_equal(0, @con.query_progress.percentage)
+        pending_result.execute_task while @con.query_progress.percentage.zero?
+        query_progress = @con.query_progress
+        assert_instance_of(DuckDB::QueryProgress, query_progress)
+        assert(query_progress.percentage.positive?, 'query_progress should be positive')
+        assert(query_progress.rows_processed.positive?, 'query_progress.rows_processed should be positive')
+        assert(query_progress.total_rows_to_process.positive?, 'query_progress.rows_processed should be positive')
+        assert(query_progress.rows_processed <= query_progress.total_rows_to_process, 'query_progress.rows_processed should be less than or equal to query_progress.total_rows_to_process')
+      else
+        assert_equal(-1, @con.query_progress)
+        pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
+        assert_equal(0, @con.query_progress)
+        pending_result.execute_task while @con.query_progress.zero?
+        assert(@con.query_progress.positive?, 'query_progress should be positive')
+      end
 
       # test interrupt
       @con.interrupt
