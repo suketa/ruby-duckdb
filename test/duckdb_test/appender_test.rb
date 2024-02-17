@@ -282,10 +282,15 @@ if defined?(DuckDB::Appender)
                                 values: [14, 3, micros],
                                 expected: '1 year 2 months 3 days 12:34:56.987654')
 
+        expected_value = if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
+                           '-1 year -2 months -3 days -12:34:56.987654'
+                         else
+                           '-1 years -2 months -3 days -12:34:56.987654'
+                         end
         sub_test_append_column2(:_append_interval,
                                 'INTERVAL',
                                 values: [-14, -3, -micros],
-                                expected: '-1 years -2 months -3 days -12:34:56.987654')
+                                expected: expected_value)
 
         sub_test_append_column2(:_append_interval,
                                 'INTERVAL',
@@ -334,10 +339,15 @@ if defined?(DuckDB::Appender)
                                 values: 'P1Y2M3DT12H34M56.987654S',
                                 expected: '1 year 2 months 3 days 12:34:56.987654')
 
+        expected_value = if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
+                           '-1 year -2 months -3 days -12:34:56.987654'
+                         else
+                           '-1 years -2 months -3 days -12:34:56.987654'
+                         end
         sub_test_append_column2(:append_interval,
                                 'INTERVAL',
                                 values: 'P-1Y-2M-3DT-12H-34M-56.987654S',
-                                expected: '-1 years -2 months -3 days -12:34:56.987654')
+                                expected: expected_value)
 
         sub_test_append_column2(:append_interval,
                                 'INTERVAL',

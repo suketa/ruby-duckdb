@@ -24,18 +24,31 @@ module DuckDB
   #   end
   class Result
     include Enumerable
-
-    TO_METHODS = Hash.new(:_to_string).merge(
-      1 => :_to_boolean,
-      3 => :_to_smallint,
-      4 => :_to_integer,
-      5 => :_to_bigint,
-      10 => :_to_float,
-      11 => :_to_double,
-      16 => :_to_hugeint_internal,
-      18 => :_to_blob,
-      19 => :_to_decimal_internal
-    ).freeze
+    TO_METHODS = if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
+                   Hash.new(:_to_string).merge(
+                     1 => :_to_boolean,
+                     3 => :_to_smallint,
+                     4 => :_to_integer,
+                     5 => :_to_bigint,
+                     10 => :_to_float,
+                     11 => :_to_double,
+                     16 => :_to_hugeint_internal,
+                     19 => :_to_blob,
+                     20 => :_to_decimal_internal
+                   ).freeze
+                 else
+                   Hash.new(:_to_string).merge(
+                     1 => :_to_boolean,
+                     3 => :_to_smallint,
+                     4 => :_to_integer,
+                     5 => :_to_bigint,
+                     10 => :_to_float,
+                     11 => :_to_double,
+                     16 => :_to_hugeint_internal,
+                     18 => :_to_blob,
+                     19 => :_to_decimal_internal
+                   ).freeze
+                 end
 
     alias column_size column_count
     alias row_size row_count

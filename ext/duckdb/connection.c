@@ -111,12 +111,20 @@ static VALUE duckdb_connection_interrupt(VALUE self) {
  */
 static VALUE duckdb_connection_query_progress(VALUE self) {
     rubyDuckDBConnection *ctx;
+#ifdef HAVE_DUCKDB_H_GE_V0_10_0
+    duckdb_query_progress_type progress;
+#else
     double progress;
+#endif
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
     progress = duckdb_query_progress(ctx->con);
 
+#ifdef HAVE_DUCKDB_H_GE_V0_10_0
+    return DBL2NUM(progress.percentage);
+#else
     return DBL2NUM(progress);
+#endif
 }
 #endif
 
