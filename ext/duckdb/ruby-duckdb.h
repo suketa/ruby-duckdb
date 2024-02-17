@@ -8,6 +8,10 @@
 #define HAVE_DUCKDB_H_GE_V090 1
 #endif
 
+#ifdef HAVE_DUCKDB_APPENDER_COLUMN_COUNT
+#define HAVE_DUCKDB_H_GE_V0_10_0 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"

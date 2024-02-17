@@ -355,7 +355,7 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_date = $1')
 
       stmt.bind_varchar(1, 'invalid_date_string')
-      if DuckDBVersion.duckdb_version < '0.5.0'
+      if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
         assert_raises(DuckDB::Error) { stmt.execute }
       else
         assert_instance_of(DuckDB::Result, stmt.execute)
@@ -376,7 +376,7 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind_varchar(1, 'invalid_timestamp_string')
-      if DuckDBVersion.duckdb_version < '0.5.0'
+      if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
         assert_raises(DuckDB::Error) { stmt.execute }
       else
         assert_instance_of(DuckDB::Result, stmt.execute)

@@ -58,6 +58,9 @@ check_duckdb_library('duckdb', 'duckdb_string_is_inlined', DUCKDB_REQUIRED_VERSI
 # check duckdb >= 0.9.0
 have_func('duckdb_bind_parameter_index', 'duckdb.h')
 
+# check duckdb >= 0.10.0
+have_func('duckdb_appender_column_count', 'duckdb.h')
+
 # duckdb_parameter_name is not found on Windows.
 have_func('duckdb_parameter_name', 'duckdb.h')
 
