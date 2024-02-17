@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+# 0.10.0.0 - 2024-02-18
 - bump to duckdb 0.10.0.
 - fix building error with duckdb v0.10.0.
 - bundle update to bump nokogiri from 1.16.0 to 1.16.2.
