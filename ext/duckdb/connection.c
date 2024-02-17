@@ -121,7 +121,7 @@ static VALUE duckdb_connection_query_progress(VALUE self) {
     progress = duckdb_query_progress(ctx->con);
 
 #ifdef HAVE_DUCKDB_H_GE_V0_10_0
-    return DBL2NUM(progress.percentage);
+    return rb_funcall(mDuckDBConverter, rb_intern("_to_query_progress"), 3, DBL2NUM(progress.percentage), ULL2NUM(progress.rows_processed), ULL2NUM(progress.total_rows_to_process));
 #else
     return DBL2NUM(progress);
 #endif

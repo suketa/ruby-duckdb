@@ -4,6 +4,8 @@ require 'date'
 require_relative 'interval'
 
 module DuckDB
+  QueryProgress = Struct.new(:percentage, :rows_processed, :total_rows_to_process)
+
   module Converter
     HALF_HUGEINT_BIT = 64
     HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
@@ -83,6 +85,10 @@ module DuckDB
           raise(ArgumentError, "Cannot parse `#{value.inspect}` to Time object. #{e.message}")
         end
       end
+    end
+
+    def _to_query_progress(percentage, rows_processed, total_rows_to_process)
+      DuckDB::QueryProgress.new(percentage, rows_processed, total_rows_to_process).freeze
     end
 
     private

@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 - bundle update to bump nokogiri from 1.16.0 to 1.16.2.
 - fix Decimal type conversion.
 
+## Breaking changes
+
+- `DuckDB::Connection#query_progress` returns `DuckDB::QueryProgress` object only when duckdb library version is 0.10.0.
+  - The available methods are `DuckDB::QueryProgress#percentage`, `DuckDB::QueryProgress#rows_processed`, `DuckDB::QueryProgress#total_rows_to_process`.
+
 # 0.9.2.3 - 2023-12-29
 - fix bigdecimal warning with Ruby 3.3.0.
 
