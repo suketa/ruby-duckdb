@@ -42,6 +42,13 @@ Using `brew install` is recommended.
 brew install duckdb
 ```
 
+## Pre-requisite setup (Windows):
+
+Using [Ruby + Devkit](https://rubyinstaller.org/downloads/) is recommended.
+
+1. Download libduckdb-windows-amd64.zip from [DuckDB](https://github.com/duckdb/duckdb/releases) and extranct it.
+2. Copy `duckdb.dll` into `C:\Windows\System32`
+
 ## How to install
 
 ```sh
