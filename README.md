@@ -57,7 +57,7 @@ gem install duckdb
 
 After you've run the above pre-requisite setup, this should work fine.
 
-If it doesn't, you may habe to specify the location of the C header and library files:
+If it doesn't, you may have to specify the location of the C header and library files:
 
 ```sh
 gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory
