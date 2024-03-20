@@ -48,7 +48,7 @@ module DuckDB
         uuid
         json
       ]
-      if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
+      if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
         types[17, 0] = :uhugeint
       end
       index = _type
