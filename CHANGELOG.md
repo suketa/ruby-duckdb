@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- drop duckdb v0.8.x.
 - fix column type failures with duckdb v0.10.1.
 
 # 0.10.0.0 - 2024-02-18
