@@ -4,18 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+# 0.10.1.0 - 2024-03-22
 - drop duckdb v0.8.x.
 - fix column type failures with duckdb v0.10.1.
 
 # 0.10.0.0 - 2024-02-18
-- bump to duckdb 0.10.0.
+- bump to duckdb v0.10.0.
 - fix building error with duckdb v0.10.0.
 - bundle update to bump nokogiri from 1.16.0 to 1.16.2.
 - fix Decimal type conversion.
 
 ## Breaking changes
 
-- `DuckDB::Connection#query_progress` returns `DuckDB::QueryProgress` object only when duckdb library version is 0.10.0.
+- `DuckDB::Connection#query_progress` returns `DuckDB::QueryProgress` object only when duckdb library version is 0.10.0 or later.
   - The available methods are `DuckDB::QueryProgress#percentage`, `DuckDB::QueryProgress#rows_processed`, `DuckDB::QueryProgress#total_rows_to_process`.
 
 # 0.9.2.3 - 2023-12-29
