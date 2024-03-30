@@ -26,6 +26,7 @@ def check_duckdb_library(library, func, version)
     '/opt/homebrew/opt/duckdb/lib',
     '/opt/local/lib'
   )
+  have_func(func, 'duckdb.h')
   return if found
 
   library_name = duckdb_library_name(library)
@@ -51,9 +52,10 @@ end
 dir_config('duckdb')
 
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
+check_duckdb_library('duckdb', 'duckdb_bind_parameter_index', DUCKDB_REQUIRED_VERSION)
 
 # check duckdb >= 0.9.0
-check_duckdb_library('duckdb', 'duckdb_bind_parameter_index', DUCKDB_REQUIRED_VERSION)
+have_func('duckdb_bind_parameter_index', 'duckdb.h')
 
 # check duckdb >= 0.10.0
 have_func('duckdb_appender_column_count', 'duckdb.h')
