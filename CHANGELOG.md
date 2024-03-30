@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- fix error using binding with name (issue #612).
+  Thanks to pere73.
+
 # 0.10.1.0 - 2024-03-22
 - drop duckdb v0.8.x.
 - fix column type failures with duckdb v0.10.1.
