@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+# 0.10.1.1 - 2024-03-31
 - fix error using binding with name (issue #612).
   Thanks to pere73.
 
