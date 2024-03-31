@@ -6,12 +6,8 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_connection_disconnect(VALUE self);
-
-#ifdef HAVE_DUCKDB_H_GE_V090
 static VALUE duckdb_connection_interrupt(VALUE self);
 static VALUE duckdb_connection_query_progress(VALUE self);
-#endif
-
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase);
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str);
 
@@ -69,7 +65,6 @@ static VALUE duckdb_connection_disconnect(VALUE self) {
     return self;
 }
 
-#ifdef HAVE_DUCKDB_H_GE_V090
 /*
  * call-seq:
  *   connection.interrupt -> nil
@@ -126,7 +121,6 @@ static VALUE duckdb_connection_query_progress(VALUE self) {
     return DBL2NUM(progress);
 #endif
 }
-#endif
 
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase) {
     rubyDuckDBConnection *ctx;
@@ -169,10 +163,8 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_alloc_func(cDuckDBConnection, allocate);
 
     rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
-#ifdef HAVE_DUCKDB_H_GE_V090
     rb_define_method(cDuckDBConnection, "interrupt", duckdb_connection_interrupt, 0);
     rb_define_method(cDuckDBConnection, "query_progress", duckdb_connection_query_progress, 0);
-#endif
     rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
 }
