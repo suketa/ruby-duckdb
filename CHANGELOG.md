@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+# 0.10.2.0 - 2024-04-20
+- remove version from docker-compose.yml.
+- bump to duckdb v0.10.2.
+
 # 0.10.1.1 - 2024-03-31
 - fix error using binding with name (issue #612).
   Thanks to pere73.
