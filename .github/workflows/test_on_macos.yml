@@ -46,6 +46,8 @@ jobs:
         cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
 
     - name: Build with Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
         bundle install --jobs 4 --retry 3
         bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
@@ -54,6 +56,7 @@ jobs:
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
+        export DYLD_LIBRARY_PATH=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src:${DYLD_LIBRARY_PATH}
         env RUBYOPT=-W:deprecated rake test
 
   post-test:
