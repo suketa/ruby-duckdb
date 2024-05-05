@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ruby: ['3.0.6', '3.1.4', '3.2.3', '3.3.0', 'head']
+        ruby: ['3.0.7', '3.1.5', '3.2.4', '3.3.1', 'head']
         duckdb: ['0.9.2', '0.10.0', '0.10.1', '0.10.2']
 
     steps:
@@ -45,20 +45,18 @@ jobs:
         cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.dylib duckdb-v$DUCKDB_VERSION/build/release/src
         cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
 
-    - name: prepare duckdb header and libraries
+    - name: Build with Ruby ${{ matrix.ruby }}
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        cp duckdb-v$DUCKDB_VERSION/src/include/*.h /usr/local/include
-        cp duckdb-v$DUCKDB_VERSION/build/release/src/*.dylib /usr/local/lib
-
-    - name: Build with Ruby ${{ matrix.ruby }}
-      run: |
         bundle install --jobs 4 --retry 3
-        rake build
+        bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
 
-    - name: run test with Ruby ${{ matrix.ruby }}
+    - name: test with Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
+        export DYLD_LIBRARY_PATH=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src:${DYLD_LIBRARY_PATH}
         env RUBYOPT=-W:deprecated rake test
 
   post-test:
