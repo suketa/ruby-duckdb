@@ -20,7 +20,7 @@ GEM
     rake (13.2.1)
     rake-compiler (1.2.7)
       rake
-    ruby_memcheck (2.3.0)
+    ruby_memcheck (3.0.0)
       nokogiri
     stackprof (0.2.26)
 
@@ -39,4 +39,4 @@ DEPENDENCIES
   stackprof
 
 BUNDLED WITH
-   2.5.3
+   2.5.9
