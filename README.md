@@ -133,7 +133,7 @@ Here is [the benchmark](./benchmark/async_query.rb).
 
 ### Using BLOB column
 
-Use `DuckDB::Blob.new` or use string#force_encoding(Encoding::BINARY)
+Use `DuckDB::Blob.new` or `my_string.force_encoding(Encoding::BINARY)`.
 
 ```ruby
 require 'duckdb'
@@ -166,6 +166,7 @@ def insert
   DuckDB::Database.open do |db|
     db.connect do |con|
       con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+
       10000.times do
         con.query("INSERT into users VALUES(1, 'Alice')")
       end
@@ -178,6 +179,7 @@ def prepare
     db.connect do |con|
       con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       stmt = con.prepared_statement('INSERT INTO users VALUES($1, $2)')
+
       10000.times do
         stmt.bind(1, 1)
         stmt.bind(2, 'Alice')
@@ -192,12 +194,14 @@ def append
     db.connect do |con|
       con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       appender = con.appender('users')
+
       10000.times do
         appender.begin_row
         appender.append(1)
         appender.append('Alice')
         appender.end_row
       end
+
       appender.flush
     end
   end
