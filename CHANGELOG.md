@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+# 0.10.3.0 - 2024-05-25
+- bump to duckdb v0.10.3.
+
 # 0.10.2.0 - 2024-04-20
 - remove version from docker-compose.yml.
 - bump to duckdb v0.10.2.
