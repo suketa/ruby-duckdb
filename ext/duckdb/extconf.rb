@@ -29,6 +29,10 @@ def check_duckdb_library(library, func, version)
   have_func(func, 'duckdb.h')
   return if found
 
+  raise_not_found_library(library, version)
+end
+
+def raise_not_found_library(library, version)
   library_name = duckdb_library_name(library)
   msg = "#{library_name} is not found. Install #{library_name} of duckdb >= #{version}."
   print_message(msg)
@@ -36,7 +40,7 @@ def check_duckdb_library(library, func, version)
 end
 
 def duckdb_library_name(library)
-  "lib#{library}.(so|dylib|dll)"
+  "lib#{library}.#{RbConfig::CONFIG['DLEXT']}"
 end
 
 def print_message(msg)
@@ -60,7 +64,7 @@ have_func('duckdb_bind_parameter_index', 'duckdb.h')
 # check duckdb >= 0.10.0
 have_func('duckdb_appender_column_count', 'duckdb.h')
 
-# duckdb_parameter_name is not found on Windows.
+# duckdb_parameter_name in duckdb <= 0.9.1 is not found on Windows.
 have_func('duckdb_parameter_name', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')
