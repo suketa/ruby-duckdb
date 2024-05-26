@@ -90,9 +90,59 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         end
       end
 
+      TEST_TABLES.each_with_index do |spec, i|
+        do_test, db_type, db_declaration, string_rep, klass, ruby_val = *spec
+        define_method :"test_stream_#{db_type}_type#{i}" do
+          skip if do_test == :ng
+          @con.query(ENUM_SQL)
+          @con.query("CREATE TABLE tests (col #{db_declaration})")
+          @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
+          res = @con.async_query_stream('SELECT * FROM tests')
+          res.execute_task while res.state == :not_ready
+          res = res.execute_pending.to_a[0][0]
+          if db_type == 'TIME'
+            assert_equal(
+              [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
+              [res.hour, res.min, res.sec, res.usec]
+            )
+          else
+            assert_equal(ruby_val, res)
+          end
+          assert_equal(klass, res.class)
+        end
+      end
+
       def test_streaming?
         r = @con.query('SELECT 1')
         assert_equal(false, r.streaming?)
+      end
+
+      def test_chunk_each_with_exception
+        # check that error is not raised when raising an error in the chunk_each block.
+        @con.query('CREATE TABLE tests (col INTEGER)')
+        @con.query('INSERT INTO tests VALUES (1), (2), (3), (4), (5)')
+        r = @con.query('SELECT * FROM tests')
+        assert_raises(StandardError) do
+          r.each do |row|
+            raise 'error' if row.first == 3
+          end
+        end
+        assert(true, 'error raised')
+      end
+
+      def test_chunk_stream_with_exception
+        # check that error is not raised when raising an error in the chunk_stream block.
+        @con.query('CREATE TABLE tests (col INTEGER)')
+        @con.query('INSERT INTO tests VALUES (1), (2), (3), (4), (5)')
+        r = @con.async_query_stream('SELECT * FROM tests')
+        r.execute_task while r.state == :not_ready
+        r = r.execute_pending
+        assert_raises(StandardError) do
+          r.each do |row|
+            raise 'error' if row.first == 3
+          end
+        end
+        assert(true, 'error raised')
       end
     end
   end
