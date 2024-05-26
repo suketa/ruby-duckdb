@@ -54,16 +54,16 @@ module DuckDBTest
       @appender.end_row
       @appender.flush
       r = @con.execute("SELECT col FROM #{table}")
-      assert_equal(expected, r.first.first)
+      assert_equal(expected, r.first.first, "in #{caller[0]}")
     ensure
       teardown
     end
 
     def sub_assert_equal(expected, actual)
       if expected.nil?
-        assert_nil(actual)
+        assert_nil(actual, "in #{caller[0]}")
       else
-        assert_equal(expected, actual)
+        assert_equal(expected, actual, "in #{caller[0]}")
       end
     end
 
