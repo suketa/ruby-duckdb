@@ -1,5 +1,10 @@
 #include "ruby-duckdb.h"
 
+struct chunk_arg {
+    duckdb_data_chunk chunk;
+    idx_t col_count;
+};
+
 static VALUE cDuckDBResult;
 static ID id__to_date;
 static ID id__to_time;
@@ -27,10 +32,11 @@ static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult);
+static VALUE destroy_data_chunk(VALUE arg);
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
 
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
-static void yield_rows(duckdb_data_chunk chunk, idx_t col_count);
+static VALUE yield_rows(VALUE arg);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -260,47 +266,50 @@ static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
     return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
 }
 
+static VALUE destroy_data_chunk(VALUE arg) {
+    struct chunk_arg *p = (struct chunk_arg *)arg;
+    duckdb_destroy_data_chunk(&(p->chunk));
+    return Qnil;
+}
+
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    idx_t col_count;
+    struct chunk_arg arg;
     idx_t chunk_count;
     idx_t chunk_idx;
-    duckdb_data_chunk chunk;
 
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
-    col_count = duckdb_column_count(&(ctx->result));
+    arg.col_count = duckdb_column_count(&(ctx->result));
     chunk_count = duckdb_result_chunk_count(ctx->result);
 
     RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
 
     for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
-        chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
-        yield_rows(chunk, col_count);
-        duckdb_destroy_data_chunk(&chunk);
+        arg.chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
+        rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
     }
     return Qnil;
 }
 
+
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
-    duckdb_data_chunk chunk;
-    idx_t col_count;
+    struct chunk_arg arg;
 
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
 
-    col_count = duckdb_column_count(&(ctx->result));
+    arg.col_count = duckdb_column_count(&(ctx->result));
 
-    while((chunk = duckdb_stream_fetch_chunk(ctx->result)) != NULL) {
-        yield_rows(chunk, col_count);
-        duckdb_destroy_data_chunk(&chunk);
+    while((arg.chunk = duckdb_stream_fetch_chunk(ctx->result)) != NULL) {
+        rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
     }
     return Qnil;
 }
 
-static void yield_rows(duckdb_data_chunk chunk, idx_t col_count) {
+static VALUE yield_rows(VALUE arg) {
     idx_t row_count;
     idx_t row_idx;
     idx_t col_idx;
@@ -308,16 +317,19 @@ static void yield_rows(duckdb_data_chunk chunk, idx_t col_count) {
     VALUE row;
     VALUE val;
 
-    row_count = duckdb_data_chunk_get_size(chunk);
+    struct chunk_arg *p = (struct chunk_arg *)arg;
+
+    row_count = duckdb_data_chunk_get_size(p->chunk);
     for (row_idx = 0; row_idx < row_count; row_idx++) {
-        row = rb_ary_new2(col_count);
-        for (col_idx = 0; col_idx < col_count; col_idx++) {
-            vector = duckdb_data_chunk_get_vector(chunk, col_idx);
+        row = rb_ary_new2(p->col_count);
+        for (col_idx = 0; col_idx < p->col_count; col_idx++) {
+            vector = duckdb_data_chunk_get_vector(p->chunk, col_idx);
             val = vector_value(vector, row_idx);
             rb_ary_store(row, col_idx, val);
         }
         rb_yield(row);
     }
+    return Qnil;
 }
 
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
