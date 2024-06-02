@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DuckDB
   # The DuckDB::PendingResult encapsulates connection with DuckDB pending
   # result.
