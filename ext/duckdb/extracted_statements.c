@@ -17,6 +17,7 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 
 static VALUE duckdb_extract_statements_initialize(VALUE self, VALUE con, VALUE query);
+static VALUE duckdb_extract_statements_size(VALUE self);
 
 static void deallocate(void *ctx) {
     rubyDuckDBExtractedStatements *p = (rubyDuckDBExtractedStatements *)ctx;
@@ -40,6 +41,7 @@ static VALUE duckdb_extract_statements_initialize(VALUE self, VALUE con, VALUE q
     rubyDuckDBConnection *pcon;
     rubyDuckDBExtractedStatements *ctx;
     char *pquery;
+    const char *error;
 
     if (rb_obj_is_kind_of(con, cDuckDBConnection) != Qtrue) {
         rb_raise(rb_eTypeError, "1st argument must be DuckDB::Connection");
@@ -51,7 +53,20 @@ static VALUE duckdb_extract_statements_initialize(VALUE self, VALUE con, VALUE q
 
     ctx->num_statements = duckdb_extract_statements(pcon->con, pquery, &(ctx->extracted_statements));
 
+    if (ctx->num_statements == 0) {
+        error = duckdb_extract_statements_error(ctx->extracted_statements);
+        rb_raise(eDuckDBError, "%s", error);
+    }
+
     return self;
+}
+
+static VALUE duckdb_extract_statements_size(VALUE self) {
+    rubyDuckDBExtractedStatements *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
+
+    return ULL2NUM(ctx->num_statements);
 }
 
 void rbduckdb_init_duckdb_extracted_statements(void) {
@@ -59,4 +74,5 @@ void rbduckdb_init_duckdb_extracted_statements(void) {
 
     rb_define_alloc_func(cDuckDBExtractedStatements, allocate);
     rb_define_method(cDuckDBExtractedStatements, "initialize", duckdb_extract_statements_initialize, 2);
+    rb_define_method(cDuckDBExtractedStatements, "size", duckdb_extract_statements_size, 0);
 }
