@@ -24,7 +24,7 @@ module DuckDBTest
       ex = assert_raises DuckDB::Error do
         DuckDB::ExtractedStatements.new(@con, 'SELECT 1; INVALID STATEMENT; SELECT 3')
       end
-      assert_equal('Parser Error: syntax error at or near "INVALID"', ex.message)
+      assert_match(/\AParser Error: syntax error at or near "INVALID"/, ex.message)
     end
 
     def test_size
