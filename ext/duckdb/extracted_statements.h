@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBExtractedStatements {
     duckdb_extracted_statements extracted_statements;
+    idx_t num_statements;
 };
 
 typedef struct _rubyDuckDBExtractedStatements rubyDuckDBExtractedStatements;
