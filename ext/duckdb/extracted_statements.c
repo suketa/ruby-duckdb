@@ -16,8 +16,9 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 
-static VALUE duckdb_extract_statements_initialize(VALUE self, VALUE con, VALUE query);
-static VALUE duckdb_extract_statements_size(VALUE self);
+static VALUE duckdb_extracted_statements_initialize(VALUE self, VALUE con, VALUE query);
+static VALUE duckdb_extracted_statements_size(VALUE self);
+static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index);
 
 static void deallocate(void *ctx) {
     rubyDuckDBExtractedStatements *p = (rubyDuckDBExtractedStatements *)ctx;
@@ -37,7 +38,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBExtractedStatements);
 }
 
-static VALUE duckdb_extract_statements_initialize(VALUE self, VALUE con, VALUE query) {
+static VALUE duckdb_extracted_statements_initialize(VALUE self, VALUE con, VALUE query) {
     rubyDuckDBConnection *pcon;
     rubyDuckDBExtractedStatements *ctx;
     char *pquery;
@@ -61,7 +62,7 @@ static VALUE duckdb_extract_statements_initialize(VALUE self, VALUE con, VALUE q
     return self;
 }
 
-static VALUE duckdb_extract_statements_size(VALUE self) {
+static VALUE duckdb_extracted_statements_size(VALUE self) {
     rubyDuckDBExtractedStatements *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
@@ -69,10 +70,25 @@ static VALUE duckdb_extract_statements_size(VALUE self) {
     return ULL2NUM(ctx->num_statements);
 }
 
+static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index) {
+    rubyDuckDBConnection *pcon;
+    rubyDuckDBExtractedStatements *ctx;
+
+    if (rb_obj_is_kind_of(con, cDuckDBConnection) != Qtrue) {
+        rb_raise(rb_eTypeError, "1st argument must be DuckDB::Connection");
+    }
+    pcon = get_struct_connection(con);
+    TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
+
+    // duckdb_prepare_extracted_statement(pcon->con, ctx->extracted_statements, NUM2ULL(index), &(ctx->prepared_statement));
+    return Qnil;
+}
+
 void rbduckdb_init_duckdb_extracted_statements(void) {
     cDuckDBExtractedStatements = rb_define_class_under(mDuckDB, "ExtractedStatements", rb_cObject);
 
     rb_define_alloc_func(cDuckDBExtractedStatements, allocate);
-    rb_define_method(cDuckDBExtractedStatements, "initialize", duckdb_extract_statements_initialize, 2);
-    rb_define_method(cDuckDBExtractedStatements, "size", duckdb_extract_statements_size, 0);
+    rb_define_method(cDuckDBExtractedStatements, "initialize", duckdb_extracted_statements_initialize, 2);
+    rb_define_method(cDuckDBExtractedStatements, "size", duckdb_extracted_statements_size, 0);
+    rb_define_method(cDuckDBExtractedStatements, "prepared_statement", duckdb_extracted_statements_prepared_statement, 2);
 }
