@@ -14,6 +14,7 @@
 #include "./result.h"
 #include "./column.h"
 #include "./prepared_statement.h"
+#include "./extracted_statements.h"
 #include "./pending_result.h"
 #include "./util.h"
 #include "./converter.h"

@@ -33,4 +33,5 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_appender();
     rbduckdb_init_duckdb_config();
     rbduckdb_init_duckdb_converter();
+    rbduckdb_init_duckdb_extracted_statements();
 }
