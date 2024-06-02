@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DuckDBTest
   class PreparedStatementDecimalTest < Minitest::Test
     def setup
