@@ -31,12 +31,10 @@ module DuckDBTest
         varchar
         varchar
       ]
-      if DuckDBVersion.duckdb_version >= '0.3.3'
-        expected.push(:decimal)
-        expected.push(:enum)
-        expected.push(:list)
-        expected.push(:list)
-      end
+      expected.push(:decimal)
+      expected.push(:enum)
+      expected.push(:list)
+      expected.push(:list)
       assert_equal(
         expected,
         @columns.map(&:type)
@@ -64,12 +62,10 @@ module DuckDBTest
         varchar_col
         ủȵȋɕṓ𝓭е_𝒄𝗈ł
       ]
-      if DuckDBVersion.duckdb_version >= '0.3.3'
-        expected.push('decimal_col')
-        expected.push('enum_col')
-        expected.push('int_list_col')
-        expected.push('varchar_list_col')
-      end
+      expected.push('decimal_col')
+      expected.push('enum_col')
+      expected.push('int_list_col')
+      expected.push('varchar_list_col')
       assert_equal(
         expected,
         @columns.map(&:name)
@@ -81,7 +77,7 @@ module DuckDBTest
     def create_data
       @@db ||= DuckDB::Database.open # FIXME
       con = @@db.connect
-      con.query(create_type_enum_sql) if DuckDBVersion.duckdb_version >= '0.3.3'
+      con.query(create_type_enum_sql)
       con.query(create_table_sql)
       con.query(insert_sql)
       con
@@ -114,12 +110,10 @@ module DuckDBTest
           ủȵȋɕṓ𝓭е_𝒄𝗈ł VARCHAR
       SQL
 
-      if DuckDBVersion.duckdb_version >= '0.3.3'
-        sql += ', decimal_col DECIMAL'
-        sql += ', enum_col mood'
-        sql += ', int_list_col INT[]'
-        sql += ', varchar_list_col VARCHAR[]'
-      end
+      sql += ', decimal_col DECIMAL'
+      sql += ', enum_col mood'
+      sql += ', int_list_col INT[]'
+      sql += ', varchar_list_col VARCHAR[]'
       sql += ')'
       sql
     end
@@ -148,12 +142,10 @@ module DuckDBTest
           'ȕɲᎥᴄⲟ𝑑ẽ 𝑠τᵲïņ𝕘 😃'
       SQL
 
-      if DuckDBVersion.duckdb_version >= '0.3.3'
-        sql += ', 1'
-        sql += ', NULL'
-        sql += ', [1, 2, 3]'
-        sql += ", ['a', 'b', 'c']"
-      end
+      sql += ', 1'
+      sql += ', NULL'
+      sql += ', [1, 2, 3]'
+      sql += ", ['a', 'b', 'c']"
       sql += ')'
       sql
     end
