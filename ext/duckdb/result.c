@@ -99,51 +99,91 @@ rubyDuckDBResult *get_struct_result(VALUE obj) {
 }
 
 static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     bool bval = duckdb_value_boolean(result, col_idx, row_idx);
     return bval ? Qtrue : Qfalse;
+#endif
 }
 
 static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     int16_t i16val = duckdb_value_int16(result, col_idx, row_idx);
     return INT2FIX(i16val);
+#endif
 }
 
 static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     uint8_t ui8val = duckdb_value_uint8(result, col_idx, row_idx);
     return UINT2NUM(ui8val);
+#endif
 }
 
 static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     int32_t i32val = duckdb_value_int32(result, col_idx, row_idx);
     return INT2NUM(i32val);
+#endif
 }
 
 static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     int64_t i64val = duckdb_value_int64(result, col_idx, row_idx);
     return LL2NUM(i64val);
+#endif
 }
 
 static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     duckdb_hugeint hugeint = duckdb_value_hugeint(result, col_idx, row_idx);
     return rb_ary_new3(2, ULL2NUM(hugeint.lower), LL2NUM(hugeint.upper));
+#endif
 }
 
 static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     duckdb_decimal decimal = duckdb_value_decimal(result, col_idx, row_idx);
     return rb_ary_new3(4, ULL2NUM(decimal.value.lower), LL2NUM(decimal.value.upper), UINT2NUM(decimal.width), UINT2NUM(decimal.scale));
+#endif
 }
 
 static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     float fval = duckdb_value_float(result, col_idx, row_idx);
     return DBL2NUM(fval);
+#endif
 }
 
 static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     double dval = duckdb_value_double(result, col_idx, row_idx);
     return DBL2NUM(dval);
+#endif
 }
 
 static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
+
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     VALUE str;
     duckdb_blob bval = duckdb_value_blob(result, col_idx, row_idx);
     str = rb_str_new(bval.data, bval.size);
@@ -153,6 +193,7 @@ static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_id
     }
 
     return str;
+#endif
 }
 
 /*
@@ -226,9 +267,14 @@ static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
  *
  */
 static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
+
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qnil;
+#else
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_row_count(&(ctx->result)));
+#endif
 }
 
 /*
@@ -262,8 +308,13 @@ static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
  */
 static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
+
+#ifdef DUCKDB_API_NO_DEPRECATED
+    return Qtrue;
+#else
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
+#endif
 }
 
 static VALUE destroy_data_chunk(VALUE arg) {
@@ -283,6 +334,11 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     idx_t chunk_count;
     idx_t chunk_idx;
 
+#ifdef DUCKDB_API_NO_DEPRECATED
+    //TODO: use duckdb_fetch_chunk instead of duckdb_result_chunk_count and duckdb_result_get_chunk.
+    // duckdb_result_chunk_count will be deprecated in the future.
+    // duckdb_result_get_chunk will be deprecated in the future.
+#else
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     arg.col_count = duckdb_column_count(&(ctx->result));
@@ -294,6 +350,7 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
         arg.chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
         rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
     }
+#endif
     return Qnil;
 /*
 #endif
@@ -352,10 +409,15 @@ static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     bool is_null;
+#ifdef DUCKDB_API_NO_DEPRECATED
+    //duckdb_value_is_null will be deprecated in the future.
+    return Qfalse;
+#else
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     is_null = duckdb_value_is_null(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
     return is_null ? Qtrue : Qfalse;
+#endif
 }
 
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
@@ -426,6 +488,9 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
     duckdb_string p;
     VALUE obj;
 
+#ifdef DUCKDB_API_NO_DEPRECATED
+    // duckdb_value_string_internal will be deprecated in the future.
+#else
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     p = duckdb_value_string(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
@@ -434,6 +499,7 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
         duckdb_free(p.data);
         return obj;
     }
+#endif
     return Qnil;
 }
 
@@ -441,6 +507,9 @@ static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_id
     rubyDuckDBResult *ctx;
     duckdb_string p;
     VALUE obj;
+#ifdef DUCKDB_API_NO_DEPRECATED
+    // duckdb_value_string_internal will be deprecated in the future.
+#else
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     p = duckdb_value_string_internal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
@@ -448,6 +517,7 @@ static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_id
         obj = rb_utf8_str_new(p.data, p.size);
         return obj;
     }
+#endif
     return Qnil;
 }
 

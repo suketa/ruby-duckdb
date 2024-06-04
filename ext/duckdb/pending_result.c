@@ -48,11 +48,15 @@ static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self)
     rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
     rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
 
+#ifdef DUCKDB_API_NO_DEPRECATED
+    state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
+#else
     if (!NIL_P(streaming_p) && streaming_p == Qtrue) {
         state = duckdb_pending_prepared_streaming(stmt->prepared_statement, &(ctx->pending_result));
     } else {
         state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
     }
+#endif
 
     if (state == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
