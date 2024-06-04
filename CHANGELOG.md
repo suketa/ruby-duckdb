@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- bump duckdb to 1.0.0.
 - add `DuckDB::ExtractedStatements` class.
 - add `DuckDB::ExtractedStatements#size`.
 - raise error when `DuckDB::ExtractedStatements#new` is called with invalid SQL.
