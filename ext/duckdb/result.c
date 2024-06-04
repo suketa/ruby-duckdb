@@ -292,7 +292,6 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
     return Qnil;
 }
 
-
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     struct chunk_arg arg;
@@ -303,7 +302,11 @@ static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
 
     arg.col_count = duckdb_column_count(&(ctx->result));
 
+#ifdef HAVE_DUCKDB_H_GE_V1_0_0
+    while((arg.chunk = duckdb_fetch_chunk(ctx->result)) != NULL) {
+#else
     while((arg.chunk = duckdb_stream_fetch_chunk(ctx->result)) != NULL) {
+#endif
         rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
     }
     return Qnil;
