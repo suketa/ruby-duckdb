@@ -191,8 +191,7 @@ module DuckDBTest
 
     def test_append_interval
       value = DuckDB::Interval.new(interval_months: 1)
-      expected = '1 month'
-      assert_duckdb_appender(expected, 'INTERVAL') { |a| a.append_interval(value) }
+      assert_duckdb_appender(value, 'INTERVAL') { |a| a.append_interval(value) }
     end
 
     class Foo
@@ -210,7 +209,7 @@ module DuckDBTest
       sub_test_append_column2(:_append_date,
                               'DATE',
                               values: [t.year, t.month, t.day],
-                              expected: t.strftime('%Y-%m-%d'))
+                              expected: Date.new(t.year, t.month, t.day))
 
       assert_raises(TypeError) do
         sub_test_append_column2(:_append_date,
@@ -243,49 +242,49 @@ module DuckDBTest
 
     def test_append_date
       today = Date.today
-      sub_test_append_column2(:append_date, 'DATE', values: [today], expected: today.strftime('%Y-%m-%d'))
+      sub_test_append_column2(:append_date, 'DATE', values: [today], expected: today)
 
       now = Time.now
-      sub_test_append_column2(:append_date, 'DATE', values: [now], expected: now.strftime('%Y-%m-%d'))
+      sub_test_append_column2(:append_date, 'DATE', values: [now], expected: Date.parse(now.strftime('%Y-%m-%d')))
 
       foo = Foo.new(now)
-      sub_test_append_column2(:append_date, 'DATE', values: [foo], expected: now.strftime('%Y-%m-%d'))
+      sub_test_append_column2(:append_date, 'DATE', values: [foo], expected: Date.parse(now.strftime('%Y-%m-%d')))
 
-      sub_test_append_column2(:append_date, 'DATE', values: ['2021-10-10'], expected: '2021-10-10')
+      sub_test_append_column2(:append_date, 'DATE', values: ['2021-10-10'], expected: Date.parse('2021-10-10'))
 
       e = assert_raises(ArgumentError) do
-        sub_test_append_column2(:append_date, 'DATE', values: [20_211_010], expected: '2021-10-10')
+        sub_test_append_column2(:append_date, 'DATE', values: [20_211_010], expected: Date.parse('2021-10-10'))
       end
       assert_equal('Cannot parse argument `20211010` to Date.', e.message)
 
       e = assert_raises(ArgumentError) do
-        sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: '2021-10-10')
+        sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: Date.parse('2021-10-10'))
       end
       assert_equal('Cannot parse argument `2021-1010` to Date.', e.message)
     end
 
     def test__append_interval
-      sub_test_append_column2(:_append_interval,
-                              'INTERVAL',
-                              values: [2, 3, 4],
-                              expected: '2 months 3 days 00:00:00.000004')
+      sub_test_append_column2(
+        :_append_interval,
+        'INTERVAL',
+        values: [2, 3, 4],
+        expected: DuckDB::Interval.new(interval_months: 2, interval_days: 3, interval_micros: 4)
+      )
 
-      sub_test_append_column2(:_append_interval,
-                              'INTERVAL',
-                              values: [14, 3, 4],
-                              expected: '1 year 2 months 3 days 00:00:00.000004')
+      sub_test_append_column2(
+        :_append_interval,
+        'INTERVAL',
+        values: [14, 3, 4],
+        expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 4)
+      )
 
       micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
       sub_test_append_column2(:_append_interval,
                               'INTERVAL',
                               values: [14, 3, micros],
-                              expected: '1 year 2 months 3 days 12:34:56.987654')
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654))
 
-      expected_value = if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
-                         '-1 year -2 months -3 days -12:34:56.987654'
-                       else
-                         '-1 years -2 months -3 days -12:34:56.987654'
-                       end
+      expected_value = DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -45_296_987_654)
       sub_test_append_column2(:_append_interval,
                               'INTERVAL',
                               values: [-14, -3, -micros],
@@ -294,7 +293,7 @@ module DuckDBTest
       sub_test_append_column2(:_append_interval,
                               'INTERVAL',
                               values: [14, 32, micros],
-                              expected: '1 year 2 months 32 days 12:34:56.987654')
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 32, interval_micros: 45_296_987_654))
 
       assert_raises(TypeError) do
         sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, micros], expected: '')
@@ -316,33 +315,29 @@ module DuckDBTest
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P2M3DT0.000004S',
-                              expected: '2 months 3 days 00:00:00.000004')
+                              expected: DuckDB::Interval.new(interval_months: 2, interval_days: 3, interval_micros: 4))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P2M3DT0.00000401S',
-                              expected: '2 months 3 days 00:00:00.000004')
+                              expected: DuckDB::Interval.new(interval_months: 2, interval_days: 3, interval_micros: 4))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P2M3DT0.00004S',
-                              expected: '2 months 3 days 00:00:00.00004')
+                              expected: DuckDB::Interval.new(interval_months: 2, interval_days: 3, interval_micros: 40))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P1Y2M3DT0.000004S',
-                              expected: '1 year 2 months 3 days 00:00:00.000004')
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 4))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P1Y2M3DT12H34M56.987654S',
-                              expected: '1 year 2 months 3 days 12:34:56.987654')
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654))
 
-      expected_value = if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('0.10.0')
-                         '-1 year -2 months -3 days -12:34:56.987654'
-                       else
-                         '-1 years -2 months -3 days -12:34:56.987654'
-                       end
+      expected_value = DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -45_296_987_654)
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P-1Y-2M-3DT-12H-34M-56.987654S',
@@ -351,17 +346,17 @@ module DuckDBTest
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P14M32DT12H34M56.987654S',
-                              expected: '1 year 2 months 32 days 12:34:56.987654')
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 32, interval_micros: 45_296_987_654))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'PT12H34M56.987654S',
-                              expected: '12:34:56.987654')
+                              expected: DuckDB::Interval.new(interval_months: 0, interval_days: 0, interval_micros: 45_296_987_654))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P3D',
-                              expected: '3 days')
+                              expected: DuckDB::Interval.new(interval_months: 0, interval_days: 3, interval_micros: 0))
 
       assert_raises(ArgumentError) do
         sub_test_append_column2(:append_interval, 'INTERVAL', values: 1, expected: '')
@@ -372,7 +367,7 @@ module DuckDBTest
     end
 
     def test__append_time
-      sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1], expected: '01:01:01.000001')
+      sub_test_append_column2(:_append_time, 'TIME', values: [1, 1, 1, 1], expected: Time.parse('01:01:01.000001'))
       assert_raises(TypeError) do
         sub_test_append_column2(:_append_time, 'TIME', values: ['a', 1, 1, 1], expected: '')
       end
@@ -400,11 +395,11 @@ module DuckDBTest
       sub_test_append_column2(:append_time,
                               'TIME',
                               values: [Time.parse('01:01:01.123456')],
-                              expected: '01:01:01.123456')
-      sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: '01:01:01.123456')
-      sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: '01:01:01')
+                              expected: Time.parse('01:01:01.123456'))
+      sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: Time.parse('01:01:01.123456'))
+      sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: Time.parse('01:01:01'))
       obj = Bar.new
-      sub_test_append_column2(:append_time, 'TIME', values: [obj], expected: '01:01:01.123456')
+      sub_test_append_column2(:append_time, 'TIME', values: [obj], expected: Time.parse('01:01:01.123456'))
 
       e = assert_raises(ArgumentError) do
         sub_test_append_column2(:append_time, 'TIME', values: [101_010], expected: '10:10:10')
@@ -420,7 +415,7 @@ module DuckDBTest
     def test__append_timestamp
       t = Time.now
       msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
-      expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+      expected = Time.parse(t.strftime("%Y-%m-%d %H:%M:%S.#{msec}"))
       sub_test_append_column2(:_append_timestamp,
                               'TIMESTAMP',
                               values: [t.year, t.month, t.day, t.hour, t.min, t.sec, t.nsec / 1000],
@@ -483,21 +478,21 @@ module DuckDBTest
     def test_append_timestamp
       now = Time.now
       msec = format('%06d', now.nsec / 1000).to_s.sub(/0+$/, '')
-      expected = now.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+      expected = Time.parse(now.strftime("%Y-%m-%d %H:%M:%S.#{msec}"))
       sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [now], expected: expected)
       sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [expected], expected: expected)
 
       obj = Bar.new
-      expected = now.strftime('%Y-%m-%d 01:01:01.123456')
+      expected = Time.parse(now.strftime('%Y-%m-%d 01:01:01.123456'))
       sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [obj], expected: expected)
 
       d = Date.today
-      expected = d.strftime('%Y-%m-%d 00:00:00')
+      expected = Time.parse(d.strftime('%Y-%m-%d 00:00:00'))
       sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [d], expected: expected)
-      dstr = expected.split(' ')[0]
+      dstr = d.strftime('%Y-%m-%d')
       sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [dstr], expected: expected)
       foo = Foo.new(now)
-      expected = now.strftime('%Y-%m-%d 00:00:00')
+      expected = Time.parse(now.strftime('%Y-%m-%d 00:00:00'))
       sub_test_append_column2(:append_timestamp, 'TIMESTAMP', values: [foo], expected: expected)
 
       e = assert_raises(ArgumentError) do
@@ -613,20 +608,19 @@ module DuckDBTest
 
       d = Date.today
 
-      assert_duckdb_appender(d.strftime('%Y-%m-%d'), 'DATE') do |appender|
+      assert_duckdb_appender(d, 'DATE') do |appender|
         appender.append(d)
       end
 
       t = Time.now
       msec = format('%06d', t.nsec / 1000).to_s.sub(/0+$/, '')
-      expected = t.strftime("%Y-%m-%d %H:%M:%S.#{msec}")
+      expected = Time.parse(t.strftime("%Y-%m-%d %H:%M:%S.#{msec}"))
       assert_duckdb_appender(expected, 'TIMESTAMP') do |appender|
         appender.append(t)
       end
 
       value = DuckDB::Interval.new(interval_months: 1)
-      expected = '1 month'
-      assert_duckdb_appender(expected, 'INTERVAL') { |a| a.append(value) }
+      assert_duckdb_appender(value, 'INTERVAL') { |a| a.append(value) }
     end
 
     def test_append_row
