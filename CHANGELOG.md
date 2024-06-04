@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ExtractedStatements#size`.
 - raise error when `DuckDB::ExtractedStatements#new` is called with invalid SQL.
 
+## Breaking changes
+- DuckDB::Result.use_chunk_each is true by default.
+  If you want to use the old behavior, set `DuckDB::Result.use_chunk_each = false`.
+  But the old behavior will be removed in the future release.
+
 # 0.10.3.0 - 2024-05-25
 - bump to duckdb v0.10.3.
 
