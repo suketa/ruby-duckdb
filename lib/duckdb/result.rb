@@ -56,10 +56,14 @@ module DuckDB
     @use_chunk_each = true
 
     class << self
-      attr_writer :use_chunk_each
-
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
+      end
+
+      def use_chunk_each=(value)
+        warn('`changing DuckDB::Result.use_chunk_each to false` will be deprecated.') if value == false
+
+        @use_chunk_each = value
       end
 
       def use_chunk_each?
