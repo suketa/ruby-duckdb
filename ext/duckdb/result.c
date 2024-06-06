@@ -413,10 +413,9 @@ static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE co
     rubyDuckDBResult *ctx;
     bool is_null;
 #ifdef DUCKDB_API_NO_DEPRECATED
-    //duckdb_value_is_null will be deprecated in the future.
-    rb_warn("private method `_null?` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     return Qfalse;
 #else
+    rb_warn("private method `_null?` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     is_null = duckdb_value_is_null(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
