@@ -5,6 +5,10 @@ module DuckDBTest
     def setup
       @@con ||= create_data
       @result = @@con.query('SELECT * from table1')
+
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      @all_records = @result.to_a
+
       @ary = first_record
     end
 
@@ -20,8 +24,14 @@ module DuckDBTest
       assert_instance_of(Array, @ary)
     end
 
-    def test_each_without_block
+    def test_each_without_block_is_enumerator
       assert_instance_of(Enumerator, @result.each)
+    end
+
+    def test_each_without_block
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      result = @@con.query('SELECT * from table1')
+
       expected_ary = [
         expected_boolean,
         expected_smallint,
@@ -36,7 +46,8 @@ module DuckDBTest
         expected_blob,
         expected_boolean_false
       ]
-      assert_equal([expected_ary, 0], @result.each.with_index.to_a.first)
+
+      assert_equal([expected_ary, 0], result.each.with_index.to_a.first)
     end
 
     def test_result_boolean
@@ -80,7 +91,10 @@ module DuckDBTest
     end
 
     def test_result_null
-      assert_equal(Array.new(12), @result.reverse_each.first)
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      result = @@con.query('SELECT * from table1')
+
+      assert_equal(Array.new(12), result.reverse_each.first)
     end
 
     def test_including_enumerable
@@ -309,7 +323,9 @@ module DuckDBTest
     end
 
     def first_record
-      @result.first
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      # @result.first
+      @all_records.first
     end
   end
 end

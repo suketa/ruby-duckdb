@@ -273,9 +273,11 @@ static VALUE destroy_data_chunk(VALUE arg) {
 }
 
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
+/*
 #ifdef HAVE_DUCKDB_H_GE_V1_0_0
     return duckdb_result__chunk_stream(oDuckDBResult);
 #else
+*/
     rubyDuckDBResult *ctx;
     struct chunk_arg arg;
     idx_t chunk_count;
@@ -293,7 +295,9 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
         rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
     }
     return Qnil;
+/*
 #endif
+*/
 }
 
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
