@@ -478,12 +478,20 @@ module DuckDBTest
       bind_val = Time.local(1970, 1, 1, 12, 34, 56, 1)
       stmt.bind_time(1, bind_val)
       result = stmt.execute
+
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      result = result.to_a
+
       dump_now = "data=#{col_time}, data.usec=#{col_time.usec} bind_val=#{bind_val}, bind_val.usec=#{bind_val.usec}"
       assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
       stmt.bind_time(1, bind_val.strftime('%F %T.%N'))
       result = stmt.execute
+
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      result = result.to_a
+
       assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
@@ -499,6 +507,10 @@ module DuckDBTest
       stmt.send(:_bind_time, 1, 12, 34, 56, 1)
 
       result = stmt.execute
+
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      result = result.to_a
+
       assert_instance_of(Array, result.each.first)
       assert_equal(1, result.each.first[0])
     end

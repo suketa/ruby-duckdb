@@ -22,6 +22,10 @@ module DuckDBTest
     def do_result_to_decimal_test(value)
       prepare_test_value(value)
       result = @con.query('SELECT decimal_value FROM decimals')
+
+      # fix for using duckdb_fetch_chunk in Result#chunk_each
+      result = result.to_a
+
       assert_equal(value, result.first.first)
       assert_instance_of(BigDecimal, result.first.first)
     end

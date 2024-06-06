@@ -20,6 +20,9 @@ module DuckDBTest
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::Result, @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a'))
       r = @con.query('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
+
+      r = r.to_a # fix for using duckdb_fetch_chunk in Result#chunk_each
+
       assert_equal(1, r.each.first[0])
       assert_equal('a', r.each.first[1])
     end
@@ -30,6 +33,9 @@ module DuckDBTest
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::Result, @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1))
       r = @con.query('SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2', col2: 'a', col1: 1)
+
+      r = r.to_a # fix for using duckdb_fetch_chunk in Result#chunk_each
+
       assert_equal(1, r.each.first[0])
       assert_equal('a', r.each.first[1])
     end
@@ -150,6 +156,9 @@ module DuckDBTest
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       assert_instance_of(DuckDB::Result, @con.execute('INSERT INTO t VALUES(?, ?)', 1, 'a'))
       r = @con.execute('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
+
+      r = r.to_a # fix for using duckdb_fetch_chunk in Result#chunk_each
+
       assert_equal(1, r.each.first[0])
       assert_equal('a', r.each.first[1])
     end
