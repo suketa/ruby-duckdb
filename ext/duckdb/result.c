@@ -102,6 +102,7 @@ static VALUE to_ruby_obj_boolean(duckdb_result *result, idx_t col_idx, idx_t row
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_boolean` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     bool bval = duckdb_value_boolean(result, col_idx, row_idx);
     return bval ? Qtrue : Qfalse;
 #endif
@@ -111,6 +112,7 @@ static VALUE to_ruby_obj_smallint(duckdb_result *result, idx_t col_idx, idx_t ro
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_smallint` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     int16_t i16val = duckdb_value_int16(result, col_idx, row_idx);
     return INT2FIX(i16val);
 #endif
@@ -120,6 +122,7 @@ static VALUE to_ruby_obj_utinyint(duckdb_result *result, idx_t col_idx, idx_t ro
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_utinyint` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     uint8_t ui8val = duckdb_value_uint8(result, col_idx, row_idx);
     return UINT2NUM(ui8val);
 #endif
@@ -411,6 +414,7 @@ static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE co
     bool is_null;
 #ifdef DUCKDB_API_NO_DEPRECATED
     //duckdb_value_is_null will be deprecated in the future.
+    rb_warn("private method `_null?` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     return Qfalse;
 #else
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
@@ -905,10 +909,11 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
-    rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2);
-    rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2);
-    rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2);
-    rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2);
+
+    rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
     rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
     rb_define_private_method(cDuckDBResult, "__to_hugeint_internal", duckdb_result___to_hugeint_internal, 2);
