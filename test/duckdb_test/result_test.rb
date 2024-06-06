@@ -28,6 +28,13 @@ module DuckDBTest
       assert_instance_of(Enumerator, @result.each)
     end
 
+    # If using duckdb_fetch_chunk in Result#chunk_each
+    # then this test will fail.
+    def test_each_using_duckdb_fetch_chunk
+      ary = @result.to_a
+      assert(ary.first, 'FAILED because of using duckdb_fetch_chunk in Result#chunk_each')
+    end
+
     def test_each_without_block
       # fix for using duckdb_fetch_chunk in Result#chunk_each
       result = @@con.query('SELECT * from table1')
