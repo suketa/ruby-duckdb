@@ -132,6 +132,7 @@ static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_integer` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     int32_t i32val = duckdb_value_int32(result, col_idx, row_idx);
     return INT2NUM(i32val);
 #endif
@@ -141,6 +142,7 @@ static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_bigint` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     int64_t i64val = duckdb_value_int64(result, col_idx, row_idx);
     return LL2NUM(i64val);
 #endif
@@ -150,6 +152,7 @@ static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `__to_hugeint_internal` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     duckdb_hugeint hugeint = duckdb_value_hugeint(result, col_idx, row_idx);
     return rb_ary_new3(2, ULL2NUM(hugeint.lower), LL2NUM(hugeint.upper));
 #endif
@@ -159,6 +162,7 @@ static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `__to_decimal_internal` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     duckdb_decimal decimal = duckdb_value_decimal(result, col_idx, row_idx);
     return rb_ary_new3(4, ULL2NUM(decimal.value.lower), LL2NUM(decimal.value.upper), UINT2NUM(decimal.width), UINT2NUM(decimal.scale));
 #endif
@@ -168,6 +172,7 @@ static VALUE to_ruby_obj_float(duckdb_result *result, idx_t col_idx, idx_t row_i
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_float` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     float fval = duckdb_value_float(result, col_idx, row_idx);
     return DBL2NUM(fval);
 #endif
@@ -177,6 +182,7 @@ static VALUE to_ruby_obj_double(duckdb_result *result, idx_t col_idx, idx_t row_
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qnil;
 #else
+    rb_warn("private method `_to_double` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     double dval = duckdb_value_double(result, col_idx, row_idx);
     return DBL2NUM(dval);
 #endif
@@ -188,6 +194,7 @@ static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_id
     return Qnil;
 #else
     VALUE str;
+    rb_warn("private method `_to_blob` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     duckdb_blob bval = duckdb_value_blob(result, col_idx, row_idx);
     str = rb_str_new(bval.data, bval.size);
 
@@ -275,6 +282,7 @@ static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
     return Qnil;
 #else
     rubyDuckDBResult *ctx;
+    rb_warn("`row_count` will be deprecated in the future.");
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_row_count(&(ctx->result)));
 #endif
@@ -315,6 +323,7 @@ static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qtrue;
 #else
+    /* FIXME streaming is allways true. so this method is not useful and deprecated. */
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
 #endif
@@ -492,8 +501,9 @@ static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE 
     VALUE obj;
 
 #ifdef DUCKDB_API_NO_DEPRECATED
-    // duckdb_value_string_internal will be deprecated in the future.
+    return Qnil;
 #else
+    rb_warn("private method `_to_string` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     p = duckdb_value_string(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
@@ -513,6 +523,7 @@ static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_id
 #ifdef DUCKDB_API_NO_DEPRECATED
     // duckdb_value_string_internal will be deprecated in the future.
 #else
+    rb_warn("private method `_to_string_internal` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
     p = duckdb_value_string_internal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
@@ -901,7 +912,7 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_alloc_func(cDuckDBResult, allocate);
 
     rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
-    rb_define_method(cDuckDBResult, "row_count", duckdb_result_row_count, 0);
+    rb_define_method(cDuckDBResult, "row_count", duckdb_result_row_count, 0); /* deprecated */
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
     rb_define_method(cDuckDBResult, "streaming?", duckdb_result_streaming_p, 0);
@@ -913,15 +924,15 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2); /* deprecated */
-    rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2);
-    rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2);
-    rb_define_private_method(cDuckDBResult, "__to_hugeint_internal", duckdb_result___to_hugeint_internal, 2);
-    rb_define_private_method(cDuckDBResult, "__to_decimal_internal", duckdb_result___to_decimal_internal, 2);
-    rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2);
-    rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2);
-    rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2);
-    rb_define_private_method(cDuckDBResult, "_to_string_internal", duckdb_result__to_string_internal, 2);
-    rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2);
+    rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "__to_hugeint_internal", duckdb_result___to_hugeint_internal, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "__to_decimal_internal", duckdb_result___to_decimal_internal, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_float", duckdb_result__to_float, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_double", duckdb_result__to_double, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_string_internal", duckdb_result__to_string_internal, 2); /* deprecated */
+    rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
