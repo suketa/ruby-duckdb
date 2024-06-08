@@ -59,6 +59,11 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'DECIMAL',   'DECIMAL(16, 1)',              -123456789,                                 BigDecimal,           BigDecimal('-123456789')                            ],
         [:ok, 'DECIMAL',   'DECIMAL(16, 0)',              123456789,                                  BigDecimal,           BigDecimal('123456789')                             ],
         [:ok, 'DECIMAL',   'DECIMAL(2, 0)',               1,                                          BigDecimal,           BigDecimal('1')                                     ],
+        [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              '2345678901234567890123.45678901',          BigDecimal,           BigDecimal('2345678901234567890123.45678901')       ],
+        [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              '-2345678901234567890123.45678901',         BigDecimal,           BigDecimal('-2345678901234567890123.45678901')      ],
+        [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              '1.23456789',                               BigDecimal,           BigDecimal('1.23456789')                            ],
+        [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              '1.234567898',                              BigDecimal,           BigDecimal('1.23456789')                            ],
+        [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              '0.00123456789',                            BigDecimal,           BigDecimal('0.00123456')                            ],
         [:ok, 'ENUM',      'mood',                        "'happy'",                                  String,               'happy'                                             ],
         [:ok, 'UUID',      'UUID',                        "'#{UUID}'",                                String,               UUID                                                ],
         # FIXME: LIST, MAP STRUCT values are always nil
