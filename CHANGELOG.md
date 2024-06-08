@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+
+# 1.0.0.0 - 2024-06-08
 - bump duckdb to 1.0.0.
 - add `DuckDB::ExtractedStatements` class.
 - add `DuckDB::ExtractedStatements#size`.
