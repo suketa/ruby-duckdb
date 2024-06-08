@@ -70,6 +70,7 @@ static VALUE duckdb_extracted_statements_size(VALUE self) {
     return ULL2NUM(ctx->num_statements);
 }
 
+
 static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index) {
     rubyDuckDBConnection *pcon;
     rubyDuckDBExtractedStatements *ctx;
@@ -80,8 +81,7 @@ static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE co
     pcon = get_struct_connection(con);
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
 
-    // duckdb_prepare_extracted_statement(pcon->con, ctx->extracted_statements, NUM2ULL(index), &(ctx->prepared_statement));
-    return Qnil;
+    return rbduckdb_prepared_statement_new(pcon->con, ctx->extracted_statements, NUM2ULL(index));
 }
 
 void rbduckdb_init_duckdb_extracted_statements(void) {

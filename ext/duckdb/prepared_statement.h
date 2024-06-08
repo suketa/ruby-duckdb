@@ -8,6 +8,7 @@ struct _rubyDuckDBPreparedStatement {
 
 typedef struct _rubyDuckDBPreparedStatement rubyDuckDBPreparedStatement;
 
+VALUE rbduckdb_prepared_statement_new(duckdb_connection con, duckdb_extracted_statements extracted_statements, idx_t index);
 rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self);
 void rbduckdb_init_duckdb_prepared_statement(void);
 

@@ -34,6 +34,14 @@ module DuckDBTest
       assert_equal 3, stmts.size
     end
 
+    def test_prepared_statement
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+      stmt = stmts.prepared_statement(@con, 0)
+      assert_instance_of(DuckDB::PreparedStatement, stmt)
+      r = stmt.execute
+      assert_equal([[1]], r.to_a)
+    end
+
     def teardown
       @con.close
       @db.close
