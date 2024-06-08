@@ -93,6 +93,7 @@ module DuckDB
     end
 
     def row(row_index)
+      warn("#{self.class}##{__method__} will be deprecated. set `DuckDB::Result.use_chunk_each = true`.")
       row = []
       column_count.times do |col_index|
         row << (_null?(row_index, col_index) ? nil : to_value(row_index, col_index))
@@ -101,6 +102,7 @@ module DuckDB
     end
 
     def to_value(row_index, col_index)
+      warn("#{self.class}##{__method__} will be deprecated. set `DuckDB::Result.use_chunk_each = true`.")
       send(TO_METHODS[_column_type(col_index)], row_index, col_index)
     end
 
@@ -115,19 +117,23 @@ module DuckDB
     private
 
     def _to_hugeint(row, col)
+      warn("#{self.class}##{__method__} will be deprecated.")
       _to_string(row, col).to_i
     end
 
     def _to_hugeint_internal(row, col)
+      warn("#{self.class}##{__method__} will be deprecated.")
       lower, upper = __to_hugeint_internal(row, col)
       Converter._to_hugeint_from_vector(lower, upper)
     end
 
     def _to_decimal(row, col)
+      warn("#{self.class}##{__method__} will be deprecated.")
       BigDecimal(_to_string(row, col))
     end
 
     def _to_decimal_internal(row, col)
+      warn("#{self.class}##{__method__} will be deprecated.")
       lower, upper, width, scale = __to_decimal_internal(row, col)
       Converter._to_decimal_from_hugeint(width, scale, upper, lower)
     end
