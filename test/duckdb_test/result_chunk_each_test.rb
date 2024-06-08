@@ -45,7 +45,9 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'INTERVAL',  'INTERVAL',                    "'2 days ago'",                             DuckDB::Interval,     DuckDB::Interval.new(interval_days: -2)             ],
         [:ok, 'VARCHAR',   'VARCHAR',                     "'hello'",                                  String,               'hello'                                             ],
         [:ok, 'VARCHAR',   'VARCHAR',                     "'𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'",                      String,               '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'                                 ],
-        [:ok, 'BLOB',      'BLOB',                        "'blob'",                                   String,               String.new('blob', encoding: 'ASCII-8BIT')          ],
+        [:ok, 'BLOB',      'BLOB',                        DuckDB::Blob.new('\0\1\2'),                 String,               '\0\1\2'.encode('ASCII-8BIT')                       ],
+        [:ok, 'BLOB',      'BLOB',                        '\0\1\2'.encode('ASCII-8BIT'),              String,               '\0\1\2'.encode('ASCII-8BIT')                       ],
+        [:ok, 'BLOB',      'BLOB',                        'blob',                                     String,               'blob'.encode('ASCII-8BIT')                         ],
         [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              0,                                          BigDecimal,           BigDecimal('0')                                     ],
         [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              1.23456789,                                 BigDecimal,           BigDecimal('1.23456789')                            ],
         [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              -1.23456789,                                BigDecimal,           BigDecimal('-1.23456789')                           ],
@@ -73,45 +75,50 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ng, 'STRUCT',    'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {"a" => 1, "b" => 2 }                               ],
       ].freeze
 
-      TEST_TABLES.each_with_index do |spec, i|
-        do_test, db_type, db_declaration, string_rep, klass, ruby_val = *spec
-        define_method :"test_#{db_type}_type#{i}" do
-          skip if do_test == :ng
-          @con.query(ENUM_SQL)
-          @con.query("CREATE TABLE tests (col #{db_declaration})")
+      def prepare_test_table_and_data(db_declaration, db_type, string_rep)
+        @con.query(ENUM_SQL)
+        @con.query("CREATE TABLE tests (col #{db_declaration})")
+        if db_type == 'BLOB'
+          @con.query('INSERT INTO tests VALUES ( ? )', string_rep)
+        else
           @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
-          res = @con.query('SELECT * FROM tests').to_a[0][0]
-          if db_type == 'TIME'
-            assert_equal(
-              [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
-              [res.hour, res.min, res.sec, res.usec]
-            )
-          else
-            assert_equal(ruby_val, res)
-          end
-          assert_equal(klass, res.class)
         end
+      end
+
+      def check_value_and_type(res, ruby_val, db_type, klass)
+        if db_type == 'TIME'
+          assert_equal(
+            [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
+            [res.hour, res.min, res.sec, res.usec]
+          )
+        else
+          assert_equal(ruby_val, res)
+        end
+        assert_equal(klass, res.class)
       end
 
       TEST_TABLES.each_with_index do |spec, i|
         do_test, db_type, db_declaration, string_rep, klass, ruby_val = *spec
+        define_method :"test_#{db_type}_type#{i}" do
+          skip if do_test == :ng
+
+          prepare_test_table_and_data(db_declaration, db_type, string_rep)
+
+          res = @con.query('SELECT * FROM tests').to_a[0][0]
+
+          check_value_and_type(res, ruby_val, db_type, klass)
+        end
+
         define_method :"test_stream_#{db_type}_type#{i}" do
           skip if do_test == :ng
-          @con.query(ENUM_SQL)
-          @con.query("CREATE TABLE tests (col #{db_declaration})")
-          @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
+
+          prepare_test_table_and_data(db_declaration, db_type, string_rep)
+
           res = @con.async_query_stream('SELECT * FROM tests')
           res.execute_task while res.state == :not_ready
           res = res.execute_pending.to_a[0][0]
-          if db_type == 'TIME'
-            assert_equal(
-              [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
-              [res.hour, res.min, res.sec, res.usec]
-            )
-          else
-            assert_equal(ruby_val, res)
-          end
-          assert_equal(klass, res.class)
+
+          check_value_and_type(res, ruby_val, db_type, klass)
         end
       end
 
