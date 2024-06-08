@@ -62,8 +62,7 @@ VALUE rbduckdb_prepared_statement_new(duckdb_connection con, duckdb_extracted_st
     TypedData_Get_Struct(obj, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     if (duckdb_prepare_extracted_statement(con, extracted_statements, index, &(ctx->prepared_statement)) == DuckDBError) {
-        const char *error = duckdb_prepare_error(ctx->prepared_statement);
-        rb_raise(eDuckDBError, "%s", error);
+        rb_raise(eDuckDBError, "Fail to get DuckDB::PreparedStatement object from ExtractedStatements object");
     }
     return obj;
 }
