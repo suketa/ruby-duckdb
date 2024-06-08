@@ -34,6 +34,35 @@ module DuckDBTest
       assert_equal 3, stmts.size
     end
 
+    def test_prepared_statement
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+      stmt = stmts.prepared_statement(@con, 0)
+      assert_instance_of(DuckDB::PreparedStatement, stmt)
+      r = stmt.execute
+      assert_equal([[1]], r.to_a)
+
+      stmt = stmts.prepared_statement(@con, 1)
+      r = stmt.execute
+      assert_equal([[2]], r.to_a)
+
+      stmt = stmts.prepared_statement(@con, 2)
+      r = stmt.execute
+      assert_equal([[3]], r.to_a)
+    end
+
+    def test_prepared_statement_with_invalid_index
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+      ex = assert_raises DuckDB::Error do
+        stmts.prepared_statement(@con, 3)
+      end
+      assert_equal 'Fail to get DuckDB::PreparedStatement object from ExtractedStatements object', ex.message
+
+      ex = assert_raises DuckDB::Error do
+        stmts.prepared_statement(@con, -1)
+      end
+      assert_equal 'Fail to get DuckDB::PreparedStatement object from ExtractedStatements object', ex.message
+    end
+
     def teardown
       @con.close
       @db.close

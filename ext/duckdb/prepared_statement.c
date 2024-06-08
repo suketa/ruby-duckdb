@@ -53,6 +53,20 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBPreparedStatement);
 }
 
+VALUE rbduckdb_prepared_statement_new(duckdb_connection con, duckdb_extracted_statements extracted_statements, idx_t index) {
+    VALUE obj;
+    rubyDuckDBPreparedStatement *ctx;
+
+    obj = allocate(cDuckDBPreparedStatement);
+
+    TypedData_Get_Struct(obj, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    if (duckdb_prepare_extracted_statement(con, extracted_statements, index, &(ctx->prepared_statement)) == DuckDBError) {
+        rb_raise(eDuckDBError, "Fail to get DuckDB::PreparedStatement object from ExtractedStatements object");
+    }
+    return obj;
+}
+
 static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBPreparedStatement *ctx;
