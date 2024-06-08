@@ -7,6 +7,27 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ExtractedStatements` class.
 - add `DuckDB::ExtractedStatements#size`.
 - raise error when `DuckDB::ExtractedStatements#new` is called with invalid SQL.
+- The following public/private methods will be deprecated.
+  - `DuckDB::Result#streaming?`
+  - `DuckDB::Result#_null?`
+  - `DuckDB::Result#_to_boolean`
+  - `DuckDB::Result#_to_smallint`
+  - `DuckDB::Result#_to_utinyint`
+  - `DuckDB::Result#_to_integer`
+  - `DuckDB::Result#_to_bigint`
+  - `DuckDB::Result#_to_hugeint`
+  - `DuckDB::Result#_to_hugeint_internal`
+  - `DuckDB::Result#__to_hugeint_internal`
+  - `DuckDB::Result#_to_decimal`
+  - `DuckDB::Result#_to_decimal_internal`
+  - `DuckDB::Result#__to_decimal_internal`
+  - `DuckDB::Result#_to_float`
+  - `DuckDB::Result#_to_double`
+  - `DuckDB::Result#_to_string`
+  - `DuckDB::Result#_to_string_internal`
+  - `DuckDB::Result#_to_blob`
+  - `DuckDB::Result.use_chunk_each=`
+  - `DuckDB::Result#use_chunk_each?`
 
 ## Breaking changes
 - DuckDB::Result.use_chunk_each is true by default.

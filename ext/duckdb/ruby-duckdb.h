@@ -1,6 +1,9 @@
 #ifndef RUBY_DUCKDB_H
 #define RUBY_DUCKDB_H
 
+// #define DUCKDB_API_NO_DEPRECATED
+#define DUCKDB_NO_EXTENSION_FUNCTIONS // disable extension C-functions
+
 #include "ruby.h"
 #include <duckdb.h>
 

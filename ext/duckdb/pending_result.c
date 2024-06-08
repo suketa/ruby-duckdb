@@ -39,6 +39,13 @@ static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self)
     VALUE streaming_p = Qfalse;
     duckdb_state state;
 
+    /*
+     * FIXME: The 2nd argument is deprecated and will be removed in the future.
+     * The behavior will be same as streaming.
+    if (argc == 2) {
+        rb_warn("The 2nd argument is deprecated and will be removed in the future.");
+    }
+    */
     rb_scan_args(argc, argv, "11", &oDuckDBPreparedStatement, &streaming_p);
 
     if (rb_obj_is_kind_of(oDuckDBPreparedStatement, cDuckDBPreparedStatement) != Qtrue) {
@@ -48,11 +55,20 @@ static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self)
     rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
     rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
 
+#ifdef DUCKDB_API_NO_DEPRECATED
+    state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
+#else
+    /*
+     * FIXME: streaming_p check will be removed in the future.
+     *
+     * state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
+     */
     if (!NIL_P(streaming_p) && streaming_p == Qtrue) {
         state = duckdb_pending_prepared_streaming(stmt->prepared_statement, &(ctx->pending_result));
     } else {
         state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
     }
+#endif
 
     if (state == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
