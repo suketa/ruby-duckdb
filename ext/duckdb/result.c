@@ -62,6 +62,7 @@ static VALUE vector_interval(void* vector_data, idx_t row_idx);
 static VALUE vector_blob(void* vector_data, idx_t row_idx);
 static VALUE vector_varchar(void* vector_data, idx_t row_idx);
 static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
+static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
@@ -662,6 +663,14 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
                       );
 }
 
+static VALUE vector_uhugeint(void* vector_data, idx_t row_idx) {
+    duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
+    return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
+                      ULL2NUM(hugeint.lower),
+                      ULL2NUM(hugeint.upper)
+                      );
+}
+
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
     VALUE width = INT2FIX(duckdb_decimal_width(ty));
     VALUE scale = INT2FIX(duckdb_decimal_scale(ty));
@@ -847,6 +856,9 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
             break;
         case DUCKDB_TYPE_HUGEINT:
             obj = vector_hugeint(vector_data, row_idx);
+            break;
+        case DUCKDB_TYPE_UHUGEINT:
+            obj = vector_uhugeint(vector_data, row_idx);
             break;
         case DUCKDB_TYPE_FLOAT:
             obj = DBL2NUM((((float *) vector_data)[row_idx]));

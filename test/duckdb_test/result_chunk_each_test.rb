@@ -35,6 +35,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'UBIGINT',   'UBIGINT',                     18446744073709551615,                       Integer,              18_446_744_073_709_551_615                          ],
         [:ok, 'HUGEINT',   'HUGEINT',                     170141183460469231731687303715884105727,    Integer,              170_141_183_460_469_231_731_687_303_715_884_105_727 ],
         [:ok, 'HUGEINT',   'HUGEINT',                     -170141183460469231731687303715884105727,   Integer,             -170_141_183_460_469_231_731_687_303_715_884_105_727 ],
+        [:ok, 'UHUGEINT',  'UHUGEINT',                    340282366920938463463374607431768211455,    Integer,              340_282_366_920_938_463_463_374_607_431_768_211_455 ],
         [:ok, 'FLOAT',     'FLOAT',                       12345.375,                                  Float,                12_345.375                                          ],
         [:ok, 'DOUBLE',    'DOUBLE',                      123.456789,                                 Float,                123.456789                                          ],
         [:ok, 'TIMESTAMP', 'TIMESTAMP',                   "'2019-11-03 12:34:56.000001'",             Time,                 Time.local(2019, 11, 3, 12, 34, 56, 1)              ],
@@ -78,7 +79,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
       def prepare_test_table_and_data(db_declaration, db_type, string_rep)
         @con.query(ENUM_SQL)
         @con.query("CREATE TABLE tests (col #{db_declaration})")
-        if db_type == 'BLOB'
+        if db_type == 'BLOB' || db_type == 'UHUGEINT'
           @con.query('INSERT INTO tests VALUES ( ? )', string_rep)
         else
           @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
