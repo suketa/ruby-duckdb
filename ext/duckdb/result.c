@@ -664,10 +664,10 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_uhugeint(void* vector_data, idx_t row_idx) {
-    duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
+    duckdb_uhugeint uhugeint = ((duckdb_uhugeint *)vector_data)[row_idx];
     return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
-                      ULL2NUM(hugeint.lower),
-                      ULL2NUM(hugeint.upper)
+                      ULL2NUM(uhugeint.lower),
+                      ULL2NUM(uhugeint.upper)
                       );
 }
 
