@@ -165,6 +165,22 @@ module DuckDBTest
       assert_equal('The argument `18.555` must be Integer.', e.message)
     end
 
+    def test_append_uhugeint
+      assert_duckdb_appender(170_141_183_460_469_231_731_687_303_715_884_105_727, 'UHUGEINT') do |appender|
+        appender.append_uhugeint(170_141_183_460_469_231_731_687_303_715_884_105_727)
+      end
+      assert_duckdb_appender(340_282_366_920_938_463_463_374_607_431_768_211_455, 'UHUGEINT') do |appender|
+        appender.append_uhugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
+      end
+      assert_duckdb_appender(1, 'UHUGEINT') do |appender|
+        appender.append_uhugeint(1)
+      end
+      e = assert_raises(ArgumentError) do
+        assert_duckdb_appender(18.555, 'UHUGEINT') { |a| a.append_hugeint(18.555) }
+      end
+      assert_equal('The argument `18.555` must be Integer.', e.message)
+    end
+
     def test_append_varchar
       assert_duckdb_appender('foobarbaz', 'VARCHAR') { |a| a.append_varchar('foobarbaz') }
     end
