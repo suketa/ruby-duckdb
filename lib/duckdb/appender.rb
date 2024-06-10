@@ -40,6 +40,24 @@ module DuckDB
     end
 
     #
+    # appends unsigned huge int value.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE numbers (num UHUGEINT)')
+    #   appender = con.appender('numbers')
+    #   appender
+    #     .begin_row
+    #     .append_hugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
+    #     .end_row
+    #
+    def append_uhugeint(value)
+      lower, upper = integer_to_hugeint(value)
+      _append_uhugeint(lower, upper)
+    end
+
+    #
     # appends date value.
     #
     #   require 'duckdb'
