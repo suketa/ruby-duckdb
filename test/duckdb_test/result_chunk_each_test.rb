@@ -69,11 +69,11 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'DECIMAL',   'DECIMAL(38, 8)',              '0.00123456789',                            BigDecimal,           BigDecimal('0.00123456')                            ],
         [:ok, 'ENUM',      'mood',                        "'happy'",                                  String,               'happy'                                             ],
         [:ok, 'UUID',      'UUID',                        "'#{UUID}'",                                String,               UUID                                                ],
-        # FIXME: LIST, MAP STRUCT values are always nil
         [:ok, 'ARRAY',     'INTEGER[2]',                  'array_value(1::INTEGER, 2::INTEGER)',      Array,                [1, 2]                                              ],
         [:ok, 'ARRAY',     'VARCHAR[2]',                  "array_value('a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃')",    Array,                ['a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃']                          ],
-        [:ng, 'LIST',      'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
-        [:ng, 'LIST',      'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
+        [:ok, 'LIST',      'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
+        [:ok, 'LIST',      'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
+        # FIXME: MAP STRUCT values are always nil
         [:ng, 'MAP',       'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
         [:ng, 'STRUCT',    'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {"a" => 1, "b" => 2 }                               ],
       ].freeze
@@ -81,7 +81,7 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
       def prepare_test_table_and_data(db_declaration, db_type, string_rep)
         @con.query(ENUM_SQL)
         @con.query("CREATE TABLE tests (col #{db_declaration})")
-        if db_type == 'BLOB' || db_type == 'UHUGEINT'
+        if %w[BLOB UHUGEINT].include?(db_type)
           @con.query('INSERT INTO tests VALUES ( ? )', string_rep)
         else
           @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
@@ -130,8 +130,8 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         assert_equal(false, r.streaming?)
       end
 
+      # check that error is not raised when raising an error in the chunk_each block.
       def test_chunk_each_with_exception
-        # check that error is not raised when raising an error in the chunk_each block.
         @con.query('CREATE TABLE tests (col INTEGER)')
         @con.query('INSERT INTO tests VALUES (1), (2), (3), (4), (5)')
         r = @con.query('SELECT * FROM tests')
@@ -143,8 +143,8 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         assert(true, 'error raised')
       end
 
+      # check that error is not raised when raising an error in the chunk_stream block.
       def test_chunk_stream_with_exception
-        # check that error is not raised when raising an error in the chunk_stream block.
         @con.query('CREATE TABLE tests (col INTEGER)')
         @con.query('INSERT INTO tests VALUES (1), (2), (3), (4), (5)')
         r = @con.async_query_stream('SELECT * FROM tests')
