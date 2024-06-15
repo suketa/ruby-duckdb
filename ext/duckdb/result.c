@@ -66,7 +66,7 @@ static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
-static VALUE vector_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index);
+static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
@@ -752,19 +752,19 @@ static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t ro
     return ary;
 }
 
-static VALUE vector_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index) {
+static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index) {
     uint64_t *validity;
     duckdb_type type_id;
     void* vector_data;
     VALUE obj = Qnil;
 
-    validity = duckdb_vector_get_validity(array);
+    validity = duckdb_vector_get_validity(vector);
     if (!duckdb_validity_row_is_valid(validity, index)) {
         return Qnil;
     }
 
     type_id = duckdb_get_type_id(element_type);
-    vector_data = duckdb_vector_get_data(array);
+    vector_data = duckdb_vector_get_data(vector);
 
     switch(type_id) {
         case DUCKDB_TYPE_INVALID:
@@ -834,10 +834,10 @@ static VALUE vector_value_at(duckdb_vector array, duckdb_logical_type element_ty
             obj = vector_enum(element_type, vector_data, index);
             break;
         case DUCKDB_TYPE_ARRAY:
-            obj = vector_array(element_type, array, index);
+            obj = vector_array(element_type, vector, index);
             break;
         case DUCKDB_TYPE_LIST:
-            obj = vector_list(element_type, array, vector_data, index);
+            obj = vector_list(element_type, vector, vector_data, index);
             break;
         case DUCKDB_TYPE_MAP:
             obj = vector_map(element_type, vector_data, index);
