@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 - support fetch the value from UHUGEINT type column.
 - add `DuckDB::Appender#append_uhugeint`.
+- DuckDB::Result supports ARRAY column type.
 
 # 1.0.0.0 - 2024-06-08
 - bump duckdb to 1.0.0.
