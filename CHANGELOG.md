@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Appender#append_uhugeint`.
 - DuckDB::Result supports ARRAY column type (only when DuckDB::Result.use_chunk_each is true).
 - DuckDB::Result supports LIST column type (only when DuckDB::Result.use_chunk_each is true).
+  Thanks to stephenprater.
 
 # 1.0.0.0 - 2024-06-08
 - bump duckdb to 1.0.0.
