@@ -46,6 +46,14 @@ module DuckDBTest
       assert_equal([[[[1, 2, 3], [4, 5]]], [[[6], [7, 8], [9, 10]]]], ary)
     end
 
+    def test_result_list_of_multiple_list_columns
+      @conn.execute('CREATE TABLE test (val1 INTEGER[], val2 INTEGER[][]);')
+      @conn.execute('INSERT INTO test values ([1, 2], [[3, 4]]);')
+      result = @conn.execute('SELECT * FROM test;')
+      ary = result.each.to_a
+      assert_equal([1, 2], ary.first[0])
+      assert_equal([[3, 4]], ary.first[1])
+    end
 
     def teardown
       @conn.execute('DROP TABLE test;')
