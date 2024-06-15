@@ -66,7 +66,7 @@ static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
-static VALUE vector_array_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index);
+static VALUE vector_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
@@ -744,7 +744,7 @@ static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t ro
 
     ary = rb_ary_new2(size);
     for (idx_t i = bgn; i < end; ++i) {
-        value = vector_array_value_at(child, child_logical_type, i);
+        value = vector_value_at(child, child_logical_type, i);
         rb_ary_store(ary, i - bgn, value);
     }
 
@@ -752,7 +752,7 @@ static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t ro
     return ary;
 }
 
-static VALUE vector_array_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index) {
+static VALUE vector_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index) {
     uint64_t *validity;
     duckdb_type type_id;
     void* vector_data;
@@ -871,7 +871,7 @@ static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void * ve
     duckdb_vector child = duckdb_list_vector_get_child(vector);
 
     for (i = bgn; i < end; ++i) {
-        value = vector_array_value_at(child, child_logical_type, i);
+        value = vector_value_at(child, child_logical_type, i);
         rb_ary_store(ary, i - bgn, value);
     }
     duckdb_destroy_logical_type(&child_logical_type);
@@ -930,107 +930,12 @@ static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
-    uint64_t *validity;
     duckdb_logical_type ty;
-    duckdb_type type_id;
-    void* vector_data;
     VALUE obj = Qnil;
 
-    validity = duckdb_vector_get_validity(vector);
-    if (!duckdb_validity_row_is_valid(validity, row_idx)) {
-        return Qnil;
-    }
-
     ty = duckdb_vector_get_column_type(vector);
-    type_id = duckdb_get_type_id(ty);
-    vector_data = duckdb_vector_get_data(vector);
 
-    switch(type_id) {
-        case DUCKDB_TYPE_INVALID:
-            obj = Qnil;
-            break;
-        case DUCKDB_TYPE_BOOLEAN:
-            obj = (((bool*) vector_data)[row_idx]) ? Qtrue : Qfalse;
-            break;
-        case DUCKDB_TYPE_TINYINT:
-            obj = INT2FIX(((int8_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_SMALLINT:
-            obj = INT2FIX(((int16_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_INTEGER:
-            obj = INT2NUM(((int32_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_BIGINT:
-            obj = LL2NUM(((int64_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_UTINYINT:
-            obj = INT2FIX(((uint8_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_USMALLINT:
-            obj = INT2FIX(((uint16_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_UINTEGER:
-            obj = UINT2NUM(((uint32_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_UBIGINT:
-            obj = ULL2NUM(((uint64_t *) vector_data)[row_idx]);
-            break;
-        case DUCKDB_TYPE_HUGEINT:
-            obj = vector_hugeint(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_UHUGEINT:
-            obj = vector_uhugeint(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_FLOAT:
-            obj = DBL2NUM((((float *) vector_data)[row_idx]));
-            break;
-        case DUCKDB_TYPE_DOUBLE:
-            obj = DBL2NUM((((double *) vector_data)[row_idx]));
-            break;
-        case DUCKDB_TYPE_DATE:
-            obj = vector_date(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_TIMESTAMP:
-            obj = vector_timestamp(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_TIME:
-            obj = vector_time(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_INTERVAL:
-            obj = vector_interval(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_VARCHAR:
-            obj = vector_varchar(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_BLOB:
-            obj = vector_blob(vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_DECIMAL:
-            obj = vector_decimal(ty, vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_ENUM:
-            obj = vector_enum(ty, vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_ARRAY:
-            obj = vector_array(ty, vector, row_idx);
-            break;
-        case DUCKDB_TYPE_LIST:
-            obj = vector_list(ty, vector, vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_MAP:
-            obj = vector_map(ty, vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_STRUCT:
-            obj = vector_struct(ty, vector_data, row_idx);
-            break;
-        case DUCKDB_TYPE_UUID:
-            obj = vector_uuid(vector_data, row_idx);
-            break;
-        default:
-            rb_warn("Unknown type %d", type_id);
-            obj = Qnil;
-    }
+    obj = vector_value_at(vector, ty, row_idx);
 
     duckdb_destroy_logical_type(&ty);
     return obj;
