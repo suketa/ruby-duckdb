@@ -67,7 +67,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_array_value_at(duckdb_vector array, duckdb_logical_type element_type, idx_t index);
-static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
+static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
@@ -837,7 +837,7 @@ static VALUE vector_array_value_at(duckdb_vector array, duckdb_logical_type elem
             obj = vector_array(element_type, array, index);
             break;
         case DUCKDB_TYPE_LIST:
-            obj = vector_list(element_type, vector_data, index);
+            obj = vector_list(element_type, array, vector_data, index);
             break;
         case DUCKDB_TYPE_MAP:
             obj = vector_map(element_type, vector_data, index);
@@ -856,27 +856,23 @@ static VALUE vector_array_value_at(duckdb_vector array, duckdb_logical_type elem
     return obj;
 }
 
-static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
-    // Lists are stored as vectors within vectors
-
+static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void * vector_data, idx_t row_idx) {
     VALUE ary = Qnil;
-    VALUE element = Qnil;
+    VALUE value = Qnil;
     idx_t i;
 
-    // rb_warn("ruby-duckdb does not support List yet");
-
     duckdb_logical_type child_logical_type = duckdb_list_type_child_type(ty);
-    // duckdb_type child_type = duckdb_get_type_id(child_logical_type);
 
-    duckdb_list_entry list_entry = ((duckdb_list_entry *)vector)[row_idx];
+    duckdb_list_entry list_entry = ((duckdb_list_entry *)vector_data)[row_idx];
+    idx_t bgn = list_entry.offset;
+    idx_t end = bgn + list_entry.length;
     ary = rb_ary_new2(list_entry.length);
 
-    for (i = list_entry.offset; i < list_entry.offset + list_entry.length; ++i) {
-        /*
-         * FIXME: How to get the child element?
-         */
-        // element = ???
-        rb_ary_store(ary, i - list_entry.offset, element);
+    duckdb_vector child = duckdb_list_vector_get_child(vector);
+
+    for (i = bgn; i < end; ++i) {
+        value = vector_array_value_at(child, child_logical_type, i);
+        rb_ary_store(ary, i - bgn, value);
     }
     duckdb_destroy_logical_type(&child_logical_type);
     return ary;
@@ -1020,7 +1016,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
             obj = vector_array(ty, vector, row_idx);
             break;
         case DUCKDB_TYPE_LIST:
-            obj = vector_list(ty, vector_data, row_idx);
+            obj = vector_list(ty, vector, vector_data, row_idx);
             break;
         case DUCKDB_TYPE_MAP:
             obj = vector_map(ty, vector_data, row_idx);
