@@ -70,6 +70,8 @@ if DuckDB::Result.instance_methods.include?(:chunk_each)
         [:ok, 'ENUM',      'mood',                        "'happy'",                                  String,               'happy'                                             ],
         [:ok, 'UUID',      'UUID',                        "'#{UUID}'",                                String,               UUID                                                ],
         # FIXME: LIST, MAP STRUCT values are always nil
+        [:ok, 'ARRAY',     'INTEGER[2]',                  'array_value(1::INTEGER, 2::INTEGER)',      Array,                [1, 2]                                              ],
+        [:ok, 'ARRAY',     'VARCHAR[2]',                  "array_value('a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃')",    Array,                ['a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃']                          ],
         [:ng, 'LIST',      'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
         [:ng, 'LIST',      'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
         [:ng, 'MAP',       'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
