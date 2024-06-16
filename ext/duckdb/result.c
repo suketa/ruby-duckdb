@@ -909,7 +909,7 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
     for (idx_t i = 0; i < child_count; ++i) {
         p = duckdb_struct_type_child_name(ty, i);
         if (p) {
-            key = rb_str_new2(p);
+            key = ID2SYM(rb_intern_const(p));
             child = duckdb_struct_vector_get_child(vector, i);
             child_type = duckdb_struct_type_child_type(ty, i);
             value = vector_value_at(child, child_type, row_idx);
