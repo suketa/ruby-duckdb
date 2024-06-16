@@ -843,7 +843,7 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
             obj = vector_map(element_type, vector_data, index);
             break;
         case DUCKDB_TYPE_STRUCT:
-            obj = vector_struct(element_type, vector_data, index);
+            obj = vector_struct(element_type, vector, index);
             break;
         case DUCKDB_TYPE_UUID:
             obj = vector_uuid(vector_data, index);
@@ -900,6 +900,8 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
     VALUE hash = rb_hash_new();
     VALUE value = Qnil;
     VALUE key = Qnil;
+    duckdb_vector child;
+    duckdb_logical_type child_type;
     char *p;
 
     idx_t child_count = duckdb_struct_type_child_count(ty);
@@ -908,12 +910,11 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
         p = duckdb_struct_type_child_name(ty, i);
         if (p) {
             key = rb_str_new2(p);
-            // FIXME
-            // How to get Struct values?
-            // value = ???
-            // duckdb_vector child_vector = duckdb_struct_vector_get_child(vector, i);
-            // VALUE value = vector_value(child_vector, i);
+            child = duckdb_struct_vector_get_child(vector, i);
+            child_type = duckdb_struct_type_child_type(ty, i);
+            value = vector_value_at(child, child_type, row_idx);
             rb_hash_aset(hash, key, value);
+            duckdb_destroy_logical_type(&child_type);
             duckdb_free(p);
         }
     }
