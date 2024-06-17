@@ -74,6 +74,8 @@ module DuckDBTest
       [:ok, 'LIST',      'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
       [:ok, 'MAP',       'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
       [:ok, 'STRUCT',    'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {a: 1, b: 2 }                                       ],
+      [:ng, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  1,                                         Integer,              1                                                   ],
+      [:ng, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  "'happy'",                                 Integer,              'happy'                                             ],
     ].freeze
 
     def prepare_test_table_and_data(db_declaration, db_type, string_rep)
