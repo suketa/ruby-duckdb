@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module DuckDBTest
-  class ResultListTest < Minitest::Test
+  class ResultStructTest < Minitest::Test
     def setup
       @db = DuckDB::Database.open
       @conn = @db.connect
