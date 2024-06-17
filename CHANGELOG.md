@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 - DuckDB::Result supports STRUCT column type (only when DuckDB::Result.use_chunk_each is true).
+- DuckDB::Result supports MAP column type (only when DuckDB::Result.use_chunk_each is true).
 
 # 1.0.0.1 - 2024-06-16
 - support fetch the value from UHUGEINT type column.
