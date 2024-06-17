@@ -68,7 +68,7 @@ static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_id
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
-static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
+static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
@@ -840,7 +840,7 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
             obj = vector_list(element_type, vector, vector_data, index);
             break;
         case DUCKDB_TYPE_MAP:
-            obj = vector_map(element_type, vector_data, index);
+            obj = vector_map(element_type, vector, vector_data, index);
             break;
         case DUCKDB_TYPE_STRUCT:
             obj = vector_struct(element_type, vector, index);
@@ -878,19 +878,29 @@ static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void * ve
     return ary;
 }
 
-static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
+static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx) {
     VALUE hash = rb_hash_new();
+    VALUE key = Qnil;
+    VALUE value = Qnil;
 
     duckdb_logical_type key_logical_type = duckdb_map_type_key_type(ty);
     duckdb_logical_type value_logical_type = duckdb_map_type_value_type(ty);
-    // duckdb_type key_type = duckdb_get_type_id(key_logical_type);
-    // duckdb_type value_type = duckdb_get_type_id(value_logical_type);
 
-    /*
-     * FIXME: How to get key and value?
-     *
-     * rb_hash_aset(hash, key, value);
-     */
+    duckdb_list_entry list_entry = ((duckdb_list_entry *)vector_data)[row_idx];
+
+    idx_t bgn = list_entry.offset;
+    idx_t end = bgn + list_entry.length;
+
+    duckdb_vector child = duckdb_list_vector_get_child(vector);
+    duckdb_vector key_vector = duckdb_struct_vector_get_child(child, 0);
+    duckdb_vector value_vector = duckdb_struct_vector_get_child(child, 1);
+
+    for (idx_t i = bgn; i < end; ++i) {
+        key = vector_value_at(key_vector, key_logical_type, i);
+        value = vector_value_at(value_vector, value_logical_type, i);
+        rb_hash_aset(hash, key, value);
+    }
+
     duckdb_destroy_logical_type(&key_logical_type);
     duckdb_destroy_logical_type(&value_logical_type);
     return hash;
