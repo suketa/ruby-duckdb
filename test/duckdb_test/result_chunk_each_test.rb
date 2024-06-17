@@ -72,8 +72,7 @@ module DuckDBTest
       [:ok, 'ARRAY',     'VARCHAR[2]',                  "array_value('a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃')",    Array,                ['a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃']                          ],
       [:ok, 'LIST',      'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
       [:ok, 'LIST',      'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
-      # FIXME: MAP values are always nil
-      [:ng, 'MAP',       'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
+      [:ok, 'MAP',       'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
       [:ok, 'STRUCT',    'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {a: 1, b: 2 }                                       ],
     ].freeze
 
