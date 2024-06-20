@@ -53,6 +53,9 @@ def print_message(msg)
   END_OF_MESSAGE
 end
 
+puts "****"
+puts "DUCKDB_API_NO_DEPRECATED=#{ENV["DUCKDB_API_NO_DEPRECATED"]}"
+puts "****"
 dir_config('duckdb')
 
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
