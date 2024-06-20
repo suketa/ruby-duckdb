@@ -70,6 +70,7 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
+static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 
@@ -845,6 +846,9 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_STRUCT:
             obj = vector_struct(element_type, vector, index);
             break;
+        case DUCKDB_TYPE_UNION:
+            obj = vector_union(element_type, vector, vector_data, index);
+            break;
         case DUCKDB_TYPE_UUID:
             obj = vector_uuid(vector_data, index);
             break;
@@ -930,6 +934,20 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
     }
 
     return hash;
+}
+
+static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx){
+    VALUE value = Qnil;
+    duckdb_vector type_vector = duckdb_struct_vector_get_child(vector, 0);
+    void *data = duckdb_vector_get_data(type_vector);
+    uint8_t index = ((int8_t *)data)[row_idx];
+
+    duckdb_logical_type  child_type = duckdb_union_type_member_type(ty, index);
+
+    duckdb_vector vector_value = duckdb_struct_vector_get_child(vector, index + 1);
+    value = vector_value_at(vector_value, child_type, row_idx);
+    duckdb_destroy_logical_type(&child_type);
+    return value;
 }
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
