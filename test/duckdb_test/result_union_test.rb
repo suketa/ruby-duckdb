@@ -11,17 +11,23 @@ module DuckDBTest
 
     def test_result_union
       @conn.execute('CREATE TABLE test (u UNION(a INTEGER, b VARCHAR, c TIMESTAMP, d BIGINT));')
-      @conn.execute("INSERT INTO test VALUES (1::INTEGER);")
+      @conn.execute('INSERT INTO test VALUES (1::INTEGER);')
       @conn.execute("INSERT INTO test VALUES ('abc'::VARCHAR);")
       @conn.execute("INSERT INTO test VALUES ('2020-01-01 00:00:00'::TIMESTAMP);")
-      @conn.execute("INSERT INTO test VALUES (15::BIGINT);");
+      @conn.execute('INSERT INTO test VALUES (2::BIGINT);')
 
-      # FIXME: support union and add assertions.
       result = @conn.execute('SELECT * FROM test;')
       ary = result.each.to_a
-      p ary
+      assert_equal([[1], ['abc'], [Time.local(2020, 1, 1)], [2]], ary)
+    end
 
-      assert(ary.size > 0)
+    def test_result_union_with_null
+      @conn.execute('CREATE TABLE test (u UNION(a INTEGER, b VARCHAR, c TIMESTAMP, d BIGINT));')
+      @conn.execute('INSERT INTO test VALUES (1::INTEGER);')
+      @conn.execute('INSERT INTO test VALUES (NULL);')
+      result = @conn.execute('SELECT * FROM test;')
+      ary = result.each.to_a
+      assert_equal([[1], [nil]], ary)
     end
 
     def teardown
