@@ -16,6 +16,7 @@ module DuckDBTest
 
     UUID = SecureRandom.uuid
     ENUM_SQL = "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
+    long_bits = '11111111111111111111111111111111111110101010101010101010101010101010101010101011100000000'
     TEST_TABLES = [
       #      DB Type  ,  DB declartion                  String Rep                                  Ruby Type             Ruby Value
       [:ok, 'BOOLEAN',   'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
@@ -78,6 +79,7 @@ module DuckDBTest
       [:ok, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  "'happy'",                                 String,               'happy'                                             ],
       [:ok, 'BIT',       'BIT',                          "'010110'::BIT",                           String,               '010110'                                            ],
       [:ok, 'BIT',       'BIT',                          "'010110111'::BIT",                        String,               '010110111'                                         ],
+      [:ok, 'BIT',       'BIT',                          "'#{long_bits}'::BIT",                     String,               long_bits                                           ],
     ].freeze
 
     def prepare_test_table_and_data(db_declaration, db_type, string_rep)

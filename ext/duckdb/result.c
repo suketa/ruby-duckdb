@@ -996,7 +996,7 @@ static VALUE vector_bit(void* vector_data, idx_t row_idx) {
         length = s.value.pointer.length - 1;
         p = &s.value.pointer.ptr[1];
         offset = s.value.pointer.ptr[0];
-        str = return bytes_to_string(p, length, offset);
+        str = bytes_to_string(p, length, offset);
     }
     return str;
 }
