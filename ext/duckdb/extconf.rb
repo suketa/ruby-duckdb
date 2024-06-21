@@ -70,4 +70,6 @@ have_func('duckdb_fetch_chunk', 'duckdb.h')
 # duckdb_parameter_name in duckdb <= 0.9.1 is not found on Windows.
 have_func('duckdb_parameter_name', 'duckdb.h')
 
+$CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
+
 create_makefile('duckdb/duckdb_native')

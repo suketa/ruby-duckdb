@@ -45,11 +45,23 @@ jobs:
         cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.dylib duckdb-v$DUCKDB_VERSION/build/release/src
         cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
 
-    - name: Build with Ruby ${{ matrix.ruby }}
+    - name: bundle install with Ruby ${{ matrix.ruby }}
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
         bundle install --jobs 4 --retry 3
+
+    - name: Build test with DUCKDB_API_NO_DEPRECATED and Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        env DUCKDB_API_NO_DEPRECATED=1 bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
+        bundle exec rake clean
+
+    - name: Build with Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
         bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
 
     - name: test with Ruby ${{ matrix.ruby }}
