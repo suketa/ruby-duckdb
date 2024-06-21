@@ -71,6 +71,7 @@ static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vec
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
+static VALUE vector_bit(void* vector_data, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 
@@ -849,6 +850,9 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_UNION:
             obj = vector_union(element_type, vector, vector_data, index);
             break;
+        case DUCKDB_TYPE_BIT:
+            obj = vector_bit(vector_data, index);
+            break;
         case DUCKDB_TYPE_UUID:
             obj = vector_uuid(vector_data, index);
             break;
@@ -948,6 +952,53 @@ static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* ve
     value = vector_value_at(vector_value, child_type, row_idx);
     duckdb_destroy_logical_type(&child_type);
     return value;
+}
+
+static VALUE str_concat_byte(VALUE str, unsigned char byte, int offset) {
+    char x[8];
+    char *p = x;
+    for (int j = 7; j >=0; j--) {
+        if (byte % 2 == 1) {
+            x[j] = '1';
+        } else {
+            x[j] = '0';
+        }
+        byte = (byte >> 1);
+    }
+    if (offset > 0 && offset < 8) {
+        p = x + offset;
+    }
+    return rb_str_cat(str, p, 8 - offset);
+}
+
+static VALUE bytes_to_string(char *bytes, uint32_t length, int offset) {
+    VALUE str = rb_str_new_literal("");
+    str = str_concat_byte(str, bytes[0], offset);
+    for (uint32_t i = 1; i < length; i++) {
+        str = str_concat_byte(str, bytes[i], 0);
+    }
+    return str;
+}
+
+static VALUE vector_bit(void* vector_data, idx_t row_idx) {
+    duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
+    char *p;
+    int offset;
+    uint32_t length;
+    VALUE str = Qnil;
+
+    if(duckdb_string_is_inlined(s)) {
+        length = s.value.inlined.length - 1;
+        p = &s.value.inlined.inlined[1];
+        offset = s.value.inlined.inlined[0];
+        str = bytes_to_string(p, length, offset);
+    } else {
+        length = s.value.pointer.length - 1;
+        p = &s.value.pointer.ptr[1];
+        offset = s.value.pointer.ptr[0];
+        str = bytes_to_string(p, length, offset);
+    }
+    return str;
 }
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
