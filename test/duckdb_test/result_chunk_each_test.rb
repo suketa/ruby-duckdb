@@ -76,11 +76,12 @@ module DuckDBTest
       [:ok, 'STRUCT',    'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {a: 1, b: 2 }                                       ],
       [:ok, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  1,                                         Integer,              1                                                   ],
       [:ok, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  "'happy'",                                 String,               'happy'                                             ],
-      [:ok, 'BIT',       'BIT',                          "1::BIT",                                  String,               '0101'                                              ],
+      [:ok, 'BIT',       'BIT',                          "'010110'::BIT",                           String,               '010110'                                            ],
+      [:ok, 'BIT',       'BIT',                          "'010110111'::BIT",                        String,               '010110111'                                         ],
     ].freeze
 
     def prepare_test_table_and_data(db_declaration, db_type, string_rep)
-      @con.query(ENUM_SQL)
+      @con.query(ENUM_SQL) if db_type == 'ENUM'
       @con.query("CREATE TABLE tests (col #{db_declaration})")
       if %w[BLOB UHUGEINT].include?(db_type)
         @con.query('INSERT INTO tests VALUES ( ? )', string_rep)

@@ -954,32 +954,51 @@ static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* ve
     return value;
 }
 
+static VALUE str_concat_byte(VALUE str, unsigned char byte, int offset) {
+    char x[8];
+    char *p = x;
+    for (int j = 7; j >=0; j--) {
+        if (byte % 2 == 1) {
+            x[j] = '1';
+        } else {
+            x[j] = '0';
+        }
+        byte = (byte >> 1);
+    }
+    if (offset > 0 && offset < 8) {
+        p = x + offset;
+    }
+    return rb_str_cat(str, p, 8 - offset);
+}
+
+static VALUE bytes_to_string(char *bytes, uint32_t length, int offset) {
+    VALUE str = rb_str_new_literal("");
+    str = str_concat_byte(str, bytes[0], offset);
+    for (uint32_t i = 1; i < length; i++) {
+        str = str_concat_byte(str, bytes[i], 0);
+    }
+    return str;
+}
+
 static VALUE vector_bit(void* vector_data, idx_t row_idx) {
     duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
+    char *p;
+    int offset;
+    uint32_t length;
+    VALUE str = Qnil;
+
     if(duckdb_string_is_inlined(s)) {
-        fprintf(stderr, "inlined.length=%d\n", s.value.inlined.length);
-        int offset = s.value.inlined.inlined[0];
-        unsigned char i = s.value.inlined.inlined[1];
-        char x[9];
-        x[8] = '\0';
-        for (int j = 7; j >=0; j--) {
-            if (i % 2 == 1) {
-                x[j] = '1';
-            } else {
-                x[j] = '0';
-            }
-            i = (i >> 1);
-        }
-        char *p = x;
-        if (offset > 0 && offset < 8) {
-            p = x + offset;
-        }
-        fprintf(stderr, "%s::BIT\n", p);
-        return rb_str_new(s.value.inlined.inlined, s.value.inlined.length);
+        length = s.value.inlined.length - 1;
+        p = &s.value.inlined.inlined[1];
+        offset = s.value.inlined.inlined[0];
+        str = bytes_to_string(p, length, offset);
     } else {
-        fprintf(stderr, "pointer.length=%d\n", s.value.pointer.length);
-        return rb_str_new(s.value.pointer.ptr, s.value.pointer.length);
+        length = s.value.pointer.length - 1;
+        p = &s.value.pointer.ptr[1];
+        offset = s.value.pointer.ptr[0];
+        str = return bytes_to_string(p, length, offset);
     }
+    return str;
 }
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
