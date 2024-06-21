@@ -76,6 +76,7 @@ module DuckDBTest
       [:ok, 'STRUCT',    'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {a: 1, b: 2 }                                       ],
       [:ok, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  1,                                         Integer,              1                                                   ],
       [:ok, 'UNION',     'UNION(i INTEGER, s VARCHAR)',  "'happy'",                                 String,               'happy'                                             ],
+      [:ok, 'BIT',       'BIT',                          "1::BIT",                                  String,               '0101'                                              ],
     ].freeze
 
     def prepare_test_table_and_data(db_declaration, db_type, string_rep)

@@ -71,6 +71,7 @@ static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vec
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
+static VALUE vector_bit(void* vector_data, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 
@@ -849,6 +850,9 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_UNION:
             obj = vector_union(element_type, vector, vector_data, index);
             break;
+        case DUCKDB_TYPE_BIT:
+            obj = vector_bit(vector_data, index);
+            break;
         case DUCKDB_TYPE_UUID:
             obj = vector_uuid(vector_data, index);
             break;
@@ -948,6 +952,34 @@ static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* ve
     value = vector_value_at(vector_value, child_type, row_idx);
     duckdb_destroy_logical_type(&child_type);
     return value;
+}
+
+static VALUE vector_bit(void* vector_data, idx_t row_idx) {
+    duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
+    if(duckdb_string_is_inlined(s)) {
+        fprintf(stderr, "inlined.length=%d\n", s.value.inlined.length);
+        int offset = s.value.inlined.inlined[0];
+        unsigned char i = s.value.inlined.inlined[1];
+        char x[9];
+        x[8] = '\0';
+        for (int j = 7; j >=0; j--) {
+            if (i % 2 == 1) {
+                x[j] = '1';
+            } else {
+                x[j] = '0';
+            }
+            i = (i >> 1);
+        }
+        char *p = x;
+        if (offset > 0 && offset < 8) {
+            p = x + offset;
+        }
+        fprintf(stderr, "%s::BIT\n", p);
+        return rb_str_new(s.value.inlined.inlined, s.value.inlined.length);
+    } else {
+        fprintf(stderr, "pointer.length=%d\n", s.value.pointer.length);
+        return rb_str_new(s.value.pointer.ptr, s.value.pointer.length);
+    }
 }
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
