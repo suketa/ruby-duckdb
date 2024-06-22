@@ -10,6 +10,7 @@ module DuckDB
     HALF_HUGEINT_BIT = 64
     HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
     FLIP_HUGEINT = 1 << 63
+    EPOCH = Time.local(1970, 1, 1)
 
     module_function
 
@@ -31,6 +32,10 @@ module DuckDB
           microsecond: microsecond
         )
       )
+    end
+
+    def _to_time_from_duckdb_timestamp_s(time)
+      EPOCH + time
     end
 
     def _to_hugeint_from_vector(lower, upper)
