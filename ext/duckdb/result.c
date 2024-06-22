@@ -799,29 +799,29 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_UBIGINT:
             obj = ULL2NUM(((uint64_t *) vector_data)[index]);
             break;
-        case DUCKDB_TYPE_HUGEINT:
-            obj = vector_hugeint(vector_data, index);
-            break;
-        case DUCKDB_TYPE_UHUGEINT:
-            obj = vector_uhugeint(vector_data, index);
-            break;
         case DUCKDB_TYPE_FLOAT:
             obj = DBL2NUM((((float *) vector_data)[index]));
             break;
         case DUCKDB_TYPE_DOUBLE:
             obj = DBL2NUM((((double *) vector_data)[index]));
             break;
-        case DUCKDB_TYPE_DATE:
-            obj = vector_date(vector_data, index);
-            break;
         case DUCKDB_TYPE_TIMESTAMP:
             obj = vector_timestamp(vector_data, index);
+            break;
+        case DUCKDB_TYPE_DATE:
+            obj = vector_date(vector_data, index);
             break;
         case DUCKDB_TYPE_TIME:
             obj = vector_time(vector_data, index);
             break;
         case DUCKDB_TYPE_INTERVAL:
             obj = vector_interval(vector_data, index);
+            break;
+        case DUCKDB_TYPE_HUGEINT:
+            obj = vector_hugeint(vector_data, index);
+            break;
+        case DUCKDB_TYPE_UHUGEINT:
+            obj = vector_uhugeint(vector_data, index);
             break;
         case DUCKDB_TYPE_VARCHAR:
             obj = vector_varchar(vector_data, index);
@@ -832,20 +832,26 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_DECIMAL:
             obj = vector_decimal(element_type, vector_data, index);
             break;
+        // case DUCKDB_TYPE_TIMESTAMP_S:
+        // case DUCKDB_TYPE_TIMESTAMP_MS:
+        // case DUCKDB_TYPE_TIMESTAMP_NS:
         case DUCKDB_TYPE_ENUM:
             obj = vector_enum(element_type, vector_data, index);
-            break;
-        case DUCKDB_TYPE_ARRAY:
-            obj = vector_array(element_type, vector, index);
             break;
         case DUCKDB_TYPE_LIST:
             obj = vector_list(element_type, vector, vector_data, index);
             break;
+        case DUCKDB_TYPE_STRUCT:
+            obj = vector_struct(element_type, vector, index);
+            break;
         case DUCKDB_TYPE_MAP:
             obj = vector_map(element_type, vector, vector_data, index);
             break;
-        case DUCKDB_TYPE_STRUCT:
-            obj = vector_struct(element_type, vector, index);
+        case DUCKDB_TYPE_ARRAY:
+            obj = vector_array(element_type, vector, index);
+            break;
+        case DUCKDB_TYPE_UUID:
+            obj = vector_uuid(vector_data, index);
             break;
         case DUCKDB_TYPE_UNION:
             obj = vector_union(element_type, vector, vector_data, index);
@@ -853,9 +859,8 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_BIT:
             obj = vector_bit(vector_data, index);
             break;
-        case DUCKDB_TYPE_UUID:
-            obj = vector_uuid(vector_data, index);
-            break;
+        // case DUCKDB_TYPE_TIME_TZ:
+        // case DUCKDB_TYPE_TIMESTAMP_TZ:
         default:
             rb_warn("Unknown type %d", type_id);
             obj = Qnil;
