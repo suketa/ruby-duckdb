@@ -16,6 +16,7 @@ static ID id__to_uuid_from_vector;
 static ID id__to_time_from_duckdb_timestamp_s;
 static ID id__to_time_from_duckdb_timestamp_ms;
 static ID id__to_time_from_duckdb_timestamp_ns;
+static ID id__to_time_from_duckdb_time_tz;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -78,6 +79,7 @@ static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vect
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_bit(void* vector_data, idx_t row_idx);
+static VALUE vector_time_tz(void* vector_data, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 
@@ -892,7 +894,9 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_BIT:
             obj = vector_bit(vector_data, index);
             break;
-        // case DUCKDB_TYPE_TIME_TZ:
+        case DUCKDB_TYPE_TIME_TZ:
+            obj = vector_time_tz(vector_data, index);
+            break;
         // case DUCKDB_TYPE_TIMESTAMP_TZ:
         default:
             rb_warn("Unknown type %d", type_id);
@@ -1039,6 +1043,17 @@ static VALUE vector_bit(void* vector_data, idx_t row_idx) {
     return str;
 }
 
+static VALUE vector_time_tz(void* vector_data, idx_t row_idx) {
+    duckdb_time_tz_struct data = duckdb_from_time_tz(((duckdb_time_tz *)vector_data)[row_idx]);
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time_tz, 5,
+                      INT2FIX(data.time.hour),
+                      INT2FIX(data.time.min),
+                      INT2FIX(data.time.sec),
+                      INT2NUM(data.time.micros),
+                      INT2NUM(data.offset)
+                      );
+}
+
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
     duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
     return rb_funcall(mDuckDBConverter, id__to_uuid_from_vector, 2,
@@ -1071,6 +1086,7 @@ void rbduckdb_init_duckdb_result(void) {
     id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
     id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
     id__to_time_from_duckdb_timestamp_ns = rb_intern("_to_time_from_duckdb_timestamp_ns");
+    id__to_time_from_duckdb_time_tz = rb_intern("_to_time_from_duckdb_time_tz");
 
     rb_define_alloc_func(cDuckDBResult, allocate);
 
