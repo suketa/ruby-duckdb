@@ -14,8 +14,7 @@ module DuckDBTest
       @conn.execute("INSERT INTO test VALUES ('2019-01-02 12:34:56.123456789');")
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
-      p ary
-      # assert_equal([[Time.local(2019, 1, 2, 12, 34, 56, 123)]], ary)
+      assert_equal([[Time.local(2019, 1, 2, 12, 34, 56, 123)]], ary)
     end
 
     def teardown

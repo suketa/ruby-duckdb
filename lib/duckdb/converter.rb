@@ -38,6 +38,11 @@ module DuckDB
       EPOCH + time
     end
 
+    def _to_time_from_duckdb_timestamp_ms(time)
+      tm = EPOCH + time / 1000
+      Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1000 * 1000)
+    end
+
     def _to_hugeint_from_vector(lower, upper)
       (upper << HALF_HUGEINT_BIT) + lower
     end

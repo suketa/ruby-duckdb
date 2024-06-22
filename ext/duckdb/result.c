@@ -14,6 +14,7 @@ static ID id__to_hugeint_from_vector;
 static ID id__to_decimal_from_hugeint;
 static ID id__to_uuid_from_vector;
 static ID id__to_time_from_duckdb_timestamp_s;
+static ID id__to_time_from_duckdb_timestamp_ms;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -66,6 +67,7 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx);
+static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index);
@@ -722,6 +724,13 @@ static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
                       );
 }
 
+static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
+    duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ms, 1,
+                      LL2NUM(data.micros)
+                      );
+}
+
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
     duckdb_type type = duckdb_enum_internal_type(ty);
     uint8_t index;
@@ -844,7 +853,9 @@ static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_t
         case DUCKDB_TYPE_TIMESTAMP_S:
             obj = vector_timestamp_s(vector_data, index);
             break;
-        // case DUCKDB_TYPE_TIMESTAMP_MS:
+        case DUCKDB_TYPE_TIMESTAMP_MS:
+            obj = vector_timestamp_ms(vector_data, index);
+            break;
         // case DUCKDB_TYPE_TIMESTAMP_NS:
         case DUCKDB_TYPE_ENUM:
             obj = vector_enum(element_type, vector_data, index);
@@ -1047,6 +1058,7 @@ void rbduckdb_init_duckdb_result(void) {
     id__to_decimal_from_hugeint = rb_intern("_to_decimal_from_hugeint");
     id__to_uuid_from_vector = rb_intern("_to_uuid_from_vector");
     id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
+    id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
 
     rb_define_alloc_func(cDuckDBResult, allocate);
 
