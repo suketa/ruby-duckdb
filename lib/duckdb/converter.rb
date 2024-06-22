@@ -48,6 +48,30 @@ module DuckDB
       Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1_000_000_000 / 1000)
     end
 
+    def _to_time_from_duckdb_time_tz(hour, min, sec, micro, timezone)
+      sign = '+'
+      if timezone.negative?
+        timezone = -timezone
+        sign = '-'
+      end
+
+      tzhour = timezone / 3600
+      tzmin = (timezone % 3600) / 60
+
+      Time.parse(
+        format(
+          '%<hour>02d:%<min>02d:%<sec>02d.%<micro>06d%<sign>s%<tzhour>02d:%<tzmin>02d',
+          hour: hour,
+          min: min,
+          sec: sec,
+          micro: micro,
+          sign: sign,
+          tzhour: tzhour,
+          tzmin: tzmin
+        )
+      )
+    end
+
     def _to_hugeint_from_vector(lower, upper)
       (upper << HALF_HUGEINT_BIT) + lower
     end
