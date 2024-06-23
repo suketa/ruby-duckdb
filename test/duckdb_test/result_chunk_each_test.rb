@@ -2,6 +2,7 @@
 
 require 'test_helper'
 require 'securerandom'
+require 'time'
 
 module DuckDBTest
   class ResultChunkEach < Minitest::Test
@@ -16,7 +17,11 @@ module DuckDBTest
 
     UUID = SecureRandom.uuid
     ENUM_SQL = "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
+    LOAD_ICU = 'LOAD icu;'
+    INSTALL_ICU = 'INSTALL icu;'
     long_bits = '11111111111111111111111111111111111110101010101010101010101010101010101010101011100000000'
+    timetz_expected = Time.parse(Time.now.strftime('%Y-%m-%d 12:34:56.123456+04:30'))
+
     TEST_TABLES = [
       #      DB Type  ,     DB declartion                  String Rep                                  Ruby Type             Ruby Value
       [:ok, 'BOOLEAN',      'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
@@ -33,17 +38,17 @@ module DuckDBTest
       [:ok, 'USMALLINT',    'USMALLINT',                   65535,                                      Integer,              65_535                                              ],
       [:ok, 'UINTEGER',     'UINTEGER',                    4294967295,                                 Integer,              4_294_967_295                                       ],
       [:ok, 'UBIGINT',      'UBIGINT',                     18446744073709551615,                       Integer,              18_446_744_073_709_551_615                          ],
-      [:ok, 'HUGEINT',      'HUGEINT',                     170141183460469231731687303715884105727,    Integer,              170_141_183_460_469_231_731_687_303_715_884_105_727 ],
-      [:ok, 'HUGEINT',      'HUGEINT',                     -170141183460469231731687303715884105727,   Integer,             -170_141_183_460_469_231_731_687_303_715_884_105_727 ],
-      [:ok, 'UHUGEINT',     'UHUGEINT',                    340282366920938463463374607431768211455,    Integer,              340_282_366_920_938_463_463_374_607_431_768_211_455 ],
       [:ok, 'FLOAT',        'FLOAT',                       12345.375,                                  Float,                12_345.375                                          ],
       [:ok, 'DOUBLE',       'DOUBLE',                      123.456789,                                 Float,                123.456789                                          ],
       [:ok, 'TIMESTAMP',    'TIMESTAMP',                   "'2019-11-03 12:34:56.000001'",             Time,                 Time.local(2019, 11, 3, 12, 34, 56, 1)              ],
       [:ok, 'TIMESTAMP',    'TIMESTAMP',                   "'2019-11-03 12:34:56.00001'",              Time,                 Time.local(2019, 11, 3, 12, 34, 56, 10)             ],
+      [:ok, 'DATE',         'DATE',                        "'2019-11-03'",                             Date,                 Date.new(2019,11,3)                                 ],
       [:ok, 'TIME',         'TIME',                        "'12:34:56.000001'",                        Time,                 Time.parse('12:34:56.000001')                       ],
       [:ok, 'TIME',         'TIME',                        "'12:34:56.00001'",                         Time,                 Time.parse('12:34:56.00001')                        ],
-      [:ok, 'DATE',         'DATE',                        "'2019-11-03'",                             Date,                 Date.new(2019,11,3)                                 ],
       [:ok, 'INTERVAL',     'INTERVAL',                    "'2 days ago'",                             DuckDB::Interval,     DuckDB::Interval.new(interval_days: -2)             ],
+      [:ok, 'HUGEINT',      'HUGEINT',                     170141183460469231731687303715884105727,    Integer,              170_141_183_460_469_231_731_687_303_715_884_105_727 ],
+      [:ok, 'HUGEINT',      'HUGEINT',                     -170141183460469231731687303715884105727,   Integer,             -170_141_183_460_469_231_731_687_303_715_884_105_727 ],
+      [:ok, 'UHUGEINT',     'UHUGEINT',                    340282366920938463463374607431768211455,    Integer,              340_282_366_920_938_463_463_374_607_431_768_211_455 ],
       [:ok, 'VARCHAR',      'VARCHAR',                     "'hello'",                                  String,               'hello'                                             ],
       [:ok, 'VARCHAR',      'VARCHAR',                     "'𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'",                      String,               '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃'                                 ],
       [:ok, 'BLOB',         'BLOB',                        DuckDB::Blob.new('\0\1\2'),                 String,               '\0\1\2'.encode('ASCII-8BIT')                       ],
@@ -68,22 +73,28 @@ module DuckDBTest
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '1.234567898',                              BigDecimal,           BigDecimal('1.23456789')                            ],
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456789',                            BigDecimal,           BigDecimal('0.00123456')                            ],
       [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'2019-11-03 12:34:56.123456789'",          Time,                 Time.local(2019, 11, 3, 12, 34, 56)                 ],
+      [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123')                ],
+      [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123456')             ],
       [:ok, 'ENUM',         'mood',                        "'happy'",                                  String,               'happy'                                             ],
-      [:ok, 'UUID',         'UUID',                        "'#{UUID}'",                                String,               UUID                                                ],
-      [:ok, 'ARRAY',        'INTEGER[2]',                  'array_value(1::INTEGER, 2::INTEGER)',      Array,                [1, 2]                                              ],
-      [:ok, 'ARRAY',        'VARCHAR[2]',                  "array_value('a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃')",    Array,                ['a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃']                          ],
       [:ok, 'LIST',         'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
       [:ok, 'LIST',         'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
-      [:ok, 'MAP',          'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
       [:ok, 'STRUCT',       'STRUCT(a INTEGER, b INTEGER)', "{'a': 1, 'b': 2}",                        Hash,                 {a: 1, b: 2 }                                       ],
+      [:ok, 'MAP',          'MAP(INTEGER, INTEGER)',       'map {1: 2, 3: 4}',                         Hash,                 {1 => 2, 3 => 4}                                    ],
+      [:ok, 'ARRAY',        'INTEGER[2]',                  'array_value(1::INTEGER, 2::INTEGER)',      Array,                [1, 2]                                              ],
+      [:ok, 'ARRAY',        'VARCHAR[2]',                  "array_value('a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃')",    Array,                ['a', '𝘶ñîҫȫ𝘥ẹ 𝖘ţ𝗋ⅰɲ𝓰 😃']                          ],
+      [:ok, 'UUID',         'UUID',                        "'#{UUID}'",                                String,               UUID                                                ],
       [:ok, 'UNION',        'UNION(i INTEGER, s VARCHAR)',  1,                                         Integer,              1                                                   ],
       [:ok, 'UNION',        'UNION(i INTEGER, s VARCHAR)',  "'happy'",                                 String,               'happy'                                             ],
       [:ok, 'BIT',          'BIT',                          "'010110'::BIT",                           String,               '010110'                                            ],
       [:ok, 'BIT',          'BIT',                          "'010110111'::BIT",                        String,               '010110111'                                         ],
       [:ok, 'BIT',          'BIT',                          "'#{long_bits}'::BIT",                     String,               long_bits                                           ],
+      # set TIMEZONE to Asia/Kabul to test TIMETZ and TIMESTAMPTZ
+      [:ok, 'TIMETZ',       'TIMETZ',                       "'2019-11-03 12:34:56.123456789'",         Time,                 timetz_expected                                     ],
+      [:ok, 'TIMESTAMPTZ',  'TIMESTAMPTZ',                  "'2019-11-03 12:34:56.123456789'",         Time,                 Time.parse('2019-11-03 08:04:56.123456+0000')       ],
     ].freeze
 
     def prepare_test_table_and_data(db_declaration, db_type, string_rep)
+      prepare_timezone('Asia/Kabul') if %w[TIMETZ TIMESTAMPTZ].include?(db_type)
       @con.query(ENUM_SQL) if db_type == 'ENUM'
       @con.query("CREATE TABLE tests (col #{db_declaration})")
       if %w[BLOB UHUGEINT].include?(db_type)
@@ -91,6 +102,12 @@ module DuckDBTest
       else
         @con.query("INSERT INTO tests VALUES ( #{string_rep} )")
       end
+    end
+
+    def prepare_timezone(timezone)
+      @con.query(INSTALL_ICU)
+      @con.query(LOAD_ICU)
+      @con.query("SET TimeZone=\"#{timezone}\";")
     end
 
     def query_test_data
