@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- DuckDB::Result supports TIMESTAMPTZ column type (only when DuckDB::Result.use_chunk_each is true).
+  - Supporting TIMESTAMPTZ is experimental.
+- DuckDB::Result supports TIMETZ column type (only when DuckDB::Result.use_chunk_each is true).
+- DuckDB::Result supports TIMESTAMP_NS column type (only when DuckDB::Result.use_chunk_each is true).
+- DuckDB::Result supports TIMESTAMP_MS column type (only when DuckDB::Result.use_chunk_each is true).
+- DuckDB::Result supports TIMESTAMP_S column type (only when DuckDB::Result.use_chunk_each is true).
 - DuckDB::Result supports STRUCT column type (only when DuckDB::Result.use_chunk_each is true).
 - DuckDB::Result supports MAP column type (only when DuckDB::Result.use_chunk_each is true).
 - DuckDB::Result supports UNION column type (only when DuckDB::Result.use_chunk_each is true).
