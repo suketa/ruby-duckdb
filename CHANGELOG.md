@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+
+# 1.0.0.2 - 2024-06-23
 - DuckDB::Result supports TIMESTAMPTZ column type (only when DuckDB::Result.use_chunk_each is true).
   - Supporting TIMESTAMPTZ is experimental.
 - DuckDB::Result supports TIMETZ column type (only when DuckDB::Result.use_chunk_each is true).
