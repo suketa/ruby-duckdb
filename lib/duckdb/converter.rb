@@ -11,6 +11,7 @@ module DuckDB
     HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
     FLIP_HUGEINT = 1 << 63
     EPOCH = Time.local(1970, 1, 1)
+    EPOCH_UTC = Time.new(1970, 1, 1, 0, 0, 0, 0)
 
     module_function
 
@@ -68,6 +69,25 @@ module DuckDB
           sign: sign,
           tzhour: tzhour,
           tzmin: tzmin
+        )
+      )
+    end
+
+    def _to_time_from_duckdb_timestamp_tz(bits)
+      micro = bits % 1_000_000
+      sec = (bits / 1_000_000)
+      time = EPOCH_UTC + sec
+
+      Time.parse(
+        format(
+          '%<year>04d-%<mon>02d-%<day>02d %<hour>02d:%<min>02d:%<sec>02d.%<micro>06d +0000',
+          year: time.year,
+          mon: time.month,
+          day: time.day,
+          hour: time.hour,
+          min: time.min,
+          sec: time.sec,
+          micro: micro
         )
       )
     end
