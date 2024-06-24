@@ -43,6 +43,8 @@ module DuckDBTest
       [:ok, 'TIMESTAMP',    'TIMESTAMP',                   "'2019-11-03 12:34:56.000001'",             Time,                 Time.local(2019, 11, 3, 12, 34, 56, 1)              ],
       [:ok, 'TIMESTAMP',    'TIMESTAMP',                   "'2019-11-03 12:34:56.00001'",              Time,                 Time.local(2019, 11, 3, 12, 34, 56, 10)             ],
       [:ok, 'DATE',         'DATE',                        "'2019-11-03'",                             Date,                 Date.new(2019,11,3)                                 ],
+      [:ng, 'DATE',         'DATE',                        "'infinity'",                               String,               'infinity'                                          ],
+      [:ng, 'DATE',         'DATE',                        "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'TIME',         'TIME',                        "'12:34:56.000001'",                        Time,                 Time.parse('12:34:56.000001')                       ],
       [:ok, 'TIME',         'TIME',                        "'12:34:56.00001'",                         Time,                 Time.parse('12:34:56.00001')                        ],
       [:ok, 'INTERVAL',     'INTERVAL',                    "'2 days ago'",                             DuckDB::Interval,     DuckDB::Interval.new(interval_days: -2)             ],

@@ -38,5 +38,7 @@ extern VALUE cDuckDBConfig;
 extern VALUE eDuckDBError;
 extern VALUE mDuckDBConverter;
 extern VALUE cDuckDBPreparedStatement;
+extern VALUE PositiveInfinity;
+extern VALUE NegativeInfinity;
 
 #endif
