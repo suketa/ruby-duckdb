@@ -15,6 +15,14 @@ module DuckDB
 
     module_function
 
+    def _to_infinity(value)
+      if value.positive?
+        DuckDB::Infinity::POSITIVE
+      else
+        DuckDB::Infinity::NEGATIVE
+      end
+    end
+
     def _to_date(year, month, day)
       Date.new(year, month, day)
     end
