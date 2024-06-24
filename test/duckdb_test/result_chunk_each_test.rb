@@ -125,10 +125,10 @@ module DuckDBTest
     end
 
     def do_query_result_assertions(res, ruby_val, db_type, klass)
-      if db_type == 'TIME'
+      if %w[TIME TIMETZ].include?(db_type)
         assert_equal(
-          [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
-          [res.hour, res.min, res.sec, res.usec]
+          [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec, ruby_val.utc_offset],
+          [res.hour, res.min, res.sec, res.usec, res.utc_offset]
         )
       else
         assert_equal(ruby_val, res)
