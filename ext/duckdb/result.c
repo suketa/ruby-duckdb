@@ -608,14 +608,30 @@ VALUE rbduckdb_create_result(void) {
     return allocate(cDuckDBResult);
 }
 
-static VALUE vector_date(void *vector_data, idx_t row_idx) {
-    duckdb_date_struct date = duckdb_from_date(((duckdb_date *) vector_data)[row_idx]);
+static VALUE infinite_date_value(duckdb_date date) {
+    if (duckdb_is_finite_date(date) == false) {
+        if (date.days > 0) {
+            return PositiveInfinity;
+        } else {
+            return NegativeInfinity;
+        }
+    }
+    return Qnil;
+}
 
-    return rb_funcall(mDuckDBConverter, id__to_date, 3,
-                      INT2FIX(date.year),
-                      INT2FIX(date.month),
-                      INT2FIX(date.day)
-                      );
+static VALUE vector_date(void *vector_data, idx_t row_idx) {
+    duckdb_date date = ((duckdb_date *) vector_data)[row_idx];
+    VALUE obj = infinite_date_value(date);
+
+    if (obj == Qnil) {
+        duckdb_date_struct date_st = duckdb_from_date(date);
+        obj = rb_funcall(mDuckDBConverter, id__to_date, 3,
+                         INT2FIX(date_st.year),
+                         INT2FIX(date_st.month),
+                         INT2FIX(date_st.day)
+                         );
+    }
+    return obj;
 }
 
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {

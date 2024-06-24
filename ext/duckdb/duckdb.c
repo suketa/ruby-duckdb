@@ -1,6 +1,8 @@
 #include "ruby-duckdb.h"
 
 VALUE mDuckDB;
+VALUE PositiveInfinity;
+VALUE NegativeInfinity;
 
 static VALUE duckdb_s_library_version(VALUE self);
 
@@ -19,6 +21,8 @@ static VALUE duckdb_s_library_version(VALUE self) {
 void
 Init_duckdb_native(void) {
     mDuckDB = rb_define_module("DuckDB");
+    PositiveInfinity = rb_str_new_literal("infinity");
+    NegativeInfinity = rb_str_new_literal("-infinity");
 
     rb_define_singleton_method(mDuckDB, "library_version", duckdb_s_library_version, 0);
 
