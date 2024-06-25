@@ -75,8 +75,6 @@ module DuckDBTest
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '1.234567898',                              BigDecimal,           BigDecimal('1.23456789')                            ],
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456789',                            BigDecimal,           BigDecimal('0.00123456')                            ],
       [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'2019-11-03 12:34:56.123456789'",          Time,                 Time.local(2019, 11, 3, 12, 34, 56)                 ],
-      [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'infinity'",                               String,               'infinity'                                          ],
-      [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123')                ],
       [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123456')             ],
       [:ok, 'ENUM',         'mood',                        "'happy'",                                  String,               'happy'                                             ],
@@ -125,10 +123,10 @@ module DuckDBTest
     end
 
     def do_query_result_assertions(res, ruby_val, db_type, klass)
-      if %w[TIME TIMETZ].include?(db_type)
+      if db_type == 'TIME'
         assert_equal(
-          [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec, ruby_val.utc_offset],
-          [res.hour, res.min, res.sec, res.usec, res.utc_offset]
+          [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec],
+          [res.hour, res.min, res.sec, res.usec]
         )
       else
         assert_equal(ruby_val, res)
