@@ -636,16 +636,22 @@ static VALUE vector_date(void *vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
-    duckdb_timestamp_struct data = duckdb_from_timestamp(((duckdb_timestamp *)vector_data)[row_idx]);
-    return rb_funcall(mDuckDBConverter, id__to_time, 7,
-                      INT2FIX(data.date.year),
-                      INT2FIX(data.date.month),
-                      INT2FIX(data.date.day),
-                      INT2FIX(data.time.hour),
-                      INT2FIX(data.time.min),
-                      INT2FIX(data.time.sec),
-                      INT2NUM(data.time.micros)
-                      );
+    duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
+    VALUE obj = infinite_timestamp_value(data);
+
+    if (obj == Qnil) {
+        duckdb_timestamp_struct data_st = duckdb_from_timestamp(data);
+        return rb_funcall(mDuckDBConverter, id__to_time, 7,
+                          INT2FIX(data_st.date.year),
+                          INT2FIX(data_st.date.month),
+                          INT2FIX(data_st.date.day),
+                          INT2FIX(data_st.time.hour),
+                          INT2FIX(data_st.time.min),
+                          INT2FIX(data_st.time.sec),
+                          INT2NUM(data_st.time.micros)
+                          );
+    }
+    return obj;
 }
 
 static VALUE vector_time(void* vector_data, idx_t row_idx) {
@@ -751,14 +757,9 @@ static VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
 
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
     duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
-    VALUE obj = infinite_timestamp_value(data);
-
-    if (obj == Qnil) {
-        obj = rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_s, 1,
-                         LL2NUM(data.micros)
-                        );
-    }
-    return obj;
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_s, 1,
+                      LL2NUM(data.micros)
+                     );
 }
 
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
