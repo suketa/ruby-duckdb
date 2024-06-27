@@ -183,6 +183,9 @@ module DuckDBTest
 
       result = @@con.query('CREATE TABLE t2 (id INT)')
       assert_equal(2, result.send(:_return_type))
+
+      result = @@con.query('INSERT INTO t2 VALUES (1)')
+      assert_equal(1, result.send(:_return_type))
     end
 
     def xtest__to_boolean
