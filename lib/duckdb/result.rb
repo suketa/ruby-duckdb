@@ -24,6 +24,8 @@ module DuckDB
   #   end
   class Result
     include Enumerable
+    RETURN_TYPES = %i[invalid changed_rows nothing query_result].freeze
+
     TO_METHODS = if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
                    Hash.new(:_to_string).merge(
                      1 => :_to_boolean,
@@ -90,6 +92,13 @@ module DuckDB
           yield row(row_index)
         end
       end
+    end
+
+    def return_type
+      i = _return_type
+      raise DuckDB::Error, "Unknown return type: #{i}" if i >= RETURN_TYPES.size
+
+      RETURN_TYPES[i]
     end
 
     def row(row_index)
