@@ -94,6 +94,14 @@ module DuckDB
       end
     end
 
+    # returns return_type. The return value is one of the following symbols:
+    #  :invalid, :changed_rows, :nothing, :query_result
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   result = con.execute('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
+    #   result.return_type # => :nothing
     def return_type
       i = _return_type
       raise DuckDB::Error, "Unknown return type: #{i}" if i >= RETURN_TYPES.size
