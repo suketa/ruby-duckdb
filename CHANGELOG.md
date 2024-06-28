@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- Add `DuckDB::Result#return_type` to get the return type of the result.
+  - The return value is one of the `:invalid`, `:query_result`, `:rows_changed`, `:nothing`.
 
 # 1.0.0.2 - 2024-06-23
 - DuckDB::Result supports TIMESTAMPTZ column type (only when DuckDB::Result.use_chunk_each is true).

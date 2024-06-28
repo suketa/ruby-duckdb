@@ -177,6 +177,17 @@ module DuckDBTest
       DuckDB::Result.use_chunk_each = true
     end
 
+    def test_return_type
+      result = @@con.query('SELECT * from table1')
+      assert_equal(:query_result, result.return_type)
+
+      result = @@con.query('CREATE TABLE t2 (id INT)')
+      assert_equal(:nothing, result.return_type)
+
+      result = @@con.query('INSERT INTO t2 VALUES (1)')
+      assert_equal(:changed_rows, result.return_type)
+    end
+
     def xtest__to_boolean
       assert_only_without_chunk_each do
       assert_equal(expected_boolean, @result.send(:_to_boolean, 0, 0))
