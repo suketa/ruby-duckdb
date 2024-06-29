@@ -45,6 +45,7 @@ static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
 static VALUE yield_rows(VALUE arg);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult);
+static VALUE duckdb_result__statement_type(VALUE oDuckDBResult);
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -441,6 +442,12 @@ static VALUE duckdb_result__return_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_return_type(ctx->result));
+}
+
+static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+    return INT2FIX(duckdb_result_statement_type(ctx->result));
 }
 
 static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
@@ -1151,6 +1158,7 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
+    rb_define_private_method(cDuckDBResult, "_statement_type", duckdb_result__statement_type, 0);
 
     rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2); /* deprecated */

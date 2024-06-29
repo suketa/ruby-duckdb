@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- Add `DuckDB::Result#statement_type` to get the return type of the statement.
+  - The return value is one of the `:invalid`, `:select`, `:insert`, `:update`, `:explain`, `:delete`, `:prepare`, `:create`,
+    `:execute`, `:alter`, `:transaction`, `:copy`, `:analyze`, `:variable_set`, `:create_func`,
+    `:drop`, `:export`, `:pragma`, `:vacuum`, `:call`, `:set`, `:load`, `:relation`, `:extension`,
+    `:logical_plan`, `:attach`, `:detach`, `:multi`
 - Add `DuckDB::Result#return_type` to get the return type of the result.
   - The return value is one of the `:invalid`, `:query_result`, `:rows_changed`, `:nothing`.
 
