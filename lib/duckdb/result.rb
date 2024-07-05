@@ -26,37 +26,6 @@ module DuckDB
     include Enumerable
     RETURN_TYPES = %i[invalid changed_rows nothing query_result].freeze
 
-    STATEMENT_TYPES = %i[
-      invalid
-      select
-      insert
-      update
-      explain
-      delete
-      prepare
-      create
-      execute
-      alter
-      transaction
-      copy
-      analyze
-      variable_set
-      create_func
-      drop
-      export
-      pragma
-      vacuum
-      call
-      set
-      load
-      relation
-      extension
-      logical_plan
-      attach
-      detach
-      multi
-    ].freeze
-
     TO_METHODS = if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
                    Hash.new(:_to_string).merge(
                      1 => :_to_boolean,
@@ -153,9 +122,7 @@ module DuckDB
     #   result.statement_type # => :create
     def statement_type
       i = _statement_type
-      raise DuckDB::Error, "Unknown statement type: #{i}" if i >= STATEMENT_TYPES.size
-
-      STATEMENT_TYPES[i]
+      Converter::IntToSym.statement_type_to_sym(i)
     end
 
     def row(row_index)
