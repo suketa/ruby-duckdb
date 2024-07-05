@@ -32,6 +32,22 @@ module DuckDB
       PendingResult.new(self, true)
     end
 
+    # returns statement type. The return value is one of the following symbols:
+    #  :invalid, :select, :insert, :update, :explain, :delete, :prepare, :create,
+    #  :execute, :alter, :transaction, :copy, :analyze, :variable_set, :create_func,
+    #  :drop, :export, :pragma, :vacuum, :call, :set, :load, :relation, :extension,
+    #  :logical_plan, :attach, :detach, :multi
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   stmt = con.prepared_statement('SELECT * FROM users')
+    #   stmt.statement_type # => :select
+    def statement_type
+      i = _statement_type
+      Converter::IntToSym.statement_type_to_sym(i)
+    end
+
     # binds all parameters with SQL prepared statement.
     #
     #   require 'duckdb'
