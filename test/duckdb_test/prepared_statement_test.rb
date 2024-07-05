@@ -123,6 +123,12 @@ module DuckDBTest
       assert_equal(1, stmt.nparams)
     end
 
+    def test_statement_type
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
+      assert_equal(:select, stmt.statement_type)
+    end
+
     def test_pending_prepared
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')

@@ -2,6 +2,7 @@
 
 require 'date'
 require_relative 'interval'
+require_relative 'converter/int_to_sym'
 
 module DuckDB
   QueryProgress = Struct.new(:percentage, :rows_processed, :total_rows_to_process)
