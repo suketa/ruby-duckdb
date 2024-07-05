@@ -188,6 +188,10 @@ module DuckDBTest
       assert_equal(:changed_rows, result.return_type)
     end
 
+    def test_statement_type
+      assert_equal(:select, @result.statement_type)
+    end
+
     def xtest__to_boolean
       assert_only_without_chunk_each do
       assert_equal(expected_boolean, @result.send(:_to_boolean, 0, 0))
