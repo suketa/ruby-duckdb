@@ -129,6 +129,15 @@ module DuckDBTest
       assert_equal(:select, stmt.statement_type)
     end
 
+    def test__param_type
+      con = PreparedStatementTest.con
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $1')
+      assert_equal(0, stmt.send(:_param_type, 0)) # INVALID
+      assert_equal(4, stmt.send(:_param_type, 1)) # INTEGER
+      assert_equal(0, stmt.send(:_param_type, 2)) # INVALID
+    end
+
     def test_pending_prepared
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
