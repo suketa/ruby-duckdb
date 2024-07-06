@@ -478,7 +478,6 @@ module DuckDBTest
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_time = $1')
 
-      now = PreparedStatementTest.now
       col_time = con.query('SELECT col_time from a').first.first
 
       bind_val = Time.local(1970, 1, 1, 12, 34, 56, 1)
@@ -653,7 +652,6 @@ module DuckDBTest
 
       con.query("UPDATE a SET col_timestamp = '#{now.strftime('%Y/%m/%d %H:%M:%S.%N')}'")
       stmt.bind(1, now)
-      col_time_stamp_index = 11
       assert_equal(1, stmt.execute.each.first.first)
 
       stmt.bind(1, now.strftime('%Y/%m/%d %H:%M:%S') + ".#{now.nsec + 1_000_000}")
