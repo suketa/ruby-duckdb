@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- Add `DuckDB::PreparedStatement#param_type` to get the type of the paramerter type.
+  - The return value is one of the `:invalid`, `:boolean`, `:tinyint`, `:smallint`, `:integer`, `:bigint`, `:utinyint`,
+    `:usmallint`, `:uinteger`, `:ubigint`, `:float`, `:double`, `:timestamp`, `:date`, `:time`, `:interval`, `:hugeint`,
+    `:uhugeint`, `:varchar`, `:blob`, `:decimal`, `:timestamp_s`, `:timestamp_ms`, `:timestamp_ns`, `:enum`, `:list`,
+    `:struct`, `:map`, `:array`, `:uuid`, `:union`, `:bit`, `:time_tz`, `:timestamp_tz`.
 - Add `DuckDB::PreparedStatement#statement_type` to get the type of the statement.
   - The return value is one of the `:invalid`, `:select`, `:insert`, `:update`, `:explain`, `:delete`, `:prepare`, `:create`,
     `:execute`, `:alter`, `:transaction`, `:copy`, `:analyze`, `:variable_set`, `:create_func`,
