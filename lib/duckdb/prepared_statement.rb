@@ -48,6 +48,14 @@ module DuckDB
       Converter::IntToSym.statement_type_to_sym(i)
     end
 
+    # returns parameter type. The argument must be index of parameter.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.execute('CREATE TABLE users (id INTEGER, name VARCHAR(255))')
+    #   stmt = con.prepared_statement('SELECT * FROM users WHERE id = ?')
+    #   stmt.param_type(1) # => :integer
     def param_type(index)
       i = _param_type(index)
       Converter::IntToSym.type_to_sym(i)
