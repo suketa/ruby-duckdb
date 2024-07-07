@@ -48,6 +48,11 @@ module DuckDB
       Converter::IntToSym.statement_type_to_sym(i)
     end
 
+    def param_type(index)
+      i = _param_type(index)
+      Converter::IntToSym.type_to_sym(i)
+    end
+
     # binds all parameters with SQL prepared statement.
     #
     #   require 'duckdb'

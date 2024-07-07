@@ -34,45 +34,80 @@ module DuckDB
         multi
       ].freeze
 
-      HASH_TYPES = {
-
-      }
-	DUCKDB_TYPE_INVALID = 0,
-	DUCKDB_TYPE_BOOLEAN = 1,
-	DUCKDB_TYPE_TINYINT = 2,
-	DUCKDB_TYPE_SMALLINT = 3,
-	DUCKDB_TYPE_INTEGER = 4,
-	DUCKDB_TYPE_BIGINT = 5,
-	DUCKDB_TYPE_UTINYINT = 6,
-	DUCKDB_TYPE_USMALLINT = 7,
-	DUCKDB_TYPE_UINTEGER = 8,
-	DUCKDB_TYPE_UBIGINT = 9,
-	DUCKDB_TYPE_FLOAT = 10,
-	DUCKDB_TYPE_DOUBLE = 11,
-	DUCKDB_TYPE_TIMESTAMP = 12,
-	DUCKDB_TYPE_DATE = 13,
-	DUCKDB_TYPE_TIME = 14,
-	DUCKDB_TYPE_INTERVAL = 15,
-	DUCKDB_TYPE_HUGEINT = 16,
-	DUCKDB_TYPE_UHUGEINT = 32,
-	DUCKDB_TYPE_VARCHAR = 17,
-	DUCKDB_TYPE_BLOB = 18,
-	DUCKDB_TYPE_DECIMAL = 19,
-	DUCKDB_TYPE_TIMESTAMP_S = 20,
-	DUCKDB_TYPE_TIMESTAMP_MS = 21,
-	DUCKDB_TYPE_TIMESTAMP_NS = 22,
-	DUCKDB_TYPE_ENUM = 23,
-	DUCKDB_TYPE_LIST = 24,
-	DUCKDB_TYPE_STRUCT = 25,
-	DUCKDB_TYPE_MAP = 26,
-	DUCKDB_TYPE_ARRAY = 33,
-	DUCKDB_TYPE_UUID = 27,
-	DUCKDB_TYPE_UNION = 28,
-	DUCKDB_TYPE_BIT = 29,
-	DUCKDB_TYPE_TIME_TZ = 30,
-	DUCKDB_TYPE_TIMESTAMP_TZ = 31,
-      ]
-
+      HASH_TYPES = if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
+                     {
+                       0 => :invalid,
+                       1 => :boolean,
+                       2 => :tinyint,
+                       3 => :smallint,
+                       4 => :integer,
+                       5 => :bigint,
+                       6 => :utinyint,
+                       7 => :usmallint,
+                       8 => :uinteger,
+                       9 => :ubigint,
+                       10 => :float,
+                       11 => :double,
+                       12 => :timestamp,
+                       13 => :date,
+                       14 => :time,
+                       15 => :interval,
+                       16 => :hugeint,
+                       32 => :uhugeint,
+                       17 => :varchar,
+                       18 => :blob,
+                       19 => :decimal,
+                       20 => :timestamp_s,
+                       21 => :timestamp_ms,
+                       22 => :timestamp_ns,
+                       23 => :enum,
+                       24 => :list,
+                       25 => :struct,
+                       26 => :map,
+                       33 => :array,
+                       27 => :uuid,
+                       28 => :union,
+                       29 => :bit,
+                       30 => :time_tz,
+                       31 => :timestamp_tz
+                     }.freeze
+                   else
+                     {
+                       0 => :invalid,
+                       1 => :boolean,
+                       2 => :tinyint,
+                       3 => :smallint,
+                       4 => :integer,
+                       5 => :bigint,
+                       6 => :utinyint,
+                       7 => :usmallint,
+                       8 => :uinteger,
+                       9 => :ubigint,
+                       10 => :float,
+                       11 => :double,
+                       12 => :timestamp,
+                       13 => :date,
+                       14 => :time,
+                       15 => :interval,
+                       16 => :hugeint,
+                       17 => :uhugeint,
+                       18 => :varchar,
+                       19 => :blob,
+                       20 => :decimal,
+                       21 => :timestamp_s,
+                       22 => :timestamp_ms,
+                       23 => :timestamp_ns,
+                       24 => :enum,
+                       25 => :list,
+                       26 => :struct,
+                       27 => :map,
+                       28 => :uuid,
+                       29 => :union,
+                       30 => :bit,
+                       31 => :time_tz,
+                       32 => :timestamp_tz
+                     }.freeze
+                   end
 
       module_function
 
@@ -80,6 +115,12 @@ module DuckDB
         raise DuckDB::Error, "Unknown statement type: #{val}" if val >= STATEMENT_TYPES.size
 
         STATEMENT_TYPES[val]
+      end
+
+      def type_to_sym(val)
+        raise DuckDB::Error, "Unknown type: #{val}" unless HASH_TYPES.key?(val)
+
+        HASH_TYPES[val]
       end
     end
   end
