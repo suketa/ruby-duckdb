@@ -17,44 +17,8 @@ module DuckDB
     #   columns.first.type #=> :integer
     #
     def type
-      types = %i[
-        invalid
-        boolean
-        tinyint
-        smallint
-        integer
-        bigint
-        utinyint
-        usmallint
-        uinteger
-        ubigint
-        float
-        double
-        timestamp
-        date
-        time
-        interval
-        hugeint
-        varchar
-        blob
-        decimal
-        timestamp_s
-        timestamp_ms
-        timestamp_ns
-        enum
-        list
-        struct
-        map
-        uuid
-        json
-      ]
-      if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
-        types[17, 0] = :uhugeint
-      end
-      index = _type
-      return :unknown if index >= types.size
-
-      types[index]
+      type_id = _type
+      DuckDB::Converter::IntToSym.type_to_sym(type_id)
     end
   end
 end
