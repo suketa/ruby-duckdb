@@ -15,6 +15,7 @@ static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE na
 static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx);
 #endif
 
+static VALUE duckdb_prepared_statement_clear_bindings(VALUE self);
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
 static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val);
 static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val);
@@ -145,6 +146,17 @@ static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     return vname;
 }
 #endif /* HAVE_DUCKDB_PARAMETER_NAME */
+
+static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
+    rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    if (duckdb_clear_bindings(ctx->prepared_statement) == DuckDBError) {
+        const char *error = duckdb_prepare_error(ctx->prepared_statement);
+        rb_raise(eDuckDBError, "fail to clear bindings. %s", error);
+    }
+    return self;
+}
 
 static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
@@ -385,6 +397,7 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
 #endif
 
+    rb_define_method(cDuckDBPreparedStatement, "clear_bindings", duckdb_prepared_statement_clear_bindings, 0);
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int8", duckdb_prepared_statement_bind_int8, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);

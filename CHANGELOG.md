@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- Add `DuckDB::PreparedStatement#clear_bindings` to clear all bindings.
 - Add `DuckDB::PreparedStatement#param_type` to get the type of the paramerter type.
   - The return value is one of the `:invalid`, `:boolean`, `:tinyint`, `:smallint`, `:integer`, `:bigint`, `:utinyint`,
     `:usmallint`, `:uinteger`, `:ubigint`, `:float`, `:double`, `:timestamp`, `:date`, `:time`, `:interval`, `:hugeint`,
