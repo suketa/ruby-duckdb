@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'test_helper'
+
 module DuckDBTest
   class PendingResultTest < Minitest::Test
     def setup
