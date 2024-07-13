@@ -47,6 +47,13 @@ module DuckDBTest
       assert_equal [[1], [2], [3], [4], [5]], pending_result.execute_pending.to_a
     end
 
+    def test_execute_check_state
+      pending_result = @stmt.pending_prepared
+      # FIXME: This test is not deterministic.
+      p pending_result.send(:_execute_check_state)
+      p pending_result.send(:_state)
+    end
+
     def teardown
       @con.close
       @db.close
