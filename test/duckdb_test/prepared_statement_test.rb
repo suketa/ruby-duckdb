@@ -138,6 +138,21 @@ module DuckDBTest
       assert_equal(:invalid, stmt.param_type(2))
     end
 
+    def test_clear_bindings
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $1')
+      stmt.bind(1, 1)
+      stmt.clear_bindings
+      res = assert_raises(DuckDB::Error) { stmt.execute }
+      assert_match(/Values were not provided for the following prepared.*: 1/, res.message)
+
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE id = $id')
+      stmt.bind(:id, 1)
+      stmt.clear_bindings
+      res = assert_raises(DuckDB::Error) { stmt.execute }
+      assert_match(/Values were not provided for the following prepared.*: id/, res.message)
+    end
+
     def test_pending_prepared
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
