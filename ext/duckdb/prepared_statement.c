@@ -147,6 +147,12 @@ static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
 }
 #endif /* HAVE_DUCKDB_PARAMETER_NAME */
 
+/*
+ *  call-seq:
+ *    prepared_statement.clear_bindings -> DuckDB::PreparedStatement
+ *
+ *  clear all bindings of prepared statement.
+ */
 static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
