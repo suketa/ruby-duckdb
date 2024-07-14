@@ -24,8 +24,7 @@ module DuckDB
     STATES = %i[ready not_ready error no_tasks].freeze
 
     # returns the state of the pending result.
-    # The result can be :ready, :not_ready, :error, :no_tasks.
-    # (:no_tasks is available only with duckdb 0.9.0 or later.)
+    # the result can be :ready, :not_ready, :error, :no_tasks.
     #
     # :ready means the result is ready to be fetched, and
     # you can call `execute_pending` to get the result.
@@ -33,9 +32,23 @@ module DuckDB
     # :not_ready means the result is not ready yet, so
     # you need to call `execute_task`.
     #
-    # @return [Symbol] :ready, :not_ready, :error, :no_tasks
+    # @return [symbol] :ready, :not_ready, :error, :no_tasks
     def state
       STATES[_state]
+    end
+
+    # returns the state of the pending result.
+    # the result can be :ready, :not_ready, :error, :no_tasks.
+    #
+    # :ready means the result is ready to be fetched, and
+    # you can call `execute_pending` to get the result.
+    #
+    # :not_ready or :no_tasks might mean the pending result
+    # is not executed yet, so you need to call `execute_task`.
+    #
+    # @return [symbol] :ready, :not_ready, :error, :no_tasks
+    def execute_check_state
+      STATES[_execute_check_state]
     end
   end
 end

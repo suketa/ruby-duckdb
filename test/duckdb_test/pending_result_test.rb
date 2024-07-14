@@ -39,7 +39,7 @@ module DuckDBTest
 
     def test_execute_pending
       pending_result = @stmt.pending_prepared
-      while pending_result.state == :not_ready
+      while pending_result.state != :ready
         sleep 0.01
         pending_result.execute_task
       end
@@ -49,9 +49,13 @@ module DuckDBTest
 
     def test_execute_check_state
       pending_result = @stmt.pending_prepared
-      # FIXME: This test is not deterministic.
-      p pending_result.send(:_execute_check_state)
-      p pending_result.send(:_state)
+      assert_equal(:no_tasks, pending_result.execute_check_state)
+      pending_result.execute_task
+      assert_equal(:no_tasks, pending_result.execute_check_state)
+      sleep 0.01
+      assert_equal(:ready, pending_result.execute_check_state)
+      pending_result.execute_task
+      assert_equal(:ready, pending_result.execute_check_state)
     end
 
     def teardown
