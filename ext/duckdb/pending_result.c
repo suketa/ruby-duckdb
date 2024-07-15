@@ -10,6 +10,7 @@ static VALUE duckdb_pending_result_execute_task(VALUE self);
 static VALUE duckdb_pending_result_execute_pending(VALUE self);
 static VALUE duckdb_pending_result_execution_finished_p(VALUE self);
 static VALUE duckdb_pending_result__state(VALUE self);
+static VALUE duckdb_pending_result__execute_check_state(VALUE self);
 
 static const rb_data_type_t pending_result_data_type = {
     "DuckDB/PendingResult",
@@ -128,6 +129,11 @@ static VALUE duckdb_pending_result__state(VALUE self) {
     return INT2FIX(ctx->state);
 }
 
+static VALUE duckdb_pending_result__execute_check_state(VALUE self) {
+    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+    return INT2FIX(duckdb_pending_execute_check_state(ctx->pending_result));
+}
+
 rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
     rubyDuckDBPendingResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
@@ -143,4 +149,5 @@ void rbduckdb_init_duckdb_pending_result(void) {
     rb_define_method(cDuckDBPendingResult, "execute_pending", duckdb_pending_result_execute_pending, 0);
     rb_define_method(cDuckDBPendingResult, "execution_finished?", duckdb_pending_result_execution_finished_p, 0);
     rb_define_private_method(cDuckDBPendingResult, "_state", duckdb_pending_result__state, 0);
+    rb_define_private_method(cDuckDBPendingResult, "_execute_check_state", duckdb_pending_result__execute_check_state, 0);
 }

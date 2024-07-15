@@ -39,12 +39,23 @@ module DuckDBTest
 
     def test_execute_pending
       pending_result = @stmt.pending_prepared
-      while pending_result.state == :not_ready
+      while pending_result.state != :ready
         sleep 0.01
         pending_result.execute_task
       end
       assert_equal :ready, pending_result.state
       assert_equal [[1], [2], [3], [4], [5]], pending_result.execute_pending.to_a
+    end
+
+    def test_execute_check_state
+      pending_result = @stmt.pending_prepared
+      assert_equal(:no_tasks, pending_result.execute_check_state)
+      pending_result.execute_task
+      assert_equal(:no_tasks, pending_result.execute_check_state)
+      sleep 0.01
+      assert_equal(:ready, pending_result.execute_check_state)
+      pending_result.execute_task
+      assert_equal(:ready, pending_result.execute_check_state)
     end
 
     def teardown
