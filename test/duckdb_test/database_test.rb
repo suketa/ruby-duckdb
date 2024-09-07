@@ -28,11 +28,7 @@ module DuckDBTest
       assert_instance_of(DuckDB::Database, db)
       db.close
 
-      if defined?(DuckDB::Config)
-        assert_raises(TypeError) { DuckDB::Database.open('foo', 'bar') }
-      else
-        assert_raises(ArgumentError) { DuckDB::Database.open('foo', 'bar') }
-      end
+      assert_raises(TypeError) { DuckDB::Database.open('foo', 'bar') }
       assert_raises(TypeError) { DuckDB::Database.open(1) }
 
       assert_raises(DuckDB::Error) do
@@ -41,25 +37,23 @@ module DuckDBTest
       end
     end
 
-    if defined?(DuckDB::Config)
-      def test_s_open_with_config
-        config = DuckDB::Config.new
-        config['default_order'] = 'DESC'
-        db = DuckDB::Database.open(nil, config)
-        conn = db.connect
-        conn.execute('CREATE TABLE t (col1 INTEGER);')
-        conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
-        r = conn.execute('SELECT * FROM t ORDER BY col1')
-        assert_equal([4], r.first)
+    def test_s_open_with_config
+      config = DuckDB::Config.new
+      config['default_order'] = 'DESC'
+      db = DuckDB::Database.open(nil, config)
+      conn = db.connect
+      conn.execute('CREATE TABLE t (col1 INTEGER);')
+      conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
+      r = conn.execute('SELECT * FROM t ORDER BY col1')
+      assert_equal([4], r.first)
 
-        config['default_order'] = 'ASC'
-        db = DuckDB::Database.open(nil, config)
-        conn = db.connect
-        conn.execute('CREATE TABLE t (col1 INTEGER);')
-        conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
-        r = conn.execute('SELECT * FROM t ORDER BY col1')
-        assert_equal([1], r.first)
-      end
+      config['default_order'] = 'ASC'
+      db = DuckDB::Database.open(nil, config)
+      conn = db.connect
+      conn.execute('CREATE TABLE t (col1 INTEGER);')
+      conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
+      r = conn.execute('SELECT * FROM t ORDER BY col1')
+      assert_equal([1], r.first)
     end
 
     def test_s_open_block
