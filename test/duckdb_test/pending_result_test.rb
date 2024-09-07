@@ -9,7 +9,7 @@ module DuckDBTest
       @con = @db.connect
       @con.query('CREATE TABLE int_vals (int_val INTEGER)')
       @con.query('INSERT INTO int_vals VALUES (1), (2), (3), (4), (5)')
-      @stmt = @con.prepared_statement('SELECT * FROM int_vals')
+      @stmt = @con.prepared_statement('SELECT * FROM int_vals WHERE int_val in (SELECT int_val FROM int_vals)')
     end
 
     def test_state
@@ -49,9 +49,11 @@ module DuckDBTest
 
     def test_execute_check_state
       pending_result = @stmt.pending_prepared
-      assert_equal(:no_tasks, pending_result.execute_check_state)
+      state = pending_result.execute_check_state
+      assert_equal(:no_tasks, state)
       pending_result.execute_task
-      assert_equal(:no_tasks, pending_result.execute_check_state)
+      state = pending_result.execute_check_state
+      assert_equal(:no_tasks, state)
       sleep 0.01
       assert_equal(:ready, pending_result.execute_check_state)
       pending_result.execute_task
