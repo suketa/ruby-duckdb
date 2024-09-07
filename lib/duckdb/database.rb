@@ -23,7 +23,7 @@ module DuckDB
   #
   class Database
     private_class_method :_open
-    private_class_method :_open_ext if defined?(DuckDB::Config)
+    private_class_method :_open_ext
 
     class << self
       ##
@@ -55,10 +55,8 @@ module DuckDB
       private
 
       def _db_open(dbpath, config)
-        if defined?(DuckDB::Config) && config
+        if config
           _open_ext(dbpath, config)
-        elsif config
-          _open(dbpath, config)
         else
           _open(dbpath)
         end
