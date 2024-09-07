@@ -97,7 +97,7 @@ module DuckDBTest
     private
 
     def create_path
-      Time.now.strftime('%Y%m%d%H%M%S') + '-' + Process.pid.to_s + '-' + (100..999).to_a.sample.to_s
+      "#{Time.now.strftime('%Y%m%d%H%M%S')}-#{Process.pid}-#{rand(100..999)}"
     end
   end
 end
