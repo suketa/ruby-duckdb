@@ -170,13 +170,6 @@ module DuckDBTest
       end
     end
 
-    def assert_only_without_chunk_each
-      DuckDB::Result.use_chunk_each = false
-      yield
-    ensure
-      DuckDB::Result.use_chunk_each = true
-    end
-
     def test_return_type
       result = @@con.query('SELECT * from table1')
       assert_equal(:query_result, result.return_type)

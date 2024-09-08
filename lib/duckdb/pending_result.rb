@@ -8,8 +8,6 @@ module DuckDB
   #
   #   require 'duckdb'
   #
-  #   DuckDB::Result.use_chunk_each = true
-  #
   #   db = DuckDB::Database.open
   #   con = db.connect
   #   stmt = con.prepared_statement(VERY_SLOW_QUERY)

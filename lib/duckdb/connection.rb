@@ -62,7 +62,6 @@ module DuckDB
     # This method returns DuckDB::PendingResult object.
     #
     #   require 'duckdb'
-    #   DuckDB::Result.use_chunk_each = true # must be true
     #   db = DuckDB::Database.open('duckdb_file')
     #   con = db.connect
     #
