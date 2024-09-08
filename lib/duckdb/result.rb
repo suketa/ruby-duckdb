@@ -76,23 +76,14 @@ module DuckDB
     end
 
     def each
-      if self.class.use_chunk_each?
-        if streaming?
-          return _chunk_stream unless block_given?
+      if streaming?
+        return _chunk_stream unless block_given?
 
-          _chunk_stream { |row| yield row }
-        else
-          return chunk_each unless block_given?
-
-          chunk_each { |row| yield row }
-        end
+        _chunk_stream { |row| yield row }
       else
-        warn('this `each` behavior will be deprecated in the future. set `DuckDB::Result.use_chunk_each = true` to use new `each` behavior.')
-        return to_enum { row_size } unless block_given?
+        return chunk_each unless block_given?
 
-        row_count.times do |row_index|
-          yield row(row_index)
-        end
+        chunk_each { |row| yield row }
       end
     end
 
