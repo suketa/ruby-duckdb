@@ -63,12 +63,14 @@ module DuckDB
       end
 
       def use_chunk_each=(value)
-        warn('`changing DuckDB::Result.use_chunk_each to false` will be deprecated.') if value == false
+        raise('`changing DuckDB::Result.use_chunk_each to false` was deprecated.') if value == false
 
+        warn('`DuckDB::Result.use_chunk_each=` will be deprecated.')
         @use_chunk_each = value
       end
 
       def use_chunk_each?
+        warn('`DuckDB::Result.use_chunk_each?` will be deprecated.')
         !!@use_chunk_each
       end
     end
