@@ -22,6 +22,14 @@ All notable changes to this project will be documented in this file.
     `:logical_plan`, `:attach`, `:detach`, `:multi`.
 - Add `DuckDB::Result#return_type` to get the return type of the result.
   - The return value is one of the `:invalid`, `:query_result`, `:rows_changed`, `:nothing`.
+- The following method will be deprecated.
+  - `DuckDB::Result#use_chunk_each?`
+  - `DuckDB::Result#use_chunk_each=`
+
+## Breaking changes
+- `DuckDB::Result#use_chunk_each?` is always true.
+- `DuckDB::Result#use_chunk_each=` always ignores the argument.
+- `DuckDB::Result#each` always works the same as `DuckDB::Result#chunk_each`.
 
 # 1.0.0.2 - 2024-06-23
 - DuckDB::Result supports TIMESTAMPTZ column type (only when DuckDB::Result.use_chunk_each is true).
