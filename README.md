@@ -119,9 +119,6 @@ con.query('SELECT * FROM users WHERE name = $name AND email = $email', name: 'Al
 You can use async query.
 
 ```ruby
-DuckDB::Result.use_chunk_each = true
-...
-
 pending_result = con.async_query_stream('SLOW QUERY')
 pending_result.execute_task while pending_result.state == :not_ready
 

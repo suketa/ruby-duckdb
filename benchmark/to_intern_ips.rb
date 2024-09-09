@@ -4,7 +4,6 @@ require 'bundler/setup'
 require 'duckdb'
 require 'benchmark/ips'
 
-DuckDB::Result.use_chunk_each = true
 db = DuckDB::Database.open
 con = db.connect
 con.query(<<~SQL

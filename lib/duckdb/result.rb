@@ -55,42 +55,34 @@ module DuckDB
     alias column_size column_count
     alias row_size row_count
 
-    @use_chunk_each = true
-
     class << self
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
       end
 
       def use_chunk_each=(value)
-        warn('`changing DuckDB::Result.use_chunk_each to false` will be deprecated.') if value == false
+        raise('`changing DuckDB::Result.use_chunk_each to false` was deprecated.') unless value
 
-        @use_chunk_each = value
+        warn('`DuckDB::Result.use_chunk_each=` will be deprecated.')
+
+        true
       end
 
       def use_chunk_each?
-        !!@use_chunk_each
+        warn('`DuckDB::Result.use_chunk_each?` will be deprecated.')
+        true
       end
     end
 
     def each
-      if self.class.use_chunk_each?
-        if streaming?
-          return _chunk_stream unless block_given?
+      if streaming?
+        return _chunk_stream unless block_given?
 
-          _chunk_stream { |row| yield row }
-        else
-          return chunk_each unless block_given?
-
-          chunk_each { |row| yield row }
-        end
+        _chunk_stream { |row| yield row }
       else
-        warn('this `each` behavior will be deprecated in the future. set `DuckDB::Result.use_chunk_each = true` to use new `each` behavior.')
-        return to_enum { row_size } unless block_given?
+        return chunk_each unless block_given?
 
-        row_count.times do |row_index|
-          yield row(row_index)
-        end
+        chunk_each { |row| yield row }
       end
     end
 

@@ -123,13 +123,6 @@ module DuckDBTest
       end
     end
 
-    def test_async_query_stream_without_chunk_each
-      DuckDB::Result.use_chunk_each = false
-      assert_raises(DuckDB::Error) { @con.async_query_stream('SELECT 1') }
-    ensure
-      DuckDB::Result.use_chunk_each = true
-    end
-
     def test_async_query_stream_with_valid_hash_params
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)

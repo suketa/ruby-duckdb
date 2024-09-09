@@ -2,8 +2,6 @@ require 'bundler/setup'
 require 'duckdb'
 require 'benchmark/ips'
 
-
-DuckDB::Result.use_chunk_each = true
 DuckDB::Database.open do |db|
   db.connect do |con|
     con.query('SET threads=1')

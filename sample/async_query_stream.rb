@@ -1,6 +1,5 @@
 require 'duckdb'
 
-DuckDB::Result.use_chunk_each = true
 DuckDB::Database.open do |db|
   db.connect do |con|
     con.query('SET threads=1')
