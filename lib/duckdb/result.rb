@@ -55,23 +55,22 @@ module DuckDB
     alias column_size column_count
     alias row_size row_count
 
-    @use_chunk_each = true
-
     class << self
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
       end
 
       def use_chunk_each=(value)
-        raise('`changing DuckDB::Result.use_chunk_each to false` was deprecated.') if value == false
+        raise('`changing DuckDB::Result.use_chunk_each to false` was deprecated.') unless value
 
         warn('`DuckDB::Result.use_chunk_each=` will be deprecated.')
-        @use_chunk_each = value
+
+        true
       end
 
       def use_chunk_each?
         warn('`DuckDB::Result.use_chunk_each?` will be deprecated.')
-        !!@use_chunk_each
+        true
       end
     end
 
