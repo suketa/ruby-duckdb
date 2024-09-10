@@ -55,9 +55,14 @@ module DuckDBTest
       state = pending_result.execute_check_state
       assert_equal(:no_tasks, state)
       sleep 0.01
-      assert_equal(:ready, pending_result.execute_check_state)
+      expected = if ::DuckDBTest.duckdb_library_version >= Gem::Version.new('1.1.0')
+                   :error
+                 else
+                   :ready
+                 end
+      assert_equal(expected, pending_result.execute_check_state)
       pending_result.execute_task
-      assert_equal(:ready, pending_result.execute_check_state)
+      assert_equal(expected, pending_result.execute_check_state)
     end
 
     def teardown
