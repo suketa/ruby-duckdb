@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
   - `DuckDB::Result#_null?`
   - `DuckDB::Result#_to_boolean`
   - `DuckDB::Result#_to_smallint`
+  - `DuckDB::Result#_to_utinyint`
   - `DuckDB::Result#row(index)`
 - `DuckDB::Result#use_chunk_each?` is always true.
 - `DuckDB::Result#use_chunk_each=` always ignores the argument.
