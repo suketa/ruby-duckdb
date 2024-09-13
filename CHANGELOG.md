@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 ## Breaking changes
 - The following methods are deprecated.
   - `DuckDB::Result#_null?`
+  - `DuckDB::Result#_to_boolean`
   - `DuckDB::Result#row(index)`
 - `DuckDB::Result#use_chunk_each?` is always true.
 - `DuckDB::Result#use_chunk_each=` always ignores the argument.
