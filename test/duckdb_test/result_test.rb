@@ -178,12 +178,6 @@ module DuckDBTest
       assert_equal(:select, @result.statement_type)
     end
 
-    def xtest__to_smallint
-      assert_only_without_chunk_each do
-        assert_equal(expected_smallint, @result.send(:_to_smallint, 0, 1))
-      end
-    end
-
     def xtest__to_integer
       assert_only_without_chunk_each do
       assert_equal(expected_integer, @result.send(:_to_integer, 0, 2))
