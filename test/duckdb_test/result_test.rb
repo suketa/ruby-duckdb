@@ -163,13 +163,6 @@ module DuckDBTest
       assert_equal(12, @result.send(:_column_type, 9))
     end
 
-    def xtest__is_null
-      assert_only_without_chunk_each do
-      assert_equal(false, @result.send(:_null?, 0, 0))
-      assert_equal(true, @result.send(:_null?, 1, 0))
-      end
-    end
-
     def test_return_type
       result = @@con.query('SELECT * from table1')
       assert_equal(:query_result, result.return_type)
