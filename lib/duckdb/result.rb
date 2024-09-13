@@ -117,15 +117,6 @@ module DuckDB
       Converter::IntToSym.statement_type_to_sym(i)
     end
 
-    def row(row_index)
-      warn("#{self.class}##{__method__} will be deprecated. set `DuckDB::Result.use_chunk_each = true`.")
-      row = []
-      column_count.times do |col_index|
-        row << (_null?(row_index, col_index) ? nil : to_value(row_index, col_index))
-      end
-      row
-    end
-
     def to_value(row_index, col_index)
       warn("#{self.class}##{__method__} will be deprecated. set `DuckDB::Result.use_chunk_each = true`.")
       send(TO_METHODS[_column_type(col_index)], row_index, col_index)

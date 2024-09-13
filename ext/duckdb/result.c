@@ -46,7 +46,6 @@ static VALUE yield_rows(VALUE arg);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult);
 static VALUE duckdb_result__statement_type(VALUE oDuckDBResult);
-static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_smallint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_utinyint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -448,20 +447,6 @@ static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_statement_type(ctx->result));
-}
-
-static VALUE duckdb_result__is_null(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    bool is_null;
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qfalse;
-#else
-    rb_warn("private method `_null?` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    is_null = duckdb_value_is_null(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    return is_null ? Qtrue : Qfalse;
-#endif
 }
 
 static VALUE duckdb_result__to_boolean(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
@@ -1160,7 +1145,6 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
     rb_define_private_method(cDuckDBResult, "_statement_type", duckdb_result__statement_type, 0);
 
-    rb_define_private_method(cDuckDBResult, "_null?", duckdb_result__is_null, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_boolean", duckdb_result__to_boolean, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_smallint", duckdb_result__to_smallint, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_utinyint", duckdb_result__to_utinyint, 2); /* deprecated */
