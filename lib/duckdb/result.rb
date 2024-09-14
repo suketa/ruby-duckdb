@@ -28,7 +28,6 @@ module DuckDB
 
     TO_METHODS = if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
                    Hash.new(:_to_string).merge(
-                     4 => :_to_integer,
                      5 => :_to_bigint,
                      10 => :_to_float,
                      11 => :_to_double,
@@ -38,7 +37,6 @@ module DuckDB
                    ).freeze
                  else
                    Hash.new(:_to_string).merge(
-                     4 => :_to_integer,
                      5 => :_to_bigint,
                      10 => :_to_float,
                      11 => :_to_double,
