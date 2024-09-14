@@ -184,12 +184,6 @@ module DuckDBTest
       end
     end
 
-    def xtest__to_double
-      assert_only_without_chunk_each do
-      assert_equal(expected_double, @result.send(:_to_double, 0, 6))
-      end
-    end
-
     def xtest__to_string_internal
       assert_only_without_chunk_each do
       assert_equal(expected_string, @result.send(:_to_string_internal, 0, 7))
