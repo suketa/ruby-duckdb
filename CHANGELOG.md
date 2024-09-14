@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file.
   - `DuckDB::Result#_to_string_internal`
   - `DuckDB::Result#_to_blob`
   - `DuckDB::Result#to_value`
-  - `DuckDB::Result#row(index)`
+  - `DuckDB::Result#row`
 - `DuckDB::Result#use_chunk_each?` is always true.
 - `DuckDB::Result#use_chunk_each=` always ignores the argument.
 - `DuckDB::Result#each` always works the same as `DuckDB::Result#chunk_each`.
