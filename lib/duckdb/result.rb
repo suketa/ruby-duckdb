@@ -30,7 +30,6 @@ module DuckDB
                    Hash.new(:_to_string).merge(
                      10 => :_to_float,
                      11 => :_to_double,
-                     16 => :_to_hugeint_internal,
                      19 => :_to_blob,
                      20 => :_to_decimal_internal
                    ).freeze
@@ -38,7 +37,6 @@ module DuckDB
                    Hash.new(:_to_string).merge(
                      10 => :_to_float,
                      11 => :_to_double,
-                     16 => :_to_hugeint_internal,
                      18 => :_to_blob,
                      19 => :_to_decimal_internal
                    ).freeze
@@ -123,17 +121,6 @@ module DuckDB
     end
 
     private
-
-    def _to_hugeint(row, col)
-      warn("#{self.class}##{__method__} will be deprecated.")
-      _to_string(row, col).to_i
-    end
-
-    def _to_hugeint_internal(row, col)
-      warn("#{self.class}##{__method__} will be deprecated.")
-      lower, upper = __to_hugeint_internal(row, col)
-      Converter._to_hugeint_from_vector(lower, upper)
-    end
 
     def _to_decimal(row, col)
       warn("#{self.class}##{__method__} will be deprecated.")
