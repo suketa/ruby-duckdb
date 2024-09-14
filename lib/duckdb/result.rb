@@ -27,11 +27,11 @@ module DuckDB
     RETURN_TYPES = %i[invalid changed_rows nothing query_result].freeze
 
     TO_METHODS = if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
-                   Hash.new(:_to_string).merge(
+                   Hash.new.merge(
                      19 => :_to_blob,
                    ).freeze
                  else
-                   Hash.new(:_to_string).merge(
+                   Hash.new.merge(
                      18 => :_to_blob,
                    ).freeze
                  end

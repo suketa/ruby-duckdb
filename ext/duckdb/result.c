@@ -37,8 +37,6 @@ static VALUE yield_rows(VALUE arg);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult);
 static VALUE duckdb_result__statement_type(VALUE oDuckDBResult);
-static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
-static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
@@ -339,46 +337,6 @@ static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_statement_type(ctx->result));
-}
-
-static VALUE duckdb_result__to_string(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    duckdb_string p;
-    VALUE obj;
-
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qnil;
-#else
-    rb_warn("private method `_to_string` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    p = duckdb_value_string(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    if (p.data) {
-        obj = rb_utf8_str_new(p.data, p.size);
-        duckdb_free(p.data);
-        return obj;
-    }
-#endif
-    return Qnil;
-}
-
-static VALUE duckdb_result__to_string_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    duckdb_string p;
-    VALUE obj;
-#ifdef DUCKDB_API_NO_DEPRECATED
-    // duckdb_value_string_internal will be deprecated in the future.
-#else
-    rb_warn("private method `_to_string_internal` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    p = duckdb_value_string_internal(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
-    if (p.data) {
-        obj = rb_utf8_str_new(p.data, p.size);
-        return obj;
-    }
-#endif
-    return Qnil;
 }
 
 static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
@@ -974,8 +932,6 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
     rb_define_private_method(cDuckDBResult, "_statement_type", duckdb_result__statement_type, 0);
 
-    rb_define_private_method(cDuckDBResult, "_to_string", duckdb_result__to_string, 2); /* deprecated */
-    rb_define_private_method(cDuckDBResult, "_to_string_internal", duckdb_result__to_string_internal, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
