@@ -31,14 +31,12 @@ module DuckDB
                      10 => :_to_float,
                      11 => :_to_double,
                      19 => :_to_blob,
-                     20 => :_to_decimal_internal
                    ).freeze
                  else
                    Hash.new(:_to_string).merge(
                      10 => :_to_float,
                      11 => :_to_double,
                      18 => :_to_blob,
-                     19 => :_to_decimal_internal
                    ).freeze
                  end
 
@@ -118,19 +116,6 @@ module DuckDB
         values << _enum_dictionary_value(col_index, i)
       end
       values
-    end
-
-    private
-
-    def _to_decimal(row, col)
-      warn("#{self.class}##{__method__} will be deprecated.")
-      BigDecimal(_to_string(row, col))
-    end
-
-    def _to_decimal_internal(row, col)
-      warn("#{self.class}##{__method__} will be deprecated.")
-      lower, upper, width, scale = __to_decimal_internal(row, col)
-      Converter._to_decimal_from_hugeint(width, scale, upper, lower)
     end
   end
 end
