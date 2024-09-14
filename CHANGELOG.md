@@ -28,6 +28,8 @@ All notable changes to this project will be documented in this file.
   - `DuckDB::Result#use_chunk_each=`
 
 ## Breaking changes
+- drop duckdb v0.9.x.
+  - skip to check duckdb_parameter_name is available.
 - The following methods are deprecated.
   - `DuckDB::Result#_null?`
   - `DuckDB::Result#_to_boolean`
