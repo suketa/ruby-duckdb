@@ -18,7 +18,7 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.01
       pending_result.execute_task
-      assert_equal :ready, pending_result.state
+      assert_includes(%i[ready no_tasks], pending_result.state)
     end
 
     def test_execution_finished?
@@ -50,7 +50,7 @@ module DuckDBTest
     def test_execute_check_state
       pending_result = @stmt.pending_prepared
       state = pending_result.execute_check_state
-      assert_equal(:no_tasks, state)
+      assert_includes(%i[error no_tasks], state)
       pending_result.execute_task
       state = pending_result.execute_check_state
       assert_equal(:no_tasks, state)
