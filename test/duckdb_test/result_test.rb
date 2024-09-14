@@ -184,12 +184,6 @@ module DuckDBTest
       end
     end
 
-    def xtest__to_blob
-      assert_only_without_chunk_each do
-      assert_equal(expected_blob, @result.send(:_to_blob, 0, 10))
-      end
-    end
-
     private
 
     def create_data

@@ -26,16 +26,6 @@ module DuckDB
     include Enumerable
     RETURN_TYPES = %i[invalid changed_rows nothing query_result].freeze
 
-    TO_METHODS = if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
-                   Hash.new.merge(
-                     19 => :_to_blob,
-                   ).freeze
-                 else
-                   Hash.new.merge(
-                     18 => :_to_blob,
-                   ).freeze
-                 end
-
     alias column_size column_count
     alias row_size row_count
 
@@ -99,11 +89,6 @@ module DuckDB
     def statement_type
       i = _statement_type
       Converter::IntToSym.statement_type_to_sym(i)
-    end
-
-    def to_value(row_index, col_index)
-      warn("#{self.class}##{__method__} will be deprecated. set `DuckDB::Result.use_chunk_each = true`.")
-      send(TO_METHODS[_column_type(col_index)], row_index, col_index)
     end
 
     def enum_dictionary_values(col_index)
