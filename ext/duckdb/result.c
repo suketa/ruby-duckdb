@@ -23,7 +23,6 @@ static ID id__to_infinity;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_row_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
@@ -37,7 +36,6 @@ static VALUE yield_rows(VALUE arg);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult);
 static VALUE duckdb_result__statement_type(VALUE oDuckDBResult);
-static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
@@ -95,24 +93,6 @@ rubyDuckDBResult *get_struct_result(VALUE obj) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBResult, &result_data_type, ctx);
     return ctx;
-}
-
-static VALUE to_ruby_obj_blob(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qnil;
-#else
-    VALUE str;
-    rb_warn("private method `_to_blob` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
-    duckdb_blob bval = duckdb_value_blob(result, col_idx, row_idx);
-    str = rb_str_new(bval.data, bval.size);
-
-    if (bval.data) {
-        duckdb_free(bval.data);
-    }
-
-    return str;
-#endif
 }
 
 /*
@@ -337,13 +317,6 @@ static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_statement_type(ctx->result));
-}
-
-static VALUE duckdb_result__to_blob(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_blob(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
@@ -932,7 +905,6 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
     rb_define_private_method(cDuckDBResult, "_statement_type", duckdb_result__statement_type, 0);
 
-    rb_define_private_method(cDuckDBResult, "_to_blob", duckdb_result__to_blob, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
     rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
