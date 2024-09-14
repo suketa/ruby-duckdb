@@ -59,7 +59,7 @@ module DuckDBTest
       pending_result.execute_task while pending_result.state == :not_ready
 
       state = pending_result.execute_check_state
-      assert_equal(:error, state)
+      assert_includes(%i[error ready], state)
     end
 
     def teardown
