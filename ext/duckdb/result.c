@@ -23,7 +23,6 @@ static ID id__to_infinity;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_hugeint(duckdb_result *result, idx_t col_idx, idx_t row_idx);
 static VALUE to_ruby_obj_decimal(duckdb_result *result, idx_t col_idx, idx_t row_idx);
@@ -43,7 +42,6 @@ static VALUE yield_rows(VALUE arg);
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult);
 static VALUE duckdb_result__statement_type(VALUE oDuckDBResult);
-static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result___to_hugeint_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
 static VALUE duckdb_result___to_decimal_internal(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx);
@@ -109,16 +107,6 @@ rubyDuckDBResult *get_struct_result(VALUE obj) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBResult, &result_data_type, ctx);
     return ctx;
-}
-
-static VALUE to_ruby_obj_integer(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qnil;
-#else
-    rb_warn("private method `_to_integer` will be deprecated in the future. Set DuckDB::Result#use_chunk_each to true.");
-    int32_t i32val = duckdb_value_int32(result, col_idx, row_idx);
-    return INT2NUM(i32val);
-#endif
 }
 
 static VALUE to_ruby_obj_bigint(duckdb_result *result, idx_t col_idx, idx_t row_idx) {
@@ -411,13 +399,6 @@ static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_statement_type(ctx->result));
-}
-
-static VALUE duckdb_result__to_integer(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    return to_ruby_obj_integer(&(ctx->result), NUM2LL(col_idx), NUM2LL(row_idx));
 }
 
 static VALUE duckdb_result__to_bigint(VALUE oDuckDBResult, VALUE row_idx, VALUE col_idx) {
@@ -1088,7 +1069,6 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
     rb_define_private_method(cDuckDBResult, "_statement_type", duckdb_result__statement_type, 0);
 
-    rb_define_private_method(cDuckDBResult, "_to_integer", duckdb_result__to_integer, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "_to_bigint", duckdb_result__to_bigint, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "__to_hugeint_internal", duckdb_result___to_hugeint_internal, 2); /* deprecated */
     rb_define_private_method(cDuckDBResult, "__to_decimal_internal", duckdb_result___to_decimal_internal, 2); /* deprecated */
