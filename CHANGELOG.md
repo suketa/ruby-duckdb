@@ -35,6 +35,9 @@ All notable changes to this project will be documented in this file.
   - `DuckDB::Result#_to_utinyint`
   - `DuckDB::Result#_to_integer`
   - `DuckDB::Result#_to_bigint`
+  - `DuckDB::Result#_to_hugeint`
+  - `DuckDB::Result#_to_hugeint_internal`
+  - `DuckDB::Result#__to_hugeint_internal`
   - `DuckDB::Result#row(index)`
 - `DuckDB::Result#use_chunk_each?` is always true.
 - `DuckDB::Result#use_chunk_each=` always ignores the argument.
