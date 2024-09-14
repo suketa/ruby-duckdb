@@ -2,7 +2,7 @@
 
 require 'mkmf'
 
-DUCKDB_REQUIRED_VERSION = '0.9.0'
+DUCKDB_REQUIRED_VERSION = '0.10.0'
 
 def check_duckdb_header(header, version)
   found = find_header(
@@ -56,10 +56,7 @@ end
 dir_config('duckdb')
 
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
-check_duckdb_library('duckdb', 'duckdb_bind_parameter_index', DUCKDB_REQUIRED_VERSION)
-
-# check duckdb >= 0.9.0
-have_func('duckdb_bind_parameter_index', 'duckdb.h')
+check_duckdb_library('duckdb', 'duckdb_appender_column_count', DUCKDB_REQUIRED_VERSION)
 
 # check duckdb >= 0.10.0
 have_func('duckdb_appender_column_count', 'duckdb.h')
@@ -69,9 +66,6 @@ have_func('duckdb_fetch_chunk', 'duckdb.h')
 
 # check duckdb >= 1.1.0
 have_func('duckdb_result_error_type', 'duckdb.h')
-
-# duckdb_parameter_name in duckdb <= 0.9.1 is not found on Windows.
-have_func('duckdb_parameter_name', 'duckdb.h')
 
 $CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
 

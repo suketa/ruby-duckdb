@@ -182,8 +182,6 @@ module DuckDBTest
         'SELECT * FROM a WHERE id = $id AND col_boolean = $col_boolean AND id = $id'
       )
 
-      skip unless stmt.respond_to?(:parameter_name)
-
       assert_equal('id', stmt.parameter_name(1))
       assert_equal('col_boolean', stmt.parameter_name(2))
 
