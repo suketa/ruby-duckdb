@@ -67,6 +67,9 @@ have_func('duckdb_appender_column_count', 'duckdb.h')
 # check duckdb >= 1.0.0
 have_func('duckdb_fetch_chunk', 'duckdb.h')
 
+# check duckdb >= 1.1.0
+have_func('duckdb_result_error_type', 'duckdb.h')
+
 # duckdb_parameter_name in duckdb <= 0.9.1 is not found on Windows.
 have_func('duckdb_parameter_name', 'duckdb.h')
 
