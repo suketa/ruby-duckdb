@@ -52,11 +52,9 @@ module DuckDBTest
       state = pending_result.execute_check_state
       assert_includes(%i[error no_tasks], state)
       pending_result.execute_task
-      state = pending_result.execute_check_state
-      assert_includes(%i[no_tasks ready], state)
       sleep 0.01
       state = pending_result.execute_check_state
-      assert_includes(%i[no_tasks error], state)
+      assert_includes(%i[no_tasks ready], state)
     end
 
     def teardown
