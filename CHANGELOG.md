@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file.
   - `DuckDB::Result#_to_decimal`
   - `DuckDB::Result#_to_decimal_internal`
   - `DuckDB::Result#__to_decimal_internal`
+  - `DuckDB::Result#_to_float`
   - `DuckDB::Result#row(index)`
 - `DuckDB::Result#use_chunk_each?` is always true.
 - `DuckDB::Result#use_chunk_each=` always ignores the argument.

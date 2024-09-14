@@ -184,12 +184,6 @@ module DuckDBTest
       end
     end
 
-    def xtest__to_float
-      assert_only_without_chunk_each do
-        assert_equal(expected_float, @result.send(:_to_float, 0, 5))
-      end
-    end
-
     def xtest__to_double
       assert_only_without_chunk_each do
       assert_equal(expected_double, @result.send(:_to_double, 0, 6))
