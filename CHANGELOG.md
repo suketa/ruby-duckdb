@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+# 1.1.0.0 - 2024-09-15
 - drop ruby 3.0.x.
 - bump duckdb to 1.1.0.
 - Add `DuckDB::PendingResult#execute_check_state` to check the state of the pending result.
