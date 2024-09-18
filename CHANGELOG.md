@@ -31,7 +31,7 @@ All notable changes to this project will be documented in this file.
 ## Breaking changes
 - drop duckdb v0.9.x.
   - skip to check duckdb_parameter_name is available.
-- The following methods are deprecated.
+- The following methods are obsoleted.
   - `DuckDB::Result#_null?`
   - `DuckDB::Result#_to_boolean`
   - `DuckDB::Result#_to_smallint`
