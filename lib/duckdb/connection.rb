@@ -108,7 +108,6 @@ module DuckDB
     def prepared_statement(str)
       PreparedStatement.new(self, str)
     end
-    alias prepare prepared_statement
 
     #
     # returns Appender object.
@@ -135,5 +134,6 @@ module DuckDB
     alias async_execute async_query
     alias open connect
     alias close disconnect
+    alias prepare prepared_statement
   end
 end
