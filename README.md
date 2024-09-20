@@ -113,7 +113,19 @@ con.query('SELECT * FROM users WHERE name = ? AND email = ?', 'Alice', 'alice@ex
 # or
 con.query('SELECT * FROM users WHERE name = $name AND email = $email', name: 'Alice', email: 'alice@example.com')
 ```
+### Using prepared statement
 
+You can use prepared statement.
+
+```ruby
+stmt = con.prepare('SELECT * FROM users WHERE name = $name AND email = $email')
+# or
+# stmt = con.prepared_statement('SELECT * FROM users WHERE name = $name AND email = $email')
+# or
+# stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM users WHERE name = $name AND email = $email')
+stmt.bind(name: 'Alice', email: 'alice@example.com')
+result = stmt.execute
+```
 ### Using async query
 
 You can use async query.
