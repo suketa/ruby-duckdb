@@ -97,6 +97,14 @@ module DuckDB
     # returns PreparedStatement object.
     # The first argument is SQL string.
     #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_file')
+    #   con = db.connect
+    #
+    #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
+    #   stmt = con.prepared_statement(sql)
+    #   stmt.bind_args(name: 'Dave', email: 'dave@example.com')
+    #   result = stmt.execute
     def prepared_statement(str)
       PreparedStatement.new(self, str)
     end
@@ -126,5 +134,6 @@ module DuckDB
     alias async_execute async_query
     alias open connect
     alias close disconnect
+    alias prepare prepared_statement
   end
 end
