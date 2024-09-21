@@ -19,25 +19,22 @@ module DuckDBTest
 
     def self.create_enum_sql
       <<~SQL
-      CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy', '𝘾𝝾օɭ 😎')
+        CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy', '𝘾𝝾օɭ 😎')
       SQL
     end
 
     def self.create_table_sql
       <<~SQL
-      CREATE TABLE enum_test (
-        id INTEGER PRIMARY KEY,
-        mood mood
-      )
+        CREATE TABLE enum_test (
+          id INTEGER PRIMARY KEY,
+          mood mood
+        )
       SQL
     end
 
     def setup
       con = self.class.con
       @result = con.query('SELECT * FROM enum_test WHERE id = 1')
-    end
-
-    def teardown
     end
 
     def test_result__enum_dictionary_size
@@ -55,10 +52,7 @@ module DuckDBTest
     end
 
     def test_enum_insert_select
-      if DuckDB::Result.instance_methods.include?(:chunk_each)
-        # TODO: fix memory leak during chunk_each (dubkdb_result_get_chunk)
-        assert_equal([1, 'sad'], @result.first)
-      end
+      assert_equal([1, 'sad'], @result.first)
     end
   end
 end
