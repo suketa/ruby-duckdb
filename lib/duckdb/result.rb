@@ -91,6 +91,14 @@ module DuckDB
       Converter::IntToSym.statement_type_to_sym(i)
     end
 
+    # returns all available ENUM type values of the specified column index.
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   con.execute("CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy', '𝘾𝝾օɭ 😎')")
+    #   con.execute("CREATE TABLE enums (id INTEGER, mood mood)")
+    #   result = con.query('SELECT * FROM enums')
+    #   result.enum_dictionary_values(1) # => ['sad', 'ok', 'happy', '𝘾𝝾օɭ 😎']
     def enum_dictionary_values(col_index)
       values = []
       _enum_dictionary_size(col_index).times do |i|
