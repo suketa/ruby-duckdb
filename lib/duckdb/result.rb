@@ -34,7 +34,7 @@ module DuckDB
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
       end
 
-      def use_chunk_each=(value)
+      def use_chunk_each=(value) # :nodoc:
         raise('`changing DuckDB::Result.use_chunk_each to false` was deprecated.') unless value
 
         warn('`DuckDB::Result.use_chunk_each=` will be deprecated.')
@@ -42,21 +42,21 @@ module DuckDB
         true
       end
 
-      def use_chunk_each?
+      def use_chunk_each? # :nodoc:
         warn('`DuckDB::Result.use_chunk_each?` will be deprecated.')
         true
       end
     end
 
-    def each
+    def each(&)
       if streaming?
         return _chunk_stream unless block_given?
 
-        _chunk_stream { |row| yield row }
+        _chunk_stream(&)
       else
         return chunk_each unless block_given?
 
-        chunk_each { |row| yield row }
+        chunk_each(&)
       end
     end
 
