@@ -67,6 +67,8 @@ have_func('duckdb_fetch_chunk', 'duckdb.h')
 # check duckdb >= 1.1.0
 have_func('duckdb_result_error_type', 'duckdb.h')
 
+have_const('DUCKDB_TYPE_SQLNULL', 'duckdb.h')
+
 $CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
 
 create_makefile('duckdb/duckdb_native')
