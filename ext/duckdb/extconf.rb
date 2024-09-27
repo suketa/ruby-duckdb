@@ -67,6 +67,8 @@ have_func('duckdb_fetch_chunk', 'duckdb.h')
 # check duckdb >= 1.1.0
 have_func('duckdb_result_error_type', 'duckdb.h')
 
+# Building with enabled DUCKDB_API_NO_DEPRECATED is failed with DuckDB v1.1.0 only.
+# DuckDB v1.1.1 is fixed this issue https://github.com/duckdb/duckdb/issues/13872.
 have_const('DUCKDB_TYPE_SQLNULL', 'duckdb.h')
 
 $CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
