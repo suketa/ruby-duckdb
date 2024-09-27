@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+- bump duckdb 1.1.1.
 
 # 1.1.0.1 - 2024-09-21
 - add `DuckDB::Connection#prepare`. `DuckDB::Connection#prepare` is an alias of `DuckDB::Connection#prepared_statement`.
