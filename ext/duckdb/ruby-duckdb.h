@@ -19,6 +19,10 @@
 #define HAVE_DUCKDB_H_GE_V1_1_0 1
 #endif
 
+#ifdef HAVE_CONST_DUCKDB_TYPE_SQLNULL
+#define HAVE_DUCKDB_H_GE_V1_1_1 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"

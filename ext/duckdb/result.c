@@ -310,7 +310,14 @@ static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+/*
+ * remove this #if ... #else statement when dropping duckdb 1.1.0.
+ */
+#if !defined(HAVE_DUCKDB_H_GE_V1_1_1) && defined(HAVE_DUCKDB_H_GE_V1_1_0) && defined(DUCKDB_API_NO_DEPRECATED)
+    rb_raise(eDuckDBError, "duckdb_result_return_type C-API is not available with duckdb v1.1.0 with enabled DUCKDB_API_NO_DEPRECATED.");
+#else
     return INT2FIX(duckdb_result_return_type(ctx->result));
+#endif
 }
 
 static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
