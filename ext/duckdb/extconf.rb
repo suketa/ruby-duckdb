@@ -2,7 +2,7 @@
 
 require 'mkmf'
 
-DUCKDB_REQUIRED_VERSION = '0.10.0'
+DUCKDB_REQUIRED_VERSION = '1.0.0'
 
 def check_duckdb_header(header, version)
   found = find_header(
@@ -58,8 +58,8 @@ dir_config('duckdb')
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
 check_duckdb_library('duckdb', 'duckdb_appender_column_count', DUCKDB_REQUIRED_VERSION)
 
-# check duckdb >= 0.10.0
-have_func('duckdb_appender_column_count', 'duckdb.h')
+# check duckdb >= 1.0.0
+have_func('duckdb_fetch_chunk', 'duckdb.h')
 
 # check duckdb >= 1.0.0
 have_func('duckdb_fetch_chunk', 'duckdb.h')
