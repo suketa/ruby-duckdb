@@ -9,9 +9,6 @@ module DuckDBTest
       @con = @db.connect
     end
 
-    def teardown
-    end
-
     def test_query
       assert_instance_of(DuckDB::Result, @con.query('CREATE TABLE table1 (id INTEGER)'))
     end
@@ -137,7 +134,6 @@ module DuckDBTest
       result = pending_result.execute_pending
       assert_equal([1, 'a'], result.each.first)
     end
-
 
     def test_execute
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
