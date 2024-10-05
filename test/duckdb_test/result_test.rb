@@ -154,11 +154,7 @@ module DuckDBTest
       assert_equal(16, @result.send(:_column_type, 4))
       assert_equal(10, @result.send(:_column_type, 5))
       assert_equal(11, @result.send(:_column_type, 6))
-      if Gem::Version.new(DuckDB::LIBRARY_VERSION) == Gem::Version.new('0.10.0')
-        assert_equal(18, @result.send(:_column_type, 7))
-      else
-        assert_equal(17, @result.send(:_column_type, 7))
-      end
+      assert_equal(17, @result.send(:_column_type, 7))
       assert_equal(13, @result.send(:_column_type, 8))
       assert_equal(12, @result.send(:_column_type, 9))
     end
