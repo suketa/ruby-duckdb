@@ -7,7 +7,7 @@ require_relative 'converter/int_to_sym'
 module DuckDB
   QueryProgress = Struct.new(:percentage, :rows_processed, :total_rows_to_process)
 
-  module Converter
+  module Converter # :nodoc: all
     HALF_HUGEINT_BIT = 64
     HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
     FLIP_HUGEINT = 1 << 63
@@ -122,7 +122,7 @@ module DuckDB
     end
 
     def _to_uuid_from_vector(lower, upper)
-      upper = upper ^ FLIP_HUGEINT
+      upper ^= FLIP_HUGEINT
       upper += HALF_HUGEINT if upper.negative?
 
       str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
