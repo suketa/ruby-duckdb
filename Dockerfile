@@ -1,7 +1,7 @@
 ARG RUBY_VERSION=3.3.5
 FROM ruby:${RUBY_VERSION}
 
-ARG DUCKDB_VERSION=1.1.0
+ARG DUCKDB_VERSION=1.1.1
 
 RUN apt update -qq && \
     apt install -y build-essential curl git wget
