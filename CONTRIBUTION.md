@@ -14,7 +14,7 @@ docker compose run --rm ubuntu bash
 
 In case you want custom ruby or duckdb versions, use `--build-arg` options
 ```
-docker compose build ubuntu --build-arg RUBY_VERSION=3.1.3 --build-arg DUCKDB_VERSION=0.6.0
+docker compose build ubuntu --build-arg RUBY_VERSION=3.1.3 --build-arg DUCKDB_VERSION=1.0.0
 ```
 
 ### Without docker
