@@ -35,6 +35,7 @@ module DuckDBTest
       expected.push(:enum)
       expected.push(:list)
       expected.push(:list)
+      expected.push(:struct)
       assert_equal(
         expected,
         @columns.map(&:type)
@@ -66,6 +67,7 @@ module DuckDBTest
       expected.push('enum_col')
       expected.push('int_list_col')
       expected.push('varchar_list_col')
+      expected.push('struct_col')
       assert_equal(
         expected,
         @columns.map(&:name)
@@ -114,6 +116,7 @@ module DuckDBTest
       sql += ', enum_col mood'
       sql += ', int_list_col INT[]'
       sql += ', varchar_list_col VARCHAR[]'
+      sql += ', struct_col STRUCT(word VARCHAR, length INTEGER)'
       sql += ')'
       sql
     end
@@ -146,6 +149,7 @@ module DuckDBTest
       sql += ', NULL'
       sql += ', [1, 2, 3]'
       sql += ", ['a', 'b', 'c']"
+      sql += ", ROW('Ruby', 4)"
       sql += ')'
       sql
     end
