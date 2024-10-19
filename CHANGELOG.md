@@ -2,10 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+
+# 1.1.2.0 - 2024-10-20
+- bump duckdb to 1.1.2.
 - add `DuckDB::PreparedStatement#destroy`.
+- `DuckDB::Connection#query`, `DuckDB::Connection#async_query`, `DuckDB::Connection#async_query_stream` call
+  `DuckDB::PreparedStatement#destroy` to free the prepared statement immediately (#775, #781).
 
 # 1.1.1.0 - 2024-10-06
-- bump duckdb 1.1.1.
+- bump duckdb to 1.1.1.
 ## Breaking changes
 - drop duckdb v0.10.x.
 
