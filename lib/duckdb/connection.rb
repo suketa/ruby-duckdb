@@ -31,6 +31,8 @@ module DuckDB
       stmt = PreparedStatement.new(self, sql)
       stmt.bind_args(*args, **kwargs)
       stmt.execute
+    ensure
+      stmt&.destroy
     end
 
     #
@@ -53,6 +55,8 @@ module DuckDB
       stmt = PreparedStatement.new(self, sql)
       stmt.bind_args(*args, **kwargs)
       stmt.pending_prepared
+    ensure
+      stmt&.destroy
     end
 
     #
@@ -76,6 +80,8 @@ module DuckDB
       stmt = PreparedStatement.new(self, sql)
       stmt.bind_args(*args, **kwargs)
       stmt.pending_prepared_stream
+    ensure
+      stmt&.destroy
     end
 
     #

@@ -2,12 +2,14 @@
 
 VALUE cDuckDBPreparedStatement;
 
+static void destroy_prepared_statement(rubyDuckDBPreparedStatement *p);
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query);
 static VALUE duckdb_prepared_statement_nparams(VALUE self);
 static VALUE duckdb_prepared_statement_execute(VALUE self);
+static VALUE duckdb_prepared_statement_destroy(VALUE self);
 static idx_t check_index(VALUE vidx);
 
 static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name);
@@ -37,10 +39,17 @@ static const rb_data_type_t prepared_statement_data_type = {
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
+static void destroy_prepared_statement(rubyDuckDBPreparedStatement *p) {
+    if (p->prepared_statement) {
+        duckdb_destroy_prepare(&(p->prepared_statement));
+    }
+}
+
 static void deallocate(void *ctx) {
     rubyDuckDBPreparedStatement *p = (rubyDuckDBPreparedStatement *)ctx;
 
-    duckdb_destroy_prepare(&(p->prepared_statement));
+    destroy_prepared_statement(p);
+    // duckdb_destroy_prepare(&(p->prepared_statement));
     xfree(p);
 }
 
@@ -91,7 +100,6 @@ static VALUE duckdb_prepared_statement_nparams(VALUE self) {
     return ULL2NUM(duckdb_nparams(ctx->prepared_statement));
 }
 
-
 static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
@@ -103,6 +111,19 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
         rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
     }
     return result;
+}
+
+/*
+ * :nodoc:
+ */
+static VALUE duckdb_prepared_statement_destroy(VALUE self) {
+    rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    destroy_prepared_statement(ctx);
+    /*
+    ctx->prepared_statement = NULL;
+    */
+    return Qnil;
 }
 
 static idx_t check_index(VALUE vidx) {
@@ -391,6 +412,7 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
 
     rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
     rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
+    rb_define_method(cDuckDBPreparedStatement, "destroy", duckdb_prepared_statement_destroy, 0);
     rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
     rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", duckdb_prepared_statement_bind_parameter_index, 1);
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
