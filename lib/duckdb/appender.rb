@@ -74,16 +74,7 @@ module DuckDB
     #   appender.flush
     #
     def append_date(value)
-      date = case value
-             when Date, Time
-               value
-             else
-               begin
-                 Date.parse(value)
-               rescue
-                 raise(ArgumentError, "Cannot parse argument `#{value}` to Date.")
-               end
-             end
+      date = to_date(value)
 
       _append_date(date.year, date.month, date.day)
     end
@@ -126,18 +117,7 @@ module DuckDB
     #   appender.flush
     #
     def append_timestamp(value)
-      time = case value
-             when Time
-               value
-             when Date
-               value.to_time
-             else
-               begin
-                 Time.parse(value)
-               rescue
-                 raise(ArgumentError, "Cannot parse argument `#{value}` to Time or Date.")
-               end
-             end
+      time = to_time(value)
 
       _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
     end
@@ -232,6 +212,34 @@ module DuckDB
 
     def blob?(value)
       value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
+    end
+
+    def to_date(value)
+      case value
+      when Date, Time
+        value
+      else
+        begin
+          Date.parse(value)
+        rescue StandardError
+          raise(ArgumentError, "Cannot parse argument `#{value}` to Date.")
+        end
+      end
+    end
+
+    def to_time(value)
+      case value
+      when Time
+        value
+      when Date
+        value.to_time
+      else
+        begin
+          Time.parse(value)
+        rescue StandardError
+          raise(ArgumentError, "Cannot parse argument `#{value}` to Time or Date.")
+        end
+      end
     end
   end
 end
