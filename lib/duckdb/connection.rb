@@ -28,7 +28,7 @@ module DuckDB
     def query(sql, *args, **kwargs)
       return query_sql(sql) if args.empty? && kwargs.empty?
 
-      stmt = PreparedStatement.new(self, sql)
+      stmt = prepare(sql)
       stmt.bind_args(*args, **kwargs)
       stmt.execute
     ensure
@@ -52,7 +52,7 @@ module DuckDB
     #   result.each.first
     #
     def async_query(sql, *args, **kwargs)
-      stmt = PreparedStatement.new(self, sql)
+      stmt = prepare(sql)
       stmt.bind_args(*args, **kwargs)
       stmt.pending_prepared
     ensure
@@ -77,7 +77,7 @@ module DuckDB
     #   result.each.first
     #
     def async_query_stream(sql, *args, **kwargs)
-      stmt = PreparedStatement.new(self, sql)
+      stmt = prepare(sql)
       stmt.bind_args(*args, **kwargs)
       stmt.pending_prepared_stream
     ensure
