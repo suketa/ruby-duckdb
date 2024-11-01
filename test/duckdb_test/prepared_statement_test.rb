@@ -34,6 +34,7 @@ module DuckDBTest
         col_hugeint HUGEINT,
         col_real REAL,
         col_double DOUBLE,
+        col_decimal DECIMAL(9,4),
         col_varchar VARCHAR,
         col_date DATE,
         col_timestamp TIMESTAMP,
@@ -57,6 +58,7 @@ module DuckDBTest
         170141183460469231731687303715884105727,
         12345.375,
         12345.6789,
+        98765.4321,
         'str',
         '#{datestr}',
         '2019-11-09 12:34:56',
@@ -78,6 +80,7 @@ module DuckDBTest
         170_141_183_460_469_231_731_687_303_715_884_105_727,
         12_345.375,
         12_345.6789,
+        98_765.4321,
         'str',
         self.class.today,
         Time.parse('2019-11-09 12:34:56'),
@@ -344,6 +347,13 @@ module DuckDBTest
       assert_equal(expected_row, stmt.execute.each.first)
 
       assert_raises(TypeError) { stmt.bind_double(1, 'invalid_double_val') }
+    end
+
+    def test__bind_decimal
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_decimal = $1')
+      stmt.send(:_bind_decimal, 1, 987654321, 0, 9, 4)
+      assert_equal(expected_row, stmt.execute.each.first)
     end
 
     def test_bind_varchar
