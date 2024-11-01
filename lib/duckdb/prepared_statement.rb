@@ -22,6 +22,31 @@ module DuckDB
     RANGE_INT32 = -2_147_483_648..2_147_483_647
     RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
 
+    class << self
+      # return DuckDB::PreparedStatement object.
+      # The first argument is DuckDB::Connection object.
+      # The second argument is SQL string.
+      # If block is given, the block is executed and the statement is destroyed.
+      #
+      #  require 'duckdb'
+      #  db = DuckDB::Database.open('duckdb_database')
+      #  con = db.connection
+      #  DuckDB::PreparedStatement.prepare(con, 'SELECT * FROM users WHERE id = ?') do |stmt|
+      #    stmt.bind(1, 1)
+      #    stmt.execute
+      #  end
+      def prepare(con, sql)
+        stmt = new(con, sql)
+        return stmt unless block_given?
+
+        begin
+          yield stmt
+        ensure
+          stmt.destroy
+        end
+      end
+    end
+
     def pending_prepared
       PendingResult.new(self)
     end
