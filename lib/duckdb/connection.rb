@@ -28,11 +28,10 @@ module DuckDB
     def query(sql, *args, **kwargs)
       return query_sql(sql) if args.empty? && kwargs.empty?
 
-      stmt = prepare(sql)
-      stmt.bind_args(*args, **kwargs)
-      stmt.execute
-    ensure
-      stmt&.destroy
+      prepare(sql) do |stmt|
+        stmt.bind_args(*args, **kwargs)
+        stmt.execute
+      end
     end
 
     #
@@ -52,11 +51,10 @@ module DuckDB
     #   result.each.first
     #
     def async_query(sql, *args, **kwargs)
-      stmt = prepare(sql)
-      stmt.bind_args(*args, **kwargs)
-      stmt.pending_prepared
-    ensure
-      stmt&.destroy
+      prepare(sql) do |stmt|
+        stmt.bind_args(*args, **kwargs)
+        stmt.pending_prepared
+      end
     end
 
     #
@@ -77,11 +75,10 @@ module DuckDB
     #   result.each.first
     #
     def async_query_stream(sql, *args, **kwargs)
-      stmt = prepare(sql)
-      stmt.bind_args(*args, **kwargs)
-      stmt.pending_prepared_stream
-    ensure
-      stmt&.destroy
+      prepare(sql) do |stmt|
+        stmt.bind_args(*args, **kwargs)
+        stmt.pending_prepared_stream
+      end
     end
 
     #
@@ -102,6 +99,8 @@ module DuckDB
     #
     # returns PreparedStatement object.
     # The first argument is SQL string.
+    # If block is given, the block is executed with PreparedStatement object
+    # and the object is cleaned up immediately.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_file')
@@ -111,8 +110,17 @@ module DuckDB
     #   stmt = con.prepared_statement(sql)
     #   stmt.bind_args(name: 'Dave', email: 'dave@example.com')
     #   result = stmt.execute
-    def prepared_statement(str)
-      PreparedStatement.new(self, str)
+    #
+    #   # or
+    #   result = con.prepared_statement(sql) do |stmt|
+    #              stmt.bind_args(name: 'Dave', email: 'dave@example.com')
+    #              stmt.execute
+    #            end
+    #
+    def prepared_statement(str, &)
+      return PreparedStatement.new(self, str) unless block_given?
+
+      PreparedStatement.prepare(self, str, &)
     end
 
     #
