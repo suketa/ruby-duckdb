@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+- add DuckDB::PreparedStatement#prepare.
 
 # 1.1.2.0 - 2024-10-20
 - bump duckdb to 1.1.2.
