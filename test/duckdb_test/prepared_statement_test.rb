@@ -104,6 +104,20 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { DuckDB::PreparedStatement.new(con, 'SELECT * FROM') }
     end
 
+    def test_s_prepare_without_block
+      con = PreparedStatementTest.con
+      assert_instance_of(DuckDB::PreparedStatement, DuckDB::PreparedStatement.prepare(con, 'SELECT * FROM a'))
+    end
+
+    def test_s_prepare_with_block
+      con = PreparedStatementTest.con
+      r = DuckDB::PreparedStatement.prepare(con, 'SELECT * FROM a WHERE id = $1') do |stmt|
+        stmt.bind(1, 1)
+        stmt.execute
+      end
+      assert_equal(1, r.first.first)
+    end
+
     def test_execute
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
