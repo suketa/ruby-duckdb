@@ -63,6 +63,28 @@ module DuckDBTest
       assert_equal 'Fail to get DuckDB::PreparedStatement object from ExtractedStatements object', ex.message
     end
 
+    def test_destroy
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+      assert_nil(stmts.destroy)
+    end
+
+    def test_each_without_block
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+      enum_stmts = stmts.each
+      assert_instance_of(Enumerator, enum_stmts)
+      assert_equal(3, enum_stmts.size)
+    end
+
+    def test_each_with_block
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+      i = 1
+      stmts.each do |stmt|
+        r = stmt.execute
+        assert_equal([[i]], r.to_a)
+        i += 1
+      end
+    end
+
     def teardown
       @con.close
       @db.close
