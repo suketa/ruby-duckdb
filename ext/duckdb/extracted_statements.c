@@ -17,6 +17,7 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 
 static VALUE duckdb_extracted_statements_initialize(VALUE self, VALUE con, VALUE query);
+static VALUE duckdb_extracted_statements_destroy(VALUE self);
 static VALUE duckdb_extracted_statements_size(VALUE self);
 static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index);
 
@@ -56,10 +57,20 @@ static VALUE duckdb_extracted_statements_initialize(VALUE self, VALUE con, VALUE
 
     if (ctx->num_statements == 0) {
         error = duckdb_extract_statements_error(ctx->extracted_statements);
-        rb_raise(eDuckDBError, "%s", error);
+        rb_raise(eDuckDBError, "%s", error ? error : "Failed to extract statements(Database connection closed?).");
     }
 
     return self;
+}
+
+static VALUE duckdb_extracted_statements_destroy(VALUE self) {
+    rubyDuckDBExtractedStatements *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
+
+    duckdb_destroy_extracted(&(ctx->extracted_statements));
+
+    return Qnil;
 }
 
 static VALUE duckdb_extracted_statements_size(VALUE self) {
@@ -85,10 +96,11 @@ static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE co
 }
 
 void rbduckdb_init_duckdb_extracted_statements(void) {
-    cDuckDBExtractedStatements = rb_define_class_under(mDuckDB, "ExtractedStatements", rb_cObject);
+    cDuckDBExtractedStatements = rb_define_class_under(mDuckDB, "ExtractedStatementsImpl", rb_cObject);
 
     rb_define_alloc_func(cDuckDBExtractedStatements, allocate);
     rb_define_method(cDuckDBExtractedStatements, "initialize", duckdb_extracted_statements_initialize, 2);
+    rb_define_method(cDuckDBExtractedStatements, "destroy", duckdb_extracted_statements_destroy, 0);
     rb_define_method(cDuckDBExtractedStatements, "size", duckdb_extracted_statements_size, 0);
     rb_define_method(cDuckDBExtractedStatements, "prepared_statement", duckdb_extracted_statements_prepared_statement, 2);
 }

@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
-- add DuckDB::PreparedStatement#prepare.
-- DuckDB::Connection#prepared_statement accepts block.
+- add `DuckDB::ExtracteStatements#each` method.
+- add `DuckDB::ExtracteStatementsImpl#destroy` method.
+- add `DuckDB::PreparedStatement#prepare`.
+- `DuckDB::Connection#prepared_statement` accepts block and calls `PreparedStatement#destroy` after block executed.
     ```ruby
     con.prepared_statement('SELECT * FROM table WHERE id = ?') do |stmt|
       stmt.bind(1)
