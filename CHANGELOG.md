@@ -2,9 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+
+# 1.1.2.1 - 2024-11-04
 - `DuckDB::Connection#query` accepts multiple SQL statement.
   - When multiple SQL statements are given, `DuckDB::Connection#query` returns the last statement result.
-  - `DuckDB::Connection#query` does not support multiple SQL statements with bind parameters.
+  - `DuckDB::Connection#query` does not support multiple SQL statements with bind parameters. If you pass 2 or more argument,
+    `DuckDB::Connection#query` will regard first argument as only one SQL statement and the rest as bind parameters.
 - add `DuckDB::ExtracteStatements#each` method.
 - add `DuckDB::ExtracteStatementsImpl#destroy` method.
 - add `DuckDB::PreparedStatement#prepare`.
@@ -15,7 +18,6 @@ All notable changes to this project will be documented in this file.
       stmt.execute
     end
     ```
-
 # 1.1.2.0 - 2024-10-20
 - bump duckdb to 1.1.2.
 - add `DuckDB::PreparedStatement#destroy`.
