@@ -26,12 +26,23 @@ module DuckDB
     #   dave = con.query(sql, name: 'Dave', email: 'dave@example.com')
     #
     def query(sql, *args, **kwargs)
-      return query_sql(sql) if args.empty? && kwargs.empty?
+      return query_multi_sql(sql) if args.empty? && kwargs.empty?
 
       prepare(sql) do |stmt|
         stmt.bind_args(*args, **kwargs)
         stmt.execute
       end
+    end
+
+    def query_multi_sql(sql)
+      stmts = ExtractedStatements.new(self, sql)
+      result = nil
+      stmts.each do |stmt|
+        result = stmt.execute
+      end
+      result
+    ensure
+      stmts&.destroy
     end
 
     #

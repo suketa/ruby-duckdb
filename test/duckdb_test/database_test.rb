@@ -88,10 +88,7 @@ module DuckDBTest
         con.query('SELECT * from DUMMY')
       end
 
-      #
-      # The error message is changed from DuckDB 0.2.4
-      #
-      assert(exception.message.include?('SELECT * from DUMMY') || exception.message.include?('has been closed'))
+      assert_equal('Failed to create DuckDB::PreparedStatement object.', exception.message)
     end
 
     private

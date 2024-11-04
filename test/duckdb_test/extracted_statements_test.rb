@@ -55,12 +55,12 @@ module DuckDBTest
       ex = assert_raises DuckDB::Error do
         stmts.prepared_statement(@con, 3)
       end
-      assert_equal 'Fail to get DuckDB::PreparedStatement object from ExtractedStatements object', ex.message
+      assert_equal 'Failed to create DuckDB::PreparedStatement object.', ex.message
 
       ex = assert_raises DuckDB::Error do
         stmts.prepared_statement(@con, -1)
       end
-      assert_equal 'Fail to get DuckDB::PreparedStatement object from ExtractedStatements object', ex.message
+      assert_equal 'Failed to create DuckDB::PreparedStatement object.', ex.message
     end
 
     def test_destroy

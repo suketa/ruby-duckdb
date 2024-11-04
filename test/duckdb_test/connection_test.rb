@@ -190,7 +190,7 @@ module DuckDBTest
       exception = assert_raises(DuckDB::Error) do
         @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       end
-      assert_equal('Database connection closed', exception.message)
+      assert_match(/Database connection closed/, exception.message)
     end
 
     def test_close
@@ -198,7 +198,7 @@ module DuckDBTest
       exception = assert_raises(DuckDB::Error) do
         @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       end
-      assert_equal('Database connection closed', exception.message)
+      assert_match(/Database connection closed/, exception.message)
     end
 
     def test_connect
@@ -206,7 +206,7 @@ module DuckDBTest
       exception = assert_raises(DuckDB::Error) do
         @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       end
-      assert_equal('Database connection closed', exception.message)
+      assert_match(/Database connection closed/, exception.message)
       @con.connect(@db)
       assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
@@ -219,7 +219,7 @@ module DuckDBTest
       exception = assert_raises(DuckDB::Error) do
         @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       end
-      assert_equal('Database connection closed', exception.message)
+      assert_match(/Database connection closed/, exception.message)
     end
 
     def test_open
@@ -227,7 +227,7 @@ module DuckDBTest
       exception = assert_raises(DuckDB::Error) do
         @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       end
-      assert_equal('Database connection closed', exception.message)
+      assert_match(/Database connection closed/, exception.message)
       @con.open(@db)
       assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
