@@ -155,6 +155,19 @@ module DuckDB
       end
     end
 
+    def _parse_deciaml(value)
+      case value
+      when BigDecimal
+        value
+      else
+        begin
+          BigDecimal(value.to_s)
+        rescue StandardError => e
+          raise(ArgumentError, "Cannot parse `#{value.inspect}` to BigDecimal object. #{e.message}")
+        end
+      end
+    end
+
     def _to_query_progress(percentage, rows_processed, total_rows_to_process)
       DuckDB::QueryProgress.new(percentage, rows_processed, total_rows_to_process).freeze
     end
@@ -170,6 +183,13 @@ module DuckDB
       else
         raise(ArgumentError, "The argument `#{value.inspect}` must be Integer.")
       end
+    end
+
+    def decimal_to_hugeint(value)
+      integer_value = (value * (10 ** value.scale)).to_i
+      integer_to_hugeint(integer_value)
+    rescue FloatDomainError => e
+      raise(ArgumentError, "The argument `#{value.inspect}` must be converted to Integer. #{e.message}")
     end
   end
 end

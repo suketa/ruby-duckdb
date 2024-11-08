@@ -219,6 +219,25 @@ module DuckDB
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
+    # The second argument value is to expected BigDecimal value or any value
+    # that can be parsed into a BigDecimal.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT value FROM decimals WHERE decimal = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_decimal(1, BigDecimal('987654.321'))
+    def bind_decimal(index, value)
+      decimal = _parse_deciaml(value)
+      lower, upper = decimal_to_hugeint(decimal)
+      width = decimal.to_s('F').gsub(/[^0-9]/, '').length
+      _bind_decimal(index, lower, upper, width, decimal.scale)
+    end
+
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
     # The second argument value is the value of prepared statement parameter.
     #
     #   require 'duckdb'
@@ -264,7 +283,7 @@ module DuckDB
       when Date
         bind_varchar(index, value.strftime('%Y-%m-%d'))
       when BigDecimal
-        bind_varchar(index, value.to_s('F'))
+        bind_decimal(index, value)
       else
         raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
       end

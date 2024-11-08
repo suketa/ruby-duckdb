@@ -370,6 +370,25 @@ module DuckDBTest
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
+    def test_bind_decimal
+      con = PreparedStatementTest.con
+      stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_decimal = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_decimal(0, BigDecimal('98765.4321')) }
+      assert_raises(DuckDB::Error) { stmt.bind_decimal(2, BigDecimal('98765.4321')) }
+
+      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, 'parse_error') }
+      assert_equal('Cannot parse `"parse_error"` to BigDecimal object. invalid value for BigDecimal(): "parse_error"', e.message)
+      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, BigDecimal('Infinity')) }
+      assert_equal('The argument `Infinity` must be converted to Integer. Computation results in \'Infinity\'', e.message)
+
+      stmt.bind_decimal(1, 98765.4321)
+      assert_equal(expected_row, stmt.execute.each.first)
+
+      stmt.bind_decimal(1, BigDecimal('98765.4321'))
+      assert_equal(expected_row, stmt.execute.each.first)
+    end
+
     def test_bind_varchar
       con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a WHERE col_varchar = $1')
