@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 # Unreleased
 
+# 1.1.3.0 - 2024-11-10
+- add `DuckDB::PreparedStatement#bind_decimal`. (Thanks to @otegami)
+- bump duckdb to 1.1.3.
+
 # 1.1.2.1 - 2024-11-04
 - `DuckDB::Connection#query` accepts multiple SQL statement.
   - When multiple SQL statements are given, `DuckDB::Connection#query` returns the last statement result.
