@@ -81,7 +81,6 @@ static VALUE duckdb_extracted_statements_size(VALUE self) {
     return ULL2NUM(ctx->num_statements);
 }
 
-
 static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index) {
     rubyDuckDBConnection *pcon;
     rubyDuckDBExtractedStatements *ctx;
