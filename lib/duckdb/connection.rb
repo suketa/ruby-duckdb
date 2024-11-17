@@ -8,7 +8,6 @@ module DuckDB
   #   con = db.connect
   #   con.query(sql)
   class Connection
-    #
     # executes sql with args.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
@@ -24,7 +23,6 @@ module DuckDB
     #
     #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
     #   dave = con.query(sql, name: 'Dave', email: 'dave@example.com')
-    #
     def query(sql, *args, **kwargs)
       return query_multi_sql(sql) if args.empty? && kwargs.empty?
 
@@ -45,7 +43,6 @@ module DuckDB
       stmts&.destroy
     end
 
-    #
     # executes sql with args asynchronously.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
@@ -60,7 +57,6 @@ module DuckDB
     #   pending_result.execute_task while pending_result.state == :not_ready
     #   result = pending_result.execute_pending
     #   result.each.first
-    #
     def async_query(sql, *args, **kwargs)
       prepare(sql) do |stmt|
         stmt.bind_args(*args, **kwargs)
@@ -68,7 +64,6 @@ module DuckDB
       end
     end
 
-    #
     # executes sql with args asynchronously and provides streaming result.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
@@ -84,7 +79,6 @@ module DuckDB
     #   pending_result.execute_task while pending_result.state == :not_ready
     #   result = pending_result.execute_pending
     #   result.each.first
-    #
     def async_query_stream(sql, *args, **kwargs)
       prepare(sql) do |stmt|
         stmt.bind_args(*args, **kwargs)
@@ -92,10 +86,8 @@ module DuckDB
       end
     end
 
-    #
     # connects DuckDB database
     # The first argument is DuckDB::Database object
-    #
     def connect(db)
       conn = _connect(db)
       return conn unless block_given?
@@ -107,7 +99,6 @@ module DuckDB
       end
     end
 
-    #
     # returns PreparedStatement object.
     # The first argument is SQL string.
     # If block is given, the block is executed with PreparedStatement object
@@ -127,17 +118,14 @@ module DuckDB
     #              stmt.bind_args(name: 'Dave', email: 'dave@example.com')
     #              stmt.execute
     #            end
-    #
     def prepared_statement(str, &)
       return PreparedStatement.new(self, str) unless block_given?
 
       PreparedStatement.prepare(self, str, &)
     end
 
-    #
     # returns Appender object.
     # The first argument is table name
-    #
     def appender(table)
       appender = create_appender(table)
 
