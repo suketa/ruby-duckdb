@@ -115,7 +115,7 @@ con.query('SELECT * FROM users WHERE name = $name AND email = $email', name: 'Al
 ```
 ### Using prepared statement
 
-You can use prepared statement.
+You can use prepared statement. Prepared statement object is created by `Connection#prepare` method or `DuckDB::PreparedStatement.new`.
 
 ```ruby
 stmt = con.prepare('SELECT * FROM users WHERE name = $name AND email = $email')
@@ -125,7 +125,20 @@ stmt = con.prepare('SELECT * FROM users WHERE name = $name AND email = $email')
 # stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM users WHERE name = $name AND email = $email')
 stmt.bind(name: 'Alice', email: 'alice@example.com')
 result = stmt.execute
+stmt.destroy
 ```
+You must call `PreparedStatement#destroy` method after using prepared statement. Otherwise, automatically destroyed
+when the PreparedStatement object is garbage collected.
+
+Instead of calling `PreparedStatement#destroy`, you can use block.
+
+```ruby
+result = con.prepare('SELECT * FROM users WHERE name = $name AND email = $email') do |stmt|
+           stmt.bind(name: 'Alice', email: 'alice@example.com')
+           stmt.execute
+         end
+```
+
 ### Using async query
 
 You can use async query.
