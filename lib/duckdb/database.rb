@@ -20,13 +20,11 @@ module DuckDB
   #   result.each do |row|
   #     p row
   #   end
-  #
   class Database
     private_class_method :_open
     private_class_method :_open_ext
 
     class << self
-      ##
       # Opens database.
       # The first argument is DuckDB database file path to open.
       # If there is no argument, the method opens DuckDB database in memory.
@@ -40,7 +38,6 @@ module DuckDB
       #     con = db.connect
       #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       #   end
-      #
       def open(dbpath = nil, config = nil)
         db = _db_open(dbpath, config)
         return db unless block_given?
@@ -54,7 +51,7 @@ module DuckDB
 
       private
 
-      def _db_open(dbpath, config)
+      def _db_open(dbpath, config) # :nodoc:
         if config
           _open_ext(dbpath, config)
         else
@@ -63,7 +60,6 @@ module DuckDB
       end
     end
 
-    ##
     # connects database.
     #
     # The method yields block and disconnects the database if block given
@@ -75,7 +71,6 @@ module DuckDB
     #   db.connect do |con|
     #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
     #   end
-    #
     def connect
       conn = _connect
       return conn unless block_given?
