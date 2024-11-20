@@ -69,7 +69,7 @@ module DuckDBTest
       expected.push('int_list_col')
       expected.push('varchar_list_col')
       expected.push('struct_col')
-      expected.push('enum_col')
+      expected.push('uuid_col')
       assert_equal(
         expected,
         @columns.map(&:name)
