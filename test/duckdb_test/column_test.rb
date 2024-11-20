@@ -5,8 +5,9 @@ require 'test_helper'
 module DuckDBTest
   class ColumnTest < Minitest::Test
     def setup
-      @@con ||= create_data
-      @result = @@con.query('SELECT * from table1')
+      @@con ||= initialize_database
+      reset_database(@@con)
+      @result = @@con.query('SELECT * FROM table1')
       @columns = @result.columns
     end
 
@@ -83,12 +84,33 @@ module DuckDBTest
     private
 
     def create_data
-      @@db ||= DuckDB::Database.open(':memory:') # FIXME
+      @@db ||= DuckDB::Database.open # FIXME
       con = @@db.connect
       con.query(create_type_enum_sql)
       con.query(create_table_sql)
       con.query(insert_sql)
       con
+    end
+
+    def initialize_database
+      @@db ||= DuckDB::Database.open # FIXME
+      @@db.connect
+    end
+
+    def reset_database(con)
+      drop_existing_schema(con)
+      setup_schema_and_data(con)
+    end
+
+    def drop_existing_schema(con)
+      con.query('DROP TABLE IF EXISTS table1')
+      con.query('DROP TYPE IF EXISTS mood')
+    end
+
+    def setup_schema_and_data(con)
+      con.query(create_type_enum_sql)
+      con.query(create_table_sql)
+      con.query(insert_sql)
     end
 
     def create_type_enum_sql
