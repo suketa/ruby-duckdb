@@ -37,7 +37,7 @@ module DuckDBTest
       expected.push(:list)
       expected.push(:struct)
       expected.push(:uuid)
-      expected.push(:json)
+      expected.push(:varchar)
       assert_equal(
         expected,
         @columns.map(&:type)
