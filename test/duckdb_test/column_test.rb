@@ -83,6 +83,10 @@ module DuckDBTest
     def create_data
       @@db ||= DuckDB::Database.open # FIXME
       con = @@db.connect
+
+      con.query(drop_table_sql)
+      con.query(drop_type_enum_sql)
+
       con.query(create_type_enum_sql)
       con.query(create_table_sql)
       con.query(insert_sql)
@@ -95,7 +99,7 @@ module DuckDBTest
 
     def create_table_sql
       sql = <<-SQL
-        CREATE TABLE table1(
+        CREATE TABLE IF NOT EXISTS table1(
           boolean_col BOOLEAN,
           tinyint_col TINYINT,
           smallint_col SMALLINT,
@@ -160,6 +164,14 @@ module DuckDBTest
       sql += ", '{\"key\": \"value\"}'"
       sql += ')'
       sql
+    end
+
+    def drop_type_enum_sql
+      "DROP TYPE IF EXISTS mood;"
+    end
+
+    def drop_table_sql
+      "DROP TABLE IF EXISTS table1;"
     end
   end
 end
