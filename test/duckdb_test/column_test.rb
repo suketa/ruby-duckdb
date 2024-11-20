@@ -83,7 +83,7 @@ module DuckDBTest
     private
 
     def create_data
-      @@db ||= DuckDB::Database.open # FIXME
+      @@db ||= DuckDB::Database.open(':memory:') # FIXME
       con = @@db.connect
       con.query(create_type_enum_sql)
       con.query(create_table_sql)
