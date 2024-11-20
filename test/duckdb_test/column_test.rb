@@ -36,6 +36,7 @@ module DuckDBTest
       expected.push(:list)
       expected.push(:list)
       expected.push(:struct)
+      expected.push(:uuid)
       assert_equal(
         expected,
         @columns.map(&:type)
@@ -68,6 +69,7 @@ module DuckDBTest
       expected.push('int_list_col')
       expected.push('varchar_list_col')
       expected.push('struct_col')
+      expected.push('enum_col')
       assert_equal(
         expected,
         @columns.map(&:name)
@@ -117,6 +119,7 @@ module DuckDBTest
       sql += ', int_list_col INT[]'
       sql += ', varchar_list_col VARCHAR[]'
       sql += ', struct_col STRUCT(word VARCHAR, length INTEGER)'
+      sql += ', uuid_col UUID'
       sql += ')'
       sql
     end
@@ -150,6 +153,7 @@ module DuckDBTest
       sql += ', [1, 2, 3]'
       sql += ", ['a', 'b', 'c']"
       sql += ", ROW('Ruby', 4)"
+      sql += ", '550e8400-e29b-41d4-a716-446655440000'"
       sql += ')'
       sql
     end
