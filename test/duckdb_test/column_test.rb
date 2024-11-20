@@ -6,7 +6,7 @@ module DuckDBTest
   class ColumnTest < Minitest::Test
     def setup
       @@con ||= initialize_database
-      reset_database(@@con)
+      ensure_clean_schema(@@con)
       @result = @@con.query('SELECT * FROM table1')
       @columns = @result.columns
     end
@@ -83,22 +83,17 @@ module DuckDBTest
 
     private
 
-    def create_data
-      @@db ||= DuckDB::Database.open # FIXME
-      con = @@db.connect
-      con.query(create_type_enum_sql)
-      con.query(create_table_sql)
-      con.query(insert_sql)
-      con
-    end
-
     def initialize_database
-      @@db ||= DuckDB::Database.open # FIXME
+      @@db ||= DuckDB::Database.open(':memory:') # Ensure an in-memory DB
       @@db.connect
     end
 
-    def reset_database(con)
-      drop_existing_schema(con)
+    def ensure_clean_schema(con)
+      begin
+        drop_existing_schema(con) # Safely drop existing schema
+      rescue DuckDB::Error
+        # Ignore errors if schema does not exist (first run)
+      end
       setup_schema_and_data(con)
     end
 
