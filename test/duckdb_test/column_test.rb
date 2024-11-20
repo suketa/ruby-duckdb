@@ -5,10 +5,14 @@ require 'test_helper'
 module DuckDBTest
   class ColumnTest < Minitest::Test
     def setup
-      @@con ||= initialize_database
-      ensure_clean_schema(@@con)
-      @result = @@con.query('SELECT * FROM table1')
-      @columns = @result.columns
+      @db = DuckDB::Database.open
+      @con = @db.connect
+      create_data
+    end
+
+    def teardown
+      @con.close if @con
+      @db = nil
     end
 
     def test_type
@@ -83,29 +87,12 @@ module DuckDBTest
 
     private
 
-    def initialize_database
-      @@db ||= DuckDB::Database.open(':memory:') # Ensure an in-memory DB
-      @@db.connect
-    end
-
-    def ensure_clean_schema(con)
-      begin
-        drop_existing_schema(con) # Safely drop existing schema
-      rescue DuckDB::Error
-        # Ignore errors if schema does not exist (first run)
-      end
-      setup_schema_and_data(con)
-    end
-
-    def drop_existing_schema(con)
-      con.query('DROP TABLE IF EXISTS table1')
-      con.query('DROP TYPE IF EXISTS mood')
-    end
-
-    def setup_schema_and_data(con)
-      con.query(create_type_enum_sql)
-      con.query(create_table_sql)
-      con.query(insert_sql)
+    def create_data
+      @con.query(create_type_enum_sql)
+      @con.query(create_table_sql)
+      @con.query(insert_sql)
+      @result = @con.query('SELECT * FROM table1')
+      @columns = @result.columns
     end
 
     def create_type_enum_sql
