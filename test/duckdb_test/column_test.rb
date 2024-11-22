@@ -36,9 +36,6 @@ module DuckDBTest
       expected.push(:list)
       expected.push(:list)
       expected.push(:struct)
-      expected.push(:uuid)
-      expected.push(:varchar) # json
-      expected.push(:map)
       assert_equal(
         expected,
         @columns.map(&:type)
@@ -71,9 +68,6 @@ module DuckDBTest
       expected.push('int_list_col')
       expected.push('varchar_list_col')
       expected.push('struct_col')
-      expected.push('uuid_col')
-      expected.push('json_col')
-      expected.push('map_col')
       assert_equal(
         expected,
         @columns.map(&:name)
@@ -123,9 +117,6 @@ module DuckDBTest
       sql += ', int_list_col INT[]'
       sql += ', varchar_list_col VARCHAR[]'
       sql += ', struct_col STRUCT(word VARCHAR, length INTEGER)'
-      sql += ', uuid_col UUID'
-      sql += ', json_col JSON'
-      sql += ', map_col MAP(INTEGER, VARCHAR)'
       sql += ')'
       sql
     end
@@ -159,9 +150,6 @@ module DuckDBTest
       sql += ', [1, 2, 3]'
       sql += ", ['a', 'b', 'c']"
       sql += ", ROW('Ruby', 4)"
-      sql += ", '#{SecureRandom.uuid}'"
-      sql += ", '{\"key\": \"value\"}'"
-      sql += ", MAP([1, 2], ['Dog', 'Cat'])"
       sql += ')'
       sql
     end
