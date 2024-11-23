@@ -205,6 +205,14 @@ module DuckDBTest
       assert_duckdb_appender(nil, 'VARCHAR', &:append_null)
     end
 
+    def test_append_default_without_default
+      assert_duckdb_appender(nil, 'VARCHAR', &:append_default)
+    end
+
+    def test_append_default_with_default
+      assert_duckdb_appender('foobar', "VARCHAR DEFAULT 'foobar'", &:append_default)
+    end
+
     def test_append_interval
       value = DuckDB::Interval.new(interval_months: 1)
       assert_duckdb_appender(value, 'INTERVAL') { |a| a.append_interval(value) }
