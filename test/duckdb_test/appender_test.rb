@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'time'
 
@@ -192,11 +194,9 @@ module DuckDBTest
     end
 
     def test_append_blob
-      # duckdb 0.4.0 has append_blob issue.
-      # https://github.com/duckdb/duckdb/issues/3960
-      data =  DuckDBVersion.duckdb_version == '0.4.0' ? "\1\2\3\4\5" : "\0\1\2\3\4\5"
+      data = "\0\1\2\3\4\5"
       value = DuckDB::Blob.new(data)
-      expected = data.force_encoding(Encoding::BINARY)
+      expected = data.encode(Encoding::BINARY)
 
       assert_duckdb_appender(expected, 'BLOB') { |a| a.append_blob(value) }
     end
@@ -601,11 +601,9 @@ module DuckDBTest
         appender.append('foobarbaz')
       end
 
-      # duckdb 0.4.0 has append_blob issue.
-      # https://github.com/duckdb/duckdb/issues/3960
-      data =  DuckDBVersion.duckdb_version == '0.4.0' ? "\1\2\3\4\5" : "\0\1\2\3\4\5"
+      data = "\0\1\2\3\4\5"
       value = DuckDB::Blob.new(data)
-      expected = data.force_encoding(Encoding::BINARY)
+      expected = data.encode(Encoding::BINARY)
 
       assert_duckdb_appender(expected, 'BLOB') do |appender|
         appender.append(value)
