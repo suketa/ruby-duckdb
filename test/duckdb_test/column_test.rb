@@ -34,7 +34,8 @@ module DuckDBTest
         int_list_col INT[],
         varchar_list_col VARCHAR[],
         struct_col STRUCT(word VARCHAR, length INTEGER),
-        uuid_col UUID
+        uuid_col UUID,
+        map_col MAP(INTEGER, VARCHAR)
       );
     SQL
 
@@ -64,7 +65,8 @@ module DuckDBTest
         [1, 2, 3],
         ['a', 'b', 'c'],
         ROW('Ruby', 4),
-        '#{SecureRandom.uuid}'
+        '#{SecureRandom.uuid}',
+        MAP{1: 'foo'}
       )
     SQL
 
@@ -95,6 +97,7 @@ module DuckDBTest
       list
       struct
       uuid
+      map
     ].freeze
 
     EXPECTED_NAMES = %w[
@@ -122,6 +125,7 @@ module DuckDBTest
       varchar_list_col
       struct_col
       uuid_col
+      map_col
     ].freeze
 
     def setup
