@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - install valgrind in docker development environment.
 - add `DuckDB::Appender#append_default`.
-- fix error message when `DuckDB::Connection#query` is called with invalid SQL.
 
 # 1.1.3.0 - 2024-11-10
 - add `DuckDB::PreparedStatement#bind_decimal`. (Thanks to @otegami)
