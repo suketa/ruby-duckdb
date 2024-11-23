@@ -153,7 +153,7 @@ module DuckDBTest
     TEST_TABLES.each_with_index do |spec, i|
       do_test, db_type, db_declaration, string_rep, klass, ruby_val = *spec
       define_method :"test_#{db_type}_type#{i}" do
-        skip if do_test == :ng
+        skip spec.to_s if do_test == :ng
 
         prepare_test_table_and_data(db_declaration, db_type, string_rep)
 
@@ -163,7 +163,7 @@ module DuckDBTest
       end
 
       define_method :"test_stream_#{db_type}_type#{i}" do
-        skip if do_test == :ng
+        skip spec.to_s if do_test == :ng
 
         prepare_test_table_and_data(db_declaration, db_type, string_rep)
 
