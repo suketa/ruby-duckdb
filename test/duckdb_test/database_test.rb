@@ -88,7 +88,7 @@ module DuckDBTest
         con.query('SELECT * from DUMMY')
       end
 
-      assert_equal('Failed to create DuckDB::PreparedStatement object.', exception.message)
+      assert_match(/DUMMY does not exist/, exception.message)
     end
 
     private
