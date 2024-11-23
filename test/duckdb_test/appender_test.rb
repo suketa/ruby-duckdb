@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'time'
 
@@ -192,17 +194,39 @@ module DuckDBTest
     end
 
     def test_append_blob
-      # duckdb 0.4.0 has append_blob issue.
-      # https://github.com/duckdb/duckdb/issues/3960
-      data =  DuckDBVersion.duckdb_version == '0.4.0' ? "\1\2\3\4\5" : "\0\1\2\3\4\5"
+      data = "\0\1\2\3\4\5"
       value = DuckDB::Blob.new(data)
-      expected = data.force_encoding(Encoding::BINARY)
+      expected = data.encode(Encoding::BINARY)
 
       assert_duckdb_appender(expected, 'BLOB') { |a| a.append_blob(value) }
     end
 
     def test_append_null
       assert_duckdb_appender(nil, 'VARCHAR', &:append_null)
+    end
+
+    def test_append_default_without_default
+      if DuckDB::Appender.instance_methods.include?(:append_default)
+        assert_duckdb_appender(nil, 'VARCHAR', &:append_default)
+      else
+        if Gem::Version.new(DuckDB::VERSION) >= Gem::Version.new('1.3.0')
+          raise "#{__method__} must be enabled. Please check the ##{__FILE__}:##{__method__} method."
+        end
+
+        skip('DuckDB::Appender#append_default is not available')
+      end
+    end
+
+    def test_append_default_with_default
+      if DuckDB::Appender.instance_methods.include?(:append_default)
+        assert_duckdb_appender('foobar', "VARCHAR DEFAULT 'foobar'", &:append_default)
+      else
+        if Gem::Version.new(DuckDB::VERSION) >= Gem::Version.new('1.3.0')
+          raise "#{__method__} must be enabled. Please check the ##{__FILE__}:##{__method__} method."
+        end
+
+        skip('DuckDB::Appender#append_default is not available')
+      end
     end
 
     def test_append_interval
@@ -601,11 +625,9 @@ module DuckDBTest
         appender.append('foobarbaz')
       end
 
-      # duckdb 0.4.0 has append_blob issue.
-      # https://github.com/duckdb/duckdb/issues/3960
-      data =  DuckDBVersion.duckdb_version == '0.4.0' ? "\1\2\3\4\5" : "\0\1\2\3\4\5"
+      data = "\0\1\2\3\4\5"
       value = DuckDB::Blob.new(data)
-      expected = data.force_encoding(Encoding::BINARY)
+      expected = data.encode(Encoding::BINARY)
 
       assert_duckdb_appender(expected, 'BLOB') do |appender|
         appender.append(value)

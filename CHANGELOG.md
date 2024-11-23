@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 # Unreleased
 - install valgrind in docker development environment.
+- add `DuckDB::Appender#append_default`.
 
 # 1.1.3.0 - 2024-11-10
 - add `DuckDB::PreparedStatement#bind_decimal`. (Thanks to @otegami)
