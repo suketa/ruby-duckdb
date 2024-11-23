@@ -129,9 +129,11 @@ module DuckDBTest
     ].freeze
 
     def setup
-      @@con ||= create_data
-      @result = @@con.query(SELECT_SQL)
-      @columns = @result.columns
+      @db = DuckDB::Database.open
+      @con = @db.connect
+      create_data(@con)
+      result = @con.query(SELECT_SQL)
+      @columns = result.columns
     end
 
     def test_type
@@ -144,13 +146,10 @@ module DuckDBTest
 
     private
 
-    def create_data
-      @@db ||= DuckDB::Database.open # FIXME
-      con = @@db.connect
+    def create_data(con)
       con.query(CREATE_TYPE_ENUM_SQL)
       con.query(CREATE_TABLE_SQL)
       con.query(INSERT_SQL)
-      con
     end
   end
 end
