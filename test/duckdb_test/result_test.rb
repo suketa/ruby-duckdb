@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module DuckDBTest
@@ -275,7 +277,7 @@ module DuckDBTest
     end
 
     def expected_blob
-      'blob'.force_encoding('ASCII-8BIT')
+      'blob'.encode('ASCII-8BIT')
     end
 
     def first_record
