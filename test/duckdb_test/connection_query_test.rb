@@ -7,7 +7,7 @@ module DuckDBTest
     end
 
     def test_prepared_statement_destroy_in_query
-      outputs = `ruby -Ilib test/connection_query_ng.rb`
+      outputs = `ruby -Ilib test/ng/connection_query_ng.rb`
       @file, before, after = outputs.split("\n")
       assert_equal(before, after)
     end
