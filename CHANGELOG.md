@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+# 1.1.3.1 - 2024-11-27
+- fix to `DuckDB::Connection#query` with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.
 - install valgrind in docker development environment.
 - add `DuckDB::Appender#append_default`.
 
