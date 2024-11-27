@@ -37,6 +37,7 @@ module DuckDB
       result = nil
       stmts.each do |stmt|
         result = stmt.execute
+        stmt.destroy
       end
       result
     ensure
