@@ -151,6 +151,9 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
 }
 
 void rbduckdb_init_duckdb_connection(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBConnection = rb_define_class_under(mDuckDB, "Connection", rb_cObject);
     rb_define_alloc_func(cDuckDBConnection, allocate);
 

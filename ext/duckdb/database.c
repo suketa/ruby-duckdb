@@ -116,6 +116,9 @@ static VALUE duckdb_database_close(VALUE self) {
 }
 
 void rbduckdb_init_duckdb_database(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
     rb_define_singleton_method(cDuckDBDatabase, "_open", duckdb_database_s_open, -1);

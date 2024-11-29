@@ -403,6 +403,9 @@ static VALUE appender_close(VALUE self) {
 }
 
 void rbduckdb_init_duckdb_appender(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBAppender = rb_define_class_under(mDuckDB, "Appender", rb_cObject);
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
