@@ -82,6 +82,9 @@ VALUE rbduckdb_create_column(VALUE oDuckDBResult, idx_t col) {
 }
 
 void rbduckdb_init_duckdb_column(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBColumn = rb_define_class_under(mDuckDB, "Column", rb_cObject);
     rb_define_alloc_func(cDuckDBColumn, allocate);
 

@@ -433,6 +433,9 @@ rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self) {
 }
 
 void rbduckdb_init_duckdb_prepared_statement(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBPreparedStatement = rb_define_class_under(mDuckDB, "PreparedStatement", rb_cObject);
 
     rb_define_alloc_func(cDuckDBPreparedStatement, allocate);

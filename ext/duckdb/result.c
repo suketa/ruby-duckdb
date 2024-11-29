@@ -884,6 +884,9 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
 }
 
 void rbduckdb_init_duckdb_result(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
     id__to_date = rb_intern("_to_date");
     id__to_time = rb_intern("_to_time");

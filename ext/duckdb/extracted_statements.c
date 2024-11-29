@@ -95,6 +95,9 @@ static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE co
 }
 
 void rbduckdb_init_duckdb_extracted_statements(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBExtractedStatements = rb_define_class_under(mDuckDB, "ExtractedStatementsImpl", rb_cObject);
 
     rb_define_alloc_func(cDuckDBExtractedStatements, allocate);

@@ -80,6 +80,9 @@ static VALUE config_set_config(VALUE self, VALUE key, VALUE value) {
 }
 
 void rbduckdb_init_duckdb_config(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBConfig = rb_define_class_under(mDuckDB, "Config", rb_cObject);
     rb_define_alloc_func(cDuckDBConfig, allocate);
     rb_define_singleton_method(cDuckDBConfig, "size", config_s_size, 0);

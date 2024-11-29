@@ -141,6 +141,9 @@ rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
 }
 
 void rbduckdb_init_duckdb_pending_result(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
 
