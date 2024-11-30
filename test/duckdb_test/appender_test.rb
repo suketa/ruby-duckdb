@@ -295,12 +295,12 @@ module DuckDBTest
       e = assert_raises(ArgumentError) do
         sub_test_append_column2(:append_date, 'DATE', values: [20_211_010], expected: Date.parse('2021-10-10'))
       end
-      assert_equal('Cannot parse argument `20211010` to Date.', e.message)
+      assert_match(/Cannot parse `20211010` to Date/, e.message)
 
       e = assert_raises(ArgumentError) do
         sub_test_append_column2(:append_date, 'DATE', values: ['2021-1010'], expected: Date.parse('2021-10-10'))
       end
-      assert_equal('Cannot parse argument `2021-1010` to Date.', e.message)
+      assert_match(/Cannot parse `"2021-1010"` to Date/, e.message)
     end
 
     def test__append_interval
