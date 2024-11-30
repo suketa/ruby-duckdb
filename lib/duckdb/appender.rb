@@ -70,7 +70,7 @@ module DuckDB
     #   appender.end_row
     #   appender.flush
     def append_date(value)
-      date = to_date(value)
+      date = _parse_date(value)
 
       _append_date(date.year, date.month, date.day)
     end
@@ -200,31 +200,12 @@ module DuckDB
       value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
     end
 
-    def to_date(value) # :nodoc:
-      case value
-      when Date, Time
-        value
-      else
-        begin
-          Date.parse(value)
-        rescue StandardError
-          raise(ArgumentError, "Cannot parse argument `#{value}` to Date.")
-        end
-      end
-    end
-
     def to_time(value) # :nodoc:
       case value
-      when Time
-        value
       when Date
         value.to_time
       else
-        begin
-          Time.parse(value)
-        rescue StandardError
-          raise(ArgumentError, "Cannot parse argument `#{value}` to Time or Date.")
-        end
+        _parse_time(value)
       end
     end
   end
