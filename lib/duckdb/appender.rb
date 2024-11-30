@@ -202,16 +202,10 @@ module DuckDB
 
     def to_time(value) # :nodoc:
       case value
-      when Time
-        value
       when Date
         value.to_time
       else
-        begin
-          Time.parse(value)
-        rescue StandardError
-          raise(ArgumentError, "Cannot parse argument `#{value}` to Time or Date.")
-        end
+        _parse_time(value)
       end
     end
   end
