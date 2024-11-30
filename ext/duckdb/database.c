@@ -43,6 +43,7 @@ rubyDuckDB *rbduckdb_get_struct_database(VALUE obj) {
     return ctx;
 }
 
+/* :nodoc: */
 static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
     rubyDuckDB *ctx;
     VALUE obj;
@@ -64,6 +65,7 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
     return obj;
 }
 
+/* :nodoc: */
 static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
     rubyDuckDB *ctx;
     VALUE obj;
@@ -98,6 +100,7 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
     return obj;
 }
 
+/* :nodoc: */
 static VALUE duckdb_database_connect(VALUE self) {
     return rbduckdb_create_connection(self);
 }
