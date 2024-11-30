@@ -13,15 +13,16 @@ module DuckDB
   #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
   #   appender = con.appender('users')
   #   appender.append_row(1, 'Alice')
-  #
   class Appender
     include DuckDB::Converter
 
+    # :stopdoc:
     RANGE_INT16 = -32_768..32_767
     RANGE_INT32 = -2_147_483_648..2_147_483_647
     RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
+    private_constant :RANGE_INT16, :RANGE_INT32, :RANGE_INT64
+    # :startdoc:
 
-    #
     # appends huge int value.
     #
     #   require 'duckdb'
@@ -33,13 +34,11 @@ module DuckDB
     #     .begin_row
     #     .append_hugeint(-170_141_183_460_469_231_731_687_303_715_884_105_727)
     #     .end_row
-    #
     def append_hugeint(value)
       lower, upper = integer_to_hugeint(value)
       _append_hugeint(lower, upper)
     end
 
-    #
     # appends unsigned huge int value.
     #
     #   require 'duckdb'
@@ -51,13 +50,11 @@ module DuckDB
     #     .begin_row
     #     .append_hugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
     #     .end_row
-    #
     def append_uhugeint(value)
       lower, upper = integer_to_hugeint(value)
       _append_uhugeint(lower, upper)
     end
 
-    #
     # appends date value.
     #
     #   require 'duckdb'
@@ -72,14 +69,12 @@ module DuckDB
     #   # appender.append_date('2021-10-10')
     #   appender.end_row
     #   appender.flush
-    #
     def append_date(value)
       date = to_date(value)
 
       _append_date(date.year, date.month, date.day)
     end
 
-    #
     # appends time value.
     #
     #   require 'duckdb'
@@ -93,14 +88,12 @@ module DuckDB
     #   # appender.append_time('01:01:01')
     #   appender.end_row
     #   appender.flush
-    #
     def append_time(value)
       time = _parse_time(value)
 
       _append_time(time.hour, time.min, time.sec, time.usec)
     end
 
-    #
     # appends timestamp value.
     #
     #   require 'duckdb'
@@ -115,14 +108,12 @@ module DuckDB
     #   # appender.append_time('2021-08-01 01:01:01')
     #   appender.end_row
     #   appender.flush
-    #
     def append_timestamp(value)
       time = to_time(value)
 
       _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
     end
 
-    #
     # appends interval.
     # The argument must be ISO8601 duration format.
     # WARNING: This method is expremental.
@@ -137,13 +128,11 @@ module DuckDB
     #     .append_interval('P1Y2D') # => append 1 year 2 days interval.
     #     .end_row
     #     .flush
-    #
     def append_interval(value)
       value = Interval.to_interval(value)
       _append_interval(value.interval_months, value.interval_days, value.interval_micros)
     end
 
-    #
     # appends value.
     #
     #   require 'duckdb'
@@ -155,7 +144,6 @@ module DuckDB
     #   appender.append(1)
     #   appender.append('Alice')
     #   appender.end_row
-    #
     def append(value)
       case value
       when NilClass
@@ -188,7 +176,6 @@ module DuckDB
       end
     end
 
-    #
     # append a row.
     #
     #   appender.append_row(1, 'Alice')
@@ -199,7 +186,6 @@ module DuckDB
     #   appender.append(1)
     #   appender.append('Alice')
     #   appender.end_row
-    #
     def append_row(*args)
       begin_row
       args.each do |arg|
@@ -210,11 +196,11 @@ module DuckDB
 
     private
 
-    def blob?(value)
+    def blob?(value) # :nodoc:
       value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
     end
 
-    def to_date(value)
+    def to_date(value) # :nodoc:
       case value
       when Date, Time
         value
@@ -227,7 +213,7 @@ module DuckDB
       end
     end
 
-    def to_time(value)
+    def to_time(value) # :nodoc:
       case value
       when Time
         value

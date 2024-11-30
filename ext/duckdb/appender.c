@@ -298,6 +298,7 @@ static VALUE appender_append_default(VALUE self) {
 }
 #endif
 
+/* :nodoc: */
 static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE day) {
     duckdb_date dt;
     rubyDuckDBAppender *ctx;
@@ -311,6 +312,7 @@ static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE da
     return self;
 }
 
+/* :nodoc: */
 static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
     rubyDuckDBAppender *ctx;
@@ -324,6 +326,7 @@ static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VAL
     return self;
 }
 
+/* :nodoc: */
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_time time;
     rubyDuckDBAppender *ctx;
@@ -337,6 +340,7 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
     return self;
 }
 
+/* :nodoc: */
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp;
 
@@ -352,6 +356,7 @@ static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VAL
     return self;
 }
 
+/* :nodoc: */
 static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper) {
     duckdb_hugeint hugeint;
 
@@ -367,6 +372,7 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper) {
     return self;
 }
 
+/* :nodoc: */
 static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
     duckdb_uhugeint uhugeint;
 
@@ -426,6 +432,8 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "append_varchar_length", appender_append_varchar_length, 2);
     rb_define_method(cDuckDBAppender, "append_blob", appender_append_blob, 1);
     rb_define_method(cDuckDBAppender, "append_null", appender_append_null, 0);
+    rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
+    rb_define_method(cDuckDBAppender, "close", appender_close, 0);
 
 #ifdef HAVE_DUCKDB_H_GE_V1_1_0
     rb_define_method(cDuckDBAppender, "append_default", appender_append_default, 0);
@@ -437,6 +445,4 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_append_timestamp", appender__append_timestamp, 7);
     rb_define_private_method(cDuckDBAppender, "_append_hugeint", appender__append_hugeint, 2);
     rb_define_private_method(cDuckDBAppender, "_append_uhugeint", appender__append_uhugeint, 2);
-    rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
-    rb_define_method(cDuckDBAppender, "close", appender_close, 0);
 }
