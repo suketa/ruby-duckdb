@@ -88,9 +88,9 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
  * Begins a new row in the appender. This must be called before appending any values to the row.
  *
  *   require 'duckdb'
- *   db = duckdb::database.open
+ *   db = DuckDB::Database.open
  *   con = db.connect
- *   con.query('create table users (id integer, name varchar)')
+ *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
  *   appender = con.appender('users')
  *   appender
  *     .begin_row
