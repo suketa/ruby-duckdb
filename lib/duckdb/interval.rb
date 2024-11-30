@@ -29,6 +29,7 @@ module DuckDB
   #     .end_row
   #     .flush
   class Interval
+    # :stopdoc:
     ISO8601_REGEXP = Regexp.compile(
       '(?<negativ>-{0,1})P
       (?<year>-{0,1}\d+Y){0,1}
@@ -40,6 +41,8 @@ module DuckDB
       ((?<sec>-{0,1}\d+)\.{0,1}(?<usec>\d*)S){0,1}',
       Regexp::EXTENDED
     )
+    private_constant :ISO8601_REGEXP
+    # :startdoc:
 
     class << self
       # parses the ISO8601 format string and return the Interval object.
@@ -93,7 +96,7 @@ module DuckDB
 
       private
 
-      def matched_to_i(matched)
+      def matched_to_i(matched) # :nodoc:
         sign = to_sign(matched)
         sec = to_sec(matched)
         usec = to_usec(matched)
@@ -104,35 +107,35 @@ module DuckDB
         sign.positive? ? value : value.map { |v| v * sign }
       end
 
-      def to_sign(matched)
+      def to_sign(matched) # :nodoc:
         matched[:negativ] == '-' ? -1 : 1
       end
 
-      def to_year(matched)
+      def to_year(matched) # :nodoc:
         matched[:year].to_i
       end
 
-      def to_month(matched)
+      def to_month(matched) # :nodoc:
         matched[:month].to_i
       end
 
-      def to_day(matched)
+      def to_day(matched) # :nodoc:
         matched[:day].to_i
       end
 
-      def to_hour(matched)
+      def to_hour(matched) # :nodoc:
         matched[:hour].to_i
       end
 
-      def to_min(matched)
+      def to_min(matched) # :nodoc:
         matched[:min].to_i
       end
 
-      def to_sec(matched)
+      def to_sec(matched) # :nodoc:
         matched[:sec].to_i
       end
 
-      def to_usec(matched)
+      def to_usec(matched) # :nodoc:
         matched[:usec].to_s.ljust(6, '0')[0, 6].to_i
       end
     end
