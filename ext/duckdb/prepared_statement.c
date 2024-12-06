@@ -316,18 +316,21 @@ static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__statement_type(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return INT2FIX(duckdb_prepared_statement_type(ctx->prepared_statement));
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__param_type(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return INT2FIX(duckdb_param_type(ctx->prepared_statement, NUM2ULL(vidx)));
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day) {
     rubyDuckDBPreparedStatement *ctx;
     duckdb_date dt;
@@ -344,6 +347,7 @@ static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros){
     rubyDuckDBPreparedStatement *ctx;
     duckdb_time time;
@@ -361,6 +365,7 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp;
     rubyDuckDBPreparedStatement *ctx;
@@ -375,6 +380,7 @@ static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, V
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
     rubyDuckDBPreparedStatement *ctx;
@@ -390,6 +396,7 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
     duckdb_hugeint hugeint;
     rubyDuckDBPreparedStatement *ctx;
@@ -406,6 +413,7 @@ static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VAL
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
     duckdb_hugeint hugeint;
     duckdb_decimal decimal;
