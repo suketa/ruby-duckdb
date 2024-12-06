@@ -114,6 +114,7 @@ static VALUE duckdb_connection_query_progress(VALUE self) {
     return rb_funcall(mDuckDBConverter, rb_intern("_to_query_progress"), 3, DBL2NUM(progress.percentage), ULL2NUM(progress.rows_processed), ULL2NUM(progress.total_rows_to_process));
 }
 
+/* :nodoc: */
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase) {
     rubyDuckDBConnection *ctx;
     rubyDuckDB *ctxdb;
@@ -131,6 +132,7 @@ static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase) {
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     rubyDuckDBConnection *ctx;
     rubyDuckDBResult *ctxr;
@@ -161,5 +163,6 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_method(cDuckDBConnection, "interrupt", duckdb_connection_interrupt, 0);
     rb_define_method(cDuckDBConnection, "query_progress", duckdb_connection_query_progress, 0);
     rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
+    /* TODO: query_sql => _query_sql */
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
 }

@@ -224,6 +224,7 @@ static VALUE destroy_data_chunk(VALUE arg) {
     return Qnil;
 }
 
+/* :nodoc: */
 static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
 /*
 #ifdef HAVE_DUCKDB_H_GE_V1_0_0
@@ -258,6 +259,7 @@ static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
 */
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     struct chunk_arg arg;
@@ -301,12 +303,14 @@ static VALUE yield_rows(VALUE arg) {
     return Qnil;
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_column_type(&(ctx->result), NUM2LL(col_idx)));
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
@@ -320,12 +324,14 @@ static VALUE duckdb_result__return_type(VALUE oDuckDBResult) {
 #endif
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_statement_type(ctx->result));
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     VALUE type = Qnil;
@@ -340,6 +346,7 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
     return type;
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     VALUE size = Qnil;
@@ -354,6 +361,7 @@ static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_
     return size;
 }
 
+/* :nodoc: */
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx) {
     rubyDuckDBResult *ctx;
     VALUE value = Qnil;
