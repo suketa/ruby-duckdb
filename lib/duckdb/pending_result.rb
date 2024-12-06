@@ -19,7 +19,7 @@ module DuckDB
   #   end
   #   result = pending_result.execute_pending
   class PendingResult
-    STATES = %i[ready not_ready error no_tasks].freeze
+    STATES = %i[ready not_ready error no_tasks].freeze # :nodoc:
 
     # returns the state of the pending result.
     # the result can be :ready, :not_ready, :error, :no_tasks.

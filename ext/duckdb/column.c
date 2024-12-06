@@ -29,9 +29,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBColumn);
 }
 
-/*
- *
- */
+/* :nodoc: */
 VALUE duckdb_column__type(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
     rubyDuckDBResult *ctxresult;

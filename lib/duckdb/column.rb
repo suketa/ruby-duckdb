@@ -2,7 +2,6 @@
 
 module DuckDB
   class Column
-    #
     # returns column type symbol
     # `:unknown` means that the column type is unknown/unsupported by ruby-duckdb.
     # `:invalid` means that the column type is invalid in duckdb.
@@ -15,7 +14,6 @@ module DuckDB
     #   users = con.query('SELECT * FROM users')
     #   columns = users.columns
     #   columns.first.type #=> :integer
-    #
     def type
       type_id = _type
       DuckDB::Converter::IntToSym.type_to_sym(type_id)

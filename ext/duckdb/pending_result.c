@@ -124,11 +124,13 @@ static VALUE duckdb_pending_result_execute_pending(VALUE self) {
     return result;
 }
 
+/* :nodoc: */
 static VALUE duckdb_pending_result__state(VALUE self) {
     rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
     return INT2FIX(ctx->state);
 }
 
+/* :nodoc: */
 static VALUE duckdb_pending_result__execute_check_state(VALUE self) {
     rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
     return INT2FIX(duckdb_pending_execute_check_state(ctx->pending_result));
