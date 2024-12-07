@@ -87,7 +87,7 @@ static VALUE appender_begin_row(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_appender_begin_row(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to flush");
+        rb_raise(eDuckDBError, "failed to begin row");
     }
     return self;
 }
@@ -97,7 +97,7 @@ static VALUE appender_end_row(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_appender_end_row(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to flush");
+        rb_raise(eDuckDBError, "failed to end row");
     }
     return self;
 }
@@ -123,7 +123,7 @@ static VALUE appender_append_int8(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_int8(ctx->appender, i8val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append int8");
     }
     return self;
 }
@@ -135,7 +135,7 @@ static VALUE appender_append_int16(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_int16(ctx->appender, i16val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append int16");
     }
     return self;
 }
@@ -147,7 +147,7 @@ static VALUE appender_append_int32(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_int32(ctx->appender, i32val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append int32");
     }
     return self;
 }
@@ -159,7 +159,7 @@ static VALUE appender_append_int64(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_int64(ctx->appender, i64val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append int64");
     }
     return self;
 }
@@ -171,7 +171,7 @@ static VALUE appender_append_uint8(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_uint8(ctx->appender, ui8val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append uint8");
     }
     return self;
 }
@@ -183,7 +183,7 @@ static VALUE appender_append_uint16(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_uint16(ctx->appender, ui16val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append uint16");
     }
     return self;
 }
@@ -195,7 +195,7 @@ static VALUE appender_append_uint32(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_uint32(ctx->appender, ui32val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append uint32");
     }
     return self;
 }
@@ -207,7 +207,7 @@ static VALUE appender_append_uint64(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_uint64(ctx->appender, ui64val) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append uint64");
     }
     return self;
 }
@@ -219,7 +219,7 @@ static VALUE appender_append_float(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_float(ctx->appender, fval) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append float");
     }
     return self;
 }
@@ -231,7 +231,7 @@ static VALUE appender_append_double(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_double(ctx->appender, dval) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append double");
     }
     return self;
 }
@@ -243,7 +243,7 @@ static VALUE appender_append_varchar(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_varchar(ctx->appender, pval) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append varchar");
     }
     return self;
 }
@@ -257,7 +257,7 @@ static VALUE appender_append_varchar_length(VALUE self, VALUE val, VALUE len) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_varchar_length(ctx->appender, pval, length) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append varchar with length");
     }
     return self;
 }
@@ -271,7 +271,7 @@ static VALUE appender_append_blob(VALUE self, VALUE val) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_blob(ctx->appender, (void *)pval, length) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append blob");
     }
     return self;
 }
@@ -281,7 +281,7 @@ static VALUE appender_append_null(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_null(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append null");
     }
     return self;
 }
@@ -292,7 +292,7 @@ static VALUE appender_append_default(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_append_default(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append");
+        rb_raise(eDuckDBError, "failed to append default");
     }
     return self;
 }
@@ -403,7 +403,7 @@ static VALUE appender_close(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_appender_close(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to flush");
+        rb_raise(eDuckDBError, "failed to close");
     }
     return self;
 }
