@@ -82,6 +82,23 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
     return self;
 }
 
+/* call-seq:
+ *   appender.begin_row -> self
+ *
+ * Begins a new row in the appender. This must be called before appending any values to the row.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_varchar('Alice')
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_begin_row(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -92,6 +109,23 @@ static VALUE appender_begin_row(VALUE self) {
     return self;
 }
 
+/* call-seq:
+ *   appender.begin_row -> self
+ *
+ * Ends a row in the appender. This must be called before starting new row.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_varchar('Alice')
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_end_row(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
