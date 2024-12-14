@@ -136,6 +136,23 @@ static VALUE appender_end_row(VALUE self) {
     return self;
 }
 
+/* call-seq:
+ *   appender.append_bool(val) -> self
+ *
+ * Appends a boolean value to the current row in the appender.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, active BOOLEAN)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_bool(true)
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_append_bool(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
