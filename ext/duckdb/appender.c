@@ -170,7 +170,7 @@ static VALUE appender_append_bool(VALUE self, VALUE val) {
 /* call-seq:
  *   appender.append_int8(val) -> self
  *
- * Appends an int8 value to the current row in the appender.
+ * Appends an int8(TINYINT) value to the current row in the appender.
  *
  *   require 'duckdb'
  *   db = DuckDB::Database.open
@@ -196,6 +196,23 @@ static VALUE appender_append_int8(VALUE self, VALUE val) {
     return self;
 }
 
+/* call-seq:
+ *   appender.append_int16(val) -> self
+ *
+ * Appends an int16(SMALLINT) value to the current row in the appender.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, age SMALLINT)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_int16(20)
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_append_int16(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     int16_t i16val = (int16_t)NUM2INT(val);
@@ -208,6 +225,23 @@ static VALUE appender_append_int16(VALUE self, VALUE val) {
     return self;
 }
 
+/* call-seq:
+ *   appender.append_int32(val) -> self
+ *
+ * Appends an int32(INTEGER) value to the current row in the appender.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, age INTEGER)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_int32(20)
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_append_int32(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     int32_t i32val = (int32_t)NUM2INT(val);
@@ -220,6 +254,23 @@ static VALUE appender_append_int32(VALUE self, VALUE val) {
     return self;
 }
 
+/* call-seq:
+ *   appender.append_int64(val) -> self
+ *
+ * Appends an int64(BIGINT) value to the current row in the appender.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, age BIGINT)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_int64(20)
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_append_int64(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     int64_t i64val = (int64_t)NUM2LL(val);
@@ -456,6 +507,24 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
     return self;
 }
 
+/* call-seq:
+ *   appender.flush -> self
+ *
+ * Flushes the appender to the table, forcing the cache of the appender to be cleared. If flushing the data triggers a
+ * constraint violation or any other error, then all data is invalidated, and this method raises DuckDB::Error.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+ *   appender = con.appender('users')
+ *   appender
+ *     .begin_row
+ *     .append_int32(1)
+ *     .append_varchar('Alice')
+ *     .end_row
+ *     .flush
+ */
 static VALUE appender_flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
