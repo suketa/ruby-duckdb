@@ -31,6 +31,7 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_connection();
     rbduckdb_init_duckdb_result();
     rbduckdb_init_duckdb_column();
+    rbduckdb_init_duckdb_logical_type();
     rbduckdb_init_duckdb_prepared_statement();
     rbduckdb_init_duckdb_pending_result();
     rbduckdb_init_duckdb_blob();
