@@ -135,7 +135,7 @@ static VALUE appender_begin_row(VALUE self) {
 }
 
 /* call-seq:
- *   appender.begin_row -> self
+ *   appender.end_row -> self
  *
  * Ends a row in the appender. This must be called before starting new row.
  *
