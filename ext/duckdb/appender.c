@@ -6,6 +6,7 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
+static VALUE appender_error_message(VALUE self);
 static VALUE appender_begin_row(VALUE self);
 static VALUE appender_end_row(VALUE self);
 static VALUE appender_append_bool(VALUE self, VALUE val);
@@ -34,7 +35,7 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper);
-static VALUE appender_flush(VALUE self);
+static VALUE appender__flush(VALUE self);
 static VALUE appender_close(VALUE self);
 
 static const rb_data_type_t appender_data_type = {
@@ -80,6 +81,30 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
         rb_raise(eDuckDBError, "failed to create appender");
     }
     return self;
+}
+
+/* call-seq:
+ *   appender.error_message -> String
+ *
+ * Returns the error message of the appender. If there is no error, then it returns nil.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+ *   appender = con.appender('users')
+ *   appender.error_message # => nil
+ */
+static VALUE appender_error_message(VALUE self) {
+    rubyDuckDBAppender *ctx;
+    const char *msg;
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+
+    msg = duckdb_appender_error(ctx->appender);
+    if (msg == NULL) {
+        return Qnil;
+    }
+    return rb_str_new2(msg);
 }
 
 /* call-seq:
@@ -507,32 +532,15 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
     return self;
 }
 
-/* call-seq:
- *   appender.flush -> self
- *
- * Flushes the appender to the table, forcing the cache of the appender to be cleared. If flushing the data triggers a
- * constraint violation or any other error, then all data is invalidated, and this method raises DuckDB::Error.
- *
- *   require 'duckdb'
- *   db = DuckDB::Database.open
- *   con = db.connect
- *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
- *   appender = con.appender('users')
- *   appender
- *     .begin_row
- *     .append_int32(1)
- *     .append_varchar('Alice')
- *     .end_row
- *     .flush
- */
-static VALUE appender_flush(VALUE self) {
+/* :nodoc: */
+static VALUE appender__flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_appender_flush(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to flush");
+        return Qfalse;
     }
-    return self;
+    return Qtrue;
 }
 
 static VALUE appender_close(VALUE self) {
@@ -552,6 +560,7 @@ void rbduckdb_init_duckdb_appender(void) {
     cDuckDBAppender = rb_define_class_under(mDuckDB, "Appender", rb_cObject);
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
+    rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
     rb_define_method(cDuckDBAppender, "begin_row", appender_begin_row, 0);
     rb_define_method(cDuckDBAppender, "end_row", appender_end_row, 0);
     rb_define_method(cDuckDBAppender, "append_bool", appender_append_bool, 1);
@@ -569,13 +578,13 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "append_varchar_length", appender_append_varchar_length, 2);
     rb_define_method(cDuckDBAppender, "append_blob", appender_append_blob, 1);
     rb_define_method(cDuckDBAppender, "append_null", appender_append_null, 0);
-    rb_define_method(cDuckDBAppender, "flush", appender_flush, 0);
     rb_define_method(cDuckDBAppender, "close", appender_close, 0);
 
 #ifdef HAVE_DUCKDB_H_GE_V1_1_0
     rb_define_method(cDuckDBAppender, "append_default", appender_append_default, 0);
 #endif
 
+    rb_define_private_method(cDuckDBAppender, "_flush", appender__flush, 0);
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
     rb_define_private_method(cDuckDBAppender, "_append_interval", appender__append_interval, 3);
     rb_define_private_method(cDuckDBAppender, "_append_time", appender__append_time, 4);

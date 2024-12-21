@@ -23,6 +23,30 @@ module DuckDB
     private_constant :RANGE_INT16, :RANGE_INT32, :RANGE_INT64
     # :startdoc:
 
+    # :call-seq:
+    #  flush -> self
+    #
+    # Flushes the appender to the table, forcing the cache of the appender to be cleared.
+    # If flushing the data triggers a constraint violation or any other error, then all
+    # data is invalidated, and this method raises DuckDB::Error.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #   appender = con.appender('users')
+    #   appender
+    #     .begin_row
+    #     .append_int32(1)
+    #     .append_varchar('Alice')
+    #     .end_row
+    #     .flush
+    def flush
+      return self if _flush
+
+      raise_appender_error('failed to flush')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
@@ -195,6 +219,11 @@ module DuckDB
     end
 
     private
+
+    def raise_appender_error(default_message) # :nodoc:
+      message = error_message
+      raise DuckDB::Error, message || default_message
+    end
 
     def blob?(value) # :nodoc:
       value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
