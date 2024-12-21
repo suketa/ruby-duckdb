@@ -7,7 +7,6 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
 static VALUE appender_error_message(VALUE self);
-static VALUE appender_begin_row(VALUE self);
 static VALUE appender_end_row(VALUE self);
 static VALUE appender_append_bool(VALUE self, VALUE val);
 static VALUE appender_append_int8(VALUE self, VALUE val);
@@ -105,33 +104,6 @@ static VALUE appender_error_message(VALUE self) {
         return Qnil;
     }
     return rb_str_new2(msg);
-}
-
-/* call-seq:
- *   appender.begin_row -> self
- *
- * Begins a new row in the appender. This must be called before appending any values to the row.
- *
- *   require 'duckdb'
- *   db = DuckDB::Database.open
- *   con = db.connect
- *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
- *   appender = con.appender('users')
- *   appender
- *     .begin_row
- *     .append_int32(1)
- *     .append_varchar('Alice')
- *     .end_row
- *     .flush
- */
-static VALUE appender_begin_row(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    if (duckdb_appender_begin_row(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to begin row");
-    }
-    return self;
 }
 
 /* call-seq:
@@ -561,7 +533,6 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
-    rb_define_method(cDuckDBAppender, "begin_row", appender_begin_row, 0);
     rb_define_method(cDuckDBAppender, "end_row", appender_end_row, 0);
     rb_define_method(cDuckDBAppender, "append_bool", appender_append_bool, 1);
     rb_define_method(cDuckDBAppender, "append_int8", appender_append_int8, 1);

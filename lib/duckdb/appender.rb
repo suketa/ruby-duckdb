@@ -24,6 +24,14 @@ module DuckDB
     # :startdoc:
 
     # :call-seq:
+    #   appender.begin_row -> self
+    # A nop method, provided for backwards compatibility reasons.
+    # Does nothing. Only `end_row` is required.
+    def begin_row
+      self
+    end
+
+    # :call-seq:
     #  flush -> self
     #
     # Flushes the appender to the table, forcing the cache of the appender to be cleared.
