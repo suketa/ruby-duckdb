@@ -6,6 +6,7 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_column__type(VALUE oDuckDBColumn);
+static VALUE duckdb_column__logical_type(VALUE oDuckDBColumn);
 static VALUE duckdb_column_get_name(VALUE oDuckDBColumn);
 
 static const rb_data_type_t column_data_type = {
@@ -43,6 +44,33 @@ VALUE duckdb_column__type(VALUE oDuckDBColumn) {
     type = duckdb_column_type(&(ctxresult->result), ctx->col);
 
     return INT2FIX(type);
+}
+
+/*
+ *  call-seq:
+ *    column.logical_type -> DuckDB::LogicalType
+ *
+ *  Returns the logical type class.
+ *
+ */
+VALUE duckdb_column__logical_type(VALUE oDuckDBColumn) {
+    rubyDuckDBColumn *ctx;
+    rubyDuckDBResult *ctxresult;
+    VALUE result;
+    duckdb_logical_type _logical_type;
+    VALUE logical_type = Qnil;
+
+    TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
+
+    result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
+    ctxresult = get_struct_result(result);
+    _logical_type = duckdb_column_logical_type(&(ctxresult->result), ctx->col);
+
+    if (_logical_type) {
+        logical_type = rbduckdb_create_logical_type(_logical_type);
+    }
+
+    return logical_type;
 }
 
 /*
@@ -87,5 +115,6 @@ void rbduckdb_init_duckdb_column(void) {
     rb_define_alloc_func(cDuckDBColumn, allocate);
 
     rb_define_private_method(cDuckDBColumn, "_type", duckdb_column__type, 0);
+    rb_define_method(cDuckDBColumn, "_logical_type", duckdb_column__logical_type, 0);
     rb_define_method(cDuckDBColumn, "name", duckdb_column_get_name, 0);
 }

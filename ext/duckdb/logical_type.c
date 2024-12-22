@@ -31,6 +31,18 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBLogicalType);
 }
 
+VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
+    VALUE obj;
+    rubyDuckDBLogicalType *ctx;
+
+    obj = allocate(cDuckDBLogicalType);
+    TypedData_Get_Struct(obj, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+
+    ctx->logical_type = logical_type;
+
+    return obj;
+}
+
 void rbduckdb_init_duckdb_logical_type(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
