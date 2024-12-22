@@ -44,7 +44,6 @@ module DuckDB
     #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
     #   appender = con.appender('users')
     #   appender
-    #     .begin_row
     #     .append_int32(1)
     #     .append_varchar('Alice')
     #     .end_row
@@ -63,7 +62,6 @@ module DuckDB
     #   con.query('CREATE TABLE numbers (num HUGEINT)')
     #   appender = con.appender('numbers')
     #   appender
-    #     .begin_row
     #     .append_hugeint(-170_141_183_460_469_231_731_687_303_715_884_105_727)
     #     .end_row
     def append_hugeint(value)
@@ -79,7 +77,6 @@ module DuckDB
     #   con.query('CREATE TABLE numbers (num UHUGEINT)')
     #   appender = con.appender('numbers')
     #   appender
-    #     .begin_row
     #     .append_hugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
     #     .end_row
     def append_uhugeint(value)
@@ -94,7 +91,6 @@ module DuckDB
     #   con = db.connect
     #   con.query('CREATE TABLE dates (date_value DATE)')
     #   appender = con.appender('dates')
-    #   appender.begin_row
     #   appender.append_date(Date.today)
     #   # or
     #   # appender.append_date(Time.now)
@@ -114,7 +110,6 @@ module DuckDB
     #   con = db.connect
     #   con.query('CREATE TABLE times (time_value TIME)')
     #   appender = con.appender('times')
-    #   appender.begin_row
     #   appender.append_time(Time.now)
     #   # or
     #   # appender.append_time('01:01:01')
@@ -133,7 +128,6 @@ module DuckDB
     #   con = db.connect
     #   con.query('CREATE TABLE timestamps (timestamp_value TIMESTAMP)')
     #   appender = con.appender('timestamps')
-    #   appender.begin_row
     #   appender.append_time(Time.now)
     #   # or
     #   # appender.append_time(Date.today)
@@ -156,7 +150,6 @@ module DuckDB
     #   con.query('CREATE TABLE intervals (interval_value INTERVAL)')
     #   appender = con.appender('intervals')
     #   appender
-    #     .begin_row
     #     .append_interval('P1Y2D') # => append 1 year 2 days interval.
     #     .end_row
     #     .flush
@@ -172,7 +165,6 @@ module DuckDB
     #   con = db.connect
     #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
     #   appender = con.appender('users')
-    #   appender.begin_row
     #   appender.append(1)
     #   appender.append('Alice')
     #   appender.end_row
@@ -214,12 +206,10 @@ module DuckDB
     #
     # is same as:
     #
-    #   appender.begin_row
-    #   appender.append(1)
+    #   appender.append(2)
     #   appender.append('Alice')
     #   appender.end_row
     def append_row(*args)
-      begin_row
       args.each do |arg|
         append(arg)
       end

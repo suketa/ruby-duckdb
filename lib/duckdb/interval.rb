@@ -24,7 +24,6 @@ module DuckDB
   #   con.query('CREATE TABLE intervals (interval_value INTERVAL)')
   #   appender = con.appender('intervals')
   #   appender
-  #     .begin_row
   #     .append_interval(interval)
   #     .end_row
   #     .flush

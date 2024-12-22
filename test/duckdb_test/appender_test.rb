@@ -51,7 +51,6 @@ module DuckDBTest
 
     def sub_test_append_column2(method, type, values:, expected:)
       create_appender("col #{type}")
-      @appender.begin_row
       @appender.send(method, *values)
       @appender.end_row
       @appender.flush
@@ -72,8 +71,6 @@ module DuckDBTest
     def assert_duckdb_appender(expected, type, &block)
       create_appender("col #{type}")
 
-      @appender.begin_row
-
       block.call(@appender) if block_given?
 
       @appender.end_row
@@ -88,10 +85,14 @@ module DuckDBTest
       teardown
     end
 
+    def test_begin_row
+      appender = create_appender('col BOOLEAN')
+      assert_equal(appender.__id__, appender.begin_row.__id__)
+    end
+
     def test_flush
       appender = create_appender('col BOOLEAN')
       appender
-        .begin_row
         .append_bool(true)
         .end_row
       assert_equal(appender.__id__, appender.flush.__id__)
@@ -100,7 +101,6 @@ module DuckDBTest
     def test_flush_with_exception
       appender = create_appender('col BOOLEAN NOT NULL')
       appender
-        .begin_row
         .append_null
         .end_row
       exception = assert_raises(DuckDB::Error) { appender.flush }

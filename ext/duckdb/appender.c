@@ -117,7 +117,6 @@ static VALUE appender_error_message(VALUE self) {
  *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
  *   appender = con.appender('users')
  *   appender
- *     .begin_row
  *     .append_int32(1)
  *     .append_varchar('Alice')
  *     .end_row
@@ -144,7 +143,6 @@ static VALUE appender_end_row(VALUE self) {
  *   con.query('CREATE TABLE users (id INTEGER, active BOOLEAN)')
  *   appender = con.appender('users')
  *   appender
- *     .begin_row
  *     .append_int32(1)
  *     .append_bool(true)
  *     .end_row
@@ -175,7 +173,6 @@ static VALUE appender_append_bool(VALUE self, VALUE val) {
  *   con.query('CREATE TABLE users (id INTEGER, age TINYINT)')
  *   appender = con.appender('users')
  *   appender
- *     .begin_row
  *     .append_int32(1)
  *     .append_int8(20)
  *     .end_row
@@ -204,7 +201,6 @@ static VALUE appender_append_int8(VALUE self, VALUE val) {
  *   con.query('CREATE TABLE users (id INTEGER, age SMALLINT)')
  *   appender = con.appender('users')
  *   appender
- *     .begin_row
  *     .append_int32(1)
  *     .append_int16(20)
  *     .end_row
@@ -233,7 +229,6 @@ static VALUE appender_append_int16(VALUE self, VALUE val) {
  *   con.query('CREATE TABLE users (id INTEGER, age INTEGER)')
  *   appender = con.appender('users')
  *   appender
- *     .begin_row
  *     .append_int32(1)
  *     .append_int32(20)
  *     .end_row
@@ -262,7 +257,6 @@ static VALUE appender_append_int32(VALUE self, VALUE val) {
  *   con.query('CREATE TABLE users (id INTEGER, age BIGINT)')
  *   appender = con.appender('users')
  *   appender
- *     .begin_row
  *     .append_int32(1)
  *     .append_int64(20)
  *     .end_row

@@ -218,7 +218,6 @@ def append
       appender = con.appender('users')
 
       10000.times do
-        appender.begin_row
         appender.append(1)
         appender.append('Alice')
         appender.end_row
