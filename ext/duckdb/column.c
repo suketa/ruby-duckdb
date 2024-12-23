@@ -115,6 +115,6 @@ void rbduckdb_init_duckdb_column(void) {
     rb_define_alloc_func(cDuckDBColumn, allocate);
 
     rb_define_private_method(cDuckDBColumn, "_type", duckdb_column__type, 0);
-    rb_define_method(cDuckDBColumn, "_logical_type", duckdb_column__logical_type, 0);
+    rb_define_method(cDuckDBColumn, "logical_type", duckdb_column__logical_type, 0);
     rb_define_method(cDuckDBColumn, "name", duckdb_column_get_name, 0);
 }
