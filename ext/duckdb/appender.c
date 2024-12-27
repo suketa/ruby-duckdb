@@ -36,6 +36,7 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__flush(VALUE self);
 static VALUE appender__close(VALUE self);
+static VALUE duckdb_state_to_bool_value(duckdb_state state);
 
 static const rb_data_type_t appender_data_type = {
     "DuckDB/Appender",
@@ -503,10 +504,7 @@ static VALUE appender__flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    if (duckdb_appender_flush(ctx->appender) == DuckDBError) {
-        return Qfalse;
-    }
-    return Qtrue;
+    return duckdb_state_to_bool_value(duckdb_appender_flush(ctx->appender));
 }
 
 /* :nodoc: */
@@ -514,10 +512,14 @@ static VALUE appender__close(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    if (duckdb_appender_close(ctx->appender) == DuckDBError) {
-        return Qfalse;
+    return duckdb_state_to_bool_value(duckdb_appender_close(ctx->appender));
+}
+
+static VALUE duckdb_state_to_bool_value(duckdb_state state) {
+    if (state == DuckDBSuccess) {
+        return Qtrue;
     }
-    return Qtrue;
+    return Qfalse;
 }
 
 void rbduckdb_init_duckdb_appender(void) {
