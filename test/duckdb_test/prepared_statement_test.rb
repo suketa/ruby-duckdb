@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module DuckDBTest
@@ -485,7 +487,7 @@ module DuckDBTest
       stmt.bind_blob(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
       assert_instance_of(DuckDB::Result, stmt.execute)
       result = con.execute('SELECT col_blob FROM a WHERE id IS NULL')
-      assert_equal("\0\1\2\3\4\5".force_encoding(Encoding::BINARY), result.first.first)
+      assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
     ensure
       con&.query('DELETE FROM a WHERE id IS NULL')
     end
@@ -742,12 +744,12 @@ module DuckDBTest
       stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
       assert_instance_of(DuckDB::Result, stmt.execute)
       result = con.execute('SELECT col_blob FROM a WHERE id IS NULL')
-      assert_equal("\0\1\2\3\4\5".force_encoding(Encoding::BINARY), result.first.first)
+      assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
 
-      stmt.bind(1, "\0\1\2\3\4\5".force_encoding(Encoding::BINARY))
+      stmt.bind(1, "\0\1\2\3\4\5".encode(Encoding::BINARY))
       assert_instance_of(DuckDB::Result, stmt.execute)
       result = con.execute('SELECT col_blob FROM a WHERE id IS NULL')
-      assert_equal("\0\1\2\3\4\5".force_encoding(Encoding::BINARY), result.first.first)
+      assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
     ensure
       con&.query('DELETE FROM a WHERE id IS NULL')
     end
