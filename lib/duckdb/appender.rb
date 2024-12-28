@@ -54,6 +54,29 @@ module DuckDB
       raise_appender_error('failed to flush')
     end
 
+    # :call-seq:
+    #   close -> self
+    #
+    # Closes the appender by flushing all intermediate states and closing it for further appends.
+    # If flushing the data triggers a constraint violation or any other error, then all data is
+    # invalidated, and this method raises DuckDB::Error.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #   appender = con.appender('users')
+    #   appender
+    #     .append_int32(1)
+    #     .append_varchar('Alice')
+    #     .end_row
+    #     .close
+    def close
+      return self if _close
+
+      raise_appender_error('failed to close')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'

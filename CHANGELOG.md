@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 # Unreleased
 - add 'DuckDB::Appender#error_message'.
-- fix error message when DuckDB::Appender#flush failed.
+- fix error message when DuckDB::Appender#flush, DuckDB::Appender#close failed.
 - 'DuckDB::Appender#begin_row' does nothing. Only returns self. 'DuckDB::Appender#end_row' is only required.
 
 # 1.1.3.1 - 2024-11-27
