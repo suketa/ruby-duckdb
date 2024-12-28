@@ -107,6 +107,23 @@ module DuckDBTest
       assert_match(/NOT NULL constraint failed/, exception.message)
     end
 
+    def test_close
+      appender = create_appender('col BOOLEAN')
+      appender
+        .append_bool(true)
+        .end_row
+      assert_equal(appender.__id__, appender.close.__id__)
+    end
+
+    def test_close_with_exception
+      appender = create_appender('col BOOLEAN NOT NULL')
+      appender
+        .append_null
+        .end_row
+      exception = assert_raises(DuckDB::Error) { appender.close }
+      assert_match(/NOT NULL constraint failed/, exception.message)
+    end
+
     def test_append_bool
       assert_duckdb_appender(true, 'BOOLEAN') { |a| a.append_bool(true) }
       assert_duckdb_appender(false, 'BOOLEAN') { |a| a.append_bool(false) }
