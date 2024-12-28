@@ -40,13 +40,13 @@ PLATFORMS
   arm-linux-gnu
   arm-linux-musl
   arm64-darwin
-  x86_64-darwin
-  x86_64-linux-gnu
-  x86_64-linux-musl
+  unknown
   x64-mingw-ucrt
   x64-mingw32
   x64-mswin64-140
-  mswin
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   benchmark-ips
