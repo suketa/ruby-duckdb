@@ -44,6 +44,7 @@ PLATFORMS
   x86_64-linux-gnu
   x86_64-linux-musl
   x64-mingw-ucrt
+  x64-mingw32
   mswin
 
 DEPENDENCIES
