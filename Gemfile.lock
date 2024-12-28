@@ -8,21 +8,23 @@ GEM
   remote: https://rubygems.org/
   specs:
     benchmark-ips (2.14.0)
-    bigdecimal (3.1.8)
-    mini_portile2 (2.8.8)
-    minitest (5.25.2)
-    nokogiri (1.18.0)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
+    bigdecimal (3.1.9)
+    minitest (5.25.4)
     nokogiri (1.18.0-aarch64-linux-gnu)
       racc (~> 1.4)
+    nokogiri (1.18.0-aarch64-linux-musl)
+      racc (~> 1.4)
     nokogiri (1.18.0-arm-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.0-arm-linux-musl)
       racc (~> 1.4)
     nokogiri (1.18.0-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.0-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.0-x86_64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.0-x86_64-linux-musl)
       racc (~> 1.4)
     racc (1.8.1)
     rake (13.2.1)
@@ -33,12 +35,16 @@ GEM
     stackprof (0.2.26)
 
 PLATFORMS
-  aarch64-linux
-  arm-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
   arm64-darwin
-  x86-linux
   x86_64-darwin
-  x86_64-linux
+  x86_64-linux-gnu
+  x86_64-linux-musl
+  x64-mingw-ucrt
+  mswin
 
 DEPENDENCIES
   benchmark-ips
@@ -51,4 +57,4 @@ DEPENDENCIES
   stackprof
 
 BUNDLED WITH
-   2.5.22
+   2.6.2

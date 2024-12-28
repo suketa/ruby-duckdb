@@ -3,11 +3,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in duckdb.gemspec
 gemspec
 
-if /(linux|darwin)/ =~ RUBY_PLATFORM
-  gem 'benchmark-ips'
-  gem 'stackprof'
-end
+gem 'benchmark-ips', platforms: %i[mri]
+gem 'stackprof', platforms: %i[mri]
 
-if /linux/ =~ RUBY_PLATFORM
-  gem 'ruby_memcheck'
-end
+gem 'ruby_memcheck', platforms: %i[mri]
