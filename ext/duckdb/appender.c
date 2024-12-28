@@ -7,7 +7,6 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
 static VALUE appender_error_message(VALUE self);
-static VALUE appender_end_row(VALUE self);
 static VALUE appender_append_bool(VALUE self, VALUE val);
 static VALUE appender_append_int8(VALUE self, VALUE val);
 static VALUE appender_append_int16(VALUE self, VALUE val);
@@ -28,6 +27,7 @@ static VALUE appender_append_null(VALUE self);
 static VALUE appender_append_default(VALUE self);
 #endif
 
+static VALUE appender__end_row(VALUE self);
 static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval);
 static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros);
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros);
@@ -107,30 +107,15 @@ static VALUE appender_error_message(VALUE self) {
     return rb_str_new2(msg);
 }
 
-/* call-seq:
- *   appender.end_row -> self
- *
- * Ends a row in the appender. This must be called before starting new row.
- *
- *   require 'duckdb'
- *   db = DuckDB::Database.open
- *   con = db.connect
- *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
- *   appender = con.appender('users')
- *   appender
- *     .append_int32(1)
- *     .append_varchar('Alice')
- *     .end_row
- *     .flush
- */
-static VALUE appender_end_row(VALUE self) {
+/* :nodoc: */
+static VALUE appender__end_row(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
     if (duckdb_appender_end_row(ctx->appender) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to end row");
+        return Qfalse;
     }
-    return self;
+    return Qtrue;
 }
 
 /* call-seq:
@@ -530,7 +515,6 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
-    rb_define_method(cDuckDBAppender, "end_row", appender_end_row, 0);
     rb_define_method(cDuckDBAppender, "append_bool", appender_append_bool, 1);
     rb_define_method(cDuckDBAppender, "append_int8", appender_append_int8, 1);
     rb_define_method(cDuckDBAppender, "append_int16", appender_append_int16, 1);
@@ -551,6 +535,7 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "append_default", appender_append_default, 0);
 #endif
 
+    rb_define_private_method(cDuckDBAppender, "_end_row", appender__end_row, 0);
     rb_define_private_method(cDuckDBAppender, "_flush", appender__flush, 0);
     rb_define_private_method(cDuckDBAppender, "_close", appender__close, 0);
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
