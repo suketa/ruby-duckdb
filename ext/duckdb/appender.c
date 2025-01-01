@@ -112,10 +112,7 @@ static VALUE appender__end_row(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    if (duckdb_appender_end_row(ctx->appender) == DuckDBError) {
-        return Qfalse;
-    }
-    return Qtrue;
+    return duckdb_state_to_bool_value(duckdb_appender_end_row(ctx->appender));
 }
 
 /* call-seq:
