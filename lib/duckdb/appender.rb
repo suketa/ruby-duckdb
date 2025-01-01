@@ -31,6 +31,25 @@ module DuckDB
       self
     end
 
+    # call-seq:
+    #   appender.end_row -> self
+    #
+    # Finish the current row of appends. After end_row is called, the next row can be appended.
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #   appender = con.appender('users')
+    #   appender
+    #     .append_int32(1)
+    #     .append_varchar('Alice')
+    #     .end_row
+    def end_row
+      return self if _end_row
+
+      raise_appender_error('failed to end_row')
+    end
+
     # :call-seq:
     #  flush -> self
     #
