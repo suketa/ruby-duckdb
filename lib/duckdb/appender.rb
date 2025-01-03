@@ -96,6 +96,27 @@ module DuckDB
       raise_appender_error('failed to close')
     end
 
+    # call-seq:
+    #   appender.append_bool(val) -> self
+    #
+    # Appends a boolean value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, active BOOLEAN)')
+    #   appender = con.appender('users')
+    #   appender
+    #     .append_int32(1)
+    #     .append_bool(true)
+    #     .end_row
+    #     .flush
+    def append_bool(value)
+      return self if _append_bool(value)
+
+      raise_appender_error('failed to append_bool')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
