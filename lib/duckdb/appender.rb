@@ -117,6 +117,28 @@ module DuckDB
       raise_appender_error('failed to append_bool')
     end
 
+    # call-seq:
+    #   appender.append_int8(val) -> self
+    #
+    # Appends an int8(TINYINT) value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, age TINYINT)')
+    #   appender = con.appender('users')
+    #   appender
+    #     .append_int32(1)
+    #     .append_int8(20)
+    #     .end_row
+    #     .flush
+    #
+    def append_int8(value)
+      return self if _append_int8(value)
+
+      raise_appender_error('failed to append_int8')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
