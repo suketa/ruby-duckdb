@@ -37,6 +37,11 @@ module DuckDBTest
       assert_equal(9, decimal_column.logical_type.width)
     end
 
+    def test_decimal_scale
+      decimal_column = @columns.find { |column| column.type == :decimal }
+      assert_equal(6, decimal_column.logical_type.scale)
+    end
+
     private
 
     def create_data(con)
