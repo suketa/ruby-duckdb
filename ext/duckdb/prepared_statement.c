@@ -106,19 +106,17 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
     VALUE result = rbduckdb_create_result();
-    duckdb_result dresult;
     const char *p = NULL;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
-    if (duckdb_execute_prepared(ctx->prepared_statement, &(dresult)) == DuckDBError) {
-        p = duckdb_result_error(&(dresult));
+    if (duckdb_execute_prepared(ctx->prepared_statement, &(ctxr->result)) == DuckDBError) {
+        p = duckdb_result_error(&(ctxr->result));
         if (p == NULL) {
             p = duckdb_prepare_error(ctx->prepared_statement);
         }
         rb_raise(eDuckDBError, "%s", p ? p : "Failed to execute prepared statement.");
     }
-    ctxr->result = dresult;
     return result;
 }
 
