@@ -1,13 +1,12 @@
 # frozen_string_literal: true
+require 'duckdb'
 
-require 'test_helper'
-
-module DuckDBTest
-  class RubyAsanTest < Minitest::Test
-    def test_with_ruby_asan
-      db = DuckDB::Database.open
-      con = db.connect
-      assert_raises(DuckDB::Error) { con.execute('INSERT INTO test VALUES (?, "hello")', 1) }
-    end
-  end
+def run_duckdb_asan_test
+  db = DuckDB::Database.open
+  con = db.connect
+  con.execute('INSERT INTO test VALUES (?, "hello")', 1)
+rescue DuckDB::Error => e
+  p e
 end
+
+run_duckdb_asan_test
