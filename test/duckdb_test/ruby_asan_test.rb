@@ -9,7 +9,7 @@ module DuckDBTest
       con = db.connect
       con.execute('CREATE TABLE test (id INTEGER PRIMARY KEY, name VARCHAR(100))')
       puts 'ExtractedStatements#each'
-      stmts = DuckDB::ExtractedStatements.new(con, 'INSERT INTO test VALUES (1, "hello")')
+      stmts = DuckDB::ExtractedStatements.new(con, "INSERT INTO test VALUES (1, 'hello')")
       stmts.each do |stmt|
         stmt.execute
       end
