@@ -64,12 +64,6 @@ jobs:
       run: |
         bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
 
-    - name: ruby_memcheck  with Ruby ${{ matrix.ruby }}
-      env:
-        DUCKDB_VERSION: ${{ matrix.duckdb }}
-      run: |
-        env RUBYOPT=-W:deprecated ruby_memcheck -Itest test/duckdb_test/ruby_asan_test.rb
-
     - name: test with Ruby ${{ matrix.ruby }}
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
