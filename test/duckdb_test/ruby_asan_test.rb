@@ -14,7 +14,7 @@ module DuckDBTest
         stmt.execute
         stmt.destroy
       end
-      # result = con.execute('SELECT * FROM test WHERE id = ?', 1)
+      result = con.execute('SELECT * FROM test WHERE id = ?', 1)
     end
   end
 end
