@@ -3,8 +3,8 @@ require 'duckdb'
 
 def run_duckdb_asan_test
   db = DuckDB::Database.open
-  con = db.connect('abc')
-  # con.execute('INSERT INTO test VALUES (?, "hello")', 1)
+  con = db.connect
+  con.execute('INSERT INTO test VALUES (?, "hello")', 1)
 rescue Exception => e
   p e
 end
