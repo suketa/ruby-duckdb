@@ -104,10 +104,6 @@ module DuckDBTest
       @columns = result.columns
     end
 
-    def test_defined_klass
-      assert(DuckDB.const_defined?(:LogicalType))
-    end
-
     def test_type
       logical_types = @columns.map(&:logical_type)
       assert_equal(EXPECTED_TYPES, logical_types.map(&:type))
