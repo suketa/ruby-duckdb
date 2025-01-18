@@ -51,7 +51,7 @@ module DuckDB
     end
 
     # :call-seq:
-    #  flush -> self
+    #   appender.flush -> self
     #
     # Flushes the appender to the table, forcing the cache of the appender to be cleared.
     # If flushing the data triggers a constraint violation or any other error, then all
@@ -74,7 +74,7 @@ module DuckDB
     end
 
     # :call-seq:
-    #   close -> self
+    #   appender.close -> self
     #
     # Closes the appender by flushing all intermediate states and closing it for further appends.
     # If flushing the data triggers a constraint violation or any other error, then all data is
