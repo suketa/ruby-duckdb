@@ -5,6 +5,7 @@ static VALUE cDuckDBLogicalType;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static VALUE duckdb_logical_type__type(VALUE self);
 static VALUE duckdb_logical_type_width(VALUE self);
 static VALUE duckdb_logical_type_scale(VALUE self);
 
@@ -31,6 +32,19 @@ static VALUE allocate(VALUE klass) {
 
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBLogicalType);
+}
+
+/*
+ *  call-seq:
+ *    decimal_col.logical_type.type -> Symbol
+ *
+ *  Returns the logical type's type symbol.
+ *
+ */
+static VALUE duckdb_logical_type__type(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    return INT2FIX(duckdb_get_type_id(ctx->logical_type));
 }
 
 /*
@@ -78,6 +92,7 @@ void rbduckdb_init_duckdb_logical_type(void) {
     cDuckDBLogicalType = rb_define_class_under(mDuckDB, "LogicalType", rb_cObject);
     rb_define_alloc_func(cDuckDBLogicalType, allocate);
 
+    rb_define_private_method(cDuckDBLogicalType, "_type", duckdb_logical_type__type, 0);
     rb_define_method(cDuckDBLogicalType, "width", duckdb_logical_type_width, 0);
     rb_define_method(cDuckDBLogicalType, "scale", duckdb_logical_type_scale, 0);
 }
