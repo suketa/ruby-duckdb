@@ -13,6 +13,7 @@ require 'duckdb/pending_result'
 require 'duckdb/appender'
 require 'duckdb/config'
 require 'duckdb/column'
+require 'duckdb/logical_type'
 require 'duckdb/infinity'
 
 # DuckDB provides Ruby interface of DuckDB.
