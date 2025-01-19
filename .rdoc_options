@@ -1,0 +1,22 @@
+---
+encoding: UTF-8
+static_path: []
+rdoc_include: []
+charset: UTF-8
+exclude:
+- "~\\z"
+- "\\.orig\\z"
+- "\\.rej\\z"
+- "\\.bak\\z"
+- "\\.gemspec\\z"
+- "ext/duckdb/extconf.rb"
+- "Gemfile"
+- "Gemfile.lock"
+- "Rakefile"
+- "getduckdb.sh"
+- "rdoc.log"
+- "tmp"
+- "mkmf.log"
+- "Dockerfile"
+- "bin"
+main_page: "README.md"
