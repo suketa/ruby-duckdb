@@ -28,7 +28,7 @@ jobs:
 
     # RDoc ドキュメントを生成
     - name: Generate RDoc
-      run: bundle exec rdoc -o ruby-duckdb-documents
+      run: bundle exec rdoc -o docs
 
     # GitHub Pages 用にデプロイ
     - name: Deploy to GitHub Pages
@@ -36,4 +36,4 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: main
-        publish_dir: ./ruby-duckdb-documents
+        publish_dir: ./docs
