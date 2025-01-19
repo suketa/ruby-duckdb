@@ -22,13 +22,9 @@ jobs:
         ruby-version: 3.4
         bundler-cache: true
 
-    # 必要な依存関係をインストール
-    - name: Install dependencies
-      run: bundle install
-
     # RDoc ドキュメントを生成
     - name: Generate RDoc
-      run: bundle exec rdoc -o docs
+      run: rdoc -o docs
 
     # GitHub Pages 用にデプロイ
     - name: Deploy to GitHub Pages
