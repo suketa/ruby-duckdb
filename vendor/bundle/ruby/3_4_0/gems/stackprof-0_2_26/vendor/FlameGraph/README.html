@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>README - RDoc Documentation</title>
+
+  <meta name="keywords" content="ruby,documentation,README">
+  <meta name="description" content="README: Flame Graphs visualize profiled code-paths. CPU profiling using Xperf.">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../../../../../../../";
+  var index_rel_prefix = "../../../../../../../../";
+</script>
+
+<script src="../../../../../../../../js/navigation.js" defer></script>
+<script src="../../../../../../../../js/search.js" defer></script>
+<script src="../../../../../../../../js/search_index.js" defer></script>
+<script src="../../../../../../../../js/searcher.js" defer></script>
+<script src="../../../../../../../../js/darkfish.js" defer></script>
+
+<link href="../../../../../../../../css/fonts.css" rel="stylesheet">
+<link href="../../../../../../../../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../../../../../../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../../../../../../../table_of_contents.html#pages">Pages</a>
+    <a href="../../../../../../../../table_of_contents.html#classes">Classes</a>
+    <a href="../../../../../../../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>      <a href="#label-"></a>
+
+  </ul>
+</div>
+
+  
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="../../../../../../../../CHANGELOG_md.html">CHANGELOG</a>
+    <li><a href="../../../../../../../../CONTRIBUTION_md.html">CONTRIBUTION</a>
+    <li><a href="../../../../../../../../Dockerfile.html">Dockerfile</a>
+    <li><a href="../../../../../../../../Gemfile.html">Gemfile</a>
+    <li><a href="../../../../../../../../Gemfile_lock.html">Gemfile.lock</a>
+    <li><a href="../../../../../../../../LICENSE.html">LICENSE</a>
+    <li><a href="../../../../../../../../README_md.html">README</a>
+    <li><a href="../../../../../../../../Rakefile.html">Rakefile</a>
+    <li><a href="../../../../../../../../bin/setup.html">setup</a>
+    <li><a href="../../../../../../../../getduckdb_sh.html">getduckdb.sh</a>
+    <li><details open><summary>vendor</summary>
+    <ul class="link-list">
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/ext/bigdecimal/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Manifest_txt.html">Manifest</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE-DEPENDENCIES_md.html">LICENSE-DEPENDENCIES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE_md.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/ext/nokogiri/depend.html">depend</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/CHANGES_md.html">CHANGES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/THANKS.html">THANKS</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/lib/nokogiri/css/tokenizer_rex.html">tokenizer.rex</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/BSDL.html">BSDL</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/COPYING.html">COPYING</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ChangeLog.html">ChangeLog</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_ja_rdoc.html">README.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/TODO.html">TODO</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar_en_rdoc.html">grammar.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar2_en_rdoc.html">grammar2.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/command_ja_html.html">command.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/debug_ja_rdoc.html">debug.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/grammar_ja_rdoc.html">grammar.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/index_ja_html.html">index.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/parser_ja_rdoc.html">parser.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/usage_ja_html.html">usage.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ext/racc/cparse/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/MIT-LICENSE.html">MIT-LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/command_line_usage_rdoc.html">command_line_usage</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile1.html">Rakefile1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile2.html">Rakefile2</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/glossary_rdoc.html">glossary</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/proto_rake_rdoc.html">proto_rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rake_1.html">rake.1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rakefile_rdoc.html">rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rational_rdoc.html">rational</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/compile_feature.html">compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-compile_feature.html">cross-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package-multi_feature.html">cross-package-multi.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package_feature.html">cross-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-compile_feature.html">java-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-no-native-compile_feature.html">java-no-native-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-package_feature.html">java-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/package_feature.html">package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bin/cross-ruby_rake.html">cross-ruby.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bootstrap_rake.html">bootstrap.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/common_rake.html">common.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/cucumber_rake.html">cucumber.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/gem_rake.html">gem.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/rspec_rake.html">rspec.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile_lock.html">Gemfile.lock</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/suppressions/ruby_supp.html">ruby.supp</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/CHANGELOG_md.html">CHANGELOG</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/ext/stackprof/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/flamegraph_js.html">flamegraph.js</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/viewer_html.html">viewer.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/README.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/flamegraph_pl.html">flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/gprof2dot_py.html">gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/hotshotmain_py.html">hotshotmain.py</a>
+    </ul></details>
+  </ul>
+</div>
+
+
+  <footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
+</nav>
+
+<main role="main" aria-label="Page vendor/bundle/ruby/3.4.0/gems/stackprof-0.2.26/vendor/FlameGraph/README">
+
+<p>Flame Graphs visualize profiled code-paths.</p>
+
+<p>Website: <a href="http://www.brendangregg.com/flamegraphs.html">www.brendangregg.com/flamegraphs.html</a></p>
+
+<p>CPU profiling using DTrace, perf_events, SystemTap, or ktap: <a href="http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html">www.brendangregg.com/FlameGraphs/cpuflamegraphs.html</a> CPU profiling using XCode Instruments: <a href="http://schani.wordpress.com/2012/11/16/flame-graphs-for-instruments">schani.wordpress.com/2012/11/16/flame-graphs-for-instruments</a>/ CPU profiling using Xperf.exe: <a href="http://randomascii.wordpress.com/2013/03/26/summarizing-xperf-cpu-usage-with-flame-graphs">randomascii.wordpress.com/2013/03/26/summarizing-xperf-cpu-usage-with-flame-graphs</a>/ Memory profiling: <a href="http://www.brendangregg.com/FlameGraphs/memoryflamegraphs.html">www.brendangregg.com/FlameGraphs/memoryflamegraphs.html</a></p>
+
+<p>These can be created in three steps:</p>
+
+<pre class="ruby"><span class="ruby-value">1</span>. <span class="ruby-constant">Capture</span> <span class="ruby-identifier">stacks</span>
+<span class="ruby-value">2</span>. <span class="ruby-constant">Fold</span> <span class="ruby-identifier">stacks</span>
+<span class="ruby-value">3</span>. <span class="ruby-identifier">flamegraph</span>.<span class="ruby-identifier">pl</span>
+</pre>
+<ol><li>
+<p>Capture stacks</p>
+</li></ol>
+
+<h6 id="label-"><span><a href="#label-">&para;</a> <a href="#top">&uarr;</a></span></h6>
+
+<p>Stack samples can be captured using DTrace, perf_events or SystemTap.</p>
+
+<p>Using DTrace to capture 60 seconds of kernel stacks at 997 Hertz:</p>
+
+<p># dtrace -x stackframes=100 -n ‘profile-997 /arg0/ { @[stack()] = count(); } tick-60s { exit(0); }’ -o out.kern_stacks</p>
+
+<p>Using DTrace to capture 60 seconds of user-level stacks for PID 12345 at 97 Hertz:</p>
+
+<p># dtrace -x ustackframes=100 -n ‘profile-97 /pid == 12345 &amp;&amp; arg1/ { @[ustack()] = count(); } tick-60s { exit(0); }’ -o out.user_stacks</p>
+
+<p>Using DTrace to capture 60 seconds of user-level stacks, including while time is spent in the kernel, for PID 12345 at 97 Hertz:</p>
+
+<p># dtrace -x ustackframes=100 -n ‘profile-97 /pid == 12345/ { @[ustack()] = count(); } tick-60s { exit(0); }’ -o out.user_stacks</p>
+
+<p>Switch ustack() for jstack() if the application has a ustack helper to include translated frames (eg, node.js frames; see: <a href="http://dtrace.org/blogs/dap/2012/01/05/where-does-your-node-program-spend-its-time">dtrace.org/blogs/dap/2012/01/05/where-does-your-node-program-spend-its-time</a>/).  The rate for user-level stack collection is deliberately slower than kernel, which is especially important when using jstack() as it performs additional work to translate frames.</p>
+<ol><li>
+<p>Fold stacks</p>
+</li></ol>
+
+<h6 id="label-"><span><a href="#label-">&para;</a> <a href="#top">&uarr;</a></span></h6>
+
+<p>Use the stackcollapse programs to fold stack samples into single lines.  The programs provided are:</p>
+<ul><li>
+<p>stackcollapse.pl: for DTrace stacks</p>
+</li><li>
+<p>stackcollapse-perf.pl: for perf_events “perf script” output</p>
+</li><li>
+<p>stackcollapse-stap.pl: for SystemTap stacks</p>
+</li><li>
+<p>stackcollapse-instruments.pl: for XCode Instruments</p>
+</li></ul>
+
+<p>Usage example:</p>
+
+<p>$ ./stackcollapse.pl out.kern_stacks &gt; out.kern_folded</p>
+
+<p>The output looks like this:</p>
+
+<p>unix`_sys_sysenter_post_swapgs 1401 unix`_sys_sysenter_post_swapgs;genunix`close 5 unix`_sys_sysenter_post_swapgs;genunix`close;genunix`closeandsetf 85 unix`_sys_sysenter_post_swapgs;genunix`close;genunix`closeandsetf;c2audit`audit_closef 26 unix`_sys_sysenter_post_swapgs;genunix`close;genunix`closeandsetf;c2audit`audit_setf 5 unix`_sys_sysenter_post_swapgs;genunix`close;genunix`closeandsetf;genunix`audit_getstate 6 unix`_sys_sysenter_post_swapgs;genunix`close;genunix`closeandsetf;genunix`audit_unfalloc 2 unix`_sys_sysenter_post_swapgs;genunix`close;genunix`closeandsetf;genunix`closef 48</p>
+<dl class="rdoc-list label-list"><dt>…</dt>
+<dd></dd></dl>
+<ol><li>
+<p>flamegraph.pl</p>
+</li></ol>
+
+<h6 id="label-"><span><a href="#label-">&para;</a> <a href="#top">&uarr;</a></span></h6>
+
+<p>Use flamegraph.pl to render a SVG.</p>
+
+<p>$ ./flamegraph.pl out.kern_folded &gt; kernel.svg</p>
+
+<p>An advantage of having the folded input file (and why this is separate to flamegraph.pl) is that you can use grep for functions of interest. Eg:</p>
+
+<p>$ grep cpuid out.kern_folded | ./flamegraph.pl &gt; cpuid.svg</p>
+
+<p>Provided Example</p>
+
+<h6 id="label-"><span><a href="#label-">&para;</a> <a href="#top">&uarr;</a></span></h6>
+
+<p>An example output from DTrace is included, both the captured stacks and the resulting Flame Graph. You can generate it yourself using:</p>
+
+<p>$ ./stackcollapse.pl example-stacks.txt | ./flamegraph.pl &gt; example.svg</p>
+
+<p>This was from a particular performance investigation: the Flame Graph identified that CPU time was spent in the lofs module, and quantified that time.</p>
+
+<p>Options</p>
+
+<h6 id="label-"><span><a href="#label-">&para;</a> <a href="#top">&uarr;</a></span></h6>
+
+<p>See the USAGE message (–help) for options:</p>
+
+<p>USAGE: ./flamegraph.pl [options] infile &gt; outfile.svg</p>
+
+<pre>    --titletext             # change title text
+    --width                 # width of image (default 1200)
+    --height                # height of each frame (default 16)
+    --minwidth              # omit smaller functions (default 0.1 pixels)
+    --fonttype              # font type (default &quot;Verdana&quot;)
+    --fontsize              # font size (default 12)
+    --countname             # count type label (default &quot;samples&quot;)
+    --nametype              # name type label (default &quot;Function:&quot;)
+    --colors                # &quot;hot&quot;, &quot;mem&quot;, &quot;io&quot; palette (default &quot;hot&quot;)
+    --hash                  # colors are keyed by function name hash
+    --cp                    # use consistent palette (palette.map)
+eg,
+    ./flamegraph.pl --titletext=&quot;Flame Graph: malloc()&quot; trace.txt &gt; graph.svg</pre>
+
+<p>As suggested in the example, flame graphs can process traces of any event, such as malloc()s, provided stack traces are gathered.</p>
+
+<p>Consistent Palette</p>
+
+<h6 id="label-"><span><a href="#label-">&para;</a> <a href="#top">&uarr;</a></span></h6>
+
+<p>If you use the –cp option, it will use the $colors selection and randomly generate the palette like normal. Any future flamegraphs created using the –cp option will use the same palette map. Any new symbols from future flamegraphs will have their colors randomly generated using the $colors selection.</p>
+
+<p>If you don’t like the palette, just delete the palette.map file.</p>
+
+<p>This allows your to change your colorscheme between flamegraphs to make the differences REALLY stand out.</p>
+
+<p>Example:</p>
+
+<p>Say we have 2 captures, one with a problem, and one when it was working (whatever “it” is):</p>
+
+<p>cat working.folded | ./flamegraph.pl –cp &gt; working.svg # this generates a palette.map, as per the normal random generated look.</p>
+
+<p>cat broken.folded | ./flamegraph.pl –cp –colors mem &gt; broken.svg # this svg will use the same palette.map for the same events, but a very # different colorscheme for any new events.</p>
+
+<p>Take a look at the demo directory for an example:</p>
+
+<p>palette-example-working.svg palette-example-broken.svg</p>
+
+</main>
+

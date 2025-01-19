@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>README - RDoc Documentation</title>
+
+  <meta name="keywords" content="ruby,documentation,README">
+  <meta name="description" content="README: This gem provides a sane way to use Valgrind&#39;s memcheck on your native extension gem. Table of contents 1.">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../../../../../";
+  var index_rel_prefix = "../../../../../../";
+</script>
+
+<script src="../../../../../../js/navigation.js" defer></script>
+<script src="../../../../../../js/search.js" defer></script>
+<script src="../../../../../../js/search_index.js" defer></script>
+<script src="../../../../../../js/searcher.js" defer></script>
+<script src="../../../../../../js/darkfish.js" defer></script>
+
+<link href="../../../../../../css/fonts.css" rel="stylesheet">
+<link href="../../../../../../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../../../../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../../../../../table_of_contents.html#pages">Pages</a>
+    <a href="../../../../../../table_of_contents.html#classes">Classes</a>
+    <a href="../../../../../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>
+            <details open>
+              <summary>      <a href="#label-ruby_memcheck">ruby_memcheck</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Table+of+contents">Table of contents</a>
+          <li>
+            <details open>
+              <summary>      <a href="#label-What+is+this+gem-3F">What is this gem?</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Who+should+use+this+gem-3F">Who should use this gem?</a>
+          <li>      <a href="#label-How+does+it+work-3F">How does it work?</a>
+          <li>      <a href="#label-Limitations">Limitations</a>
+
+              </ul>
+            </details>
+          </li>
+          <li>      <a href="#label-Installation">Installation</a>
+          <li>      <a href="#label-Running+a+Ruby+script">Running a Ruby script</a>
+          <li>      <a href="#label-Setup+for+test+suites">Setup for test suites</a>
+          <li>      <a href="#label-Configuration">Configuration</a>
+          <li>      <a href="#label-Suppression+files">Suppression files</a>
+          <li>      <a href="#label-Success+stories">Success stories</a>
+          <li>      <a href="#label-License">License</a>
+
+              </ul>
+            </details>
+          </li>
+
+  </ul>
+</div>
+
+  
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="../../../../../../CHANGELOG_md.html">CHANGELOG</a>
+    <li><a href="../../../../../../CONTRIBUTION_md.html">CONTRIBUTION</a>
+    <li><a href="../../../../../../Dockerfile.html">Dockerfile</a>
+    <li><a href="../../../../../../Gemfile.html">Gemfile</a>
+    <li><a href="../../../../../../Gemfile_lock.html">Gemfile.lock</a>
+    <li><a href="../../../../../../LICENSE.html">LICENSE</a>
+    <li><a href="../../../../../../README_md.html">README</a>
+    <li><a href="../../../../../../Rakefile.html">Rakefile</a>
+    <li><a href="../../../../../../bin/setup.html">setup</a>
+    <li><a href="../../../../../../getduckdb_sh.html">getduckdb.sh</a>
+    <li><details open><summary>vendor</summary>
+    <ul class="link-list">
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/History_md.html">History</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/README_md.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/ext/bigdecimal/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/History_rdoc.html">History</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Manifest_txt.html">Manifest</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/README_rdoc.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE-DEPENDENCIES_md.html">LICENSE-DEPENDENCIES</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE_md.html">LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/README_md.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/ext/nokogiri/depend.html">depend</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/CHANGES_md.html">CHANGES</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/THANKS.html">THANKS</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/lib/nokogiri/css/tokenizer_rex.html">tokenizer.rex</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/BSDL.html">BSDL</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/COPYING.html">COPYING</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ChangeLog.html">ChangeLog</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_ja_rdoc.html">README.ja</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/TODO.html">TODO</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar_en_rdoc.html">grammar.en</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar2_en_rdoc.html">grammar2.en</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/command_ja_html.html">command.ja.html</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/debug_ja_rdoc.html">debug.ja</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/grammar_ja_rdoc.html">grammar.ja</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/index_ja_html.html">index.ja.html</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/parser_ja_rdoc.html">parser.ja</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/usage_ja_html.html">usage.ja.html</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ext/racc/cparse/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/History_rdoc.html">History</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/MIT-LICENSE.html">MIT-LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/command_line_usage_rdoc.html">command_line_usage</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile1.html">Rakefile1</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile2.html">Rakefile2</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/glossary_rdoc.html">glossary</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/proto_rake_rdoc.html">proto_rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rake_1.html">rake.1</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rakefile_rdoc.html">rakefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rational_rdoc.html">rational</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/History_md.html">History</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/README_md.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/compile_feature.html">compile.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-compile_feature.html">cross-compile.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package-multi_feature.html">cross-package-multi.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package_feature.html">cross-package.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-compile_feature.html">java-compile.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-no-native-compile_feature.html">java-no-native-compile.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-package_feature.html">java-package.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/package_feature.html">package.feature</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bin/cross-ruby_rake.html">cross-ruby.rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bootstrap_rake.html">bootstrap.rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/common_rake.html">common.rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/cucumber_rake.html">cucumber.rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/gem_rake.html">gem.rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/rspec_rake.html">rspec.rake</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile_lock.html">Gemfile.lock</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/README_md.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/suppressions/ruby_supp.html">ruby.supp</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/CHANGELOG_md.html">CHANGELOG</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/README_md.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/ext/stackprof/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/flamegraph_js.html">flamegraph.js</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/viewer_html.html">viewer.html</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/README.html">README</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/flamegraph_pl.html">flamegraph.pl</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/gprof2dot_py.html">gprof2dot.py</a>
+      <li><a href="../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/hotshotmain_py.html">hotshotmain.py</a>
+    </ul></details>
+  </ul>
+</div>
+
+
+  <footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
+</nav>
+
+<main role="main" aria-label="Page vendor/bundle/ruby/3.4.0/gems/ruby_memcheck-3.0.0/README.md">
+
+<h1 id="label-ruby_memcheck">ruby_memcheck<span><a href="#label-ruby_memcheck">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>This gem provides a sane way to use Valgrind’s memcheck on your native extension gem.</p>
+
+<h2 id="label-Table+of+contents">Table of contents<span><a href="#label-Table+of+contents">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p><a href="#what-is-this-gem">What is this gem?</a></p>
+<ol><li>
+<p><a href="#who-should-use-this-gem">Who should use this gem?</a></p>
+</li><li>
+<p><a href="#how-does-it-work">How does it work?</a></p>
+</li><li>
+<p><a href="#limitations">Limitations</a></p>
+</li></ol>
+</li><li>
+<p><a href="#installation">Installation</a></p>
+</li><li>
+<p><a href="#running-a-ruby-script">Running a Ruby script</a></p>
+</li><li>
+<p><a href="#setup-for-test-suites">Setup for test suites</a></p>
+</li><li>
+<p><a href="#configuration">Configuration</a></p>
+</li><li>
+<p><a href="#suppression-files">Suppression files</a></p>
+</li><li>
+<p><a href="#license">License</a></p>
+</li></ol>
+
+<h2 id="label-What+is+this+gem-3F">What is this gem?<span><a href="#label-What+is+this+gem-3F">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Valgrind’s memcheck is a great tool to find and debug memory issues (e.g. memory leak, use-after-free, etc.). However, it doesn’t work well on Ruby because Ruby does not free all of the memory it allocates during shutdown. This results in Valgrind reporting thousands (or more) false positives, making it very difficult for Valgrind to actually be useful. This gem solves the problem by using heuristics to filter out false positives.</p>
+
+<h3 id="label-Who+should+use+this+gem-3F">Who should use this gem?<span><a href="#label-Who+should+use+this+gem-3F">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Only gems with native extensions can use this gem. If your gem is written in plain Ruby, this gem is not useful for you.</p>
+
+<h3 id="label-How+does+it+work-3F">How does it work?<span><a href="#label-How+does+it+work-3F">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>This gem runs Valgrind with the <code>--xml</code> option to generate an XML of all the errors. It will then parse the XML and use various heuristics based on the type of the error and the stack trace to filter out errors that are false positives.</p>
+
+<p>For more details, read <a href="https://blog.peterzhu.ca/ruby-memcheck/">this blog post</a>.</p>
+
+<h3 id="label-Limitations">Limitations<span><a href="#label-Limitations">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Because of the aggressive heuristics used to filter out false positives, there are various limitations of what this gem can detect.</p>
+<ol><li>
+<p>This gem is only expected to work on Linux.</p>
+</li><li>
+<p>This gem runs your gem’s test suite to find errors and memory leaks. It will only be able to report errors on code paths that are covered by your tests. So make sure your test suite has good coverage!</p>
+</li><li>
+<p>It will not find memory leaks in Ruby. It filters out everything in Ruby.</p>
+</li><li>
+<p>It will not find memory leaks of allocations that occurred in Ruby (even if the memory leak is caused by your native extension).</p>
+
+<p>An example of this is if a string is allocated in Ruby, passed into your native extension, you change the pointer of the string without freeing the contents, so the contents of the string becomes leaked.</p>
+</li><li>
+<p>To filter out false positives, it will only find definite leaks (i.e. memory regions with no pointers to it). It will not find possible leaks (i.e. memory regions with pointers to it).</p>
+</li><li>
+<p>It will not find leaks that occur in the <code>Init</code> function of your native extension.</p>
+</li><li>
+<p>It will not find uses of undefined values (e.g. conditional jumps depending on undefined values). This is just a technical limitation that has not been solved yet (contributions welcome!).</p>
+</li></ol>
+
+<h2 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">ruby_memcheck</span>
+</pre>
+
+<h2 id="label-Running+a+Ruby+script">Running a Ruby script<span><a href="#label-Running+a+Ruby+script">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>You can run a Ruby script under ruby_memcheck. This will report all memory leaks in all native extensions found in your Ruby script. Simply replace the <code>ruby</code> part of your command with <code>ruby_memcheck</code>. For example:</p>
+
+<pre>$ ruby_memcheck -e &quot;puts &#39;Hello world&#39;&quot;
+Hello world</pre>
+
+<h2 id="label-Setup+for+test+suites">Setup for test suites<span><a href="#label-Setup+for+test+suites">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<blockquote>
+<p><strong>Note</strong> If you encounter errors from Valgrind that looks like this:</p>
+
+<pre class="ruby"><span class="ruby-comment">### unhandled dwarf2 abbrev form code 0x25</span>
+</pre>
+
+<p>Then you need a newer version of Valgrind (&gt;= 3.20.0) with DWARF5 support. The current versions of Valgrind in Ubuntu Packages is not new enough.</p>
+
+<p>You can install Valgrind from source using the following commands:</p>
+
+<pre>sudo apt-get install -y libc6-dbg
+wget https://sourceware.org/pub/valgrind/valgrind-3.21.0.tar.bz2
+tar xvf valgrind-3.21.0.tar.bz2
+cd valgrind-3.21.0
+./configure
+make
+sudo make install</pre>
+</blockquote>
+
+<p>You can use ruby_memcheck on your test suite (<a href="../../../../../../Minitest.html"><code>Minitest</code></a> or RSpec) using rake.</p>
+<ol><li>
+<p>Install Valgrind.</p>
+</li><li>
+<p>In your <a href="../../../../../../Rakefile.html">Rakefile</a>, require this gem.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;ruby_memcheck&quot;</span>
+</pre>
+<ul><li>
+<p><strong>For RSpec:</strong> If you’re using RSpec, also add the following require.</p>
+</li></ul>
+
+<p> <code>ruby  require &quot;ruby_memcheck/rspec/rake_task&quot; </code></p>
+</li><li>
+<p>Setup the test task for your test framework.</p>
+<ul><li>
+<p><strong>minitest</strong></p>
+</li></ul>
+
+<p>Locate your test task(s) in your <a href="../../../../../../Rakefile.html">Rakefile</a>. You can identify it with a call to <a href="../../../../../../Rake/TestTask.html#method-c-new"><code>Rake::TestTask.new</code></a>.</p>
+
+<p>Create a namespace under the test task and create a <a href="../../../../../../RubyMemcheck/TestTask.html"><code>RubyMemcheck::TestTask</code></a> with the same configuration.</p>
+
+<p>For example, if your <a href="../../../../../../Rakefile.html">Rakefile</a> looked like this before:</p>
+
+<p><code>ruby  Rake::TestTask.new(test: :compile) do |t|    t.libs &lt;&lt; &quot;test&quot;    t.test_files = FileList[&quot;test/unit/<strong>*/</strong>_test.rb&quot;]  end </code></p>
+
+<p>You can change it to look like this:</p>
+
+<p><code>ruby  test_config = lambda do |t|    t.libs &lt;&lt; &quot;test&quot;    t.test_files = FileList[&quot;test/<strong>*/</strong>_test.rb&quot;]  end  Rake::TestTask.new(test: :compile, &amp;test_config)  namespace :test do    RubyMemcheck::TestTask.new(valgrind: :compile, &amp;test_config)  end </code></p>
+<ul><li>
+<p><strong>RSpec</strong></p>
+</li></ul>
+
+<p>Locate your rake task(s) in your <a href="../../../../../../Rakefile.html">Rakefile</a>. You can identify it with a call to <code>RSpec::Core::RakeTask.new</code>.</p>
+
+<p>Create a namespace under the test task and create a <a href="../../../../../../RubyMemcheck/RSpec/RakeTask.html"><code>RubyMemcheck::RSpec::RakeTask</code></a> with the same configuration.</p>
+
+<p>For example, if your <a href="../../../../../../Rakefile.html">Rakefile</a> looked like this before:</p>
+
+<p><code>ruby  RSpec::Core::RakeTask.new(spec: :compile) </code></p>
+
+<p>You can change it to look like this:</p>
+
+<p> <code>ruby  RSpec::Core::RakeTask.new(spec: :compile)  namespace :spec do    RubyMemcheck::RSpec::RakeTask.new(valgrind: :compile)  end </code></p>
+</li><li>
+<p>You're ready to run your test suite with Valgrind using <code>rake test:valgrind</code> or <code>rake spec:valgrind</code>! Note that this will take a while to run because Valgrind will make Ruby significantly slower.</p>
+</li><li>
+<p>(Optional) If you find false positives in the output, you can create Valgrind suppression files. See the {<code>Suppression files</code><a href="#suppression-files">}</a> section for more details.</p>
+</li></ol>
+
+<h2 id="label-Configuration">Configuration<span><a href="#label-Configuration">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>If you want to override any of the default configurations you can call <a href="../../../../../../RubyMemcheck.html#method-c-config"><code>RubyMemcheck.config</code></a> after <code>require &quot;ruby_memcheck&quot;</code>. This will create a default <a href="../../../../../../RubyMemcheck/Configuration.html"><code>RubyMemcheck::Configuration</code></a>. By default, the Rake tasks for minitest and RSpec will use this configuration. You can also manually pass in a <code>Configuration</code> object as the first argument to the constructor of <a href="../../../../../../RubyMemcheck/TestTask.html"><code>RubyMemcheck::TestTask</code></a> or <a href="../../../../../../RubyMemcheck/RSpec/RakeTask.html"><code>RubyMemcheck::RSpec::RakeTask</code></a> to use a different <code>Configuration</code> object rather than the default one.</p>
+
+<p><a href="../../../../../../RubyMemcheck/Configuration.html"><code>RubyMemcheck::Configuration</code></a> accepts a variety of keyword arguments. Here are all the arguments:</p>
+<ul><li>
+<p><code>binary_name</code>: Optional. The name of the only binary to report errors for. Use this if there is too much noise caused by other binaries.</p>
+</li><li>
+<p><code>ruby</code>: Optional. The command to run to invoke Ruby. Defaults to the Ruby that is currently being used.</p>
+</li><li>
+<p><code>valgrind</code>: Optional. The command to run to invoke Valgrind. Defaults to the string <code>&quot;valgrind&quot;</code>.</p>
+</li><li>
+<p><code>valgrind_options</code>: Optional. <a href="../../../../../../Array.html"><code>Array</code></a> of options to pass into Valgrind. This is only present as an escape hatch, so avoid using it. This may be deprecated or removed in future versions.</p>
+</li><li>
+<p><code>valgrind_suppressions_dir</code>: Optional. The string path of the directory that stores suppression files for Valgrind. See the {<code>Suppression files</code><a href="#suppression-files">}</a> section for more details. Defaults to <code>suppressions</code>.</p>
+</li><li>
+<p><code>valgrind_generate_suppressions</code>: Optional. Whether suppressions should also be outputted along with the errors. the {<code>Suppression files</code><a href="#suppression-files">}</a> section for more details. Defaults to <code>false</code>.</p>
+</li><li>
+<p><code>skipped_ruby_functions</code>: Optional. Ruby functions that are ignored because they are considered a call back into Ruby. This is only present as an escape hatch, so avoid using it. If you find another Ruby function that is a false positive because it calls back into Ruby, please send a patch into this repo. Otherwise, use a Valgrind suppression file.</p>
+</li><li>
+<p><code>temp_dir</code>: Optional. The directory to store temporary files. It defaults to a temporary directory. This is present for development debugging, so you shouldn’t have to use it.</p>
+</li><li>
+<p><code>output_io</code>: Optional. The <code>IO</code> object to output Valgrind errors to. Defaults to standard error.</p>
+</li><li>
+<p><code>filter_all_errors</code>: Optional. Whether to filter all kinds of Valgrind errors (not just memory leaks). This feature should only be used if you’re encountering a large number of illegal memory accesses coming from Ruby. If you need to use this feature, you may have found a bug inside of Ruby. Consider reporting it to the <a href="https://bugs.ruby-lang.org/projects/ruby-master/issues/new">Ruby bug tracker</a>. Defaults to <code>false</code>.</p>
+</li><li>
+<p><code>use_only_ruby_free_at_exit</code>: Optional. Use only the {<code>RUBY_FREE_AT_EXIT</code><a href="https://bugs.ruby-lang.org/issues/19993">}</a> feature introduced in Ruby 3.3 and disables most of the heuristics inside of ruby_memcheck. Disable this if you want to use the original heuristics. Defaults to <code>true</code> for Ruby 3.4 and later, <code>false</code> otherwise. Note: while <code>RUBY_FREE_AT_EXIT</code> was introduced in Ruby 3.3, there are bugs which prevents it from working well, so it is only enabled by default for Ruby 3.4 and later.</p>
+</li></ul>
+
+<h2 id="label-Suppression+files">Suppression files<span><a href="#label-Suppression+files">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>If you find false positives in the output, you can create suppression files in a <code>suppressions</code> directory in the root directory of your gem. In this directory, you can create <a href="https://wiki.wxwidgets.org/Valgrind_Suppression_File_Howto">Valgrind suppression files</a>.</p>
+
+<p>The most basic suppression file is <code>ruby.supp</code>. If you want some suppressions for only specific versions of Ruby, you can add the Ruby version to the filename. For example, <code>ruby-3.supp</code> will suppress for any Rubies with a major version of 3 (e.g. 3.0.0, 3.1.1, etc.), while suppression file <code>ruby-3.1.supp</code> will only be used for Ruby with a major and minor version of 3.1 (e.g. 3.1.0, 3.1.1, etc.).</p>
+
+<h2 id="label-Success+stories">Success stories<span><a href="#label-Success+stories">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Let’s celebrate wins from this gem! If this gem was useful for you, please share your story below too!</p>
+<ul><li>
+<p>{<code>liquid-c</code><a href="https://github.com/Shopify/liquid-c">}</a>:</p>
+</li><li>
+<p>Found 2 memory leaks: <a href="https://github.com/Shopify/liquid-c/pull/157">#157</a>, <a href="https://github.com/Shopify/liquid-c/pull/161">#161</a></p>
+</li><li>
+<p>Running on CI: <a href="https://github.com/Shopify/liquid-c/pull/162">#162</a></p>
+</li><li>
+<p>{<code>nokogiri</code><a href="https://github.com/sparklemotion/nokogiri">}</a>:</p>
+</li><li>
+<p>Found 5 memory leaks: <a href="https://github.com/sparklemotion/nokogiri/pull/2345">4 in #2345</a>, <a href="https://github.com/sparklemotion/nokogiri/pull/2347">#2347</a></p>
+</li><li>
+<p>Running on CI: <a href="https://github.com/sparklemotion/nokogiri/pull/2344">#2344</a></p>
+</li><li>
+<p>{<code>rotoscope</code><a href="https://github.com/Shopify/rotoscope">}</a>:</p>
+</li><li>
+<p>Found a <a href="https://bugs.ruby-lang.org/issues/18264">memory leak in Ruby TracePoint</a></p>
+</li><li>
+<p>Running on CI: <a href="https://github.com/Shopify/rotoscope/pull/89">#89</a></p>
+</li><li>
+<p>{<code>protobuf</code><a href="https://github.com/protocolbuffers/protobuf">}</a>:</p>
+</li><li>
+<p>Found 1 memory leak: <a href="https://github.com/protocolbuffers/protobuf/pull/9150">#9150</a></p>
+</li><li>
+<p>{<code>gRPC</code><a href="https://github.com/grpc/grpc">}</a>:</p>
+</li><li>
+<p>Found 1 memory leak: <a href="https://github.com/grpc/grpc/pull/27900">#27900</a></p>
+</li><li>
+<p>{<code>wasmtime-rb</code><a href="https://github.com/bytecodealliance/wasmtime-rb">}</a>:</p>
+</li><li>
+<p>Found 1 memory leak: <a href="https://github.com/bytecodealliance/wasmtime-rb/pull/26">#26</a></p>
+</li><li>
+<p>{<code>yarp</code><a href="https://github.com/shopify/yarp">}</a>:</p>
+</li><li>
+<p>Found 6 memory leaks and 1 memory error: <a href="https://github.com/Shopify/yarp/pull/304">#292</a>, <a href="https://github.com/Shopify/yarp/pull/292">#292</a></p>
+</li><li>
+<p>Running on CI: <a href="https://github.com/Shopify/yarp/pull/293">#293</a></p>
+</li><li>
+<p>{<code>libxml2</code><a href="https://gitlab.gnome.org/GNOME/libxml2">}</a>:</p>
+</li><li>
+<p>Found 1 memory leak: <a href="https://gitlab.gnome.org/GNOME/libxml2/-/issues/530">memory leak from ‘xmlSchemaValidateStream` in v2.11.x (#530)</a></p>
+</li><li>
+<p>Running in Nokogiri’s CI pipeline: <a href="https://github.com/sparklemotion/nokogiri/pull/2868">#2868</a></p>
+</li></ul>
+
+<h2 id="label-License">License<span><a href="#label-License">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The gem is available as open source under the terms of the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
+
+</main>
+

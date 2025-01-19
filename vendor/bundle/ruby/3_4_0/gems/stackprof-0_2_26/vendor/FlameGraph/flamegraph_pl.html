@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>flamegraph.pl - RDoc Documentation</title>
+
+  <meta name="keywords" content="ruby,documentation,flamegraph.pl">
+  <meta name="description" content="flamegraph.pl: This takes stack samples and renders a call graph, allowing hot functions # and codepaths to be quickly identified. Stack samples can be generated usi">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../../../../../../../";
+  var index_rel_prefix = "../../../../../../../../";
+</script>
+
+<script src="../../../../../../../../js/navigation.js" defer></script>
+<script src="../../../../../../../../js/search.js" defer></script>
+<script src="../../../../../../../../js/search_index.js" defer></script>
+<script src="../../../../../../../../js/searcher.js" defer></script>
+<script src="../../../../../../../../js/darkfish.js" defer></script>
+
+<link href="../../../../../../../../css/fonts.css" rel="stylesheet">
+<link href="../../../../../../../../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../../../../../../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../../../../../../../table_of_contents.html#pages">Pages</a>
+    <a href="../../../../../../../../table_of_contents.html#classes">Classes</a>
+    <a href="../../../../../../../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+  
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="../../../../../../../../CHANGELOG_md.html">CHANGELOG</a>
+    <li><a href="../../../../../../../../CONTRIBUTION_md.html">CONTRIBUTION</a>
+    <li><a href="../../../../../../../../Dockerfile.html">Dockerfile</a>
+    <li><a href="../../../../../../../../Gemfile.html">Gemfile</a>
+    <li><a href="../../../../../../../../Gemfile_lock.html">Gemfile.lock</a>
+    <li><a href="../../../../../../../../LICENSE.html">LICENSE</a>
+    <li><a href="../../../../../../../../README_md.html">README</a>
+    <li><a href="../../../../../../../../Rakefile.html">Rakefile</a>
+    <li><a href="../../../../../../../../bin/setup.html">setup</a>
+    <li><a href="../../../../../../../../getduckdb_sh.html">getduckdb.sh</a>
+    <li><details open><summary>vendor</summary>
+    <ul class="link-list">
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/ext/bigdecimal/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Manifest_txt.html">Manifest</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE-DEPENDENCIES_md.html">LICENSE-DEPENDENCIES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE_md.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/ext/nokogiri/depend.html">depend</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/CHANGES_md.html">CHANGES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/THANKS.html">THANKS</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/lib/nokogiri/css/tokenizer_rex.html">tokenizer.rex</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/BSDL.html">BSDL</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/COPYING.html">COPYING</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ChangeLog.html">ChangeLog</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_ja_rdoc.html">README.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/TODO.html">TODO</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar_en_rdoc.html">grammar.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar2_en_rdoc.html">grammar2.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/command_ja_html.html">command.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/debug_ja_rdoc.html">debug.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/grammar_ja_rdoc.html">grammar.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/index_ja_html.html">index.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/parser_ja_rdoc.html">parser.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/usage_ja_html.html">usage.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ext/racc/cparse/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/MIT-LICENSE.html">MIT-LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/command_line_usage_rdoc.html">command_line_usage</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile1.html">Rakefile1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile2.html">Rakefile2</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/glossary_rdoc.html">glossary</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/proto_rake_rdoc.html">proto_rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rake_1.html">rake.1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rakefile_rdoc.html">rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rational_rdoc.html">rational</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/compile_feature.html">compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-compile_feature.html">cross-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package-multi_feature.html">cross-package-multi.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package_feature.html">cross-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-compile_feature.html">java-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-no-native-compile_feature.html">java-no-native-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-package_feature.html">java-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/package_feature.html">package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bin/cross-ruby_rake.html">cross-ruby.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bootstrap_rake.html">bootstrap.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/common_rake.html">common.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/cucumber_rake.html">cucumber.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/gem_rake.html">gem.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/rspec_rake.html">rspec.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile_lock.html">Gemfile.lock</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/suppressions/ruby_supp.html">ruby.supp</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/CHANGELOG_md.html">CHANGELOG</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/ext/stackprof/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/flamegraph_js.html">flamegraph.js</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/viewer_html.html">viewer.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/README.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/flamegraph_pl.html">flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/gprof2dot_py.html">gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/hotshotmain_py.html">hotshotmain.py</a>
+    </ul></details>
+  </ul>
+</div>
+
+
+  <footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
+</nav>
+
+<main role="main" aria-label="Page vendor/bundle/ruby/3.4.0/gems/stackprof-0.2.26/vendor/FlameGraph/flamegraph.pl">
+
+<p>!/usr/bin/perl -w # # flamegraph.pl         flame stack grapher. # # This takes stack samples and renders a call graph, allowing hot functions # and codepaths to be quickly identified.  Stack samples can be generated using # tools such as DTrace, perf, SystemTap, and Instruments. # # USAGE: ./flamegraph.pl [options] input.txt &gt; graph.svg # #        grep funcA input.txt | ./flamegraph.pl [options] &gt; graph.svg # # Then open the resulting .svg in a web browser, for interactivity: mouse-over # frames for info, click to zoom, and ctrl-F to search. # # Options are listed in the usage message (–help). # # The input is stack frames and sample counts formatted as single lines.  Each # frame in the stack is semicolon separated, with a space and count at the end # of the line.  These can be generated for Linux perf script output using # stackcollapse-perf.pl, for DTrace using stackcollapse.pl, and for other tools # using the other stackcollapse programs.  Example input: # #  swapper;start_kernel;rest_init;cpu_idle;default_idle;native_safe_halt 1 # # An optional extra column of counts can be provided to generate a differential # flame graph of the counts, colored red for more, and blue for less.  This # can be useful when using flame graphs for non-regression testing. # See the header comment in the difffolded.pl program for instructions. # # The input functions can optionally have annotations at the end of each # function name, following a precedent by some tools (Linux perf’s <a href="k">_</a>): #       <a href="k">_</a> for kernel #       <a href="i">_</a> for inlined #       <a href="j">_</a> for jit #       <a href="w">_</a> for waker # Some of the stackcollapse programs support adding these annotations, eg, # stackcollapse-perf.pl –kernel –jit. They are used merely for colors by # some palettes, eg, flamegraph.pl –color=java. # # The output flame graph shows relative presence of functions in stack samples. # The ordering on the x-axis has no meaning; since the data is samples, time # order of events is not known.  The order used sorts function names # alphabetically. # # While intended to process stack samples, this can also process stack traces. # For example, tracing stacks for memory allocation, or resource usage.  You # can use –title to set the title to reflect the content, and –countname # to change “samples” to “bytes” etc. # # There are a few different palettes, selectable using –color.  By default, # the colors are selected at random (except for differentials).  Functions # called “-” will be printed gray, which can be used for stack separators (eg, # between user and kernel stacks). # # HISTORY # # This was inspired by Neelakanth Nadgir’s excellent function_call_graph.rb # program, which visualized function entry and return trace events.  As Neel # wrote: “The output displayed is inspired by Roch’s CallStackAnalyzer which # was in turn inspired by the work on vftrace by Jan Boerhout”.  See: # <a href="https://blogs.oracle.com/realneel/entry/visualizing_callstacks_via_dtrace_and">blogs.oracle.com/realneel/entry/visualizing_callstacks_via_dtrace_and</a> # # Copyright 2016 Netflix, Inc. # Copyright 2011 Joyent, Inc.  All rights reserved. # Copyright 2011 Brendan Gregg.  All rights reserved. # # CDDL HEADER START # # The contents of this file are subject to the terms of the # Common Development and Distribution License (the “License”). # You may not use this file except in compliance with the License. # # You can obtain a copy of the license at docs/cddl1.txt or # <a href="http://opensource.org/licenses/CDDL-1.0">opensource.org/licenses/CDDL-1.0</a>. # See the License for the specific language governing permissions # and limitations under the License. # # When distributing Covered Code, include this CDDL HEADER in each # file and include the License file at docs/cddl1.txt. # If applicable, add the following below this CDDL HEADER, with the # fields enclosed by brackets “[]” replaced with your own identifying # information: Portions Copyright [yyyy] [name of copyright owner] # # CDDL HEADER END # # 11-Oct-2014   Adrien Mahieux  Added zoom. # 21-Nov-2013   Shawn Sterling  Added consistent palette file option # 17-Mar-2013   Tim Bunce       Added options and more tunables. # 15-Dec-2011   Dave Pacheco    Support for frames with whitespace. # 10-Sep-2011   Brendan Gregg   Created this.</p>
+
+<p>use strict;</p>
+
+<p>use Getopt::Long;</p>
+
+<p>use open qw(:std :utf8);</p>
+
+<p># tunables my $encoding; my $fonttype = “Verdana”; my $imagewidth = 1200;          # max width, pixels my $frameheight = 16;           # max height is dynamic my $fontsize = 12;              # base text size my $fontwidth = 0.59;           # avg width relative to fontsize my $minwidth = 0.1;             # min function width, pixels my $nametype = “Function:”;     # what are the names in the data? my $countname = “samples”;      # what are the counts in the data? my $colors = “hot”;             # color theme my $bgcolors = “”;              # background color theme my $nameattrfile;               # file holding function attributes my $timemax;                    # (override the) sum of the counts my $factor = 1;                 # factor to scale counts by my $hash = 0;                   # color by function name my $palette = 0;                # if we use consistent palettes (default off) my %palette_map;                # palette map hash my $pal_file = “palette.map”;   # palette map file name my $stackreverse = 0;           # reverse stack order, switching merge end my $inverted = 0;               # icicle graph my $flamechart = 0;             # produce a flame chart (sort by time, do not merge stacks) my $negate = 0;                 # switch differential hues my $titletext = “”;             # centered heading my $titledefault = “Flame Graph”;       # overwritten by –title my $titleinverted = “Icicle Graph”;     #   “    ” my $searchcolor = “rgb(230,0,230)”;     # color for search highlighting my $notestext = “”;             # embedded notes in SVG my $subtitletext = “”;          # second level title (optional) my $help = 0;</p>
+
+<p>sub usage {</p>
+
+<pre>die &lt;&lt;USAGE_END;</pre>
+
+<p>USAGE: $0 [options] infile &gt; outfile.svgn</p>
+
+<pre>--title TEXT     # change title text
+--subtitle TEXT  # second level title (optional)
+--width NUM      # width of image (default 1200)
+--height NUM     # height of each frame (default 16)
+--minwidth NUM   # omit smaller functions (default 0.1 pixels)
+--fonttype FONT  # font type (default &quot;Verdana&quot;)
+--fontsize NUM   # font size (default 12)
+--countname TEXT # count type label (default &quot;samples&quot;)
+--nametype TEXT  # name type label (default &quot;Function:&quot;)
+--colors PALETTE # set color palette. choices are: hot (default), mem,
+                 # io, wakeup, chain, java, js, perl, red, green, blue,
+                 # aqua, yellow, purple, orange
+--bgcolors COLOR # set background colors. gradient choices are yellow
+                 # (default), blue, green, grey; flat colors use &quot;#rrggbb&quot;
+--hash           # colors are keyed by function name hash
+--cp             # use consistent palette (palette.map)
+--reverse        # generate stack-reversed flame graph
+--inverted       # icicle graph
+--flamechart     # produce a flame chart (sort by time, do not merge stacks)
+--negate         # switch differential hues (blue&lt;-&gt;red)
+--notes TEXT     # add notes comment in SVG (for debugging)
+--help           # this message
+
+eg,
+$0 --title=&quot;Flame Graph: malloc()&quot; trace.txt &gt; graph.svg</pre>
+
+<p>USAGE_END }</p>
+
+<p>GetOptions(</p>
+
+<pre>&#39;fonttype=s&#39;  =&gt; \$fonttype,
+&#39;width=i&#39;     =&gt; \$imagewidth,
+&#39;height=i&#39;    =&gt; \$frameheight,
+&#39;encoding=s&#39;  =&gt; \$encoding,
+&#39;fontsize=f&#39;  =&gt; \$fontsize,
+&#39;fontwidth=f&#39; =&gt; \$fontwidth,
+&#39;minwidth=f&#39;  =&gt; \$minwidth,
+&#39;title=s&#39;     =&gt; \$titletext,
+&#39;subtitle=s&#39;  =&gt; \$subtitletext,
+&#39;nametype=s&#39;  =&gt; \$nametype,
+&#39;countname=s&#39; =&gt; \$countname,
+&#39;nameattr=s&#39;  =&gt; \$nameattrfile,
+&#39;total=s&#39;     =&gt; \$timemax,
+&#39;factor=f&#39;    =&gt; \$factor,
+&#39;colors=s&#39;    =&gt; \$colors,
+&#39;bgcolors=s&#39;  =&gt; \$bgcolors,
+&#39;hash&#39;        =&gt; \$hash,
+&#39;cp&#39;          =&gt; \$palette,
+&#39;reverse&#39;     =&gt; \$stackreverse,
+&#39;inverted&#39;    =&gt; \$inverted,
+&#39;flamechart&#39;  =&gt; \$flamechart,
+&#39;negate&#39;      =&gt; \$negate,
+&#39;notes=s&#39;     =&gt; \$notestext,
+&#39;help&#39;        =&gt; \$help,</pre>
+
+<p>) or usage(); $help &amp;&amp; usage();</p>
+
+<p># internals my $ypad1 = $fontsize * 3;      # pad top, include title my $ypad2 = $fontsize * 2 + 10; # pad bottom, include labels my $ypad3 = $fontsize * 2;      # pad top, include subtitle (optional) my $xpad = 10;                  # pad lefm and right my $framepad = 1;               # vertical padding for frames my $depthmax = 0; my %Events; my %nameattr;</p>
+
+<p>if ($flamechart &amp;&amp; $titletext eq “”) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">$titletext</span> = <span class="ruby-string">&quot;Flame Chart&quot;</span>;
+</pre>
+
+<p>}</p>
+
+<p>if ($titletext eq “”) {</p>
+
+<pre>unless ($inverted) {
+        $titletext = $titledefault;
+} else {
+        $titletext = $titleinverted;
+}</pre>
+
+<p>}</p>
+
+<p>if ($nameattrfile) {</p>
+
+<pre># The name-attribute file format is a function name followed by a tab then
+# a sequence of tab separated name=value pairs.
+open my $attrfh, $nameattrfile or die &quot;Can&#39;t read $nameattrfile: $!\n&quot;;
+while (&lt;$attrfh&gt;) {
+        chomp;
+        my ($funcname, $attrstr) = split /\t/, $_, 2;
+        die &quot;Invalid format in $nameattrfile&quot; unless defined $attrstr;
+        $nameattr{$funcname} = { map { split /=/, $_, 2 } split /\t/, $attrstr };
+}</pre>
+
+<p>}</p>
+
+<p>if ($notestext =~ /[&lt;&gt;]/) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">die</span> <span class="ruby-string">&quot;Notes string can&#39;t contain &lt; or &gt;&quot;</span>
+</pre>
+
+<p>}</p>
+
+<p># background colors: # - yellow gradient: default (hot, java, js, perl) # - green gradient: mem # - blue gradient: io, wakeup, chain # - gray gradient: flat colors (red, green, blue, …) if ($bgcolors eq “”) {</p>
+
+<pre># choose a default
+if ($colors eq &quot;mem&quot;) {
+        $bgcolors = &quot;green&quot;;
+} elsif ($colors =~ /^(io|wakeup|chain)$/) {
+        $bgcolors = &quot;blue&quot;;
+} elsif ($colors =~ /^(red|green|blue|aqua|yellow|purple|orange)$/) {
+        $bgcolors = &quot;grey&quot;;
+} else {
+        $bgcolors = &quot;yellow&quot;;
+}</pre>
+
+<p>} my ($bgcolor1, $bgcolor2); if ($bgcolors eq “yellow”) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">$bgcolor1</span> = <span class="ruby-string">&quot;#eeeeee&quot;</span>;       <span class="ruby-comment"># background color gradient start</span>
+<span class="ruby-identifier">$bgcolor2</span> = <span class="ruby-string">&quot;#eeeeb0&quot;</span>;       <span class="ruby-comment"># background color gradient stop</span>
+</pre>
+
+<p>} elsif ($bgcolors eq “blue”) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">$bgcolor1</span> = <span class="ruby-string">&quot;#eeeeee&quot;</span>; <span class="ruby-identifier">$bgcolor2</span> = <span class="ruby-string">&quot;#e0e0ff&quot;</span>;
+</pre>
+
+<p>} elsif ($bgcolors eq “green”) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">$bgcolor1</span> = <span class="ruby-string">&quot;#eef2ee&quot;</span>; <span class="ruby-identifier">$bgcolor2</span> = <span class="ruby-string">&quot;#e0ffe0&quot;</span>;
+</pre>
+
+<p>} elsif ($bgcolors eq “grey”) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">$bgcolor1</span> = <span class="ruby-string">&quot;#f8f8f8&quot;</span>; <span class="ruby-identifier">$bgcolor2</span> = <span class="ruby-string">&quot;#e8e8e8&quot;</span>;
+</pre>
+
+<p>} elsif ($bgcolors =~ /^#.…..$/) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">$bgcolor1</span> = <span class="ruby-identifier">$bgcolor2</span> = <span class="ruby-identifier">$bgcolors</span>;
+</pre>
+
+<p>} else {</p>
+
+<pre class="ruby"><span class="ruby-identifier">die</span> <span class="ruby-string">&quot;Unrecognized bgcolor option \&quot;$bgcolors\&quot;&quot;</span>
+</pre>
+
+<p>}</p>
+
+<p># SVG functions { package SVG;</p>
+
+<pre>sub new {
+        my $class = shift;
+        my $self = {};
+        bless ($self, $class);
+        return $self;
+}
+
+sub header {
+        my ($self, $w, $h) = @_;
+        my $enc_attr = &#39;&#39;;
+        if (defined $encoding) {
+                $enc_attr = qq{ encoding=&quot;$encoding&quot;};
+        }
+        $self-&gt;{svg} .= &lt;&lt;SVG;</pre>
+
+<p>&lt;?xml version=“1.0”$enc_attr standalone=“no”?&gt; &lt;!DOCTYPE svg PUBLIC “-//W3C//DTD SVG 1.1//EN” “<a href="http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd</a>”&gt; &lt;svg version=“1.1” width=“$w” height=“$h” onload=“init(evt)” viewBox=“0 0 $w $h” xmlns=“<a href="http://www.w3.org/2000/svg">www.w3.org/2000/svg</a>” xmlns:xlink=“<a href="http://www.w3.org/1999/xlink">www.w3.org/1999/xlink</a>”&gt; &lt;!– Flame graph stack visualization. See <a href="https://github.com/brendangregg/FlameGraph">github.com/brendangregg/FlameGraph</a> for latest version, and <a href="http://www.brendangregg.com/flamegraphs.html">www.brendangregg.com/flamegraphs.html</a> for examples. –&gt; &lt;!– NOTES: $notestext –&gt; SVG</p>
+
+<pre>}
+
+sub include {
+        my ($self, $content) = @_;
+        $self-&gt;{svg} .= $content;
+}
+
+sub colorAllocate {
+        my ($self, $r, $g, $b) = @_;
+        return &quot;rgb($r,$g,$b)&quot;;
+}
+
+sub group_start {
+        my ($self, $attr) = @_;
+
+        my @g_attr = map {
+                exists $attr-&gt;{$_} ? sprintf(qq/$_=&quot;%s&quot;/, $attr-&gt;{$_}) : ()
+        } qw(id class);
+        push @g_attr, $attr-&gt;{g_extra} if $attr-&gt;{g_extra};
+        if ($attr-&gt;{href}) {
+                my @a_attr;
+                push @a_attr, sprintf qq/xlink:href=&quot;%s&quot;/, $attr-&gt;{href} if $attr-&gt;{href};
+                # default target=_top else links will open within SVG &lt;object&gt;
+                push @a_attr, sprintf qq/target=&quot;%s&quot;/, $attr-&gt;{target} || &quot;_top&quot;;
+                push @a_attr, $attr-&gt;{a_extra}                           if $attr-&gt;{a_extra};
+                $self-&gt;{svg} .= sprintf qq/&lt;a %s&gt;\n/, join(&#39; &#39;, (@a_attr, @g_attr));
+        } else {
+                $self-&gt;{svg} .= sprintf qq/&lt;g %s&gt;\n/, join(&#39; &#39;, @g_attr);
+        }
+
+        $self-&gt;{svg} .= sprintf qq/&lt;title&gt;%s&lt;\/title&gt;/, $attr-&gt;{title}
+                if $attr-&gt;{title}; # should be first element within g container
+}
+
+sub group_end {
+        my ($self, $attr) = @_;
+        $self-&gt;{svg} .= $attr-&gt;{href} ? qq/&lt;\/a&gt;\n/ : qq/&lt;\/g&gt;\n/;
+}
+
+sub filledRectangle {
+        my ($self, $x1, $y1, $x2, $y2, $fill, $extra) = @_;
+        $x1 = sprintf &quot;%0.1f&quot;, $x1;
+        $x2 = sprintf &quot;%0.1f&quot;, $x2;
+        my $w = sprintf &quot;%0.1f&quot;, $x2 - $x1;
+        my $h = sprintf &quot;%0.1f&quot;, $y2 - $y1;
+        $extra = defined $extra ? $extra : &quot;&quot;;
+        $self-&gt;{svg} .= qq/&lt;rect x=&quot;$x1&quot; y=&quot;$y1&quot; width=&quot;$w&quot; height=&quot;$h&quot; fill=&quot;$fill&quot; $extra \/&gt;\n/;
+}
+
+sub stringTTF {
+        my ($self, $id, $x, $y, $str, $extra) = @_;
+        $x = sprintf &quot;%0.2f&quot;, $x;
+        $id =  defined $id ? qq/id=&quot;$id&quot;/ : &quot;&quot;;
+        $extra ||= &quot;&quot;;
+        $self-&gt;{svg} .= qq/&lt;text $id x=&quot;$x&quot; y=&quot;$y&quot; $extra&gt;$str&lt;\/text&gt;\n/;
+}
+
+sub svg {
+        my $self = shift;
+        return &quot;$self-&gt;{svg}&lt;/svg&gt;\n&quot;;
+}
+1;</pre>
+
+<p>}</p>
+
+<p>sub namehash {</p>
+
+<pre># Generate a vector hash for the name string, weighting early over
+# later characters. We want to pick the same colors for function
+# names across different flame graphs.
+my $name = shift;
+my $vector = 0;
+my $weight = 1;
+my $max = 1;
+my $mod = 10;
+# if module name present, trunc to 1st char
+$name =~ s/.(.*?)`//;
+foreach my $c (split //, $name) {
+        my $i = (ord $c) % $mod;
+        $vector += ($i / ($mod++ - 1)) * $weight;
+        $max += 1 * $weight;
+        $weight *= 0.70;
+        last if $mod &gt; 12;
+}
+return (1 - $vector / $max)</pre>
+
+<p>}</p>
+
+<p>sub color {</p>
+
+<pre>my ($type, $hash, $name) = @_;
+my ($v1, $v2, $v3);
+
+if ($hash) {
+        $v1 = namehash($name);
+        $v2 = $v3 = namehash(scalar reverse $name);
+} else {
+        $v1 = rand(1);
+        $v2 = rand(1);
+        $v3 = rand(1);
+}
+
+# theme palettes
+if (defined $type and $type eq &quot;hot&quot;) {
+        my $r = 205 + int(50 * $v3);
+        my $g = 0 + int(230 * $v1);
+        my $b = 0 + int(55 * $v2);
+        return &quot;rgb($r,$g,$b)&quot;;
+}
+if (defined $type and $type eq &quot;mem&quot;) {
+        my $r = 0;
+        my $g = 190 + int(50 * $v2);
+        my $b = 0 + int(210 * $v1);
+        return &quot;rgb($r,$g,$b)&quot;;
+}
+if (defined $type and $type eq &quot;io&quot;) {
+        my $r = 80 + int(60 * $v1);
+        my $g = $r;
+        my $b = 190 + int(55 * $v2);
+        return &quot;rgb($r,$g,$b)&quot;;
+}
+
+# multi palettes
+if (defined $type and $type eq &quot;java&quot;) {
+        # Handle both annotations (_[j], _[i], ...; which are
+        # accurate), as well as input that lacks any annotations, as
+        # best as possible. Without annotations, we get a little hacky
+        # and match on java|org|com, etc.
+        if ($name =~ m:_\[j\]$:) {      # jit annotation
+                $type = &quot;green&quot;;
+        } elsif ($name =~ m:_\[i\]$:) { # inline annotation
+                $type = &quot;aqua&quot;;
+        } elsif ($name =~ m:^L?(java|javax|jdk|net|org|com|io|sun)/:) { # Java
+                $type = &quot;green&quot;;
+        } elsif ($name =~ m:_\[k\]$:) { # kernel annotation
+                $type = &quot;orange&quot;;
+        } elsif ($name =~ /::/) {       # C++
+                $type = &quot;yellow&quot;;
+        } else {                        # system
+                $type = &quot;red&quot;;
+        }
+        # fall-through to color palettes
+}
+if (defined $type and $type eq &quot;perl&quot;) {
+        if ($name =~ /::/) {            # C++
+                $type = &quot;yellow&quot;;
+        } elsif ($name =~ m:Perl: or $name =~ m:\.pl:) {        # Perl
+                $type = &quot;green&quot;;
+        } elsif ($name =~ m:_\[k\]$:) { # kernel
+                $type = &quot;orange&quot;;
+        } else {                        # system
+                $type = &quot;red&quot;;
+        }
+        # fall-through to color palettes
+}
+if (defined $type and $type eq &quot;js&quot;) {
+        # Handle both annotations (_[j], _[i], ...; which are
+        # accurate), as well as input that lacks any annotations, as
+        # best as possible. Without annotations, we get a little hacky,
+        # and match on a &quot;/&quot; with a &quot;.js&quot;, etc.
+        if ($name =~ m:_\[j\]$:) {      # jit annotation
+                if ($name =~ m:/:) {
+                        $type = &quot;green&quot;;        # source
+                } else {
+                        $type = &quot;aqua&quot;;         # builtin
+                }
+        } elsif ($name =~ /::/) {       # C++
+                $type = &quot;yellow&quot;;
+        } elsif ($name =~ m:/.*\.js:) { # JavaScript (match &quot;/&quot; in path)
+                $type = &quot;green&quot;;
+        } elsif ($name =~ m/:/) {       # JavaScript (match &quot;:&quot; in builtin)
+                $type = &quot;aqua&quot;;
+        } elsif ($name =~ m/^ $/) {     # Missing symbol
+                $type = &quot;green&quot;;
+        } elsif ($name =~ m:_\[k\]:) {  # kernel
+                $type = &quot;orange&quot;;
+        } else {                        # system
+                $type = &quot;red&quot;;
+        }
+        # fall-through to color palettes
+}
+if (defined $type and $type eq &quot;wakeup&quot;) {
+        $type = &quot;aqua&quot;;
+        # fall-through to color palettes
+}
+if (defined $type and $type eq &quot;chain&quot;) {
+        if ($name =~ m:_\[w\]:) {       # waker
+                $type = &quot;aqua&quot;
+        } else {                        # off-CPU
+                $type = &quot;blue&quot;;
+        }
+        # fall-through to color palettes
+}
+
+# color palettes
+if (defined $type and $type eq &quot;red&quot;) {
+        my $r = 200 + int(55 * $v1);
+        my $x = 50 + int(80 * $v1);
+        return &quot;rgb($r,$x,$x)&quot;;
+}
+if (defined $type and $type eq &quot;green&quot;) {
+        my $g = 200 + int(55 * $v1);
+        my $x = 50 + int(60 * $v1);
+        return &quot;rgb($x,$g,$x)&quot;;
+}
+if (defined $type and $type eq &quot;blue&quot;) {
+        my $b = 205 + int(50 * $v1);
+        my $x = 80 + int(60 * $v1);
+        return &quot;rgb($x,$x,$b)&quot;;
+}
+if (defined $type and $type eq &quot;yellow&quot;) {
+        my $x = 175 + int(55 * $v1);
+        my $b = 50 + int(20 * $v1);
+        return &quot;rgb($x,$x,$b)&quot;;
+}
+if (defined $type and $type eq &quot;purple&quot;) {
+        my $x = 190 + int(65 * $v1);
+        my $g = 80 + int(60 * $v1);
+        return &quot;rgb($x,$g,$x)&quot;;
+}
+if (defined $type and $type eq &quot;aqua&quot;) {
+        my $r = 50 + int(60 * $v1);
+        my $g = 165 + int(55 * $v1);
+        my $b = 165 + int(55 * $v1);
+        return &quot;rgb($r,$g,$b)&quot;;
+}
+if (defined $type and $type eq &quot;orange&quot;) {
+        my $r = 190 + int(65 * $v1);
+        my $g = 90 + int(65 * $v1);
+        return &quot;rgb($r,$g,0)&quot;;
+}
+
+return &quot;rgb(0,0,0)&quot;;</pre>
+
+<p>}</p>
+
+<p>sub color_scale {</p>
+
+<pre>my ($value, $max) = @_;
+my ($r, $g, $b) = (255, 255, 255);
+$value = -$value if $negate;
+if ($value &gt; 0) {
+        $g = $b = int(210 * ($max - $value) / $max);
+} elsif ($value &lt; 0) {
+        $r = $g = int(210 * ($max + $value) / $max);
+}
+return &quot;rgb($r,$g,$b)&quot;;</pre>
+
+<p>}</p>
+
+<p>sub color_map {</p>
+
+<pre>my ($colors, $func) = @_;
+if (exists $palette_map{$func}) {
+        return $palette_map{$func};
+} else {
+        $palette_map{$func} = color($colors, $hash, $func);
+        return $palette_map{$func};
+}</pre>
+
+<p>}</p>
+
+<p>sub write_palette {</p>
+
+<pre>open(FILE, &quot;&gt;$pal_file&quot;);
+foreach my $key (sort keys %palette_map) {
+        print FILE $key.&quot;-&gt;&quot;.$palette_map{$key}.&quot;\n&quot;;
+}
+close(FILE);</pre>
+
+<p>}</p>
+
+<p>sub read_palette {</p>
+
+<pre>if (-e $pal_file) {
+open(FILE, $pal_file) or die &quot;can&#39;t open file $pal_file: $!&quot;;
+while ( my $line = &lt;FILE&gt;) {
+        chomp($line);
+        (my $key, my $value) = split(&quot;-&gt;&quot;,$line);
+        $palette_map{$key}=$value;
+}
+close(FILE)
+}</pre>
+
+<p>}</p>
+
+<p>my %Node;       # Hash of merged frame data my %Tmp;</p>
+
+<p># flow() merges two stacks, storing the merged frames and value data in %Node. sub flow {</p>
+
+<pre>my ($last, $this, $v, $d) = @_;
+
+my $len_a = @$last - 1;
+my $len_b = @$this - 1;
+
+my $i = 0;
+my $len_same;
+for (; $i &lt;= $len_a; $i++) {
+        last if $i &gt; $len_b;
+        last if $last-&gt;[$i] ne $this-&gt;[$i];
+}
+$len_same = $i;
+
+for ($i = $len_a; $i &gt;= $len_same; $i--) {
+        my $k = &quot;$last-&gt;[$i];$i&quot;;
+        # a unique ID is constructed from &quot;func;depth;etime&quot;;
+        # func-depth isn&#39;t unique, it may be repeated later.
+        $Node{&quot;$k;$v&quot;}-&gt;{stime} = delete $Tmp{$k}-&gt;{stime};
+        if (defined $Tmp{$k}-&gt;{delta}) {
+                $Node{&quot;$k;$v&quot;}-&gt;{delta} = delete $Tmp{$k}-&gt;{delta};
+        }
+        delete $Tmp{$k};
+}
+
+for ($i = $len_same; $i &lt;= $len_b; $i++) {
+        my $k = &quot;$this-&gt;[$i];$i&quot;;
+        $Tmp{$k}-&gt;{stime} = $v;
+        if (defined $d) {
+                $Tmp{$k}-&gt;{delta} += $i == $len_b ? $d : 0;
+        }
+}
+
+return $this;</pre>
+
+<p>}</p>
+
+<p># parse input my @Data; my @SortedData; my $last = []; my $time = 0; my $delta = undef; my $ignored = 0; my $line; my $maxdelta = 1;</p>
+
+<p># reverse if needed foreach (&lt;&gt;) {</p>
+
+<pre>chomp;
+$line = $_;
+if ($stackreverse) {
+        # there may be an extra samples column for differentials
+        # XXX todo: redo these REs as one. It&#39;s repeated below.
+        my($stack, $samples) = (/^(.*)\s+?(\d+(?:\.\d*)?)$/);
+        my $samples2 = undef;
+        if ($stack =~ /^(.*)\s+?(\d+(?:\.\d*)?)$/) {
+                $samples2 = $samples;
+                ($stack, $samples) = $stack =~ (/^(.*)\s+?(\d+(?:\.\d*)?)$/);
+                unshift @Data, join(&quot;;&quot;, reverse split(&quot;;&quot;, $stack)) . &quot; $samples $samples2&quot;;
+        } else {
+                unshift @Data, join(&quot;;&quot;, reverse split(&quot;;&quot;, $stack)) . &quot; $samples&quot;;
+        }
+} else {
+        unshift @Data, $line;
+}</pre>
+
+<p>}</p>
+
+<p>if ($flamechart) {</p>
+
+<pre class="ruby"><span class="ruby-comment"># In flame chart mode, just reverse the data so time moves from left to right.</span>
+<span class="ruby-ivar">@SortedData</span> = <span class="ruby-identifier">reverse</span> <span class="ruby-ivar">@Data</span>;
+</pre>
+
+<p>} else {</p>
+
+<pre class="ruby"><span class="ruby-ivar">@SortedData</span> = <span class="ruby-identifier">sort</span> <span class="ruby-ivar">@Data</span>;
+</pre>
+
+<p>}</p>
+
+<p># process and merge frames foreach (@SortedData) {</p>
+
+<pre>chomp;
+# process: folded_stack count
+# eg: func_a;func_b;func_c 31
+my ($stack, $samples) = (/^(.*)\s+?(\d+(?:\.\d*)?)$/);
+unless (defined $samples and defined $stack) {
+        ++$ignored;
+        next;
+}
+
+# there may be an extra samples column for differentials:
+my $samples2 = undef;
+if ($stack =~ /^(.*)\s+?(\d+(?:\.\d*)?)$/) {
+        $samples2 = $samples;
+        ($stack, $samples) = $stack =~ (/^(.*)\s+?(\d+(?:\.\d*)?)$/);
+}
+$delta = undef;
+if (defined $samples2) {
+        $delta = $samples2 - $samples;
+        $maxdelta = abs($delta) if abs($delta) &gt; $maxdelta;
+}
+
+# for chain graphs, annotate waker frames with &quot;_[w]&quot;, for later
+# coloring. This is a hack, but has a precedent (&quot;_[k]&quot; from perf).
+if ($colors eq &quot;chain&quot;) {
+        my @parts = split &quot;;--;&quot;, $stack;
+        my @newparts = ();
+        $stack = shift @parts;
+        $stack .= &quot;;--;&quot;;
+        foreach my $part (@parts) {
+                $part =~ s/;/_[w];/g;
+                $part .= &quot;_[w]&quot;;
+                push @newparts, $part;
+        }
+        $stack .= join &quot;;--;&quot;, @parts;
+}
+
+# merge frames and populate %Node:
+$last = flow($last, [ &#39;&#39;, split &quot;;&quot;, $stack ], $time, $delta);
+
+if (defined $samples2) {
+        $time += $samples2;
+} else {
+        $time += $samples;
+}</pre>
+
+<p>} flow($last, [], $time, $delta);</p>
+
+<p>warn “Ignored $ignored lines with invalid formatn” if $ignored; unless ($time) {</p>
+
+<pre>warn &quot;ERROR: No stack counts found\n&quot;;
+my $im = SVG-&gt;new();
+# emit an error message SVG, for tools automating flamegraph use
+my $imageheight = $fontsize * 5;
+$im-&gt;header($imagewidth, $imageheight);
+$im-&gt;stringTTF(undef, int($imagewidth / 2), $fontsize * 2,
+    &quot;ERROR: No valid input provided to flamegraph.pl.&quot;);
+print $im-&gt;svg;
+exit 2;</pre>
+
+<p>} if ($timemax and $timemax &lt; $time) {</p>
+
+<pre>warn &quot;Specified --total $timemax is less than actual total $time, so ignored\n&quot;
+if $timemax/$time &gt; 0.02; # only warn is significant (e.g., not rounding etc)
+undef $timemax;</pre>
+
+<p>} $timemax ||= $time;</p>
+
+<p>my $widthpertime = ($imagewidth - 2 * $xpad) / $timemax; my $minwidth_time = $minwidth / $widthpertime;</p>
+
+<p># prune blocks that are too narrow and determine max depth while (my ($id, $node) = each %Node) {</p>
+
+<pre>my ($func, $depth, $etime) = split &quot;;&quot;, $id;
+my $stime = $node-&gt;{stime};
+die &quot;missing start for $id&quot; if not defined $stime;
+
+if (($etime-$stime) &lt; $minwidth_time) {
+        delete $Node{$id};
+        next;
+}
+$depthmax = $depth if $depth &gt; $depthmax;</pre>
+
+<p>}</p>
+
+<p># draw canvas, and embed interactive JavaScript program my $imageheight = (($depthmax + 1) * $frameheight) + $ypad1 + $ypad2; $imageheight += $ypad3 if $subtitletext ne “”; my $titlesize = $fontsize + 5; my $im = SVG-&gt;new(); my ($black, $vdgrey, $dgrey) = (</p>
+
+<pre>    $im-&gt;colorAllocate(0, 0, 0),
+    $im-&gt;colorAllocate(160, 160, 160),
+    $im-&gt;colorAllocate(200, 200, 200),
+);</pre>
+
+<p>$im-&gt;header($imagewidth, $imageheight); my $inc = &lt;&lt;INC; &lt;defs&gt;</p>
+
+<pre>&lt;linearGradient id=&quot;background&quot; y1=&quot;0&quot; y2=&quot;1&quot; x1=&quot;0&quot; x2=&quot;0&quot; &gt;
+        &lt;stop stop-color=&quot;$bgcolor1&quot; offset=&quot;5%&quot; /&gt;
+        &lt;stop stop-color=&quot;$bgcolor2&quot; offset=&quot;95%&quot; /&gt;
+&lt;/linearGradient&gt;</pre>
+
+<p>&lt;/defs&gt; &lt;style type=“text/css”&gt;</p>
+
+<pre>text { font-family:$fonttype; font-size:${fontsize}px; fill:$black; }
+#search { opacity:0.1; cursor:pointer; }
+#search:hover, #search.show { opacity:1; }
+#subtitle { text-anchor:middle; font-color:$vdgrey; }
+#title { text-anchor:middle; font-size:${titlesize}px}
+#unzoom { cursor:pointer; }
+#frames &gt; *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+.hide { display:none; }
+.parent { opacity:0.5; }</pre>
+
+<p>&lt;/style&gt; &lt;script type=“text/ecmascript”&gt; &lt;![CDATA[</p>
+
+<pre>&quot;use strict&quot;;
+var details, searchbtn, unzoombtn, matchedtxt, svg, searching;
+function init(evt) {
+        details = document.getElementById(&quot;details&quot;).firstChild;
+        searchbtn = document.getElementById(&quot;search&quot;);
+        unzoombtn = document.getElementById(&quot;unzoom&quot;);
+        matchedtxt = document.getElementById(&quot;matched&quot;);
+        svg = document.getElementsByTagName(&quot;svg&quot;)[0];
+        searching = 0;
+}
+
+window.addEventListener(&quot;click&quot;, function(e) {
+        var target = find_group(e.target);
+        if (target) {
+                if (target.nodeName == &quot;a&quot;) {
+                        if (e.ctrlKey === false) return;
+                        e.preventDefault();
+                }
+                if (target.classList.contains(&quot;parent&quot;)) unzoom();
+                zoom(target);
+        }
+        else if (e.target.id == &quot;unzoom&quot;) unzoom();
+        else if (e.target.id == &quot;search&quot;) search_prompt();
+}, false)
+
+// mouse-over for info
+// show
+window.addEventListener(&quot;mouseover&quot;, function(e) {
+        var target = find_group(e.target);
+        if (target) details.nodeValue = &quot;$nametype &quot; + g_to_text(target);
+}, false)
+
+// clear
+window.addEventListener(&quot;mouseout&quot;, function(e) {
+        var target = find_group(e.target);
+        if (target) details.nodeValue = &#39; &#39;;
+}, false)
+
+// ctrl-F for search
+window.addEventListener(&quot;keydown&quot;,function (e) {
+        if (e.keyCode === 114 || (e.ctrlKey &amp;&amp; e.keyCode === 70)) {
+                e.preventDefault();
+                search_prompt();
+        }
+}, false)
+
+// functions
+function find_child(node, selector) {
+        var children = node.querySelectorAll(selector);
+        if (children.length) return children[0];
+        return;
+}
+function find_group(node) {
+        var parent = node.parentElement;
+        if (!parent) return;
+        if (parent.id == &quot;frames&quot;) return node;
+        return find_group(parent);
+}
+function orig_save(e, attr, val) {
+        if (e.attributes[&quot;_orig_&quot; + attr] != undefined) return;
+        if (e.attributes[attr] == undefined) return;
+        if (val == undefined) val = e.attributes[attr].value;
+        e.setAttribute(&quot;_orig_&quot; + attr, val);
+}
+function orig_load(e, attr) {
+        if (e.attributes[&quot;_orig_&quot;+attr] == undefined) return;
+        e.attributes[attr].value = e.attributes[&quot;_orig_&quot; + attr].value;
+        e.removeAttribute(&quot;_orig_&quot;+attr);
+}
+function g_to_text(e) {
+        var text = find_child(e, &quot;title&quot;).firstChild.nodeValue;
+        return (text)
+}
+function g_to_func(e) {
+        var func = g_to_text(e);
+        // if there&#39;s any manipulation we want to do to the function
+        // name before it&#39;s searched, do it here before returning.
+        return (func);
+}
+function update_text(e) {
+        var r = find_child(e, &quot;rect&quot;);
+        var t = find_child(e, &quot;text&quot;);
+        var w = parseFloat(r.attributes.width.value) -3;
+        var txt = find_child(e, &quot;title&quot;).textContent.replace(/\\([^(]*\\)\$/,&quot;&quot;);
+        t.attributes.x.value = parseFloat(r.attributes.x.value) + 3;
+
+        // Smaller than this size won&#39;t fit anything
+        if (w &lt; 2 * $fontsize * $fontwidth) {
+                t.textContent = &quot;&quot;;
+                return;
+        }
+
+        t.textContent = txt;
+        // Fit in full text width
+        if (/^ *\$/.test(txt) || t.getSubStringLength(0, txt.length) &lt; w)
+                return;
+
+        for (var x = txt.length - 2; x &gt; 0; x--) {
+                if (t.getSubStringLength(0, x + 2) &lt;= w) {
+                        t.textContent = txt.substring(0, x) + &quot;..&quot;;
+                        return;
+                }
+        }
+        t.textContent = &quot;&quot;;
+}
+
+// zoom
+function zoom_reset(e) {
+        if (e.attributes != undefined) {
+                orig_load(e, &quot;x&quot;);
+                orig_load(e, &quot;width&quot;);
+        }
+        if (e.childNodes == undefined) return;
+        for (var i = 0, c = e.childNodes; i &lt; c.length; i++) {
+                zoom_reset(c[i]);
+        }
+}
+function zoom_child(e, x, ratio) {
+        if (e.attributes != undefined) {
+                if (e.attributes.x != undefined) {
+                        orig_save(e, &quot;x&quot;);
+                        e.attributes.x.value = (parseFloat(e.attributes.x.value) - x - $xpad) * ratio + $xpad;
+                        if (e.tagName == &quot;text&quot;)
+                                e.attributes.x.value = find_child(e.parentNode, &quot;rect[x]&quot;).attributes.x.value + 3;
+                }
+                if (e.attributes.width != undefined) {
+                        orig_save(e, &quot;width&quot;);
+                        e.attributes.width.value = parseFloat(e.attributes.width.value) * ratio;
+                }
+        }
+
+        if (e.childNodes == undefined) return;
+        for (var i = 0, c = e.childNodes; i &lt; c.length; i++) {
+                zoom_child(c[i], x - $xpad, ratio);
+        }
+}
+function zoom_parent(e) {
+        if (e.attributes) {
+                if (e.attributes.x != undefined) {
+                        orig_save(e, &quot;x&quot;);
+                        e.attributes.x.value = $xpad;
+                }
+                if (e.attributes.width != undefined) {
+                        orig_save(e, &quot;width&quot;);
+                        e.attributes.width.value = parseInt(svg.width.baseVal.value) - ($xpad * 2);
+                }
+        }
+        if (e.childNodes == undefined) return;
+        for (var i = 0, c = e.childNodes; i &lt; c.length; i++) {
+                zoom_parent(c[i]);
+        }
+}
+function zoom(node) {
+        var attr = find_child(node, &quot;rect&quot;).attributes;
+        var width = parseFloat(attr.width.value);
+        var xmin = parseFloat(attr.x.value);
+        var xmax = parseFloat(xmin + width);
+        var ymin = parseFloat(attr.y.value);
+        var ratio = (svg.width.baseVal.value - 2 * $xpad) / width;
+
+        // XXX: Workaround for JavaScript float issues (fix me)
+        var fudge = 0.0001;
+
+        unzoombtn.classList.remove(&quot;hide&quot;);
+
+        var el = document.getElementById(&quot;frames&quot;).children;
+        for (var i = 0; i &lt; el.length; i++) {
+                var e = el[i];
+                var a = find_child(e, &quot;rect&quot;).attributes;
+                var ex = parseFloat(a.x.value);
+                var ew = parseFloat(a.width.value);
+                var upstack;
+                // Is it an ancestor
+                if ($inverted == 0) {
+                        upstack = parseFloat(a.y.value) &gt; ymin;
+                } else {
+                        upstack = parseFloat(a.y.value) &lt; ymin;
+                }
+                if (upstack) {
+                        // Direct ancestor
+                        if (ex &lt;= xmin &amp;&amp; (ex+ew+fudge) &gt;= xmax) {
+                                e.classList.add(&quot;parent&quot;);
+                                zoom_parent(e);
+                                update_text(e);
+                        }
+                        // not in current path
+                        else
+                                e.classList.add(&quot;hide&quot;);
+                }
+                // Children maybe
+                else {
+                        // no common path
+                        if (ex &lt; xmin || ex + fudge &gt;= xmax) {
+                                e.classList.add(&quot;hide&quot;);
+                        }
+                        else {
+                                zoom_child(e, xmin, ratio);
+                                update_text(e);
+                        }
+                }
+        }
+}
+function unzoom() {
+        unzoombtn.classList.add(&quot;hide&quot;);
+        var el = document.getElementById(&quot;frames&quot;).children;
+        for(var i = 0; i &lt; el.length; i++) {
+                el[i].classList.remove(&quot;parent&quot;);
+                el[i].classList.remove(&quot;hide&quot;);
+                zoom_reset(el[i]);
+                update_text(el[i]);
+        }
+}
+
+// search
+function reset_search() {
+        var el = document.querySelectorAll(&quot;#frames rect&quot;);
+        for (var i = 0; i &lt; el.length; i++) {
+                orig_load(el[i], &quot;fill&quot;)
+        }
+}
+function search_prompt() {
+        if (!searching) {
+                var term = prompt(&quot;Enter a search term (regexp &quot; +
+                    &quot;allowed, eg: ^ext4_)&quot;, &quot;&quot;);
+                if (term != null) {
+                        search(term)
+                }
+        } else {
+                reset_search();
+                searching = 0;
+                searchbtn.classList.remove(&quot;show&quot;);
+                searchbtn.firstChild.nodeValue = &quot;Search&quot;
+                matchedtxt.classList.add(&quot;hide&quot;);
+                matchedtxt.firstChild.nodeValue = &quot;&quot;
+        }
+}
+function search(term) {
+        var re = new RegExp(term);
+        var el = document.getElementById(&quot;frames&quot;).children;
+        var matches = new Object();
+        var maxwidth = 0;
+        for (var i = 0; i &lt; el.length; i++) {
+                var e = el[i];
+                var func = g_to_func(e);
+                var rect = find_child(e, &quot;rect&quot;);
+                if (func == null || rect == null)
+                        continue;
+
+                // Save max width. Only works as we have a root frame
+                var w = parseFloat(rect.attributes.width.value);
+                if (w &gt; maxwidth)
+                        maxwidth = w;
+
+                if (func.match(re)) {
+                        // highlight
+                        var x = parseFloat(rect.attributes.x.value);
+                        orig_save(rect, &quot;fill&quot;);
+                        rect.attributes.fill.value = &quot;$searchcolor&quot;;
+
+                        // remember matches
+                        if (matches[x] == undefined) {
+                                matches[x] = w;
+                        } else {
+                                if (w &gt; matches[x]) {
+                                        // overwrite with parent
+                                        matches[x] = w;
+                                }
+                        }
+                        searching = 1;
+                }
+        }
+        if (!searching)
+                return;
+
+        searchbtn.classList.add(&quot;show&quot;);
+        searchbtn.firstChild.nodeValue = &quot;Reset Search&quot;;
+
+        // calculate percent matched, excluding vertical overlap
+        var count = 0;
+        var lastx = -1;
+        var lastw = 0;
+        var keys = Array();
+        for (k in matches) {
+                if (matches.hasOwnProperty(k))
+                        keys.push(k);
+        }
+        // sort the matched frames by their x location
+        // ascending, then width descending
+        keys.sort(function(a, b){
+                return a - b;
+        });
+        // Step through frames saving only the biggest bottom-up frames
+        // thanks to the sort order. This relies on the tree property
+        // where children are always smaller than their parents.
+        var fudge = 0.0001;     // JavaScript floating point
+        for (var k in keys) {
+                var x = parseFloat(keys[k]);
+                var w = matches[keys[k]];
+                if (x &gt;= lastx + lastw - fudge) {
+                        count += w;
+                        lastx = x;
+                        lastw = w;
+                }
+        }
+        // display matched percent
+        matchedtxt.classList.remove(&quot;hide&quot;);
+        var pct = 100 * count / maxwidth;
+        if (pct != 100) pct = pct.toFixed(1)
+        matchedtxt.firstChild.nodeValue = &quot;Matched: &quot; + pct + &quot;%&quot;;
+}</pre>
+
+<p>]]&gt; &lt;/script&gt; INC $im-&gt;include($inc); $im-&gt;filledRectangle(0, 0, $imagewidth, $imageheight, ‘url(background)’); $im-&gt;stringTTF(“title”, int($imagewidth / 2), $fontsize * 2, $titletext); $im-&gt;stringTTF(“subtitle”, int($imagewidth / 2), $fontsize * 4, $subtitletext) if $subtitletext ne “”; $im-&gt;stringTTF(“details”, $xpad, $imageheight - ($ypad2 / 2), “ ”); $im-&gt;stringTTF(“unzoom”, $xpad, $fontsize * 2, “Reset Zoom”, ‘class=“hide”’); $im-&gt;stringTTF(“search”, $imagewidth - $xpad - 100, $fontsize * 2, “Search”); $im-&gt;stringTTF(“matched”, $imagewidth - $xpad - 100, $imageheight - ($ypad2 / 2), “ ”);</p>
+
+<p>if ($palette) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">read_palette</span>();
+</pre>
+
+<p>}</p>
+
+<p># draw frames $im-&gt;group_start({id =&gt; “frames”}); while (my ($id, $node) = each %Node) {</p>
+
+<pre>my ($func, $depth, $etime) = split &quot;;&quot;, $id;
+my $stime = $node-&gt;{stime};
+my $delta = $node-&gt;{delta};
+
+$etime = $timemax if $func eq &quot;&quot; and $depth == 0;
+
+my $x1 = $xpad + $stime * $widthpertime;
+my $x2 = $xpad + $etime * $widthpertime;
+my ($y1, $y2);
+unless ($inverted) {
+        $y1 = $imageheight - $ypad2 - ($depth + 1) * $frameheight + $framepad;
+        $y2 = $imageheight - $ypad2 - $depth * $frameheight;
+} else {
+        $y1 = $ypad1 + $depth * $frameheight;
+        $y2 = $ypad1 + ($depth + 1) * $frameheight - $framepad;
+}
+
+my $samples = sprintf &quot;%.0f&quot;, ($etime - $stime) * $factor;
+(my $samples_txt = $samples) # add commas per perlfaq5
+        =~ s/(^[-+]?\d+?(?=(?&gt;(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/$1,/g;
+
+my $info;
+if ($func eq &quot;&quot; and $depth == 0) {
+        $info = &quot;all ($samples_txt $countname, 100%)&quot;;
+} else {
+        my $pct = sprintf &quot;%.2f&quot;, ((100 * $samples) / ($timemax * $factor));
+        my $escaped_func = $func;
+        # clean up SVG breaking characters:
+        $escaped_func =~ s/&amp;/&amp;amp;/g;
+        $escaped_func =~ s/&lt;/&amp;lt;/g;
+        $escaped_func =~ s/&gt;/&amp;gt;/g;
+        $escaped_func =~ s/&quot;/&amp;quot;/g;
+        $escaped_func =~ s/_\[[kwij]\]$//;      # strip any annotation
+        unless (defined $delta) {
+                $info = &quot;$escaped_func ($samples_txt $countname, $pct%)&quot;;
+        } else {
+                my $d = $negate ? -$delta : $delta;
+                my $deltapct = sprintf &quot;%.2f&quot;, ((100 * $d) / ($timemax * $factor));
+                $deltapct = $d &gt; 0 ? &quot;+$deltapct&quot; : $deltapct;
+                $info = &quot;$escaped_func ($samples_txt $countname, $pct%; $deltapct%)&quot;;
+        }
+}
+
+my $nameattr = { %{ $nameattr{$func}||{} } }; # shallow clone
+$nameattr-&gt;{title}       ||= $info;
+$im-&gt;group_start($nameattr);
+
+my $color;
+if ($func eq &quot;--&quot;) {
+        $color = $vdgrey;
+} elsif ($func eq &quot;-&quot;) {
+        $color = $dgrey;
+} elsif (defined $delta) {
+        $color = color_scale($delta, $maxdelta);
+} elsif ($palette) {
+        $color = color_map($colors, $func);
+} else {
+        $color = color($colors, $hash, $func);
+}
+$im-&gt;filledRectangle($x1, $y1, $x2, $y2, $color, &#39;rx=&quot;2&quot; ry=&quot;2&quot;&#39;);
+
+my $chars = int( ($x2 - $x1) / ($fontsize * $fontwidth));
+my $text = &quot;&quot;;
+if ($chars &gt;= 3) { # room for one char plus two dots
+        $func =~ s/_\[[kwij]\]$//;      # strip any annotation
+        $text = substr $func, 0, $chars;
+        substr($text, -2, 2) = &quot;..&quot; if $chars &lt; length $func;
+        $text =~ s/&amp;/&amp;amp;/g;
+        $text =~ s/&lt;/&amp;lt;/g;
+        $text =~ s/&gt;/&amp;gt;/g;
+}
+$im-&gt;stringTTF(undef, $x1 + 3, 3 + ($y1 + $y2) / 2, $text);
+
+$im-&gt;group_end($nameattr);</pre>
+
+<p>} $im-&gt;group_end();</p>
+
+<p>print $im-&gt;svg;</p>
+
+<p>if ($palette) {</p>
+
+<pre class="ruby"><span class="ruby-identifier">write_palette</span>();
+</pre>
+
+<p>}</p>
+
+<p># vim: ts=8 sts=8 sw=8 noexpandtab</p>
+
+</main>
+

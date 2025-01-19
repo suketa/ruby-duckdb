@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>usage.ja.html - RDoc Documentation</title>
+
+  <meta name="keywords" content="ruby,documentation,usage.ja.html">
+  <meta name="description" content="usage.ja.html: Racc をどのように使うかという話をします。Racc には独自のソース コードみたいなものがあって、この中に処理したい「構造」を記述しておきま す。このソースファイルを「文法ファイル」と呼ぶことにしましょう。この文 法ファイルの名前が parse. Parser の下位クラスで、名前は文法ファイル">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../../../../../../../";
+  var index_rel_prefix = "../../../../../../../../";
+</script>
+
+<script src="../../../../../../../../js/navigation.js" defer></script>
+<script src="../../../../../../../../js/search.js" defer></script>
+<script src="../../../../../../../../js/search_index.js" defer></script>
+<script src="../../../../../../../../js/searcher.js" defer></script>
+<script src="../../../../../../../../js/darkfish.js" defer></script>
+
+<link href="../../../../../../../../css/fonts.css" rel="stylesheet">
+<link href="../../../../../../../../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../../../../../../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../../../../../../../table_of_contents.html#pages">Pages</a>
+    <a href="../../../../../../../../table_of_contents.html#classes">Classes</a>
+    <a href="../../../../../../../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+  
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="../../../../../../../../CHANGELOG_md.html">CHANGELOG</a>
+    <li><a href="../../../../../../../../CONTRIBUTION_md.html">CONTRIBUTION</a>
+    <li><a href="../../../../../../../../Dockerfile.html">Dockerfile</a>
+    <li><a href="../../../../../../../../Gemfile.html">Gemfile</a>
+    <li><a href="../../../../../../../../Gemfile_lock.html">Gemfile.lock</a>
+    <li><a href="../../../../../../../../LICENSE.html">LICENSE</a>
+    <li><a href="../../../../../../../../README_md.html">README</a>
+    <li><a href="../../../../../../../../Rakefile.html">Rakefile</a>
+    <li><a href="../../../../../../../../bin/setup.html">setup</a>
+    <li><a href="../../../../../../../../getduckdb_sh.html">getduckdb.sh</a>
+    <li><details open><summary>vendor</summary>
+    <ul class="link-list">
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/ext/bigdecimal/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Manifest_txt.html">Manifest</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE-DEPENDENCIES_md.html">LICENSE-DEPENDENCIES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE_md.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/ext/nokogiri/depend.html">depend</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/CHANGES_md.html">CHANGES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/THANKS.html">THANKS</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/lib/nokogiri/css/tokenizer_rex.html">tokenizer.rex</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/BSDL.html">BSDL</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/COPYING.html">COPYING</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ChangeLog.html">ChangeLog</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_ja_rdoc.html">README.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/TODO.html">TODO</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar_en_rdoc.html">grammar.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar2_en_rdoc.html">grammar2.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/command_ja_html.html">command.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/debug_ja_rdoc.html">debug.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/grammar_ja_rdoc.html">grammar.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/index_ja_html.html">index.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/parser_ja_rdoc.html">parser.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/usage_ja_html.html">usage.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ext/racc/cparse/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/MIT-LICENSE.html">MIT-LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/command_line_usage_rdoc.html">command_line_usage</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile1.html">Rakefile1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile2.html">Rakefile2</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/glossary_rdoc.html">glossary</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/proto_rake_rdoc.html">proto_rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rake_1.html">rake.1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rakefile_rdoc.html">rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rational_rdoc.html">rational</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/compile_feature.html">compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-compile_feature.html">cross-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package-multi_feature.html">cross-package-multi.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package_feature.html">cross-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-compile_feature.html">java-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-no-native-compile_feature.html">java-no-native-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-package_feature.html">java-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/package_feature.html">package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bin/cross-ruby_rake.html">cross-ruby.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bootstrap_rake.html">bootstrap.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/common_rake.html">common.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/cucumber_rake.html">cucumber.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/gem_rake.html">gem.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/rspec_rake.html">rspec.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile_lock.html">Gemfile.lock</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/suppressions/ruby_supp.html">ruby.supp</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/CHANGELOG_md.html">CHANGELOG</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/ext/stackprof/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/flamegraph_js.html">flamegraph.js</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/viewer_html.html">viewer.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/README.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/flamegraph_pl.html">flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/gprof2dot_py.html">gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/hotshotmain_py.html">hotshotmain.py</a>
+    </ul></details>
+  </ul>
+</div>
+
+
+  <footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
+</nav>
+
+<main role="main" aria-label="Page vendor/bundle/ruby/3.4.0/gems/racc-1.8.1/doc/ja/usage.ja.html">
+
+<p>&lt;h1&gt;Racc の使い方&lt;/h1&gt; &lt;p&gt; <a href="../../../../../../../../Racc.html"><code>Racc</code></a> は文法規則から Ruby で書かれたパーサを生成するパーサジェネレータです。パーサ生成アルゴリズムには yacc などと同じ LALR(1) を使用しています。&lt;/p&gt; &lt;p&gt; yacc を知っている人は記述法の違いだけわかれば使えると思います。yacc を知らない人は拙著『Ruby を 256 倍使うための本 無道編』(青木峰郎著、ASCII) などを一読していただくのがよいかと思います。他の UNIX コマンドなどとは異なり、いきなり使うだけで <a href="../../../../../../../../Racc.html"><code>Racc</code></a> を理解するのはかなり困難です。&lt;/p&gt;</p>
+
+<p>&lt;h2&gt;Racc とはなにか&lt;/h2&gt; &lt;p&gt; <a href="../../../../../../../../Racc.html"><code>Racc</code></a> は文法を処理するツールです。文字列はただの文字の列で、コンピュータにとっては意味を持ちません。しかし人間はその文字の列の中になにか意味を見出すことができます。コンピュータにもそのようなことを、部分的にでも、させられたら便利でしょう。Racc はその手伝いをしてくれます。完全な自動化ではありませんが、人間が全部やるよりも遥かに簡単になります。&lt;/p&gt; &lt;p&gt; <a href="../../../../../../../../Racc.html"><code>Racc</code></a> が自動化してくれる部分とは、文字列の含む「構造」の処理です。たとえば Ruby の if 文を考えてみると、次のように定式化できます。&lt;/p&gt; &lt;pre&gt; if 条件式 [then]</p>
+
+<pre class="ruby"><span class="ruby-identifier">文</span>
+<span class="ruby-identifier">：</span>
+</pre>
+<dl class="rdoc-list label-list"><dt>elsif 条件式 [then</dt>
+<dd>
+<p>文：]</p>
+</dd></dl>
+
+<p>[else</p>
+
+<pre>文
+：]</pre>
+
+<p>end &lt;/pre&gt; &lt;p&gt; if 文では if という単語が最初になくてはならず、elsif 節は else 節より前になくてはいけません。このような配置の関係 (構造) が、Racc が処理する対象です。&lt;/p&gt; &lt;p&gt; 一方、Racc で処理できないのはどういうことでしょうか。それは、たとえばif の条件式にあたる部分が「なんであるか」ということです。つまり、条件式が if の条件だということです。これは、こっちで条件として扱うコードを書いてやらないといけません。&lt;/p&gt; &lt;p&gt; と言っても、わかりにくいでしょう。こういう抽象的なものは実際にいじってみるのが一番です。&lt;/p&gt;</p>
+
+<p>&lt;h2&gt;実際の話&lt;/h2&gt; &lt;p&gt; 実際に <a href="../../../../../../../../Racc.html"><code>Racc</code></a> をどのように使うかという話をします。Racc には独自のソースコードみたいなものがあって、この中に処理したい「構造」を記述しておきます。このソースファイルを「文法ファイル」と呼ぶことにしましょう。この文法ファイルの名前が parse.y と仮定すると、コマンドラインから以下のように打ちこめば、その構造を処理するためのクラスを含んだファイルが得られます。&lt;/p&gt; &lt;pre&gt; $ racc parse.y &lt;/pre&gt; &lt;p&gt; 生成されるファイルはデフォルトでは “ファイル名.tab.rb” です。他の名前にしたいなら、-o オプションで変更できます。&lt;/p&gt; &lt;pre&gt; $ racc parse.y -o myparser.rb &lt;/pre&gt; &lt;p&gt; このようにして作ったクラス、またはそのような処理を担当するパート、のことはパーサ (parser) と呼ぶことになっています。解析するヤツ、というくらいに適当にとらえてください。&lt;/p&gt;</p>
+
+<p>&lt;h2&gt;文法ファイルを書く&lt;/h2&gt; &lt;p&gt; <a href="../../../../../../../../Racc.html"><code>Racc</code></a> は文法ファイルから Ruby のクラスを生成するツールだと言いました。そのクラスは全て <a href="../../../../../../../../Racc/Parser.html"><code>Racc::Parser</code></a> の下位クラスで、名前は文法ファイル中で指定します。以下、ここに書くべきことが「なんなのか」を説明します。ここでは内容に重点を置くので、文法ファイル自体の文法の詳細は&lt;a href=“grammar.html”&gt;文法リファレンス&lt;/a&gt;を見てください。&lt;/p&gt;</p>
+
+<p>&lt;h3&gt;文法&lt;/h3&gt; &lt;p&gt; まずは、全体の概形です。&lt;/p&gt; &lt;pre&gt; class MyParser rule</p>
+
+<pre>if_stmt: IF expr then stmt_list elsif else END
+
+then   : THEN
+       |
+
+elsif  :
+       | ELSIF stmt_list
+
+else   :
+       | ELSE stmt_list
+
+expr   : NUMBER
+       | IDENT
+       | STRING
+
+stmt_list : ふにゃふにゃ</pre>
+
+<p>end &lt;/pre&gt; &lt;p&gt; Ruby スクリプトのように class でパーサクラス名を指定し、rule … end の間にパーサに解析させたい文法を記述します。&lt;/p&gt; &lt;p&gt; 文法は、記号の並びでもって表します。rule … end の間にあるコロンとバー以外のもの、if_stmt IF expr then などが全て「記号」です。そしてコロンが日本語で言う「〜は××だ」の「は」みたいなもんで、その左の記号が右の記号の列と同じものを指す、というふうに定義します。また、バーは「または」を意味します。それと、単純にコロンの左の記号のことを左辺、右を右辺とも言います。以下はこちらのほうを使って説明しましょう。&lt;/p&gt; &lt;p&gt; 少し注意が必要な点を述べます。まず、then の、バーのあとの定義 (規則) を見てください。ここには何も書いていないので、これはその通り「無」であってもいい、ということを表しています。つまり、then は記号 THEN 一個か、またはなにもなし(省略する)でよい、ということです。記号 then は実際の Ruby のソースコードにある then とは切り離して考えましょう(それは実は大文字の記号 THEN が表しています)。&lt;/p&gt; &lt;p&gt; さて、そろそろ「記号」というものがなんなのか書きましょう。ただし順番に話をしないといけないので、まずは聞いていてください。この文章の最初に、パーサとは文字の列から構造を見出す部分だと言いました。しかし文字の列からいきなり構造を探すのは面倒なので、実際にはまず文字の列を単語の列に分割します。その時点でスペースやコメントは捨ててしまい、以降は純粋にプログラムの一部をなす部分だけを相手にします。たとえば文字列の入力が次のようだったとすると、&lt;/p&gt; &lt;pre&gt; if flag then   # item found.</p>
+
+<pre class="ruby"><span class="ruby-identifier">puts</span> <span class="ruby-string">&#39;ok&#39;</span>
+</pre>
+
+<p>end &lt;/pre&gt; &lt;p&gt; 単語の列は次のようになります。&lt;/p&gt; &lt;pre&gt; if flag then puts ‘ok’ end &lt;/pre&gt; &lt;p&gt; ここで、工夫が必要です。どうやら flag はローカル変数名だと思われますが、変数名というのは他にもいろいろあります。しかし名前が i だろうが a だろうが vvvvvvvvvvvv だろうが、「構造」は同じです。つまり同じ扱いをされるべきです。変数 a を書ける場所なら b も書けなくてはいけません。だったら一時的に同じ名前で読んでもいいじゃん。ということで、この単語の列を以下のように読みかえましょう。&lt;/p&gt; &lt;pre&gt; IF IDENT THEN IDENT STRING END &lt;/pre&gt; &lt;p&gt; これが「記号」の列です。パーサではこの記号列のほうを扱い、構造を見付けていきます。&lt;/p&gt; &lt;p&gt; さらに記号について見ていきましょう。記号は二種類に分けられます。「左辺にある記号」と「ない記号」です。左辺にある記号は「非終端」記号と言います。ないほうは「終端」記号と言います。最初の例では終端記号はすべて大文字、非終端記号は小文字で書いてあるので、もう一度戻って例の文法を見てください。&lt;/p&gt; &lt;p&gt; なぜこの区分が重要かと言うと、入力の記号列はすべて終端記号だからです。一方、非終端記号はパーサの中でだけ、終端記号の列から「作りだす」ことによって始めて存在します。例えば次の規則をもう一度見てください。&lt;/p&gt; &lt;pre&gt;</p>
+
+<pre>expr   : NUMBER
+       | IDENT
+       | STRING</pre>
+
+<p>&lt;/pre&gt; &lt;p&gt; expr は NUMBER か IDENT か STRING だと言っています。逆に言うと、IDENT は expr に「なることができます」。文法上 expr が存在できる場所に IDENT が来ると、それは expr になります。例えば if の条件式の部分は expr ですから、ここに IDENT があると expr になります。そのように文法的に「大きい」記号を作っていって、最終的に一個になると、その入力は文法を満たしていることになります。実際にさっきの入力で試してみましょう。入力はこうでした。&lt;/p&gt; &lt;pre&gt; IF IDENT THEN IDENT STRING END &lt;/pre&gt; &lt;p&gt; まず、IDENT が expr になります。&lt;/p&gt; &lt;pre&gt; IF expr THEN IDENT STRING END &lt;/pre&gt; &lt;p&gt; 次に THEN が then になります。&lt;/p&gt; &lt;pre&gt; IF expr then IDENT STRING END &lt;/pre&gt; &lt;p&gt; IDENT STRING がメソッドコールになります。この定義はさきほどの例にはないですが、実は省略されているんだと考えてください。そしていろいろな過程を経て、最終的には stmt_list (文のリスト)になります。&lt;/p&gt; &lt;pre&gt; IF expr then stmt_list END &lt;/pre&gt; &lt;p&gt; elsif と else は省略できる、つまり無から生成できます。&lt;/p&gt; &lt;pre&gt; IF expr then stmt_list elsif else END &lt;/pre&gt; &lt;p&gt; 最後に if_stmt を作ります。&lt;/p&gt; &lt;pre&gt; if_stmt &lt;/pre&gt; &lt;p&gt; ということでひとつになりました。つまりこの入力は文法的に正しいということがわかりました。&lt;/p&gt;</p>
+
+<p>&lt;h3&gt;アクション&lt;/h3&gt; &lt;p&gt; ここまでで入力の文法が正しいかどうかを確認する方法はわかりましたが、これだけではなんにもなりません。最初に説明したように、ここまででは構造が見えただけで、プログラムは「意味」を理解できません。そしてその部分は <a href="../../../../../../../../Racc.html"><code>Racc</code></a> では自動処理できないので、人間が書く、とも言いました。それを書くのが以下に説明する「アクション」という部分です。&lt;/p&gt; &lt;p&gt; 前項で、記号の列がだんだんと大きな単位にまとめられていく過程を見ました。そのまとめる時に、同時になにかをやらせることができます。それがアクションです。アクションは、文法ファイルで以下のように書きます。&lt;/p&gt; &lt;pre&gt; class MyParser rule</p>
+
+<pre>if_stmt: IF expr then stmt_list elsif else END
+           { puts &#39;if_stmt found&#39; }
+
+then   : THEN
+           { puts &#39;then found&#39; }
+       |
+           { puts &#39;then is omitted&#39; }
+
+elsif  :
+           { puts &#39;elsif is omitted&#39; }
+       | ELSIF stmt_list
+           { puts &#39;elsif found&#39; }
+
+else   :
+           { puts &#39;else omitted&#39; }
+       | ELSE stmt_list
+           { puts &#39;else found&#39; }
+
+expr   : NUMBER
+           { puts &#39;expr found (NUMBER)&#39; }
+       | IDENT
+           { puts &#39;expr found (IDENT)&#39; }
+       | STRING
+           { puts &#39;expr found (STRING)&#39; }
+
+stmt_list : ふにゃふにゃ</pre>
+
+<p>end &lt;/pre&gt; &lt;p&gt; 見てのとおり、規則のあとに { と } で囲んで書きます。アクションにはだいたい好きなように Ruby スクリプトが書けます。&lt;/p&gt; &lt;p&gt; (この節、未完) &lt;/p&gt; &lt;hr&gt;</p>
+
+<p>&lt;p&gt; yacc での <code>$$</code> は <a href="../../../../../../../../Racc.html"><code>Racc</code></a> ではローカル変数 <code>result</code> で、<code>$1,$2...</code> は配列 &lt;var&gt;val&lt;/var&gt;です。<code>result</code> は <code>val[0]</code> ($1) の値に初期化され、アクションを抜けたときの <code>result</code> の値が左辺値になります。Racc ではアクション中の <code>return</code> はアクションから抜けるだけで、パース自体は終わりません。アクション中からパースを終了するには、メソッド <code>yyaccept</code> を使ってください。&lt;/p&gt; &lt;p&gt; 演算子の優先順位、スタートルールなどの yacc の一般的な機能も用意されています。ただしこちらも少し文法が違います。&lt;/p&gt; &lt;p&gt; yacc では生成されたコードに直接転写されるコードがありました。Racc でも同じように、ユーザ指定のコードが書けます。Racc ではクラスを生成するので、クラス定義の前/中/後の三個所があります。Racc ではそれを上から順番に header inner footer と呼んでいます。&lt;/p&gt;</p>
+
+<p>&lt;h3&gt;ユーザが用意すべきコード&lt;/h3&gt; &lt;p&gt; パースのエントリポイントとなるメソッドは二つあります。ひとつは <code>do_parse</code>で、こちらはトークンを <code>Parser#next_token</code> から得ます。もうひとつは <code>yyparse</code> で、こちらはスキャナから <code>yield</code> されることによってトークンを得ます。ユーザ側ではこのどちらか(両方でもいいけど)を起動する簡単なメソッドを inner に書いてください。これらメソッドの引数など、詳しいことはリファレンスを見てください。&lt;/p&gt; &lt;ul&gt; &lt;li&gt;&lt;a href=“parser.html#Racc%3a%3aParser-do_parse”&gt;do_parse&lt;/a&gt; &lt;li&gt;&lt;a href=“parser.html#Racc%3a%3aParser-yyparse”&gt;yyparse&lt;/a&gt; &lt;/ul&gt; &lt;p&gt; どちらのメソッドにも共通なのはトークンの形式です。必ずトークンシンボルとその値の二要素を持つ配列を返すようにします。またスキャンが終了して、もう送るものがない場合は <code>[false,&lt;var&gt;なにか&lt;/var&gt;]</code> を返してください。これは一回返せば十分です (逆に、<code>yyparse</code> を使う場合は二回以上 <code>yield</code> してはいけない)。&lt;/p&gt; &lt;p&gt; パーサは別に文字列処理にだけ使われるものではありませんが、実際問題として、パーサを作る場面ではたいてい文字列のスキャナとセットで使うことが多いでしょう。Ruby ならスキャナくらい楽勝で作れますが、高速なスキャナとなると実は難しかったりします。そこで高速なスキャナを作成するためのライブラリも作っています。詳しくは&lt;a href=“#WritingScanner”&gt;「スキャナを作る」の項&lt;/a&gt;を見てください。&lt;/p&gt; &lt;p&gt; <a href="../../../../../../../../Racc.html"><code>Racc</code></a> には error トークンを使ったエラー回復機能もあります。yacc の<code>yyerror()</code> は <a href="../../../../../../../../Racc.html"><code>Racc</code></a> では&lt;a href=“parser.html#Racc%3a%3aParser-on_error”&gt;<a href="../../../../../../../../Racc/Parser.html#method-i-on_error"><code>Racc::Parser#on_error</code></a>&lt;/a&gt; で、エラーが起きたトークンとその値、値スタック、の三つの引数をとります。<code>on_error</code> のデフォルトの実装は例外<a href="../../../../../../../../Racc/ParseError.html"><code>Racc::ParseError</code></a> を発生します。&lt;/p&gt; &lt;p&gt; ユーザがアクション中でパースエラーを発見した場合は、メソッド&lt;a href=“parser.html#Racc%3a%3aParser-yyerror”&gt;<code>yyerror</code>&lt;/a&gt; を呼べばパーサがエラー回復モードに入ります。ただしこのとき <code>on_error</code>は呼ばれません。&lt;/p&gt;</p>
+
+<p>&lt;h3&gt;パーサを生成する&lt;/h3&gt; &lt;p&gt; これだけあればだいたい書けると思います。あとは、最初に示した方法で文法ファイルを処理し、Ruby スクリプトを得ます。&lt;/p&gt; &lt;p&gt; うまくいけばいいのですが、大きいものだと最初からはうまくいかないでしょう。racc に -g オプションをつけてコンパイルし、@yydebug を true にするとデバッグ用の出力が得られます。デバッグ出力はパーサの @racc_debug_out に出力されます(デフォルトは stderr)。また、racc に -v オプションをつけると、状態遷移表を読みやすい形で出力したファイル(*.output)が得られます。どちらもデバッグの参考になるでしょう。&lt;/p&gt;</p>
+
+<p>&lt;h2&gt;作ったパーサを配布する&lt;/h2&gt; &lt;p&gt; <a href="../../../../../../../../Racc.html"><code>Racc</code></a> の生成したパーサは動作時にランタイムルーチンが必要です。具体的には parser.rb と cparse.so です。ただし cparse.so は単にパースを高速化するためのライブラリなので必須ではありません。なくても動きます。&lt;/p&gt; &lt;p&gt; まず Ruby 1.8.0 以降にはこのランタイムが標準添付されているので、Ruby 1.8 がある環境ならばランタイムについて考慮する必要はありません。Racc 1.4.x のランタイムと Ruby 1.8 に添付されているランタイムは完全互換です。&lt;/p&gt; &lt;p&gt; 問題は Ruby 1.8 を仮定できない場合です。 <a href="../../../../../../../../Racc.html"><code>Racc</code></a> をユーザみんなにインストールしてもらうのも一つの手ですが、これでは不親切です。そこでRacc では回避策を用意しました。&lt;/p&gt; &lt;p&gt; racc に -E オプションをつけてコンパイルすると、パーサと racc/parser.rb を合体したファイルを出力できます。これならばファイルは一つだけなので簡単に扱えます。racc/parser.rb は擬似的に require したような扱いになるので、この形式のパーサが複数あったとしてもクラスやメソッドが衝突することもありません。ただし -E を使った場合は cparse.so が使えませんので、必然的にパーサの速度は落ちます。&lt;/p&gt;</p>
+
+<p>&lt;h2&gt;&lt;a name=“WritingScanner”&gt;おまけ： スキャナを書く&lt;/a&gt;&lt;/h2&gt; &lt;p&gt; パーサを使うときは、たいてい文字列をトークンに切りわけてくれるスキャナが必要になります。しかし実は Ruby は文字列の最初からトークンに切りわけていくという作業があまり得意ではありません。正確に言うと、簡単にできるのですが、それなりのオーバーヘッドがかかります。&lt;/p&gt; &lt;p&gt; そのオーバーヘッドを回避しつつ、手軽にスキャナを作れるように strscan というパッケージを作りました。Ruby 1.8 以降には標準添付されていますし、&lt;a href=“<a href="http://i.loveruby.net/ja">i.loveruby.net/ja</a>/”&gt;筆者のホームページ&lt;/a&gt;には単体パッケージがあります。&lt;/p&gt;</p>
+
+</main>
+

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>README - RDoc Documentation</title>
+
+  <meta name="keywords" content="ruby,documentation,README">
+  <meta name="description" content="README: Download the latest C++ package release for DuckDB. Extract the `duckdb.">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>
+            <details open>
+              <summary>      <a href="#label-ruby-duckdb">ruby-duckdb</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Description">Description</a>
+          <li>      <a href="#label-Requirement">Requirement</a>
+          <li>      <a href="#label-Pre-requisite+setup+-28Linux-29-3A">Pre-requisite setup (Linux):</a>
+          <li>      <a href="#label-Pre-requisite+setup+-28macOS-29-3A">Pre-requisite setup (macOS):</a>
+          <li>      <a href="#label-Pre-requisite+setup+-28Windows-29-3A">Pre-requisite setup (Windows):</a>
+          <li>      <a href="#label-How+to+install">How to install</a>
+          <li>
+            <details open>
+              <summary>      <a href="#label-Usage">Usage</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Using+bind+variables">Using bind variables</a>
+          <li>      <a href="#label-Using+prepared+statement">Using prepared statement</a>
+          <li>      <a href="#label-Using+async+query">Using async query</a>
+          <li>      <a href="#label-Using+BLOB+column">Using BLOB column</a>
+          <li>      <a href="#label-Appender">Appender</a>
+          <li>      <a href="#label-Configuration">Configuration</a>
+
+              </ul>
+            </details>
+          </li>
+
+              </ul>
+            </details>
+          </li>
+
+  </ul>
+</div>
+
+  
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./CHANGELOG_md.html">CHANGELOG</a>
+    <li><a href="./CONTRIBUTION_md.html">CONTRIBUTION</a>
+    <li><a href="./Dockerfile.html">Dockerfile</a>
+    <li><a href="./Gemfile.html">Gemfile</a>
+    <li><a href="./Gemfile_lock.html">Gemfile.lock</a>
+    <li><a href="./LICENSE.html">LICENSE</a>
+    <li><a href="./README_md.html">README</a>
+    <li><a href="./Rakefile.html">Rakefile</a>
+    <li><a href="./bin/setup.html">setup</a>
+    <li><a href="./getduckdb_sh.html">getduckdb.sh</a>
+    <li><details><summary>vendor</summary>
+    <ul class="link-list">
+      <li><a href="./vendor/bundle/ruby/3_4_0/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_make_out.html">gem_make.out</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/mkmf_log.html">mkmf.log</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_make_out.html">gem_make.out</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_make_out.html">gem_make.out</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/mkmf_log.html">mkmf.log</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/History_md.html">History</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/LICENSE.html">LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/README_md.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/LICENSE.html">LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/ext/bigdecimal/Makefile.html">Makefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/History_rdoc.html">History</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Manifest_txt.html">Manifest</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/README_rdoc.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Rakefile.html">Rakefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/Gemfile.html">Gemfile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE-DEPENDENCIES_md.html">LICENSE-DEPENDENCIES</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE_md.html">LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/README_md.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/ext/nokogiri/depend.html">depend</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/CHANGES_md.html">CHANGES</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/Makefile.html">Makefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/THANKS.html">THANKS</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/lib/nokogiri/css/tokenizer_rex.html">tokenizer.rex</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/BSDL.html">BSDL</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/COPYING.html">COPYING</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ChangeLog.html">ChangeLog</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_ja_rdoc.html">README.ja</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_rdoc.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/TODO.html">TODO</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar_en_rdoc.html">grammar.en</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar2_en_rdoc.html">grammar2.en</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/command_ja_html.html">command.ja.html</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/debug_ja_rdoc.html">debug.ja</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/grammar_ja_rdoc.html">grammar.ja</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/index_ja_html.html">index.ja.html</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/parser_ja_rdoc.html">parser.ja</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/usage_ja_html.html">usage.ja.html</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ext/racc/cparse/Makefile.html">Makefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/History_rdoc.html">History</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/MIT-LICENSE.html">MIT-LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/README_rdoc.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/command_line_usage_rdoc.html">command_line_usage</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile1.html">Rakefile1</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile2.html">Rakefile2</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/glossary_rdoc.html">glossary</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/proto_rake_rdoc.html">proto_rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rake_1.html">rake.1</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rakefile_rdoc.html">rakefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rational_rdoc.html">rational</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Gemfile.html">Gemfile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/History_md.html">History</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/LICENSE_txt.html">LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/README_md.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Rakefile.html">Rakefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/compile_feature.html">compile.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-compile_feature.html">cross-compile.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package-multi_feature.html">cross-package-multi.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package_feature.html">cross-package.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-compile_feature.html">java-compile.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-no-native-compile_feature.html">java-no-native-compile.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-package_feature.html">java-package.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/package_feature.html">package.feature</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bin/cross-ruby_rake.html">cross-ruby.rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bootstrap_rake.html">bootstrap.rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/common_rake.html">common.rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/cucumber_rake.html">cucumber.rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/gem_rake.html">gem.rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/rspec_rake.html">rspec.rake</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile.html">Gemfile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile_lock.html">Gemfile.lock</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/LICENSE_txt.html">LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/README_md.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Rakefile.html">Rakefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/suppressions/ruby_supp.html">ruby.supp</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/CHANGELOG_md.html">CHANGELOG</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Gemfile.html">Gemfile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/LICENSE.html">LICENSE</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/README_md.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Rakefile.html">Rakefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/ext/stackprof/Makefile.html">Makefile</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/flamegraph_js.html">flamegraph.js</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/viewer_html.html">viewer.html</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/README.html">README</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/flamegraph_pl.html">flamegraph.pl</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/gprof2dot_py.html">gprof2dot.py</a>
+      <li><a href="./vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/hotshotmain_py.html">hotshotmain.py</a>
+    </ul></details>
+  </ul>
+</div>
+
+
+  <footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
+</nav>
+
+<main role="main" aria-label="Page README.md">
+
+<h1 id="label-ruby-duckdb">ruby-duckdb<span><a href="#label-ruby-duckdb">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu"><img src="https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS"><img src="https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows"><img src="https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg"></a> <a href="https://badge.fury.io/rb/duckdb"><img src="https://badge.fury.io/rb/duckdb.svg"></a></p>
+
+<h2 id="label-Description">Description<span><a href="#label-Description">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This gem <code>duckdb</code> is Ruby client for the <a href="https://www.duckdb.org">DuckDB</a> database engine.</p>
+
+<h2 id="label-Requirement">Requirement<span><a href="#label-Requirement">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>You must have <a href="https://www.duckdb.org">DuckDB</a> engine installed in order to use this gem.</p>
+
+<h2 id="label-Pre-requisite+setup+-28Linux-29-3A">Pre-requisite setup (Linux):<span><a href="#label-Pre-requisite+setup+-28Linux-29-3A">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ol><li>
+<p>Head over to the <a href="https://duckdb.org/">DuckDB</a> webpage.</p>
+</li><li>
+<p>Download the latest C++ package release for <a href="DuckDB.html"><code>DuckDB</code></a>.</p>
+</li><li>
+<p>Move the files to their respective location:</p>
+<ul><li>
+<p>Extract the <code>duckdb.h</code> and <code>duckdb.hpp</code> file to <code>/usr/local/include</code>.</p>
+</li><li>
+<p>Extract the <code>libduckdb.so</code> file to <code>/usr/local/lib</code>.</p>
+</li></ul>
+
+<pre>unzip libduckdb-linux-amd64.zip -d libduckdb
+sudo mv libduckdb/duckdb.* /usr/local/include/
+sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
+</li><li>
+<p>To create the necessary link, run <code>ldconfig</code> as root:</p>
+
+<pre>sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked</pre>
+</li></ol>
+
+<h2 id="label-Pre-requisite+setup+-28macOS-29-3A">Pre-requisite setup (macOS):<span><a href="#label-Pre-requisite+setup+-28macOS-29-3A">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Using <code>brew install</code> is recommended.</p>
+
+<pre class="ruby"><span class="ruby-identifier">brew</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">duckdb</span>
+</pre>
+
+<h2 id="label-Pre-requisite+setup+-28Windows-29-3A">Pre-requisite setup (Windows):<span><a href="#label-Pre-requisite+setup+-28Windows-29-3A">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Using <a href="https://rubyinstaller.org/downloads/">Ruby + Devkit</a> is recommended.</p>
+<ol><li>
+<p>Download libduckdb-windows-amd64.zip from <a href="https://github.com/duckdb/duckdb/releases">DuckDB</a> and extract it.</p>
+</li><li>
+<p>Copy <code>duckdb.dll</code> into <code>C:\Windows\System32</code></p>
+</li></ol>
+
+<h2 id="label-How+to+install">How to install<span><a href="#label-How+to+install">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">duckdb</span>
+</pre>
+
+<p>After you’ve run the above pre-requisite setup, this should work fine.</p>
+
+<p>If it doesn’t, you may have to specify the location of the C header and library files:</p>
+
+<pre>gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory</pre>
+
+<h2 id="label-Usage">Usage<span><a href="#label-Usage">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-comment"># database in memory</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
+
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(1, &#39;Alice&#39;)&quot;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(2, &#39;Bob&#39;)&quot;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(3, &#39;Cathy&#39;)&quot;</span>)
+
+<span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * from users&#39;</span>)
+<span class="ruby-identifier">result</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-identifier">row</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>Or, you can use block.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
+
+    <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(1, &#39;Alice&#39;)&quot;</span>)
+    <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(2, &#39;Bob&#39;)&quot;</span>)
+    <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(3, &#39;Cathy&#39;)&quot;</span>)
+
+    <span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * from users&#39;</span>)
+    <span class="ruby-identifier">result</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">puts</span> <span class="ruby-identifier">row</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<h3 id="label-Using+bind+variables">Using bind variables<span><a href="#label-Using+bind+variables">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>You can use bind variables.</p>
+
+<pre class="ruby"><span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM users WHERE name = ? AND email = ?&#39;</span>, <span class="ruby-string">&#39;Alice&#39;</span>, <span class="ruby-string">&#39;alice@example.com&#39;</span>)
+<span class="ruby-comment"># or</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM users WHERE name = $name AND email = $email&#39;</span>, <span class="ruby-value">name:</span> <span class="ruby-string">&#39;Alice&#39;</span>, <span class="ruby-value">email:</span> <span class="ruby-string">&#39;alice@example.com&#39;</span>)
+</pre>
+
+<h3 id="label-Using+prepared+statement">Using prepared statement<span><a href="#label-Using+prepared+statement">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>You can use prepared statement. Prepared statement object is created by <code>Connection#prepare</code> method or <a href="DuckDB/PreparedStatement.html#method-c-new"><code>DuckDB::PreparedStatement.new</code></a>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">stmt</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">prepare</span>(<span class="ruby-string">&#39;SELECT * FROM users WHERE name = $name AND email = $email&#39;</span>)
+<span class="ruby-comment"># or</span>
+<span class="ruby-comment"># stmt = con.prepared_statement(&#39;SELECT * FROM users WHERE name = $name AND email = $email&#39;)</span>
+<span class="ruby-comment"># or</span>
+<span class="ruby-comment"># stmt = DuckDB::PreparedStatement.new(con, &#39;SELECT * FROM users WHERE name = $name AND email = $email&#39;)</span>
+<span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">name:</span> <span class="ruby-string">&#39;Alice&#39;</span>, <span class="ruby-value">email:</span> <span class="ruby-string">&#39;alice@example.com&#39;</span>)
+<span class="ruby-identifier">result</span> = <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">execute</span>
+<span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">destroy</span>
+</pre>
+
+<p>You must call <code>PreparedStatement#destroy</code> method after using prepared statement. Otherwise, automatically destroyed when the PreparedStatement object is garbage collected.</p>
+
+<p>Instead of calling <code>PreparedStatement#destroy</code>, you can use block.</p>
+
+<pre class="ruby"><span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">prepare</span>(<span class="ruby-string">&#39;SELECT * FROM users WHERE name = $name AND email = $email&#39;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">stmt</span><span class="ruby-operator">|</span>
+           <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">name:</span> <span class="ruby-string">&#39;Alice&#39;</span>, <span class="ruby-value">email:</span> <span class="ruby-string">&#39;alice@example.com&#39;</span>)
+           <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">execute</span>
+         <span class="ruby-keyword">end</span>
+</pre>
+
+<h3 id="label-Using+async+query">Using async query<span><a href="#label-Using+async+query">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>You can use async query.</p>
+
+<pre class="ruby"><span class="ruby-identifier">pending_result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">async_query_stream</span>(<span class="ruby-string">&#39;SLOW QUERY&#39;</span>)
+<span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">execute_task</span> <span class="ruby-keyword">while</span> <span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">state</span> <span class="ruby-operator">==</span> <span class="ruby-value">:not_ready</span>
+
+<span class="ruby-identifier">result</span> = <span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">execute_pending</span>
+<span class="ruby-identifier">result</span>.<span class="ruby-identifier">each</span>.<span class="ruby-identifier">first</span>
+</pre>
+
+<p>Here is <a href="./benchmark/async_query_rb.html">the benchmark</a>.</p>
+
+<h3 id="label-Using+BLOB+column">Using BLOB column<span><a href="#label-Using+BLOB+column">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Use <code>DuckDB::Blob.new</code> or <code>my_string.force_encoding(Encoding::BINARY)</code>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE blob_table (binary_data BLOB)&#39;</span>)
+    <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-string">&#39;INSERT INTO blob_table VALUES ($1)&#39;</span>)
+
+    <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">1</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Blob</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;\0\1\2\3\4\5&quot;</span>))
+    <span class="ruby-comment"># or</span>
+    <span class="ruby-comment"># stmt.bind(1, &quot;\0\1\2\3\4\5&quot;.force_encoding(Encoding::BINARY))</span>
+    <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">execute</span>
+
+    <span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT binary_data FROM blob_table&#39;</span>)
+    <span class="ruby-identifier">puts</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<h3 id="label-Appender">Appender<span><a href="#label-Appender">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Appender class provides Ruby interface of <a href="https://duckdb.org/docs/data/appender">DuckDB Appender</a></p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">&#39;benchmark&#39;</span>
+
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">insert</span>
+  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
+
+      <span class="ruby-value">10000</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(1, &#39;Alice&#39;)&quot;</span>)
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prepare</span>
+  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
+      <span class="ruby-identifier">stmt</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">prepared_statement</span>(<span class="ruby-string">&#39;INSERT INTO users VALUES($1, $2)&#39;</span>)
+
+      <span class="ruby-value">10000</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">1</span>, <span class="ruby-value">1</span>)
+        <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">2</span>, <span class="ruby-string">&#39;Alice&#39;</span>)
+        <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">execute</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>
+  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
+      <span class="ruby-identifier">appender</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender</span>(<span class="ruby-string">&#39;users&#39;</span>)
+
+      <span class="ruby-value">10000</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append</span>(<span class="ruby-value">1</span>)
+        <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append</span>(<span class="ruby-string">&#39;Alice&#39;</span>)
+        <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-constant">Benchmark</span>.<span class="ruby-identifier">bm</span>(<span class="ruby-value">8</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">x</span>.<span class="ruby-identifier">report</span>(<span class="ruby-string">&#39;insert&#39;</span>) { <span class="ruby-identifier">insert</span> }
+  <span class="ruby-identifier">x</span>.<span class="ruby-identifier">report</span>(<span class="ruby-string">&#39;prepare&#39;</span>) { <span class="ruby-identifier">prepare</span> }
+  <span class="ruby-identifier">x</span>.<span class="ruby-identifier">report</span>(<span class="ruby-string">&#39;append&#39;</span>) { <span class="ruby-identifier">append</span> }
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-comment"># =&gt;</span>
+<span class="ruby-comment">#                user     system      total        real</span>
+<span class="ruby-comment"># insert     0.637439   0.000000   0.637439 (  0.637486 )</span>
+<span class="ruby-comment"># prepare    0.230457   0.000000   0.230457 (  0.230460 )</span>
+<span class="ruby-comment"># append     0.012666   0.000000   0.012666 (  0.012670 )</span>
+</pre>
+
+<h3 id="label-Configuration">Configuration<span><a href="#label-Configuration">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Config class provides Ruby interface of <a href="https://duckdb.org/docs/api/c/config">DuckDB configuration</a>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+
+<span class="ruby-identifier">config</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Config</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-identifier">config</span>[<span class="ruby-string">&#39;default_order&#39;</span>] = <span class="ruby-string">&#39;DESC&#39;</span>
+
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-keyword">nil</span>, <span class="ruby-identifier">config</span>)
+
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE numbers (number INTEGER)&#39;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;INSERT INTO numbers VALUES (2), (1), (4), (3)&#39;</span>)
+
+<span class="ruby-comment"># number is ordered by descending</span>
+<span class="ruby-identifier">res</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT number FROM numbers ORDER BY number&#39;</span>)
+<span class="ruby-identifier">res</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span> <span class="ruby-comment"># =&gt; 4</span>
+</pre>
+
+</main>
+

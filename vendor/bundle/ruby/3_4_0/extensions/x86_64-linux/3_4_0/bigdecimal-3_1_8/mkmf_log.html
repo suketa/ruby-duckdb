@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>mkmf.log - RDoc Documentation</title>
+
+  <meta name="keywords" content="ruby,documentation,mkmf.log">
+  <meta name="description" content="mkmf.log: LD_LIBRARY_PATH=. DENABLE_PATH_CHECK=0 -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdep">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../../../../../../../";
+  var index_rel_prefix = "../../../../../../../../";
+</script>
+
+<script src="../../../../../../../../js/navigation.js" defer></script>
+<script src="../../../../../../../../js/search.js" defer></script>
+<script src="../../../../../../../../js/search_index.js" defer></script>
+<script src="../../../../../../../../js/searcher.js" defer></script>
+<script src="../../../../../../../../js/darkfish.js" defer></script>
+
+<link href="../../../../../../../../css/fonts.css" rel="stylesheet">
+<link href="../../../../../../../../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../../../../../../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../../../../../../../table_of_contents.html#pages">Pages</a>
+    <a href="../../../../../../../../table_of_contents.html#classes">Classes</a>
+    <a href="../../../../../../../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+  
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="../../../../../../../../CHANGELOG_md.html">CHANGELOG</a>
+    <li><a href="../../../../../../../../CONTRIBUTION_md.html">CONTRIBUTION</a>
+    <li><a href="../../../../../../../../Dockerfile.html">Dockerfile</a>
+    <li><a href="../../../../../../../../Gemfile.html">Gemfile</a>
+    <li><a href="../../../../../../../../Gemfile_lock.html">Gemfile.lock</a>
+    <li><a href="../../../../../../../../LICENSE.html">LICENSE</a>
+    <li><a href="../../../../../../../../README_md.html">README</a>
+    <li><a href="../../../../../../../../Rakefile.html">Rakefile</a>
+    <li><a href="../../../../../../../../bin/setup.html">setup</a>
+    <li><a href="../../../../../../../../getduckdb_sh.html">getduckdb.sh</a>
+    <li><details open><summary>vendor</summary>
+    <ul class="link-list">
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/bigdecimal-3_1_8/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/racc-1_8_1/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_build_complete.html">gem.build_complete</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/gem_make_out.html">gem_make.out</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/extensions/x86_64-linux/3_4_0/stackprof-0_2_26/mkmf_log.html">mkmf.log</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/benchmark-ips-2_14_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/bigdecimal-3_1_8/ext/bigdecimal/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Manifest_txt.html">Manifest</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/minitest-5_25_2/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE-DEPENDENCIES_md.html">LICENSE-DEPENDENCIES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/LICENSE_md.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/ext/nokogiri/depend.html">depend</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/CHANGES_md.html">CHANGES</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/gumbo-parser/THANKS.html">THANKS</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/nokogiri-1_18_0-x86_64-linux-gnu/lib/nokogiri/css/tokenizer_rex.html">tokenizer.rex</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/BSDL.html">BSDL</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/COPYING.html">COPYING</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ChangeLog.html">ChangeLog</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_ja_rdoc.html">README.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/TODO.html">TODO</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar_en_rdoc.html">grammar.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/en/grammar2_en_rdoc.html">grammar2.en</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/command_ja_html.html">command.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/debug_ja_rdoc.html">debug.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/grammar_ja_rdoc.html">grammar.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/index_ja_html.html">index.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/parser_ja_rdoc.html">parser.ja</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/doc/ja/usage_ja_html.html">usage.ja.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/racc-1_8_1/ext/racc/cparse/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/History_rdoc.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/MIT-LICENSE.html">MIT-LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/README_rdoc.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/command_line_usage_rdoc.html">command_line_usage</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile1.html">Rakefile1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/example/Rakefile2.html">Rakefile2</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/glossary_rdoc.html">glossary</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/proto_rake_rdoc.html">proto_rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rake_1.html">rake.1</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rakefile_rdoc.html">rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-13_2_1/doc/rational_rdoc.html">rational</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/History_md.html">History</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/compile_feature.html">compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-compile_feature.html">cross-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package-multi_feature.html">cross-package-multi.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/cross-package_feature.html">cross-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-compile_feature.html">java-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-no-native-compile_feature.html">java-no-native-compile.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/java-package_feature.html">java-package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/features/package_feature.html">package.feature</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bin/cross-ruby_rake.html">cross-ruby.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/bootstrap_rake.html">bootstrap.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/common_rake.html">common.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/cucumber_rake.html">cucumber.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/gem_rake.html">gem.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/rake-compiler-1_2_8/tasks/rspec_rake.html">rspec.rake</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Gemfile_lock.html">Gemfile.lock</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/LICENSE_txt.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/ruby_memcheck-3_0_0/suppressions/ruby_supp.html">ruby.supp</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/CHANGELOG_md.html">CHANGELOG</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Gemfile.html">Gemfile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/LICENSE.html">LICENSE</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/README_md.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/Rakefile.html">Rakefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-flamegraph_pl.html">stackprof-flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/bin/stackprof-gprof2dot_py.html">stackprof-gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/ext/stackprof/Makefile.html">Makefile</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/flamegraph_js.html">flamegraph.js</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/lib/stackprof/flamegraph/viewer_html.html">viewer.html</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/README.html">README</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/FlameGraph/flamegraph_pl.html">flamegraph.pl</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/gprof2dot_py.html">gprof2dot.py</a>
+      <li><a href="../../../../../../../../vendor/bundle/ruby/3_4_0/gems/stackprof-0_2_26/vendor/gprof2dot/hotshotmain_py.html">hotshotmain.py</a>
+    </ul></details>
+  </ul>
+</div>
+
+
+  <footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
+</nav>
+
+<main role="main" aria-label="Page vendor/bundle/ruby/3.4.0/extensions/x86_64-linux/3.4.0/bigdecimal-3.1.8/mkmf.log">
+
+<p>have_builtin_func: checking for __builtin_clz()… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */ 1: include “ruby.h” 2: 3: int main(int argc, char **argv) 4: { 5:   return !!<a href="argc">argv</a>; 6: } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” conftest.c: In function ‘main’: conftest.c:4:5: warning: old-style function definition [-Wold-style-definition]</p>
+
+<pre>4 | int main() { __builtin_clz(0); return 0; }
+  |     ^~~~</pre>
+
+<p>At top level: cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */ 1: include “ruby.h” 2: 3: int foo; 4: int main() { __builtin_clz(0); return 0; } /* end */</p>
+<hr>
+
+<p>have_builtin_func: checking for __builtin_clzl()… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” conftest.c: In function ‘main’: conftest.c:4:5: warning: old-style function definition [-Wold-style-definition]</p>
+
+<pre>4 | int main() { __builtin_clzl(0); return 0; }
+  |     ^~~~</pre>
+
+<p>At top level: cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */ 1: include “ruby.h” 2: 3: int foo; 4: int main() { __builtin_clzl(0); return 0; } /* end */</p>
+<hr>
+
+<p>have_builtin_func: checking for __builtin_clzll()… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” conftest.c: In function ‘main’: conftest.c:4:5: warning: old-style function definition [-Wold-style-definition]</p>
+
+<pre>4 | int main() { __builtin_clzll(0); return 0; }
+  |     ^~~~</pre>
+
+<p>At top level: cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */ 1: include “ruby.h” 2: 3: int foo; 4: int main() { __builtin_clzll(0); return 0; } /* end */</p>
+<hr>
+
+<p>have_header: checking for float.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;float.h&gt; /* end */</p>
+<hr>
+
+<p>have_header: checking for math.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;math.h&gt; /* end */</p>
+<hr>
+
+<p>have_header: checking for stdbool.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;stdbool.h&gt; /* end */</p>
+<hr>
+
+<p>have_header: checking for stdlib.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;stdlib.h&gt; /* end */</p>
+<hr>
+
+<p>have_header: checking for x86intrin.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;x86intrin.h&gt; /* end */</p>
+<hr>
+
+<p>have_func: checking for _lzcnt_u32() in x86intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” /usr/bin/ld: /tmp/ccE51pjC.o: in function ‘t’: /home/runner/work/ruby-duckdb/ruby-duckdb/vendor/bundle/ruby/3.4.0/gems/bigdecimal-3.1.8/ext/bigdecimal/conftest.c:16:(.text+0x7): undefined reference to ‘_lzcnt_u32’ collect2: error: ld returned 1 exit status checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;x86intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))_lzcnt_u32; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:16:13: error: conflicting types for ‘_lzcnt_u32’; have ‘void()’</p>
+
+<pre>16 | extern void _lzcnt_u32();
+   |             ^~~~~~~~~~</pre>
+
+<p>In file included from /usr/lib/gcc/x86_64-linux-gnu/13/include/x86gprintrin.h:61,</p>
+
+<pre>from /usr/lib/gcc/x86_64-linux-gnu/13/include/x86intrin.h:27,
+from conftest.c:3:</pre>
+
+<p>/usr/lib/gcc/x86_64-linux-gnu/13/include/lzcntintrin.h:51:1: note: previous definition of ‘_lzcnt_u32’ with type ‘unsigned int(unsigned int)’</p>
+
+<pre>51 | _lzcnt_u32 (unsigned int __X)
+   | ^~~~~~~~~~</pre>
+
+<p>cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;x86intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void _lzcnt_u32(); 17: int t(void) { _lzcnt_u32(); return 0; } /* end */</p>
+<hr>
+
+<p>have_func: checking for _lzcnt_u64() in x86intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” /usr/bin/ld: /tmp/cczYLDmO.o: in function ‘t’: /home/runner/work/ruby-duckdb/ruby-duckdb/vendor/bundle/ruby/3.4.0/gems/bigdecimal-3.1.8/ext/bigdecimal/conftest.c:16:(.text+0x7): undefined reference to ‘_lzcnt_u64’ collect2: error: ld returned 1 exit status checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;x86intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))_lzcnt_u64; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:16:13: error: conflicting types for ‘_lzcnt_u64’; have ‘void()’</p>
+
+<pre>16 | extern void _lzcnt_u64();
+   |             ^~~~~~~~~~</pre>
+
+<p>In file included from /usr/lib/gcc/x86_64-linux-gnu/13/include/x86gprintrin.h:61,</p>
+
+<pre>from /usr/lib/gcc/x86_64-linux-gnu/13/include/x86intrin.h:27,
+from conftest.c:3:</pre>
+
+<p>/usr/lib/gcc/x86_64-linux-gnu/13/include/lzcntintrin.h:64:1: note: previous definition of ‘_lzcnt_u64’ with type ‘long long unsigned int(long long unsigned int)’</p>
+
+<pre>64 | _lzcnt_u64 (unsigned long long __X)
+   | ^~~~~~~~~~</pre>
+
+<p>cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;x86intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void _lzcnt_u64(); 17: int t(void) { _lzcnt_u64(); return 0; } /* end */</p>
+<hr>
+
+<p>have_header: checking for intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;intrin.h&gt; /* end */</p>
+<hr>
+
+<p>have_func: checking for __lzcnt() in intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))__lzcnt; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void __lzcnt(); 17: int t(void) { __lzcnt(); return 0; } /* end */</p>
+<hr>
+
+<p>have_func: checking for __lzcnt64() in intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))__lzcnt64; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void __lzcnt64(); 17: int t(void) { __lzcnt64(); return 0; } /* end */</p>
+<hr>
+
+<p>have_func: checking for _BitScanReverse() in intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))_BitScanReverse; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void _BitScanReverse(); 17: int t(void) { _BitScanReverse(); return 0; } /* end */</p>
+<hr>
+
+<p>have_func: checking for _BitScanReverse64() in intrin.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))_BitScanReverse64; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c:3:10: fatal error: intrin.h: No such file or directory</p>
+
+<pre>3 | #include &lt;intrin.h&gt;
+  |          ^~~~~~~~~~</pre>
+
+<p>compilation terminated. checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;intrin.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void _BitScanReverse64(); 17: int t(void) { _BitScanReverse64(); return 0; } /* end */</p>
+<hr>
+
+<p>have_func: checking for labs() in stdlib.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;stdlib.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))labs; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for llabs() in stdlib.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;stdlib.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))llabs; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for finite() in math.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;math.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))finite; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for isfinite() in math.h… ——————– no</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c: In function ‘t’: conftest.c:16:57: error: ‘isfinite’ undeclared (first use in this function); did you mean ‘finite’?</p>
+
+<pre>16 | int t(void) { void ((*volatile p)()); p = (void ((*)()))isfinite; return !p; }
+   |                                                         ^~~~~~~~
+   |                                                         finite</pre>
+
+<p>conftest.c:16:57: note: each undeclared identifier is reported only once for each function it appears in At top level: cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;math.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))isfinite; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” /usr/bin/ld: /tmp/cclGSwuH.o: in function ‘t’: /home/runner/work/ruby-duckdb/ruby-duckdb/vendor/bundle/ruby/3.4.0/gems/bigdecimal-3.1.8/ext/bigdecimal/conftest.c:17:(.text+0xb): undefined reference to ‘__builtin_isfinite’ collect2: error: ld returned 1 exit status checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;math.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void isfinite(); 17: int t(void) { isfinite(); return 0; } /* end */</p>
+<hr>
+
+<p>have_header: checking for ruby/atomic.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;ruby/atomic.h&gt; /* end */</p>
+<hr>
+
+<p>have_header: checking for ruby/internal/has/builtin.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;ruby/internal/has/builtin.h&gt; /* end */</p>
+<hr>
+
+<p>have_header: checking for ruby/internal/static_assert.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;ruby/internal/static_assert.h&gt; /* end */</p>
+<hr>
+
+<p>have_func: checking for rb_rational_num() in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_rational_num; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for rb_rational_den() in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_rational_den; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for rb_complex_real() in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_complex_real; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for rb_complex_imag() in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_complex_imag; return !p; } /* end */</p>
+<hr>
+
+<p>have_func: checking for rb_opts_exception_p() in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” conftest.c: In function ‘t’: conftest.c:16:57: error: ‘rb_opts_exception_p’ undeclared (first use in this function); did you mean ‘rb_make_exception’?</p>
+
+<pre>16 | int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_opts_exception_p; return !p; }
+   |                                                         ^~~~~~~~~~~~~~~~~~~
+   |                                                         rb_make_exception</pre>
+
+<p>conftest.c:16:57: note: each undeclared identifier is reported only once for each function it appears in At top level: cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_opts_exception_p; return !p; } /* end */</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: extern void rb_opts_exception_p(); 17: int t(void) { rb_opts_exception_p(); return 0; } /* end */</p>
+<hr>
+
+<p>have_func: checking for rb_category_warn() in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC conftest.c -L. -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,–no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -L/opt/hostedtoolcache/Ruby/3.4.1/x64/lib -lruby  -lm -lpthread  -lc” checked program was: /* begin */</p>
+
+<pre>1: #include &quot;ruby.h&quot;
+2: 
+3: #include &lt;ruby.h&gt;
+4: 
+5: /*top*/
+6: extern int t(void);
+7: int main(int argc, char **argv)
+8: {
+9:   if (argc &gt; 1000000) {</pre>
+
+<p>10:     int (* volatile tp)(void)=(int (*)(void))&amp;t; 11:     printf(“%d”, (*tp)()); 12:   } 13: 14:   return !!<a href="argc">argv</a>; 15: } 16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_category_warn; return !p; } /* end */</p>
+<hr>
+
+<p>have_const: checking for RB_WARN_CATEGORY_DEPRECATED in ruby.h… ——————– yes</p>
+
+<p>LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.4.1/x64/lib ASAN_OPTIONS=detect_leaks=0 “gcc -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.4.1/x64/include/ruby-3.4.0 -I. -DENABLE_PATH_CHECK=0   -fstack-protector-strong -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wdiv-by-zero -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wmisleading-indentation -Wundef  -fPIC   -c conftest.c” checked program was: /* begin */ 1: include “ruby.h” 2: 3: include &lt;ruby.h&gt; 4: 5: /<strong>top</strong>/ 6: typedef int conftest_type; 7: conftest_type conftestval = (int)RB_WARN_CATEGORY_DEPRECATED; /* end */</p>
+<hr>
+
+</main>
+
