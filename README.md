@@ -65,6 +65,8 @@ gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duck
 
 ## Usage
 
+The followings are some examples, for more detailed information, please refer to the [documentation](https://suketa.github.io/ruby-duckdb/index.html).
+
 ```ruby
 require 'duckdb'
 
