@@ -16,3 +16,4 @@
 *.so
 Makefile
 ng_test
+/docs/
