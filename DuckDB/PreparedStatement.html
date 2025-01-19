@@ -502,7 +502,7 @@
   <span class="ruby-identifier">_bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>, <span class="ruby-identifier">width</span>, <span class="ruby-identifier">decimal</span>.<span class="ruby-identifier">scale</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected <a href="../BigDecimal.html"><code>BigDecimal</code></a> value or any value that can be parsed into a <a href="../BigDecimal.html"><code>BigDecimal</code></a>.</p>
+          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected BigDecimal value or any value that can be parsed into a BigDecimal.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;duckdb_database&#39;</span>)
@@ -618,7 +618,7 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected <a href="../Integer.html"><code>Integer</code></a> value. This method uses <a href="PreparedStatement.html#method-i-bind_varchar"><code>bind_varchar</code></a> internally.</p>
+          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value. This method uses <a href="PreparedStatement.html#method-i-bind_varchar"><code>bind_varchar</code></a> internally.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;duckdb_database&#39;</span>)
@@ -656,7 +656,7 @@
   <span class="ruby-identifier">_bind_hugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value must be <a href="../Integer.html"><code>Integer</code></a> value. This method uses duckdb_bind_hugeint internally.</p>
+          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value must be Integer value. This method uses duckdb_bind_hugeint internally.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;duckdb_database&#39;</span>)

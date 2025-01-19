@@ -331,7 +331,7 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Convert the value to the <a href="Interval.html"><code>Interval</code></a> object. The value can be <a href="../String.html"><code>String</code></a> or <a href="Interval.html"><code>Interval</code></a> object. If the value is <a href="../String.html"><code>String</code></a>, it is parsed as ISO8601 format. If the value is <a href="Interval.html"><code>Interval</code></a> object, it is returned as is. Otherwise, ArgumentError is raised.</p>
+          <p>Convert the value to the <a href="Interval.html"><code>Interval</code></a> object. The value can be String or <a href="Interval.html"><code>Interval</code></a> object. If the value is String, it is parsed as ISO8601 format. If the value is <a href="Interval.html"><code>Interval</code></a> object, it is returned as is. Otherwise, ArgumentError is raised.</p>
 
 <pre>DuckDB::Interval.to_interval(&#39;P1Y2M3DT4H5M6.123456S&#39;)
 =&gt; #&lt;DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456&gt;
