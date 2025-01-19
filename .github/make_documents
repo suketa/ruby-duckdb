@@ -1,0 +1,39 @@
+name: Deploy RDoc to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build and Deploy RDoc
+    runs-on: ubuntu-latest
+
+    steps:
+    # リポジトリをクローン
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Ruby をセットアップ
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.4
+        bundler-cache: true
+
+    # 必要な依存関係をインストール
+    - name: Install dependencies
+      run: bundle install
+
+    # RDoc ドキュメントを生成
+    - name: Generate RDoc
+      run: bundle exec rdoc -o ruby-duckdb-documents
+
+    # GitHub Pages 用にデプロイ
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./ruby-duckdb-documents
