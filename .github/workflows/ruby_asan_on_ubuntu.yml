@@ -1,0 +1,71 @@
+name: Ubuntu
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['asan']
+        duckdb: ['1.1.3', '1.1.1', '1.0.0']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: duckdb cache
+      id: duckdb-cache
+      uses: actions/cache@v4
+      with:
+        path: duckdb-v${{ matrix.duckdb }}
+        key: ${{ runner.os }}-duckdb-v${{ matrix.duckdb }}
+
+    - name: Build duckdb ${{ matrix.duckdb }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      if: steps.duckdb-cache.outputs.cache-hit != 'true'
+      run: |
+        git clone -b v$DUCKDB_VERSION https://github.com/cwida/duckdb.git duckdb-tmp-v$DUCKDB_VERSION
+        cd duckdb-tmp-v$DUCKDB_VERSION && make && cd ..
+        rm -rf duckdb-v$DUCKDB_VERSION
+        mkdir -p duckdb-v$DUCKDB_VERSION/build/release/src duckdb-v$DUCKDB_VERSION/src
+        cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.so duckdb-v$DUCKDB_VERSION/build/release/src
+        cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
+
+    - name: bundle install with Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        bundle install --jobs 4 --retry 3
+
+    - name: Build test with DUCKDB_API_NO_DEPRECATED and Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        env DUCKDB_API_NO_DEPRECATED=1 bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
+        bundle exec rake clean
+
+    - name: Build with Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
+
+    - name: test with Ruby ${{ matrix.ruby }}
+      env:
+        DUCKDB_VERSION: ${{ matrix.duckdb }}
+      run: |
+        env RUBYOPT=-W:deprecated ruby -Ilib test/duckdb_test/ruby_asan_test.rb
