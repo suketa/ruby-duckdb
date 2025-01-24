@@ -82,8 +82,6 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBPreparedStatement *ctx;
 
-    duckdb_prepared_statement prepared_statement;
-
     if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
         rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
     }
@@ -91,12 +89,10 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxcon = get_struct_connection(con);
 
-    if (duckdb_prepare(ctxcon->con, StringValuePtr(query), &(prepared_statement)) == DuckDBError) {
-        const char *error = duckdb_prepare_error(prepared_statement);
-        duckdb_destroy_prepare(&prepared_statement);
+    if (duckdb_prepare(ctxcon->con, StringValuePtr(query), &(ctx->prepared_statement)) == DuckDBError) {
+        const char *error = duckdb_prepare_error(ctx->prepared_statement);
         rb_raise(eDuckDBError, "%s", error ? error : "Failed to prepare statement(Database connection closed?).");
     }
-    ctx->prepared_statement = prepared_statement;
     return self;
 }
 
