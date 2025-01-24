@@ -93,6 +93,7 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
 
     if (duckdb_prepare(ctxcon->con, StringValuePtr(query), &(prepared_statement)) == DuckDBError) {
         const char *error = duckdb_prepare_error(prepared_statement);
+        duckdb_destroy_prepare(&prepared_statement);
         rb_raise(eDuckDBError, "%s", error ? error : "Failed to prepare statement(Database connection closed?).");
     }
     ctx->prepared_statement = prepared_statement;
