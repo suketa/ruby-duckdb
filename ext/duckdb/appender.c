@@ -11,7 +11,7 @@ static VALUE appender__append_bool(VALUE self, VALUE val);
 static VALUE appender__append_int8(VALUE self, VALUE val);
 static VALUE appender__apend_int16(VALUE self, VALUE val);
 static VALUE appender__append_int32(VALUE self, VALUE val);
-static VALUE appender__apend_int64(VALUE self, VALUE val);
+static VALUE appender__append_int64(VALUE self, VALUE val);
 static VALUE appender_append_uint8(VALUE self, VALUE val);
 static VALUE appender_append_uint16(VALUE self, VALUE val);
 static VALUE appender_append_uint32(VALUE self, VALUE val);
@@ -158,7 +158,7 @@ static VALUE appender__append_int32(VALUE self, VALUE val) {
 }
 
 /* :nodoc: */
-static VALUE appender__apend_int64(VALUE self, VALUE val) {
+static VALUE appender__append_int64(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     int64_t i64val = (int64_t)NUM2LL(val);
 
@@ -444,7 +444,7 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_append_int8", appender__append_int8, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int16", appender__apend_int16, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int32", appender__append_int32, 1);
-    rb_define_private_method(cDuckDBAppender, "_append_int64", appender__apend_int64, 1);
+    rb_define_private_method(cDuckDBAppender, "_append_int64", appender__append_int64, 1);
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
     rb_define_private_method(cDuckDBAppender, "_append_interval", appender__append_interval, 3);
     rb_define_private_method(cDuckDBAppender, "_append_time", appender__append_time, 4);
