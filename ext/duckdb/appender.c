@@ -9,7 +9,7 @@ static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE tab
 static VALUE appender_error_message(VALUE self);
 static VALUE appender__append_bool(VALUE self, VALUE val);
 static VALUE appender__append_int8(VALUE self, VALUE val);
-static VALUE appender__apend_int16(VALUE self, VALUE val);
+static VALUE appender__append_int16(VALUE self, VALUE val);
 static VALUE appender__append_int32(VALUE self, VALUE val);
 static VALUE appender__append_int64(VALUE self, VALUE val);
 static VALUE appender_append_uint8(VALUE self, VALUE val);
@@ -138,7 +138,7 @@ static VALUE appender__append_int8(VALUE self, VALUE val) {
 }
 
 /* :nodoc: */
-static VALUE appender__apend_int16(VALUE self, VALUE val) {
+static VALUE appender__append_int16(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     int16_t i16val = (int16_t)NUM2INT(val);
 
@@ -442,7 +442,7 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_close", appender__close, 0);
     rb_define_private_method(cDuckDBAppender, "_append_bool", appender__append_bool, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int8", appender__append_int8, 1);
-    rb_define_private_method(cDuckDBAppender, "_append_int16", appender__apend_int16, 1);
+    rb_define_private_method(cDuckDBAppender, "_append_int16", appender__append_int16, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int32", appender__append_int32, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int64", appender__append_int64, 1);
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
