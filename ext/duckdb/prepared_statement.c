@@ -42,7 +42,6 @@ static const rb_data_type_t prepared_statement_data_type = {
 
 static void destroy_prepared_statement(rubyDuckDBPreparedStatement *p) {
     if (p->prepared_statement) {
-        fprintf(stderr, "destroy prepared statement\n");
         duckdb_destroy_prepare(&(p->prepared_statement));
     }
 }
