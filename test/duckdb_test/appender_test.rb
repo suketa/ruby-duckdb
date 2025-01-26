@@ -7,7 +7,6 @@ module DuckDBTest
   class AppenderTest < Minitest::Test
     def setup
       @db = DuckDB::Database.open # FIXME
-      @db.connect
       @con = @db.connect
     end
 
