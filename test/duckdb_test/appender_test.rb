@@ -5,19 +5,24 @@ require 'time'
 
 module DuckDBTest
   class AppenderTest < Minitest::Test
-    def self.con
-      @db ||= DuckDB::Database.open # FIXME
+    def setup
+      @db = DuckDB::Database.open # FIXME
       @db.connect
+      @con = @db.connect
     end
 
-    def setup
-      @con = AppenderTest.con
+    def safe_drop_table
+      @con.execute("DROP TABLE #{table};")
+    rescue DuckDB::Error
+      # ignore DuckDB::Error
     end
 
     def teardown
-      @con.execute("DROP TABLE #{table};")
+      safe_drop_table
+      @con.close
+      @db.close
     rescue DuckDB::Error
-      # ignore
+      # ignore DuckDB::Error
     end
 
     def table
@@ -57,7 +62,7 @@ module DuckDBTest
       r = @con.execute("SELECT col FROM #{table}")
       assert_equal(expected, r.first.first, "in #{caller[0]}")
     ensure
-      teardown
+      safe_drop_table
     end
 
     def sub_assert_equal(expected, actual)
@@ -82,7 +87,7 @@ module DuckDBTest
       r = @con.execute("SELECT col FROM #{table}")
       sub_assert_equal(expected, r.first.first)
     ensure
-      teardown
+      safe_drop_table
     end
 
     def test_begin_row
