@@ -206,7 +206,6 @@ module DuckDB
     #  appender.append_uint8(val) -> self
     #
     # Appends an uint8 value to the current row in the appender.
-    # The value must be in the range of 0 to 255.
     #
     #  require 'duckdb'
     #  db = DuckDB::Database.open
