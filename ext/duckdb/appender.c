@@ -170,7 +170,7 @@ static VALUE appender__append_int64(VALUE self, VALUE val) {
 /* :nodoc: */
 static VALUE appender__append_uint8(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
-    int8_t ui8val = (uint8_t)NUM2UINT(val);
+    uint8_t ui8val = (uint8_t)NUM2UINT(val);
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
