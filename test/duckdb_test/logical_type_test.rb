@@ -119,6 +119,22 @@ module DuckDBTest
       assert_equal(6, decimal_column.logical_type.scale)
     end
 
+    def test_list_child_type
+      list_columns = @columns.select { |column| column.type == :list }
+      child_types = list_columns.map do |list_column|
+        list_column.logical_type.child_type
+      end
+      assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
+      assert_equal([:integer, :varchar], child_types.map(&:type))
+    end
+
+    def test_map_child_type
+      map_column = @columns.detect { |column| column.type == :map }
+      child_type = map_column.logical_type.child_type
+      assert(child_type.is_a?(DuckDB::LogicalType))
+      assert_equal(:struct, child_type.type)
+    end
+
     private
 
     def create_data(con)
