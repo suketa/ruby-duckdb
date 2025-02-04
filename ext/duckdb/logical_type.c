@@ -74,6 +74,13 @@ static VALUE duckdb_logical_type_scale(VALUE self) {
     return INT2FIX(duckdb_decimal_scale(ctx->logical_type));
 }
 
+/*
+ *  call-seq:
+ *    list_col.logical_type.child_type -> DuckDB::LogicalType
+ *
+ *  Returns the child logical type for list and map types, otherwise nil.
+ *
+ */
 static VALUE duckdb_logical_type_child_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
