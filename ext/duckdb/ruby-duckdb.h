@@ -5,6 +5,7 @@
 #define DUCKDB_NO_EXTENSION_FUNCTIONS // disable extension C-functions
 
 #include "ruby.h"
+#include "ruby/thread.h"
 #include <duckdb.h>
 
 #ifdef HAVE_DUCKDB_FETCH_CHUNK
