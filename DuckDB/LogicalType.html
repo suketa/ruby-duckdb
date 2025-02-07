@@ -78,6 +78,7 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-child_type">child_type</a></li>
       <li ><a href="#method-i-scale">scale</a></li>
       <li ><a href="#method-i-type">type</a></li>
       <li ><a href="#method-i-width">width</a></li>
@@ -113,6 +114,52 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-child_type" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-child_type" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.child_type &rarr; DuckDB::LogicalType
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="child_type-source">
+            <pre>static VALUE duckdb_logical_type_child_type(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_type type_id;
+    duckdb_logical_type child_logical_type;
+    VALUE logical_type = Qnil;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+    type_id = duckdb_get_type_id(ctx-&gt;logical_type);
+
+    switch(type_id) {
+        case DUCKDB_TYPE_LIST:
+        case DUCKDB_TYPE_MAP:
+            child_logical_type = duckdb_list_type_child_type(ctx-&gt;logical_type);
+            logical_type = rbduckdb_create_logical_type(child_logical_type);
+            break;
+        default:
+            logical_type = Qnil;
+    }
+    return logical_type;
+}</pre>
+          </div>
+          <p>Returns the child logical type for list and map types, otherwise nil.</p>
+        </div>
+
+
+      </div>
 
       <div id="method-i-scale" class="method-detail anchor-link ">
         <div class="method-header">
