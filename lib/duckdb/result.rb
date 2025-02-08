@@ -32,19 +32,6 @@ module DuckDB
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
       end
-
-      def use_chunk_each=(value) # :nodoc:
-        raise('`changing DuckDB::Result.use_chunk_each to false` was deprecated.') unless value
-
-        warn('`DuckDB::Result.use_chunk_each=` will be deprecated.')
-
-        true
-      end
-
-      def use_chunk_each? # :nodoc:
-        warn('`DuckDB::Result.use_chunk_each?` will be deprecated.')
-        true
-      end
     end
 
     def each(&)
