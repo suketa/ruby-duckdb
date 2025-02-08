@@ -27,7 +27,6 @@ module DuckDB
     RETURN_TYPES = %i[invalid changed_rows nothing query_result].freeze
 
     alias column_size column_count
-    alias row_size row_count
 
     class << self
       def new
