@@ -61,9 +61,6 @@ check_duckdb_library('duckdb', 'duckdb_appender_column_count', DUCKDB_REQUIRED_V
 # check duckdb >= 1.0.0
 have_func('duckdb_fetch_chunk', 'duckdb.h')
 
-# check duckdb >= 1.0.0
-have_func('duckdb_fetch_chunk', 'duckdb.h')
-
 # check duckdb >= 1.1.0
 have_func('duckdb_result_error_type', 'duckdb.h')
 
