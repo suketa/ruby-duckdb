@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
   `DuckDB::Appender#append_int32`, `DuckDB::Appender#append_int64`, `DuckDB::Appender#append_uint8` failed.
 - `DuckDB::Appender#begin_row` does nothing. Only returns self. `DuckDB::Appender#end_row` is only required.
 
+## Breaking changes
+- `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are deprecated.
+
 # 1.1.3.1 - 2024-11-27
 - fix to `DuckDB::Connection#query` with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.
 - install valgrind in docker development environment.
