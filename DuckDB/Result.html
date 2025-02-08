@@ -99,8 +99,6 @@
       <li ><a href="#method-i-each">each</a></li>
       <li ><a href="#method-i-enum_dictionary_values">enum_dictionary_values</a></li>
       <li ><a href="#method-i-return_type">return_type</a></li>
-      <li ><a href="#method-i-row_count">row_count</a></li>
-      <li ><a href="#method-i-row_size">row_size</a></li>
       <li ><a href="#method-i-rows_changed">rows_changed</a></li>
       <li ><a href="#method-i-statement_type">statement_type</a></li>
       <li ><a href="#method-i-streaming-3F">streaming?</a></li>
@@ -186,7 +184,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 33</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 32</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;DuckDB::Result cannot be instantiated directly.&#39;</span>
 <span class="ruby-keyword">end</span></pre>
@@ -325,7 +323,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 51</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">streaming?</span>
     <span class="ruby-keyword">return</span> <span class="ruby-identifier">_chunk_stream</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
@@ -362,7 +360,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="enum_dictionary_values-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 102</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 101</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">enum_dictionary_values</span>(<span class="ruby-identifier">col_index</span>)
   <span class="ruby-identifier">values</span> = []
   <span class="ruby-identifier">_enum_dictionary_size</span>(<span class="ruby-identifier">col_index</span>).<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
@@ -404,7 +402,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 71</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 70</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type</span>
   <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_return_type</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;Unknown return type: #{i}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-constant">RETURN_TYPES</span>.<span class="ruby-identifier">size</span>
@@ -424,75 +422,6 @@
         </div>
 
 
-      </div>
-
-      <div id="method-i-row_count" class="method-detail anchor-link ">
-        <div class="method-header">
-              <div class="method-heading">
-                <a href="#method-i-row_count" title="Link to this method">
-                  <span class="method-callseq">
-                    row_count &rarr; Integer
-                  </span>
-                </a>
-              </div>
-        </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="row_count-source">
-            <pre>static VALUE duckdb_result_row_count(VALUE oDuckDBResult) {
-
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qnil;
-#else
-    rubyDuckDBResult *ctx;
-    rb_warn(&quot;`row_count` will be deprecated in the future.&quot;);
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &amp;result_data_type, ctx);
-    return LL2NUM(duckdb_row_count(&amp;(ctx-&gt;result)));
-#endif
-}</pre>
-          </div>
-          <p>Returns the column size of the result.</p>
-
-<pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
-  <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">r</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE t2 (id INT, name VARCHAR(128))&#39;</span>)
-    <span class="ruby-identifier">r</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT INTO t2 VALUES (1, &#39;Alice&#39;), (2, &#39;Bob&#39;), (3, &#39;Catherine&#39;)&quot;</span>)
-    <span class="ruby-identifier">r</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM t2&#39;</span>)
-    <span class="ruby-identifier">r</span>.<span class="ruby-identifier">row_count</span> <span class="ruby-comment"># =&gt; 3</span>
-    <span class="ruby-identifier">r</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM t2 where id = 1&#39;</span>)
-    <span class="ruby-identifier">r</span>.<span class="ruby-identifier">row_count</span> <span class="ruby-comment"># =&gt; 1</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span>
-</pre>
-        </div>
-
-        <div class="aliases">
-          Also aliased as: <a href="Result.html#method-i-row_size">row_size</a>
-        </div>
-
-      </div>
-
-      <div id="method-i-row_size" class="method-detail anchor-link method-alias">
-        <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-row_size" title="Link to this method">
-                <span class="method-name">row_size</span>
-              </a>
-            </div>
-        </div>
-
-
-
-
-        <div class="aliases">
-          Alias for: <a href="Result.html#method-i-row_count">row_count</a>
-        </div>
       </div>
 
       <div id="method-i-rows_changed" class="method-detail anchor-link ">
@@ -560,7 +489,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="statement_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 89</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 88</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">statement_type</span>
   <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_statement_type</span>
   <span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">statement_type_to_sym</span>(<span class="ruby-identifier">i</span>)
