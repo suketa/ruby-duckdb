@@ -323,7 +323,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 50</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 37</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">streaming?</span>
     <span class="ruby-keyword">return</span> <span class="ruby-identifier">_chunk_stream</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
@@ -360,7 +360,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="enum_dictionary_values-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 101</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 88</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">enum_dictionary_values</span>(<span class="ruby-identifier">col_index</span>)
   <span class="ruby-identifier">values</span> = []
   <span class="ruby-identifier">_enum_dictionary_size</span>(<span class="ruby-identifier">col_index</span>).<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
@@ -402,7 +402,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 70</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 57</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type</span>
   <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_return_type</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;Unknown return type: #{i}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-constant">RETURN_TYPES</span>.<span class="ruby-identifier">size</span>
@@ -489,7 +489,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="statement_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 88</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 75</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">statement_type</span>
   <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_statement_type</span>
   <span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">statement_type_to_sym</span>(<span class="ruby-identifier">i</span>)
