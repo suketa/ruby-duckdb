@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ## Breaking changes
 - `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are deprecated.
+- `DuckDB::Result#use_chunk_each?`, `DuckDB::Result#use_chunk_each=` are deprecated.
 
 # 1.1.3.1 - 2024-11-27
 - fix to `DuckDB::Connection#query` with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.
