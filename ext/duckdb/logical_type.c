@@ -96,6 +96,10 @@ static VALUE duckdb_logical_type_child_type(VALUE self) {
             child_logical_type = duckdb_list_type_child_type(ctx->logical_type);
             logical_type = rbduckdb_create_logical_type(child_logical_type);
             break;
+        case DUCKDB_TYPE_ARRAY:
+            child_logical_type = duckdb_array_type_child_type(ctx->logical_type);
+            logical_type = rbduckdb_create_logical_type(child_logical_type);
+            break;
         default:
             logical_type = Qnil;
     }
