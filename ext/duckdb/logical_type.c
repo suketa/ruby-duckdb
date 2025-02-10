@@ -9,6 +9,7 @@ static VALUE duckdb_logical_type__type(VALUE self);
 static VALUE duckdb_logical_type_width(VALUE self);
 static VALUE duckdb_logical_type_scale(VALUE self);
 static VALUE duckdb_logical_type_child_type(VALUE self);
+static VALUE duckdb_logical_type_size(VALUE self);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -106,6 +107,19 @@ static VALUE duckdb_logical_type_child_type(VALUE self) {
     return logical_type;
 }
 
+/*
+ *  call-seq:
+ *    list_col.logical_type.size -> Integer
+ *
+ *  Returns the size of the array column, otherwise 0.
+ *
+ */
+static VALUE duckdb_logical_type_size(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    return INT2FIX(duckdb_array_type_array_size(ctx->logical_type));
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -129,4 +143,5 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "width", duckdb_logical_type_width, 0);
     rb_define_method(cDuckDBLogicalType, "scale", duckdb_logical_type_scale, 0);
     rb_define_method(cDuckDBLogicalType, "child_type", duckdb_logical_type_child_type, 0);
+    rb_define_method(cDuckDBLogicalType, "size", duckdb_logical_type_size, 0);
 }

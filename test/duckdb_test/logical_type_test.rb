@@ -150,6 +150,14 @@ module DuckDBTest
       assert_equal([:integer, :varchar], child_types.map(&:type))
     end
 
+    def test_array_size
+      array_columns = @columns.select { |column| column.type == :array }
+      array_sizes = array_columns.map do |array_column|
+        array_column.logical_type.size
+      end
+      assert_equal([3, 2], array_sizes)
+    end
+
     private
 
     def create_data(con)
