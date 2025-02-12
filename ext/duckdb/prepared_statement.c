@@ -102,21 +102,47 @@ static VALUE duckdb_prepared_statement_nparams(VALUE self) {
     return ULL2NUM(duckdb_nparams(ctx->prepared_statement));
 }
 
+/* :nodoc: */
+typedef struct {
+    duckdb_prepared_statement prepared_statement;
+    duckdb_result *out_result;
+    duckdb_state retval;
+} duckdb_prepared_statement_execute_nogvl_args;
+
+/* :nodoc: */
+static void duckdb_prepared_statement_execute_nogvl(void *ptr) {
+    duckdb_prepared_statement_execute_nogvl_args *args = (duckdb_prepared_statement_execute_nogvl_args *)ptr;
+
+    args->retval = duckdb_execute_prepared(args->prepared_statement, args->out_result);
+}
+
 static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
+    const char *error;
     VALUE result = rbduckdb_create_result();
-    const char *p = NULL;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
-    if (duckdb_execute_prepared(ctx->prepared_statement, &(ctxr->result)) == DuckDBError) {
-        p = duckdb_result_error(&(ctxr->result));
-        if (p == NULL) {
-            p = duckdb_prepare_error(ctx->prepared_statement);
+
+    duckdb_prepared_statement_execute_nogvl_args args = {
+        .prepared_statement = ctx->prepared_statement,
+        .out_result = &(ctxr->result),
+        .retval = DuckDBError,
+    };
+
+    rb_thread_call_without_gvl((void *)duckdb_prepared_statement_execute_nogvl, &args, RUBY_UBF_IO, 0);
+    duckdb_state state = args.retval;
+
+    if (state == DuckDBError) {
+        error = duckdb_result_error(args.out_result);
+        if (error == NULL) {
+            error = duckdb_prepare_error(args.prepared_statement);
         }
-        rb_raise(eDuckDBError, "%s", p ? p : "Failed to execute prepared statement.");
+
+        rb_raise(eDuckDBError, "%s", error ? error : "Failed to execute prepared statement.");
     }
+
     return result;
 }
 
