@@ -31,6 +31,8 @@ module DuckDBTest
         enum_col mood,
         int_list_col INT[],
         varchar_list_col VARCHAR[],
+        int_array_col INT[3],
+        varchar_list_array_col VARCHAR[2],
         struct_col STRUCT(word VARCHAR, length INTEGER),
         uuid_col UUID,
         map_col MAP(INTEGER, VARCHAR)
@@ -61,6 +63,8 @@ module DuckDBTest
         'sad',
         [1, 2, 3],
         ['a', 'b', 'c'],
+        [1, 2, 3],
+        [['a', 'b'], ['c', 'd']],
         ROW('Ruby', 4),
         '#{SecureRandom.uuid}',
         MAP{1: 'foo'}
@@ -91,6 +95,8 @@ module DuckDBTest
       enum
       list
       list
+      array
+      array
       struct
       uuid
       map
@@ -133,6 +139,23 @@ module DuckDBTest
       child_type = map_column.logical_type.child_type
       assert(child_type.is_a?(DuckDB::LogicalType))
       assert_equal(:struct, child_type.type)
+    end
+
+    def test_array_child_type
+      array_columns = @columns.select { |column| column.type == :array }
+      child_types = array_columns.map do |array_column|
+        array_column.logical_type.child_type
+      end
+      assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
+      assert_equal([:integer, :varchar], child_types.map(&:type))
+    end
+
+    def test_array_size
+      array_columns = @columns.select { |column| column.type == :array }
+      array_sizes = array_columns.map do |array_column|
+        array_column.logical_type.size
+      end
+      assert_equal([3, 2], array_sizes)
     end
 
     private
