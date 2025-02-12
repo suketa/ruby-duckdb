@@ -1103,18 +1103,30 @@
             <pre>static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
+    const char *error;
     VALUE result = rbduckdb_create_result();
-    const char *p = NULL;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
-    if (duckdb_execute_prepared(ctx-&gt;prepared_statement, &amp;(ctxr-&gt;result)) == DuckDBError) {
-        p = duckdb_result_error(&amp;(ctxr-&gt;result));
-        if (p == NULL) {
-            p = duckdb_prepare_error(ctx-&gt;prepared_statement);
+
+    duckdb_prepared_statement_execute_nogvl_args args = {
+        .prepared_statement = ctx-&gt;prepared_statement,
+        .out_result = &amp;(ctxr-&gt;result),
+        .retval = DuckDBError,
+    };
+
+    rb_thread_call_without_gvl((void *)duckdb_prepared_statement_execute_nogvl, &amp;args, RUBY_UBF_IO, 0);
+    duckdb_state state = args.retval;
+
+    if (state == DuckDBError) {
+        error = duckdb_result_error(args.out_result);
+        if (error == NULL) {
+            error = duckdb_prepare_error(args.prepared_statement);
         }
-        rb_raise(eDuckDBError, &quot;%s&quot;, p ? p : &quot;Failed to execute prepared statement.&quot;);
+
+        rb_raise(eDuckDBError, &quot;%s&quot;, error ? error : &quot;Failed to execute prepared statement.&quot;);
     }
+
     return result;
 }</pre>
           </div>
