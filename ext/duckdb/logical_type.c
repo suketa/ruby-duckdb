@@ -11,6 +11,7 @@ static VALUE duckdb_logical_type_scale(VALUE self);
 static VALUE duckdb_logical_type_child_type(VALUE self);
 static VALUE duckdb_logical_type_size(VALUE self);
 static VALUE duckdb_logical_type_key_type(VALUE self);
+static VALUE duckdb_logical_type_value_type(VALUE self);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -139,6 +140,24 @@ static VALUE duckdb_logical_type_key_type(VALUE self) {
     return logical_type;
 }
 
+/*
+ *  call-seq:
+ *    map_col.logical_type.value_type -> DuckDB::LogicalType
+ *
+ *  Returns the value logical type for map type, otherwise nil.
+ *
+ */
+static VALUE duckdb_logical_type_value_type(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_logical_type value_logical_type;
+    VALUE logical_type = Qnil;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    value_logical_type = duckdb_map_type_value_type(ctx->logical_type);
+    logical_type = rbduckdb_create_logical_type(value_logical_type);
+    return logical_type;
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -164,4 +183,5 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "child_type", duckdb_logical_type_child_type, 0);
     rb_define_method(cDuckDBLogicalType, "size", duckdb_logical_type_size, 0);
     rb_define_method(cDuckDBLogicalType, "key_type", duckdb_logical_type_key_type, 0);
+    rb_define_method(cDuckDBLogicalType, "value_type", duckdb_logical_type_value_type, 0);
 }

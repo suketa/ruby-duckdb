@@ -165,6 +165,13 @@ module DuckDBTest
       assert_equal(:integer, key_type.type)
     end
 
+    def test_map_value_type
+      map_column = @columns.find { |column| column.type == :map }
+      value_type = map_column.logical_type.value_type
+      assert(value_type.is_a?(DuckDB::LogicalType))
+      assert_equal(:varchar, value_type.type)
+    end
+
     private
 
     def create_data(con)
