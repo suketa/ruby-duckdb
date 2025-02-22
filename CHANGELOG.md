@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 - bump duckdb to 1.2.0.
 - add `DuckDB::LogicalType` class(Thanks to @otegami).
   - `DuckDB::LogicalType` class is under construction. `DuckDB::LogicalType#type`, `DuckDB::LogicalType#width`,
-    `DuckDB::LogicalType#scale`, `DuckDB::LogicalType#child_type`, `DuckDB::LogicalType#size` are available.
+    `DuckDB::LogicalType#scale`, `DuckDB::LogicalType#child_type`, `DuckDB::LogicalType#size`,
+    `DuckDB::LogicalType#key_type`, and `DuckDB::LogicalType#value_type` are available.
 - add `DuckDB::Appender#error_message`.
 - fix error message when `DuckDB::Appender#flush`, `DuckDB::Appender#close`, `DuckDB::Appender#end_row`,
   `DuckDB::Appender#append_bool`, `DuckDB::Appender#append_int8`, `DuckDB::Appender#append_int16`,
