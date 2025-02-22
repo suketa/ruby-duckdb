@@ -28,7 +28,7 @@ static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult);
 static VALUE destroy_data_chunk(VALUE arg);
-static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult);
+static VALUE duckdb_result__chunk_each(VALUE oDuckDBResult);
 
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
 static VALUE yield_rows(VALUE arg);
@@ -194,7 +194,7 @@ static VALUE destroy_data_chunk(VALUE arg) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_result_chunk_each(VALUE oDuckDBResult) {
+static VALUE duckdb_result__chunk_each(VALUE oDuckDBResult) {
 /*
 #ifdef HAVE_DUCKDB_H_GE_V1_0_0
     return duckdb_result__chunk_stream(oDuckDBResult);
@@ -881,7 +881,7 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
     rb_define_method(cDuckDBResult, "streaming?", duckdb_result_streaming_p, 0);
-    rb_define_method(cDuckDBResult, "chunk_each", duckdb_result_chunk_each, 0);
+    rb_define_private_method(cDuckDBResult, "_chunk_each", duckdb_result__chunk_each, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
