@@ -37,10 +37,6 @@ module DuckDB
 
       attr_writer :use_chunk_each
 
-      # def use_chunk_each=(value)
-      #   @use_chunk_each = value
-      # end
-
       def use_chunk_each?
         @use_chunk_each
       end
