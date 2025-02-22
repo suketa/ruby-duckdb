@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are deprecated.
 - `DuckDB::Result#use_chunk_each?`, `DuckDB::Result#use_chunk_each=` are deprecated.
 - `DuckDB::Result#chunk_each` is deprecated.
--  `DuckDB::Result#each` only works only at first time because duckdb_chunk_each C-API is deprecated.
+-  `DuckDB::Result#each` only works at first time because duckdb_chunk_each C-API is deprecated.
    Calling `DuckDB::Result#each` twice or more does not work.
    ```ruby
    result = con.query('SELECT * FROM table')
