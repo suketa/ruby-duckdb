@@ -79,9 +79,11 @@
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-child_type">child_type</a></li>
+      <li ><a href="#method-i-key_type">key_type</a></li>
       <li ><a href="#method-i-scale">scale</a></li>
       <li ><a href="#method-i-size">size</a></li>
       <li ><a href="#method-i-type">type</a></li>
+      <li ><a href="#method-i-value_type">value_type</a></li>
       <li ><a href="#method-i-width">width</a></li>
     </ul>
   </div>
@@ -161,6 +163,42 @@
 }</pre>
           </div>
           <p>Returns the child logical type for list and map types, otherwise nil.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-key_type" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-key_type" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.key_type &rarr; DuckDB::LogicalType
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="key_type-source">
+            <pre>static VALUE duckdb_logical_type_key_type(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_logical_type key_logical_type;
+    VALUE logical_type = Qnil;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+    key_logical_type = duckdb_map_type_key_type(ctx-&gt;logical_type);
+    logical_type = rbduckdb_create_logical_type(key_logical_type);
+    return logical_type;
+}</pre>
+          </div>
+          <p>Returns the key logical type for map type, otherwise nil.</p>
         </div>
 
 
@@ -263,6 +301,42 @@
 <span class="ruby-identifier">columns</span> = <span class="ruby-identifier">users</span>.<span class="ruby-identifier">columns</span>
 <span class="ruby-identifier">columns</span>.<span class="ruby-identifier">second</span>.<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :decimal</span>
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-value_type" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-value_type" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.value_type &rarr; DuckDB::LogicalType
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="value_type-source">
+            <pre>static VALUE duckdb_logical_type_value_type(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_logical_type value_logical_type;
+    VALUE logical_type = Qnil;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+    value_logical_type = duckdb_map_type_value_type(ctx-&gt;logical_type);
+    logical_type = rbduckdb_create_logical_type(value_logical_type);
+    return logical_type;
+}</pre>
+          </div>
+          <p>Returns the value logical type for map type, otherwise nil.</p>
         </div>
 
 
