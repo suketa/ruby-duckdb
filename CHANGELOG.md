@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
   `DuckDB::Appender#append_bool`, `DuckDB::Appender#append_int8`, `DuckDB::Appender#append_int16`,
   `DuckDB::Appender#append_int32`, `DuckDB::Appender#append_int64`, `DuckDB::Appender#append_uint8` failed.
 - `DuckDB::Appender#begin_row` does nothing. Only returns self. `DuckDB::Appender#end_row` is only required.
+- bump ruby in CI. use 3.4.2 on MacOS, 3.4.3 on Ubuntu, 3.4.1 on Windows.
 
 ## Breaking changes
 - `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are deprecated.
