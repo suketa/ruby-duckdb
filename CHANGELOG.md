@@ -16,6 +16,32 @@ All notable changes to this project will be documented in this file.
 ## Breaking changes
 - `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are deprecated.
 - `DuckDB::Result#use_chunk_each?`, `DuckDB::Result#use_chunk_each=` are deprecated.
+- `DuckDB::Result#chunk_each` is deprecated.
+-  `DuckDB::Result#each` only works at first time because duckdb_chunk_each C-API is deprecated.
+   Calling `DuckDB::Result#each` twice or more does not work.
+   ```ruby
+   result = con.query('SELECT * FROM table')
+   result.each do |record|
+     p record # <= this works fine.
+   end
+   # calling each again does not work.
+   result.each do |record|
+     p record # <= this will not work
+   end
+   ```
+   If you prefer to use `DuckDB::Result#each` multiple times, set `DuckDB::Result.use_chunk_each = true`.
+   But this behavior will be removed in the future release.
+   ```ruby
+   DuckDB::Result.use_chunk_each = true
+   result = con.query('SELECT * FROM table')
+   result.each do |record|
+     p record # <= this works fine.
+   end
+   # calling each again works.
+   result.each do |record|
+     p record # <= this works fine.
+   end
+   ```
 
 # 1.1.3.1 - 2024-11-27
 - fix to `DuckDB::Connection#query` with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.

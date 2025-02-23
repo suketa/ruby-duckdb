@@ -33,8 +33,11 @@ module DuckDBTest
     # If using duckdb_fetch_chunk in Result#chunk_each
     # then this test will fail.
     def test_each_using_duckdb_fetch_chunk
-      ary = @result.to_a
+      DuckDB::Result.use_chunk_each = true
+      ary = @result.to_a # fetch again
       assert(ary.first, 'FAILED because of using duckdb_fetch_chunk in Result#chunk_each')
+    ensure
+      DuckDB::Result.use_chunk_each = false
     end
 
     def test_each_without_block
