@@ -15,6 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/suketa/ruby-duckdb'
   spec.license       = 'MIT'
 
+  spec.metadata['rubygems_mfa_required'] = 'true'
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/suketa/ruby-duckdb'
   spec.metadata['changelog_uri'] = 'https://github.com/suketa/ruby-duckdb/blob/master/CHANGELOG.md'

@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+
+# 1.2.0.0 - 2025-02-24
 - bump duckdb to 1.2.0.
 - add `DuckDB::LogicalType` class(Thanks to @otegami).
   - `DuckDB::LogicalType` class is under construction. `DuckDB::LogicalType#type`, `DuckDB::LogicalType#width`,
