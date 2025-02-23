@@ -85,6 +85,7 @@
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-c-new">new</a></li>
+      <li ><a href="#method-c-use_chunk_each-3F">use_chunk_each?</a></li>
     </ul>
   </div>
 
@@ -97,10 +98,7 @@
       <li ><a href="#method-i-column_size">column_size</a></li>
       <li ><a href="#method-i-columns">columns</a></li>
       <li ><a href="#method-i-each">each</a></li>
-      <li ><a href="#method-i-enum_dictionary_values">enum_dictionary_values</a></li>
-      <li ><a href="#method-i-return_type">return_type</a></li>
       <li ><a href="#method-i-rows_changed">rows_changed</a></li>
-      <li ><a href="#method-i-statement_type">statement_type</a></li>
       <li ><a href="#method-i-streaming-3F">streaming?</a></li>
     </ul>
   </div>
@@ -159,6 +157,24 @@
       </dl>
     </section>
 
+    <section class="attribute-method-details" class="method-section">
+      <header>
+        <h3>Attributes</h3>
+      </header>
+
+      <div id="attribute-c-use_chunk_each" class="method-detail anchor-link">
+        <div class="method-heading attribute-method-heading">
+          <a href="#attribute-c-use_chunk_each" title="Link to this attribute">
+            <span class="method-name">use_chunk_each</span>
+            <span class="attribute-access-type">[W]</span>
+          </a>
+        </div>
+
+        <div class="method-description">
+        
+        </div>
+      </div>
+    </section>
 
 
      <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
@@ -184,9 +200,38 @@
 
         <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 32</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 34</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;DuckDB::Result cannot be instantiated directly.&#39;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-c-use_chunk_each-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-use_chunk_each-3F" title="Link to this method">
+                <span class="method-name">use_chunk_each?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="use_chunk_each-3F-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 40</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">use_chunk_each?</span>
+  <span class="ruby-ivar">@use_chunk_each</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -323,102 +368,20 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 37</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 45</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each</span>(<span class="ruby-operator">&amp;</span>)
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">streaming?</span>
-    <span class="ruby-keyword">return</span> <span class="ruby-identifier">_chunk_stream</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
-
-    <span class="ruby-identifier">_chunk_stream</span>(<span class="ruby-operator">&amp;</span>)
-  <span class="ruby-keyword">else</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">use_chunk_each?</span>
     <span class="ruby-keyword">return</span> <span class="ruby-identifier">chunk_each</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
     <span class="ruby-identifier">chunk_each</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-keyword">return</span> <span class="ruby-identifier">_chunk_stream</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+    <span class="ruby-identifier">_chunk_stream</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
-        </div>
-
-
-      </div>
-
-      <div id="method-i-enum_dictionary_values" class="method-detail anchor-link ">
-        <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-enum_dictionary_values" title="Link to this method">
-                <span class="method-name">enum_dictionary_values</span>
-                <span class="method-args">(col_index)</span>
-              </a>
-            </div>
-        </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="enum_dictionary_values-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 88</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">enum_dictionary_values</span>(<span class="ruby-identifier">col_index</span>)
-  <span class="ruby-identifier">values</span> = []
-  <span class="ruby-identifier">_enum_dictionary_size</span>(<span class="ruby-identifier">col_index</span>).<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">values</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">_enum_dictionary_value</span>(<span class="ruby-identifier">col_index</span>, <span class="ruby-identifier">i</span>)
-  <span class="ruby-keyword">end</span>
-  <span class="ruby-identifier">values</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          <p>returns all available ENUM type values of the specified column index.</p>
-
-<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
-<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;duckdb_database&#39;</span>)
-<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&quot;CREATE TYPE mood AS ENUM (&#39;sad&#39;, &#39;ok&#39;, &#39;happy&#39;, &#39;𝘾𝝾օɭ 😎&#39;)&quot;</span>)
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&quot;CREATE TABLE enums (id INTEGER, mood mood)&quot;</span>)
-<span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM enums&#39;</span>)
-<span class="ruby-identifier">result</span>.<span class="ruby-identifier">enum_dictionary_values</span>(<span class="ruby-value">1</span>) <span class="ruby-comment"># =&gt; [&#39;sad&#39;, &#39;ok&#39;, &#39;happy&#39;, &#39;𝘾𝝾օɭ 😎&#39;]</span>
-</pre>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-return_type" class="method-detail anchor-link ">
-        <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-return_type" title="Link to this method">
-                <span class="method-name">return_type</span>
-                <span class="method-args">()</span>
-              </a>
-            </div>
-        </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="return_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 57</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type</span>
-  <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_return_type</span>
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;Unknown return type: #{i}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-constant">RETURN_TYPES</span>.<span class="ruby-identifier">size</span>
-
-  <span class="ruby-constant">RETURN_TYPES</span>[<span class="ruby-identifier">i</span>]
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          <p>returns return type. The return value is one of the following symbols:</p>
-
-<pre>:invalid, :changed_rows, :nothing, :query_result
-
- require &#39;duckdb&#39;
- db = DuckDB::Database.open(&#39;duckdb_database&#39;)
- con = db.connect
- result = con.execute(&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;)
- result.return_type # =&gt; :nothing</pre>
         </div>
 
 
@@ -466,47 +429,6 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span>
 </pre>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-statement_type" class="method-detail anchor-link ">
-        <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-statement_type" title="Link to this method">
-                <span class="method-name">statement_type</span>
-                <span class="method-args">()</span>
-              </a>
-            </div>
-        </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="statement_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/result.rb, line 75</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">statement_type</span>
-  <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_statement_type</span>
-  <span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">statement_type_to_sym</span>(<span class="ruby-identifier">i</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-          <p>returns statement type. The return value is one of the following symbols:</p>
-
-<pre>:invalid, :select, :insert, :update, :explain, :delete, :prepare, :create,
-:execute, :alter, :transaction, :copy, :analyze, :variable_set, :create_func,
-:drop, :export, :pragma, :vacuum, :call, :set, :load, :relation, :extension,
-:logical_plan, :attach, :detach, :multi
-
- require &#39;duckdb&#39;
- db = DuckDB::Database.open(&#39;duckdb_database&#39;)
- con = db.connect
- result = con.execute(&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;)
- result.statement_type # =&gt; :create</pre>
         </div>
 
 
