@@ -99,7 +99,6 @@
       <li ><a href="#method-i-columns">columns</a></li>
       <li ><a href="#method-i-each">each</a></li>
       <li ><a href="#method-i-rows_changed">rows_changed</a></li>
-      <li ><a href="#method-i-streaming-3F">streaming?</a></li>
     </ul>
   </div>
 
@@ -429,43 +428,6 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span>
 </pre>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-streaming-3F" class="method-detail anchor-link ">
-        <div class="method-header">
-              <div class="method-heading">
-                <a href="#method-i-streaming-3F" title="Link to this method">
-                  <span class="method-callseq">
-                    streaming? &rarr; Boolean
-                  </span>
-                </a>
-              </div>
-        </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="streaming-3F-source">
-            <pre>static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qtrue;
-#else
-    /* FIXME streaming is allways true. so this method is not useful and deprecated. */
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &amp;result_data_type, ctx);
-    return duckdb_result_is_streaming(ctx-&gt;result) ? Qtrue : Qfalse;
-#endif
-}</pre>
-          </div>
-          <p>Returns true if the result is streaming, otherwise false.</p>
         </div>
 
 
