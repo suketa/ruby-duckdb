@@ -42,6 +42,7 @@ All notable changes to this project will be documented in this file.
      p record # <= this works fine.
    end
    ```
+- `DuckDB::Result#streaming?` will be deprecated.
 
 # 1.1.3.1 - 2024-11-27
 - fix to `DuckDB::Connection#query` with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.
