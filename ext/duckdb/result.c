@@ -169,11 +169,7 @@ static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
 }
 
 /*
- *  call-seq:
- *    result.streaming? -> Boolean
- *
- *  Returns true if the result is streaming, otherwise false.
- *
+ * :nodoc:
  */
 static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
@@ -181,6 +177,7 @@ static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
 #ifdef DUCKDB_API_NO_DEPRECATED
     return Qtrue;
 #else
+    rb_warn("`DuckDB::Result#streaming?` will be deprecated in the future.");
     /* FIXME streaming is allways true. so this method is not useful and deprecated. */
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
