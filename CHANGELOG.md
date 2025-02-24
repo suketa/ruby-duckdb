@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+- drop duckdb v1.0.0.
 
 # 1.2.0.0 - 2025-02-24
 - bump duckdb to 1.2.0.
