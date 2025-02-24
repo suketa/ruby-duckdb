@@ -189,6 +189,16 @@ module DuckDBTest
       assert_equal(["num", "str"], member_names)
     end
 
+    def test_union_member_type_at
+      union_column = @columns.find { |column| column.type == :union }
+      union_logical_type = union_column.logical_type
+      member_types = union_logical_type.member_count.times.map do |i|
+        union_logical_type.member_type_at(i)
+      end
+      assert(member_types.all? { |member_type| member_type.is_a?(DuckDB::LogicalType) })
+      assert_equal([:integer, :varchar], member_types.map(&:type))
+    end
+
     private
 
     def create_data(con)
