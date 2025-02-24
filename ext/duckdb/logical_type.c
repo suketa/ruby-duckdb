@@ -13,6 +13,7 @@ static VALUE duckdb_logical_type_size(VALUE self);
 static VALUE duckdb_logical_type_key_type(VALUE self);
 static VALUE duckdb_logical_type_value_type(VALUE self);
 static VALUE duckdb_logical_type_member_count(VALUE self);
+static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -172,6 +173,30 @@ static VALUE duckdb_logical_type_value_type(VALUE self) {
     return INT2FIX(duckdb_union_type_member_count(ctx->logical_type));
 }
 
+/*
+ *  call-seq:
+ *    union_col.logical_type.member_name_at(index) -> String
+ *
+ *  Returns the name of the union member at the specified index.
+ *
+ */
+ static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE mname;
+    const char *member_name;
+    idx_t idx = NUM2ULL(midx);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+
+    member_name = duckdb_union_type_member_name(ctx->logical_type, idx);
+    if (member_name == NULL) {
+        rb_raise(eDuckDBError, "fail to get name of %llu member", (unsigned long long)idx);
+    }
+    mname = rb_str_new_cstr(member_name);
+    duckdb_free((void *)member_name);
+    return mname;
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -199,4 +224,5 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "key_type", duckdb_logical_type_key_type, 0);
     rb_define_method(cDuckDBLogicalType, "value_type", duckdb_logical_type_value_type, 0);
     rb_define_method(cDuckDBLogicalType, "member_count", duckdb_logical_type_member_count, 0);
+    rb_define_method(cDuckDBLogicalType, "member_name_at", duckdb_logical_type_member_name_at, 1);
 }
