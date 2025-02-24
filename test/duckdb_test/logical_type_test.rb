@@ -35,7 +35,8 @@ module DuckDBTest
         varchar_list_array_col VARCHAR[2],
         struct_col STRUCT(word VARCHAR, length INTEGER),
         uuid_col UUID,
-        map_col MAP(INTEGER, VARCHAR)
+        map_col MAP(INTEGER, VARCHAR),
+        union_col UNION(num INTEGER, str VARCHAR)
       );
     SQL
 
@@ -67,7 +68,8 @@ module DuckDBTest
         [['a', 'b'], ['c', 'd']],
         ROW('Ruby', 4),
         '#{SecureRandom.uuid}',
-        MAP{1: 'foo'}
+        MAP{1: 'foo'},
+        1::INTEGER,
       )
     SQL
 
@@ -100,6 +102,7 @@ module DuckDBTest
       struct
       uuid
       map
+      union
     ].freeze
 
     def setup
@@ -170,6 +173,11 @@ module DuckDBTest
       value_type = map_column.logical_type.value_type
       assert(value_type.is_a?(DuckDB::LogicalType))
       assert_equal(:varchar, value_type.type)
+    end
+
+    def test_union_member_count
+      union_column = @columns.find { |column| column.type == :union }
+      assert_equal(2, union_column.logical_type.member_count)
     end
 
     private

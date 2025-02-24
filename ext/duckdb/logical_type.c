@@ -12,6 +12,7 @@ static VALUE duckdb_logical_type_child_type(VALUE self);
 static VALUE duckdb_logical_type_size(VALUE self);
 static VALUE duckdb_logical_type_key_type(VALUE self);
 static VALUE duckdb_logical_type_value_type(VALUE self);
+static VALUE duckdb_logical_type_member_count(VALUE self);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -158,6 +159,19 @@ static VALUE duckdb_logical_type_value_type(VALUE self) {
     return logical_type;
 }
 
+/*
+ *  call-seq:
+ *    member_col.logical_type.member_count -> Integer
+ *
+ *  Returns the member count of union type, otherwise 0.
+ *
+ */
+ static VALUE duckdb_logical_type_member_count(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    return INT2FIX(duckdb_union_type_member_count(ctx->logical_type));
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -184,4 +198,5 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "size", duckdb_logical_type_size, 0);
     rb_define_method(cDuckDBLogicalType, "key_type", duckdb_logical_type_key_type, 0);
     rb_define_method(cDuckDBLogicalType, "value_type", duckdb_logical_type_value_type, 0);
+    rb_define_method(cDuckDBLogicalType, "member_count", duckdb_logical_type_member_count, 0);
 }
