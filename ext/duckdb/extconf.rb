@@ -61,6 +61,9 @@ check_duckdb_library('duckdb', 'duckdb_result_error_type', DUCKDB_REQUIRED_VERSI
 # check duckdb >= 1.1.0
 have_func('duckdb_result_error_type', 'duckdb.h')
 
+# check duckdb >= 1.2.0
+have_func('duckdb_create_instance_cache', 'duckdb.h')
+
 # Building with enabled DUCKDB_API_NO_DEPRECATED is failed with DuckDB v1.1.0 only.
 # DuckDB v1.1.1 is fixed this issue https://github.com/duckdb/duckdb/issues/13872.
 have_const('DUCKDB_TYPE_SQLNULL', 'duckdb.h')
