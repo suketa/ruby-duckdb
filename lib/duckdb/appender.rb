@@ -244,6 +244,27 @@ module DuckDB
       raise_appender_error('failed to append_uint16')
     end
 
+    # call-seq:
+    #  appender.append_uint32(val) -> self
+    #
+    # Appends an uint32 value to the current row in the appender.
+    #
+    #  require 'duckdb'
+    #  db = DuckDB::Database.open
+    #  con = db.connect
+    #  con.query('CREATE TABLE users (id INTEGER, age UINTEGER)')
+    #  appender = con.appender('users')
+    #  appender
+    #  .append_int32(1)
+    #  .append_uint32(20)
+    #  .end_row
+    #  .flush
+    def append_uint32(value)
+      return self if _append_uint32(value)
+
+      raise_appender_error('failed to append_uint32')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
