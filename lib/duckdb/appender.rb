@@ -482,7 +482,10 @@ module DuckDB
       raise_appender_error('failed to append_date')
     end
 
-    # appends time value.
+    # call-seq:
+    #   appender.append_time(val) -> self
+    #
+    # Appends a time value to the current row in the appender.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
@@ -497,10 +500,15 @@ module DuckDB
     def append_time(value)
       time = _parse_time(value)
 
-      _append_time(time.hour, time.min, time.sec, time.usec)
+      return self if _append_time(time.hour, time.min, time.sec, time.usec)
+
+      raise_appender_error('failed to append_time')
     end
 
-    # appends timestamp value.
+    # call-seq:
+    #   appender.append_timestamp(val) -> self
+    #
+    # Appends a timestamp value to the current row in the appender.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
@@ -516,7 +524,9 @@ module DuckDB
     def append_timestamp(value)
       time = to_time(value)
 
-      _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
+      return self if _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
+
+      raise_appender_error('failed to append_timestamp')
     end
 
     # call-seq:
