@@ -8,10 +8,6 @@
 #include "ruby/thread.h"
 #include <duckdb.h>
 
-#ifdef HAVE_DUCKDB_RESULT_ERROR_TYPE
-#define HAVE_DUCKDB_H_GE_V1_1_0 1
-#endif
-
 #ifdef HAVE_CONST_DUCKDB_TYPE_SQLNULL
 #define HAVE_DUCKDB_H_GE_V1_1_1 1
 #endif

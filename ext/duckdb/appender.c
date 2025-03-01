@@ -23,9 +23,7 @@ static VALUE appender__append_varchar_length(VALUE self, VALUE val, VALUE len);
 static VALUE appender__append_blob(VALUE self, VALUE val);
 static VALUE appender__append_null(VALUE self);
 
-#ifdef HAVE_DUCKDB_H_GE_V1_1_0
 static VALUE appender_append_default(VALUE self);
-#endif
 
 static VALUE appender__end_row(VALUE self);
 static VALUE appender__append_date(VALUE self, VALUE yearval, VALUE monthval, VALUE dayval);
@@ -269,7 +267,7 @@ static VALUE appender__append_null(VALUE self) {
     return duckdb_state_to_bool_value(duckdb_append_null(ctx->appender));
 }
 
-#ifdef HAVE_DUCKDB_H_GE_V1_1_0
+/* :nodoc: */
 static VALUE appender_append_default(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -279,7 +277,6 @@ static VALUE appender_append_default(VALUE self) {
     }
     return self;
 }
-#endif
 
 /* :nodoc: */
 static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE day) {
@@ -402,11 +399,7 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
-
-#ifdef HAVE_DUCKDB_H_GE_V1_1_0
     rb_define_method(cDuckDBAppender, "append_default", appender_append_default, 0);
-#endif
-
     rb_define_private_method(cDuckDBAppender, "_end_row", appender__end_row, 0);
     rb_define_private_method(cDuckDBAppender, "_flush", appender__flush, 0);
     rb_define_private_method(cDuckDBAppender, "_close", appender__close, 0);
