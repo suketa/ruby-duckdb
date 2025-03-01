@@ -534,7 +534,10 @@ module DuckDB
     #     .flush
     def append_interval(value)
       value = Interval.to_interval(value)
-      _append_interval(value.interval_months, value.interval_days, value.interval_micros)
+
+      return self if _append_interval(value.interval_months, value.interval_days, value.interval_micros)
+
+      raise_appender_error('failed to append_interval')
     end
 
     # appends value.
