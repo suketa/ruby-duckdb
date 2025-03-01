@@ -326,6 +326,46 @@ module DuckDB
       raise_appender_error('failed to append_double')
     end
 
+    # call-seq:
+    #   appender.append_varchar(val) -> self
+    #
+    # Appends a varchar value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE names (name VARCHAR)')
+    #   appender = con.appender('names')
+    #   appender
+    #     .append_varchar('Alice')
+    #     .end_row
+    #     .flush
+    def append_varchar(value)
+      return self if _append_varchar(value)
+
+      raise_appender_error('failed to append_varchar')
+    end
+
+    # call-seq:
+    #   appender.append_varchar_length(val, len) -> self
+    #
+    # Appends a varchar value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE names (name VARCHAR)')
+    #   appender = con.appender('names')
+    #   appender
+    #     .append_varchar_length('Alice', 5)
+    #     .end_row
+    #     .flush
+    def append_varchar_length(value, length)
+      return self if _append_varchar_length(value, length)
+
+      raise_appender_error('failed to append_varchar_length')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
