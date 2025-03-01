@@ -229,7 +229,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 553</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 555</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -759,12 +759,13 @@
 
       <div id="method-i-append_interval" class="method-detail anchor-link ">
         <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-append_interval" title="Link to this method">
-                <span class="method-name">append_interval</span>
-                <span class="method-args">(value)</span>
-              </a>
-            </div>
+              <div class="method-heading">
+                <a href="#method-i-append_interval" title="Link to this method">
+                  <span class="method-callseq">
+                    append_interval(val) &rarr; self
+                  </span>
+                </a>
+              </div>
         </div>
 
           <div class="method-controls">
@@ -775,7 +776,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 535</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 537</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">to_interval</span>(<span class="ruby-identifier">value</span>)
 
@@ -784,7 +785,7 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_interval&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>appends interval. The argument must be ISO8601 duration format. WARNING: This method is expremental.</p>
+          <p>Appends an interval value to the current row in the appender. The argument must be ISO8601 duration format.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
@@ -862,7 +863,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 594</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 596</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)
