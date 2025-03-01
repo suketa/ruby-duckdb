@@ -303,10 +303,7 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, micros);
 
-    if (duckdb_append_time(ctx->appender, time) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append time");
-    }
-    return self;
+    return duckdb_state_to_bool_value(duckdb_append_time(ctx->appender, time));
 }
 
 /* :nodoc: */
@@ -319,10 +316,7 @@ static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VAL
 
     timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
-    if (duckdb_append_timestamp(ctx->appender, timestamp) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append timestamp");
-    }
-    return self;
+    return duckdb_state_to_bool_value(duckdb_append_timestamp(ctx->appender, timestamp));
 }
 
 /* :nodoc: */
