@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - fix error message when `DuckDB::Appender#append_uint16`, `DuckDB::Appender#append_uint32`,
   `DuckDB::Appender#append_uint64`, `DuckDB::Appender#append_float`, `DuckDB::Appender#append_double`,
   `DuckDB::Appender#append_varchar`, `DuckDB::Appender#append_varchar_length`,
-  `DuckDB::Appender#append_blob`, `DuckDB::Appender#append_null` failed.
+  `DuckDB::Appender#append_blob`, `DuckDB::Appender#append_null`, `DuckDB::Appender#append_default` failed.
 
 # 1.2.0.0 - 2025-02-24
 - bump duckdb to 1.2.0.

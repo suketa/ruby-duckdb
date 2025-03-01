@@ -406,6 +406,28 @@ module DuckDB
       raise_appender_error('failed to append_null')
     end
 
+    # call-seq:
+    #   appender.append_default -> self
+    #
+    # Appends a default value to the current row in the appender.
+    # If the column does not have a default value, this method
+    # appends a NULL value.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE values (value INTEGER DEFAULT 1)')
+    #   appender = con.appender('values')
+    #   appender
+    #     .append_default
+    #     .end_row
+    #     .flush
+    def append_default
+      return self if _append_default
+
+      raise_appender_error('failed to append_default')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'

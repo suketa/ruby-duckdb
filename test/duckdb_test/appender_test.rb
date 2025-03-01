@@ -259,27 +259,11 @@ module DuckDBTest
     end
 
     def test_append_default_without_default
-      if DuckDB::Appender.instance_methods.include?(:append_default)
-        assert_duckdb_appender(nil, 'VARCHAR', &:append_default)
-      else
-        if Gem::Version.new(DuckDB::VERSION) >= Gem::Version.new('1.3.0')
-          raise "#{__method__} must be enabled. Please check the ##{__FILE__}:##{__method__} method."
-        end
-
-        skip('DuckDB::Appender#append_default is not available')
-      end
+      assert_duckdb_appender(nil, 'VARCHAR', &:append_default)
     end
 
     def test_append_default_with_default
-      if DuckDB::Appender.instance_methods.include?(:append_default)
-        assert_duckdb_appender('foobar', "VARCHAR DEFAULT 'foobar'", &:append_default)
-      else
-        if Gem::Version.new(DuckDB::VERSION) >= Gem::Version.new('1.3.0')
-          raise "#{__method__} must be enabled. Please check the ##{__FILE__}:##{__method__} method."
-        end
-
-        skip('DuckDB::Appender#append_default is not available')
-      end
+      assert_duckdb_appender('foobar', "VARCHAR DEFAULT 'foobar'", &:append_default)
     end
 
     def test_append_interval
