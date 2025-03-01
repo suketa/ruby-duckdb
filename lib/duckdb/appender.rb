@@ -306,6 +306,26 @@ module DuckDB
       raise_appender_error('failed to append_float')
     end
 
+    # call-seq:
+    #   appender.append_double(val) -> self
+    #
+    # Appends a double value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE numbers (num DOUBLE)')
+    #   appender = con.appender('numbers')
+    #   appender
+    #     .append_double(1.23)
+    #     .end_row
+    #     .flush
+    def append_double(value)
+      return self if _append_double(value)
+
+      raise_appender_error('failed to append_double')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
