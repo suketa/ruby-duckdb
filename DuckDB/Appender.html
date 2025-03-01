@@ -89,7 +89,6 @@
       <li ><a href="#method-i-append_blob">append_blob</a></li>
       <li ><a href="#method-i-append_bool">append_bool</a></li>
       <li ><a href="#method-i-append_date">append_date</a></li>
-      <li ><a href="#method-i-append_default">append_default</a></li>
       <li ><a href="#method-i-append_double">append_double</a></li>
       <li ><a href="#method-i-append_float">append_float</a></li>
       <li ><a href="#method-i-append_hugeint">append_hugeint</a></li>
@@ -404,41 +403,6 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
 </pre>
-        </div>
-
-
-      </div>
-
-      <div id="method-i-append_default" class="method-detail anchor-link ">
-        <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-append_default" title="Link to this method">
-                <span class="method-name">append_default</span>
-                <span class="method-args">()</span>
-              </a>
-            </div>
-        </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="append_default-source">
-            <pre>HAVE_DUCKDB_H_GE_V1_1_0
-static VALUE appender_append_default(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &amp;appender_data_type, ctx);
-
-    if (duckdb_append_default(ctx-&gt;appender) == DuckDBError) {
-        rb_raise(eDuckDBError, &quot;failed to append default&quot;);
-    }
-    return self;
-}</pre>
-          </div>
-          
         </div>
 
 
