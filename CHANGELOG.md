@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
   `DuckDB::Appender#append_uint64`, `DuckDB::Appender#append_float`, `DuckDB::Appender#append_double`,
   `DuckDB::Appender#append_varchar`, `DuckDB::Appender#append_varchar_length`,
   `DuckDB::Appender#append_blob`, `DuckDB::Appender#append_null`, `DuckDB::Appender#append_default`,
-  `DuckDB::Appender#append_date` failed.
+  `DuckDB::Appender#append_date`, `DuckDB::Appender#append_interval` failed.
 
 # 1.2.0.0 - 2025-02-24
 - bump duckdb to 1.2.0.
