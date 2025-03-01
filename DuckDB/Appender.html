@@ -229,7 +229,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 555</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 565</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -776,7 +776,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 537</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 547</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">to_interval</span>(<span class="ruby-identifier">value</span>)
 
@@ -863,7 +863,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 596</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 606</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)
@@ -889,12 +889,13 @@
 
       <div id="method-i-append_time" class="method-detail anchor-link ">
         <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-append_time" title="Link to this method">
-                <span class="method-name">append_time</span>
-                <span class="method-args">(value)</span>
-              </a>
-            </div>
+              <div class="method-heading">
+                <a href="#method-i-append_time" title="Link to this method">
+                  <span class="method-callseq">
+                    append_time(val) &rarr; self
+                  </span>
+                </a>
+              </div>
         </div>
 
           <div class="method-controls">
@@ -905,14 +906,16 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_time-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 497</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 500</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_time</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
-  <span class="ruby-identifier">_append_time</span>(<span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">usec</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_time</span>(<span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">usec</span>)
+
+  <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_time&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>appends time value.</p>
+          <p>Appends a time value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
@@ -932,12 +935,13 @@
 
       <div id="method-i-append_timestamp" class="method-detail anchor-link ">
         <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-append_timestamp" title="Link to this method">
-                <span class="method-name">append_timestamp</span>
-                <span class="method-args">(value)</span>
-              </a>
-            </div>
+              <div class="method-heading">
+                <a href="#method-i-append_timestamp" title="Link to this method">
+                  <span class="method-callseq">
+                    append_timestamp(val) &rarr; self
+                  </span>
+                </a>
+              </div>
         </div>
 
           <div class="method-controls">
@@ -948,14 +952,16 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_timestamp-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 516</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 524</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_timestamp</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">to_time</span>(<span class="ruby-identifier">value</span>)
 
-  <span class="ruby-identifier">_append_timestamp</span>(<span class="ruby-identifier">time</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">day</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">nsec</span> <span class="ruby-operator">/</span> <span class="ruby-value">1000</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_timestamp</span>(<span class="ruby-identifier">time</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">day</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">nsec</span> <span class="ruby-operator">/</span> <span class="ruby-value">1000</span>)
+
+  <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_timestamp&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>appends timestamp value.</p>
+          <p>Appends a timestamp value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
