@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::LogicalType` class.
   - `DuckDB::LogicalType` class is under construction. `DuckDB::LogicalType#member_count`,
     `DuckDB::LogicalType#member_name_at`, and `DuckDB::LogicalType#member_type_at` are available.
-- fix error message when `DuckDB::Appender#append_uint16`, `DuckDB::Appender#append_uint32`.
+- fix error message when `DuckDB::Appender#append_uint16`, `DuckDB::Appender#append_uint32`,
+  `DuckDB::Appender#append_uint64` failed.
 
 # 1.2.0.0 - 2025-02-24
 - bump duckdb to 1.2.0.
