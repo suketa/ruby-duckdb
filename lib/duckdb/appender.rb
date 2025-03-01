@@ -286,6 +286,26 @@ module DuckDB
       raise_appender_error('failed to append_uint64')
     end
 
+    # call-seq:
+    #   appender.append_float(val) -> self
+    #
+    # Appends a float value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE numbers (num FLOAT)')
+    #   appender = con.appender('numbers')
+    #   appender
+    #     .append_float(1.23)
+    #     .end_row
+    #     .flush
+    def append_float(value)
+      return self if _append_float(value)
+
+      raise_appender_error('failed to append_float')
+    end
+
     # appends huge int value.
     #
     #   require 'duckdb'
