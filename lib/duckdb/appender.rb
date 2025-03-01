@@ -458,7 +458,10 @@ module DuckDB
       _append_uhugeint(lower, upper)
     end
 
-    # appends date value.
+    # call-seq:
+    #   appender.append_date(val) -> self
+    #
+    # Appends a date value to the current row in the appender.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
@@ -474,7 +477,9 @@ module DuckDB
     def append_date(value)
       date = _parse_date(value)
 
-      _append_date(date.year, date.month, date.day)
+      return self if _append_date(date.year, date.month, date.day)
+
+      raise_appender_error('failed to append_date')
     end
 
     # appends time value.

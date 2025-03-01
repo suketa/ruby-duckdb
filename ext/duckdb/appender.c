@@ -281,10 +281,7 @@ static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE da
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     dt = rbduckdb_to_duckdb_date_from_value(year, month, day);
 
-    if (duckdb_append_date(ctx->appender, dt) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append date");
-    }
-    return self;
+    return duckdb_state_to_bool_value(duckdb_append_date(ctx->appender, dt));
 }
 
 /* :nodoc: */
