@@ -519,9 +519,11 @@ module DuckDB
       _append_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.nsec / 1000)
     end
 
-    # appends interval.
+    # call-seq:
+    #   appender.append_interval(val) -> self
+    #
+    # Appends an interval value to the current row in the appender.
     # The argument must be ISO8601 duration format.
-    # WARNING: This method is expremental.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
