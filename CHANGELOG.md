@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
     `DuckDB::LogicalType#member_name_at`, and `DuckDB::LogicalType#member_type_at` are available.
 - fix error message when `DuckDB::Appender#append_uint16`, `DuckDB::Appender#append_uint32`,
   `DuckDB::Appender#append_uint64`, `DuckDB::Appender#append_float`, `DuckDB::Appender#append_double`,
-  `DuckDB::Appender#append_varchar`, `DuckDB::Appender#append_varchar_length` failed.
+  `DuckDB::Appender#append_varchar`, `DuckDB::Appender#append_varchar_length`,
+  `DuckDB::Appender#append_blob` failed.
 
 # 1.2.0.0 - 2025-02-24
 - bump duckdb to 1.2.0.
