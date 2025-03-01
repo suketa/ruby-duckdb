@@ -347,6 +347,26 @@ module DuckDB
     end
 
     # call-seq:
+    #   appender.append_blob(val) -> self
+    #
+    # Appends a varchar value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE values (value BLOB)')
+    #   appender = con.appender('values')
+    #   appender
+    #     .append('\0\1\2\3\4\5'.encode(Encoding::BINARY))
+    #     .end_row
+    #     .flush
+    def append_blob(value)
+      return self if _append_blob(value)
+
+      raise_appender_error('failed to append_blob')
+    end
+
+    # call-seq:
     #   appender.append_varchar_length(val, len) -> self
     #
     # Appends a varchar value to the current row in the appender.
