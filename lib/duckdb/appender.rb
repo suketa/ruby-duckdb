@@ -347,6 +347,26 @@ module DuckDB
     end
 
     # call-seq:
+    #   appender.append_varchar_length(val, len) -> self
+    #
+    # Appends a varchar value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE names (name VARCHAR)')
+    #   appender = con.appender('names')
+    #   appender
+    #     .append_varchar_length('Alice', 5)
+    #     .end_row
+    #     .flush
+    def append_varchar_length(value, length)
+      return self if _append_varchar_length(value, length)
+
+      raise_appender_error('failed to append_varchar_length')
+    end
+
+    # call-seq:
     #   appender.append_blob(val) -> self
     #
     # Appends a varchar value to the current row in the appender.
@@ -367,23 +387,23 @@ module DuckDB
     end
 
     # call-seq:
-    #   appender.append_varchar_length(val, len) -> self
+    #   appender.append_null -> self
     #
-    # Appends a varchar value to the current row in the appender.
+    # Appends a NULL value to the current row in the appender.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
     #   con = db.connect
-    #   con.query('CREATE TABLE names (name VARCHAR)')
-    #   appender = con.appender('names')
+    #   con.query('CREATE TABLE values (value INTEGER)')
+    #   appender = con.appender('values')
     #   appender
-    #     .append_varchar_length('Alice', 5)
+    #     .append_null
     #     .end_row
     #     .flush
-    def append_varchar_length(value, length)
-      return self if _append_varchar_length(value, length)
+    def append_null
+      return self if _append_null
 
-      raise_appender_error('failed to append_varchar_length')
+      raise_appender_error('failed to append_null')
     end
 
     # appends huge int value.
