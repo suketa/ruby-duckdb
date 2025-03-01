@@ -17,7 +17,7 @@ static VALUE appender__append_uint16(VALUE self, VALUE val);
 static VALUE appender__append_uint32(VALUE self, VALUE val);
 static VALUE appender__append_uint64(VALUE self, VALUE val);
 static VALUE appender__append_float(VALUE self, VALUE val);
-static VALUE appender_append_double(VALUE self, VALUE val);
+static VALUE appender__append_double(VALUE self, VALUE val);
 static VALUE appender_append_varchar(VALUE self, VALUE val);
 static VALUE appender_append_varchar_length(VALUE self, VALUE val, VALUE len);
 static VALUE appender_append_blob(VALUE self, VALUE val);
@@ -217,16 +217,13 @@ static VALUE appender__append_float(VALUE self, VALUE val) {
     return duckdb_state_to_bool_value(duckdb_append_float(ctx->appender, fval));
 }
 
-static VALUE appender_append_double(VALUE self, VALUE val) {
+static VALUE appender__append_double(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     double dval = NUM2DBL(val);
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    if (duckdb_append_double(ctx->appender, dval) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append double");
-    }
-    return self;
+    return duckdb_state_to_bool_value(duckdb_append_double(ctx->appender, dval));
 }
 
 static VALUE appender_append_varchar(VALUE self, VALUE val) {
@@ -412,7 +409,6 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
-    rb_define_method(cDuckDBAppender, "append_double", appender_append_double, 1);
     rb_define_method(cDuckDBAppender, "append_varchar", appender_append_varchar, 1);
     rb_define_method(cDuckDBAppender, "append_varchar_length", appender_append_varchar_length, 2);
     rb_define_method(cDuckDBAppender, "append_blob", appender_append_blob, 1);
@@ -435,6 +431,7 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_append_uint32", appender__append_uint32, 1);
     rb_define_private_method(cDuckDBAppender, "_append_uint64", appender__append_uint64, 1);
     rb_define_private_method(cDuckDBAppender, "_append_float", appender__append_float, 1);
+    rb_define_private_method(cDuckDBAppender, "_append_double", appender__append_double, 1);
     rb_define_private_method(cDuckDBAppender, "_append_date", appender__append_date, 3);
     rb_define_private_method(cDuckDBAppender, "_append_interval", appender__append_interval, 3);
     rb_define_private_method(cDuckDBAppender, "_append_time", appender__append_time, 4);
