@@ -83,6 +83,7 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     rubyDuckDBPreparedStatement *ctx;
     duckdb_state state;
     const char *error;
+    char *pquery;
     VALUE msg;
 
     if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
@@ -92,13 +93,14 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxcon = get_struct_connection(con);
 
-    state = duckdb_prepare(ctxcon->con, StringValuePtr(query), &(ctx->prepared_statement));
+    pquery = StringValueCStr(query);
+    state = duckdb_prepare(ctxcon->con, pquery, &(ctx->prepared_statement));
 
     // If preparation failed, raise Ruby exception with the error message
     if (state == DuckDBError) {
         error = duckdb_prepare_error(ctx->prepared_statement);
         msg = rb_str_new2(error ? error : "Failed to execute prepared statement.");
-        rb_raise(eDuckDBError, "%s", StringValuePtr(msg));
+        rb_raise(eDuckDBError, "%s", StringValueCStr(msg));
     }
 
     return self;
