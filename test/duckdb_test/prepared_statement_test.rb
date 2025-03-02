@@ -125,7 +125,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a')
       result = stmt.execute
       assert_instance_of(DuckDB::Result, result)
+    end
 
+    def test_execute_with_exception
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
+      con = PreparedStatementTest.con
       stmt = DuckDB::PreparedStatement.new(con, 'SELECT * FROM a where id = ?')
       assert_raises(DuckDB::Error) { stmt.execute }
     end
