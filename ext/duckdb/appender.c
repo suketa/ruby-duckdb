@@ -329,10 +329,8 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper) {
     rubyDuckDBAppender *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    if (duckdb_append_hugeint(ctx->appender, hugeint) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append hugeint");
-    }
-    return self;
+
+    return duckdb_state_to_bool_value(duckdb_append_hugeint(ctx->appender, hugeint));
 }
 
 /* :nodoc: */
@@ -345,10 +343,8 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
     rubyDuckDBAppender *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    if (duckdb_append_uhugeint(ctx->appender, uhugeint) == DuckDBError) {
-        rb_raise(eDuckDBError, "failed to append uhugeint");
-    }
-    return self;
+
+    return duckdb_state_to_bool_value(duckdb_append_uhugeint(ctx->appender, uhugeint));
 }
 
 /* :nodoc: */

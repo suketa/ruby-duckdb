@@ -428,7 +428,10 @@ module DuckDB
       raise_appender_error('failed to append_default')
     end
 
-    # appends huge int value.
+    # call-seq:
+    #   appender.append_hugeint(val) -> self
+    #
+    # Appends a huge int value to the current row in the appender.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
@@ -438,12 +441,19 @@ module DuckDB
     #   appender
     #     .append_hugeint(-170_141_183_460_469_231_731_687_303_715_884_105_727)
     #     .end_row
+    #     .flush
     def append_hugeint(value)
       lower, upper = integer_to_hugeint(value)
-      _append_hugeint(lower, upper)
+
+      return self if _append_hugeint(lower, upper)
+
+      raise_appender_error('failed to append_hugeint')
     end
 
-    # appends unsigned huge int value.
+    # call-seq:
+    #   appender.append_uhugeint(val) -> self
+    #
+    # Appends an unsigned huge int value to the current row in the appender.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
@@ -453,9 +463,13 @@ module DuckDB
     #   appender
     #     .append_hugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
     #     .end_row
+    #     .flush
     def append_uhugeint(value)
       lower, upper = integer_to_hugeint(value)
-      _append_uhugeint(lower, upper)
+
+      return self if _append_uhugeint(lower, upper)
+
+      raise_appender_error('failed to append_uhugeint')
     end
 
     # call-seq:
