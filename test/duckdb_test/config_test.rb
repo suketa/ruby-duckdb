@@ -46,6 +46,7 @@ module DuckDBTest
 
     def test_set_config_with_exception
       skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
+      config = DuckDB::Config.new
       assert_raises(DuckDB::Error) do
         config.set_config('access_mode', 'INVALID_VALUE')
       end
