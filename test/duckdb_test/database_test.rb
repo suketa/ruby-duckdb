@@ -81,6 +81,7 @@ module DuckDBTest
     end
 
     def test_close
+      skip 'asan test with exception' if ENV['ASAN_TEST'] == '1'
       db = DuckDB::Database.open
       con = db.connect
       db.close
