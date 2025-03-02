@@ -428,6 +428,7 @@ module DuckDBTest
     end
 
     def test_bind_varchar_date_with_invalid_timestamp_string
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_date = $1')
 
       stmt.bind_varchar(1, 'invalid_date_string')

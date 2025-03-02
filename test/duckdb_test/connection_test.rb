@@ -108,6 +108,7 @@ module DuckDBTest
     end
 
     def test_async_query_stream_with_invalid_params
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       assert_raises(DuckDB::Error) { @con.async_query_stream('foo', 'bar') }
 
       assert_raises(ArgumentError) { @con.async_query_stream }
