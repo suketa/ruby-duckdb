@@ -1105,6 +1105,7 @@
     rubyDuckDBResult *ctxr;
     const char *error;
     VALUE result = rbduckdb_create_result();
+    VALUE msg;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
@@ -1119,12 +1120,13 @@
     duckdb_state state = args.retval;
 
     if (state == DuckDBError) {
-        error = duckdb_result_error(args.out_result);
+        error = duckdb_prepare_error(args.prepared_statement);
         if (error == NULL) {
-            error = duckdb_prepare_error(args.prepared_statement);
+            error = duckdb_result_error(args.out_result);
         }
+        msg = rb_str_new2(error ? error : &quot;Failed to execute prepared statement.&quot;);
 
-        rb_raise(eDuckDBError, &quot;%s&quot;, error ? error : &quot;Failed to execute prepared statement.&quot;);
+        rb_raise(eDuckDBError, &quot;%s&quot;, StringValuePtr(msg));
     }
 
     return result;
