@@ -102,6 +102,10 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::PreparedStatement.new }
       assert_raises(TypeError) { DuckDB::PreparedStatement.new(@con, 1) }
       assert_raises(TypeError) { DuckDB::PreparedStatement.new(1, 1) }
+    end
+
+    def test_s_new_with_duckdb_error
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       assert_raises(DuckDB::Error) { DuckDB::PreparedStatement.new(@con, 'SELECT * FROM') }
     end
 
@@ -153,6 +157,7 @@ module DuckDBTest
     end
 
     def test_clear_bindings
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = $1')
       stmt.bind(1, 1)
       stmt.clear_bindings

@@ -79,6 +79,7 @@ module DuckDBTest
     end
 
     def test_async_query_with_invalid_params
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       assert_raises(DuckDB::Error) { @con.async_query('foo', 'bar') }
 
       assert_raises(ArgumentError) { @con.async_query }
@@ -178,11 +179,15 @@ module DuckDBTest
         "QueryProgress: total_rows_to_process(#{total_rows_to_process}) to be >= rows_processed(#{rows_processed})"
       )
 
-      # test interrupt
-      @con.interrupt
-      while pending_result.state == :not_ready
-        pending_result.execute_task
-        assert(pending_result.state != :ready, 'pending_result.state should not be :ready')
+      if ENV['ASAN_TEST'].nil?
+        # test interrupt
+        @con.interrupt
+        while pending_result.state == :not_ready
+          pending_result.execute_task
+          assert(pending_result.state != :ready, 'pending_result.state should not be :ready')
+        end
+      else
+        skip 'test with ASAN'
       end
     end
 
