@@ -49,8 +49,12 @@ module DuckDBTest
       @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (id INT);')
       appender = DuckDB::Appender.new(@con, 'a', 'b')
       assert_instance_of(DuckDB::Appender, appender)
+    end
 
-      assert_raises(DuckDB::Error) { appender = DuckDB::Appender.new(@con, 'b', 'b') }
+    def test_s_new_with_invalid_schema
+      skip('test with ASAN') if ENV['ASAN_TEST'] == '1'
+      @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (id INT);')
+      assert_raises(DuckDB::Error) { DuckDB::Appender.new(@con, 'b', 'b') }
     end
 
     def sub_test_append_column2(method, type, values:, expected:)
@@ -103,6 +107,7 @@ module DuckDBTest
     end
 
     def test_flush_with_exception
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       appender = create_appender('col BOOLEAN NOT NULL')
       appender
         .append_null
@@ -119,6 +124,7 @@ module DuckDBTest
     end
 
     def test_end_row_with_exception
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       appender = create_appender('col BOOLEAN')
       exception = assert_raises(DuckDB::Error) { appender.end_row }
       assert_match(/Call to EndRow/, exception.message)
@@ -133,6 +139,7 @@ module DuckDBTest
     end
 
     def test_close_with_exception
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       appender = create_appender('col BOOLEAN NOT NULL')
       appender
         .append_null

@@ -53,6 +53,7 @@ module DuckDBTest
     end
 
     def test_set_invalid_option
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       config = DuckDB::Config.new
       assert_instance_of(DuckDB::Config, config.set_config('aaa_invalid_option', 'READ_ONLY'))
       assert_raises(DuckDB::Error) do
