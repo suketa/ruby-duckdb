@@ -11,6 +11,11 @@ module DuckDBTest
       @con.query(self.class.insert_sql)
     end
 
+    def teardown
+      @con&.close
+      @db&.close
+    end
+
     def self.today
       @today ||= Date.today
     end
