@@ -180,12 +180,10 @@ module DuckDBTest
       assert_equal(2, union_column.logical_type.member_count)
     end
 
-    def test_union_member_name_at
+    def test_union_each_member_name
       union_column = @columns.find { |column| column.type == :union }
       union_logical_type = union_column.logical_type
-      member_names = union_logical_type.member_count.times.map do |i|
-        union_logical_type.member_name_at(i)
-      end
+      member_names = union_logical_type.each_member_name.to_a
       assert_equal(["num", "str"], member_names)
     end
 
