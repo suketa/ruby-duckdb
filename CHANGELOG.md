@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+- bump duckdb v1.2.1 on CI.
 - drop duckdb v1.0.0.
 - add `DuckDB::LogicalType` class.
   - `DuckDB::LogicalType` class is under construction. `DuckDB::LogicalType#member_count`,
