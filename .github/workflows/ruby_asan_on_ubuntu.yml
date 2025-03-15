@@ -68,4 +68,4 @@ jobs:
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        env RUBYOPT=-W:deprecated ASAN_TEST=1 bundle exec rake test
+        env RUBYOPT=-W:deprecated ASAN_TEST=1 bundle exec ruby -Ilib test/duckdb_test/asan_test.rb
