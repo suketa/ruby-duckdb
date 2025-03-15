@@ -10,6 +10,7 @@ module DuckDBTest
     end
 
     def test_multiple_sql
+      skip('test with ASAN') if ENV['ASAN_TEST'] == '1'
       exception = assert_raises(DuckDB::Error) do
         @con.execute('CREATE TABLE test (v VARCHAR); CREATE TABLE test (v VARCHAR); SELECT 42;')
       end
