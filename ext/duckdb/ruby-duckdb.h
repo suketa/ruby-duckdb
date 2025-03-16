@@ -12,6 +12,10 @@
 #define HAVE_DUCKDB_H_GE_V1_1_1 1
 #endif
 
+#ifdef HAVE_DUCKDB_CREATE_INSTANCE_CACHE
+#define HAVE_DUCKDB_H_GE_V1_2_0 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"
