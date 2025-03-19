@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this file.
 - drop duckdb v1.0.0.
 - add `DuckDB::LogicalType` class.
   - `DuckDB::LogicalType` class is under construction. `DuckDB::LogicalType#member_count`,
-    `DuckDB::LogicalType#member_name_at`, `DuckDB::LogicalType#member_type_at`, and
-    `DuckDB::LogicalType#each_member_name` are available.
+    `DuckDB::LogicalType#member_name_at`, `DuckDB::LogicalType#member_type_at`,
+    `DuckDB::LogicalType#each_member_name`, and `DuckDB::LogicalType#each_member_type` are available.
 - fix error message when `DuckDB::Appender#append_uint16`, `DuckDB::Appender#append_uint32`,
   `DuckDB::Appender#append_uint64`, `DuckDB::Appender#append_float`, `DuckDB::Appender#append_double`,
   `DuckDB::Appender#append_varchar`, `DuckDB::Appender#append_varchar_length`,

@@ -40,5 +40,27 @@ module DuckDB
         yield member_name_at(i)
       end
     end
+
+    # Iterates over each union member type.
+    #
+    # When a block is provided, this method yields each union member logical
+    # type in order. It also returns the total number of members yielded.
+    #
+    #   union_logical_type.each_member_type do |logical_type|
+    #     puts "Union member: #{logical_type.type}"
+    #   end
+    #
+    # If no block is given, an Enumerator is returned, which can be used to
+    # retrieve all member logical types.
+    #
+    #   names = union_logical_type.each_member_type.map(&:type)
+    #   # => [:varchar, :integer]
+    def each_member_type
+      return to_enum(__method__) {member_count} unless block_given?
+
+      member_count.times do |i|
+        yield member_type_at(i)
+      end
+    end
   end
 end
