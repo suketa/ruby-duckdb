@@ -8,6 +8,7 @@ static size_t memsize(const void *p);
 static VALUE duckdb_logical_type__type(VALUE self);
 static VALUE duckdb_logical_type_width(VALUE self);
 static VALUE duckdb_logical_type_scale(VALUE self);
+static VALUE duckdb_logical_type_child_count(VALUE self);
 static VALUE duckdb_logical_type_child_type(VALUE self);
 static VALUE duckdb_logical_type_size(VALUE self);
 static VALUE duckdb_logical_type_key_type(VALUE self);
@@ -78,6 +79,19 @@ static VALUE duckdb_logical_type_scale(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_scale(ctx->logical_type));
+}
+
+/*
+ *  call-seq:
+ *    struct_col.logical_type.child_count -> Integer
+ *
+ *  Returns the number of children of a struct type, otherwise 0.
+ *
+ */
+static VALUE duckdb_logical_type_child_count(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    return INT2FIX(duckdb_struct_type_child_count(ctx->logical_type));
 }
 
 /*
@@ -245,6 +259,7 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_private_method(cDuckDBLogicalType, "_type", duckdb_logical_type__type, 0);
     rb_define_method(cDuckDBLogicalType, "width", duckdb_logical_type_width, 0);
     rb_define_method(cDuckDBLogicalType, "scale", duckdb_logical_type_scale, 0);
+    rb_define_method(cDuckDBLogicalType, "child_count", duckdb_logical_type_child_count, 0);
     rb_define_method(cDuckDBLogicalType, "child_type", duckdb_logical_type_child_type, 0);
     rb_define_method(cDuckDBLogicalType, "size", duckdb_logical_type_size, 0);
     rb_define_method(cDuckDBLogicalType, "key_type", duckdb_logical_type_key_type, 0);

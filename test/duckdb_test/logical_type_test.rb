@@ -195,6 +195,11 @@ module DuckDBTest
       assert_equal([:integer, :varchar], member_types.map(&:type))
     end
 
+    def test_struct_child_count
+      struct_column = @columns.find { |column| column.type == :struct }
+      assert_equal(2, struct_column.logical_type.child_count)
+    end
+
     private
 
     def create_data(con)
