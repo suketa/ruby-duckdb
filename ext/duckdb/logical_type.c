@@ -11,6 +11,7 @@ static VALUE duckdb_logical_type_scale(VALUE self);
 static VALUE duckdb_logical_type_child_count(VALUE self);
 static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx);
 static VALUE duckdb_logical_type_child_type(VALUE self);
+static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx);
 static VALUE duckdb_logical_type_size(VALUE self);
 static VALUE duckdb_logical_type_key_type(VALUE self);
 static VALUE duckdb_logical_type_value_type(VALUE self);
@@ -153,6 +154,31 @@ static VALUE duckdb_logical_type_child_type(VALUE self) {
 
 /*
  *  call-seq:
+ *    struct_col.logical_type.child_type_at(index) -> DuckDB::LogicalType
+ *
+ *  Returns the child logical type for struct types at the specified index as a
+ *  DuckDB::LogicalType object.
+ *
+ */
+static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_logical_type struct_child_type;
+    idx_t idx = NUM2ULL(cidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+
+    struct_child_type = duckdb_struct_type_child_type(ctx->logical_type, idx);
+    if (struct_child_type == NULL) {
+        rb_raise(eDuckDBError,
+                 "Failed to get the struct child type at index %llu",
+                 (unsigned long long)idx);
+    }
+
+    return rbduckdb_create_logical_type(struct_child_type);
+}
+
+/*
+ *  call-seq:
  *    list_col.logical_type.size -> Integer
  *
  *  Returns the size of the array column, otherwise 0.
@@ -287,6 +313,7 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "child_count", duckdb_logical_type_child_count, 0);
     rb_define_method(cDuckDBLogicalType, "child_name_at", duckdb_logical_type_child_name_at, 1);
     rb_define_method(cDuckDBLogicalType, "child_type", duckdb_logical_type_child_type, 0);
+    rb_define_method(cDuckDBLogicalType, "child_type_at", duckdb_logical_type_child_type_at, 1);
     rb_define_method(cDuckDBLogicalType, "size", duckdb_logical_type_size, 0);
     rb_define_method(cDuckDBLogicalType, "key_type", duckdb_logical_type_key_type, 0);
     rb_define_method(cDuckDBLogicalType, "value_type", duckdb_logical_type_value_type, 0);

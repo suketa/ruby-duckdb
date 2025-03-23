@@ -207,6 +207,14 @@ module DuckDBTest
       assert_equal(["word", "length"], child_names)
     end
 
+    def test_struct_each_child_type
+      struct_column = @columns.find { |column| column.type == :struct }
+      struct_logical_type = struct_column.logical_type
+      child_types = struct_logical_type.each_child_type.to_a
+      assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
+      assert_equal([:varchar, :integer], child_types.map(&:type))
+    end
+
     private
 
     def create_data(con)
