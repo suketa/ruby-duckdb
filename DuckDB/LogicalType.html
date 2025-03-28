@@ -80,6 +80,7 @@
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-child_type">child_type</a></li>
       <li ><a href="#method-i-each_member_name">each_member_name</a></li>
+      <li ><a href="#method-i-each_member_type">each_member_type</a></li>
       <li ><a href="#method-i-key_type">key_type</a></li>
       <li ><a href="#method-i-member_count">member_count</a></li>
       <li ><a href="#method-i-member_name_at">member_name_at</a></li>
@@ -212,6 +213,52 @@
 
 <pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">union_logical_type</span>.<span class="ruby-identifier">each_member_name</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-comment"># =&gt; [&quot;member1&quot;, &quot;member2&quot;]</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-each_member_type" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-each_member_type" title="Link to this method">
+                <span class="method-name">each_member_type</span>
+                <span class="method-args">() { |member_type_at(i)| ... }</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="each_member_type-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 58</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_type</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+  <span class="ruby-identifier">member_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">member_type_at</span>(<span class="ruby-identifier">i</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Iterates over each union member type.</p>
+
+<p>When a block is provided, this method yields each union member logical type in order. It also returns the total number of members yielded.</p>
+
+<pre class="ruby"><span class="ruby-identifier">union_logical_type</span>.<span class="ruby-identifier">each_member_type</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">logical_type</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Union member: #{logical_type.type}&quot;</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>If no block is given, an Enumerator is returned, which can be used to retrieve all member logical types.</p>
+
+<pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">union_logical_type</span>.<span class="ruby-identifier">each_member_type</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:type</span>)
+<span class="ruby-comment"># =&gt; [:varchar, :integer]</span>
 </pre>
         </div>
 
