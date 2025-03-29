@@ -12,6 +12,7 @@ module DuckDBTest
     end
 
     def teardown
+      @con.query('DROP TABLE IF EXISTS values')
       @con&.close
       @db&.close
     end
@@ -276,7 +277,6 @@ module DuckDBTest
       stmt.bind_int64(1, 2_147_483_647)
       assert_equal(expected_row, stmt.execute.each.first)
 
-
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int64(1, 9_223_372_036_854_775_807)
       assert_equal(expected_row, stmt.execute.each.first)
@@ -315,6 +315,19 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       e = assert_raises(ArgumentError) { stmt.bind_hugeint(1, 1.5) }
       assert_equal('2nd argument `1.5` must be Integer.', e.message)
+    end
+
+    def test_bind_uhugeint_internal
+      value = (2**128) - 1
+      @con.query('CREATE TABLE values (value UHUGEINT)')
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
+      stmt.bind_uhugeint_internal(1, value)
+      stmt.execute
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
+      stmt.bind_uhugeint_internal(1, value)
+      assert_equal(value, stmt.execute.each.first[0])
     end
 
     def test_bind_float
