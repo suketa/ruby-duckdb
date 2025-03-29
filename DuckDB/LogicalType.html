@@ -78,7 +78,12 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-child_count">child_count</a></li>
+      <li ><a href="#method-i-child_name_at">child_name_at</a></li>
       <li ><a href="#method-i-child_type">child_type</a></li>
+      <li ><a href="#method-i-child_type_at">child_type_at</a></li>
+      <li ><a href="#method-i-each_child_name">each_child_name</a></li>
+      <li ><a href="#method-i-each_child_type">each_child_type</a></li>
       <li ><a href="#method-i-each_member_name">each_member_name</a></li>
       <li ><a href="#method-i-each_member_type">each_member_type</a></li>
       <li ><a href="#method-i-key_type">key_type</a></li>
@@ -122,6 +127,79 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-child_count" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-child_count" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.child_count &rarr; Integer
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="child_count-source">
+            <pre>static VALUE duckdb_logical_type_child_count(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+    return INT2FIX(duckdb_struct_type_child_count(ctx-&gt;logical_type));
+}</pre>
+          </div>
+          <p>Returns the number of children of a struct type, otherwise 0.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-child_name_at" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-child_name_at" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.child_name(index) &rarr; String
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="child_name_at-source">
+            <pre>static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE cname;
+    const char *child_name;
+    idx_t idx = NUM2ULL(cidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+
+    child_name = duckdb_struct_type_child_name(ctx-&gt;logical_type, idx);
+    if (child_name == NULL) {
+        rb_raise(eDuckDBError, &quot;fail to get name of %llu child&quot;, (unsigned long long)idx);
+    }
+    cname = rb_str_new_cstr(child_name);
+    duckdb_free((void *)child_name);
+    return cname;
+}</pre>
+          </div>
+          <p>Returns the name of the struct child at the specified index.</p>
+        </div>
+
+
+      </div>
 
       <div id="method-i-child_type" class="method-detail anchor-link ">
         <div class="method-header">
@@ -168,6 +246,140 @@
 }</pre>
           </div>
           <p>Returns the child logical type for list and map types, otherwise nil.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-child_type_at" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-child_type_at" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.child_type_at(index) &rarr; DuckDB::LogicalType
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="child_type_at-source">
+            <pre>static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_logical_type struct_child_type;
+    idx_t idx = NUM2ULL(cidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+
+    struct_child_type = duckdb_struct_type_child_type(ctx-&gt;logical_type, idx);
+    if (struct_child_type == NULL) {
+        rb_raise(eDuckDBError,
+                 &quot;Failed to get the struct child type at index %llu&quot;,
+                 (unsigned long long)idx);
+    }
+
+    return rbduckdb_create_logical_type(struct_child_type);
+}</pre>
+          </div>
+          <p>Returns the child logical type for struct types at the specified index as a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> object.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-each_child_name" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-each_child_name" title="Link to this method">
+                <span class="method-name">each_child_name</span>
+                <span class="method-args">() { |child_name_at(i)| ... }</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="each_child_name-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 80</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_name</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+  <span class="ruby-identifier">child_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">child_name_at</span>(<span class="ruby-identifier">i</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Iterates over each struct child name.</p>
+
+<p>When a block is provided, this method yields each struct child name in order. It also returns the total number of children yielded.</p>
+
+<pre class="ruby"><span class="ruby-identifier">struct_logical_type</span>.<span class="ruby-identifier">each_child_name</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Struct child: #{name}&quot;</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>If no block is given, an Enumerator is returned, which can be used to retrieve all child names.</p>
+
+<pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">struct_logical_type</span>.<span class="ruby-identifier">each_child_name</span>.<span class="ruby-identifier">to_a</span>
+<span class="ruby-comment"># =&gt; [&quot;child1&quot;, &quot;child2&quot;]</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-each_child_type" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-each_child_type" title="Link to this method">
+                <span class="method-name">each_child_type</span>
+                <span class="method-args">() { |child_type_at(i)| ... }</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="each_child_type-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 102</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_type</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+  <span class="ruby-identifier">child_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">child_type_at</span>(<span class="ruby-identifier">i</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Iterates over each struct child type.</p>
+
+<p>When a block is provided, this method yields each struct child type in order. It also returns the total number of children yielded.</p>
+
+<pre class="ruby"><span class="ruby-identifier">struct_logical_type</span>.<span class="ruby-identifier">each_child_type</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">logical_type</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Struct child type: #{logical_type.type}&quot;</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>If no block is given, an Enumerator is returned, which can be used to retrieve all child logical types.</p>
+
+<pre class="ruby"><span class="ruby-identifier">types</span> = <span class="ruby-identifier">struct_logical_type</span>.<span class="ruby-identifier">each_child_type</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:type</span>)
+<span class="ruby-comment"># =&gt; [:integer, :varchar]</span>
+</pre>
         </div>
 
 
