@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+
+# 1.2.1.0 - 2025-03-30
 - bump duckdb v1.2.1 on CI.
 - drop duckdb v1.0.0.
 - add `DuckDB::LogicalType` class.
