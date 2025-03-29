@@ -317,16 +317,16 @@ module DuckDBTest
       assert_equal('2nd argument `1.5` must be Integer.', e.message)
     end
 
-    def test_bind_uhugeint_internal
+    def test_bind_uhugeint
       value = (2**128) - 1
       @con.query('CREATE TABLE values (value UHUGEINT)')
 
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
-      stmt.bind_uhugeint_internal(1, value)
+      stmt.bind_uhugeint(1, value)
       stmt.execute
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
-      stmt.bind_uhugeint_internal(1, value)
+      stmt.bind_uhugeint(1, value)
       assert_equal(value, stmt.execute.each.first[0])
     end
 
