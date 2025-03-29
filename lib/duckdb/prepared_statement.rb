@@ -135,12 +135,29 @@ module DuckDB
     #   require 'duckdb'
     #   db = DuckDB::Database.open('duckdb_database')
     #   con = db.connect
-    #   sql ='SELECT name FROM users WHERE bigint_col = ?'
+    #   sql ='SELECT name FROM users WHERE hugeint_col = ?'
     #   stmt = PreparedStatement.new(con, sql)
     #   stmt.bind_hugeint_internal(1, 1_234_567_890_123_456_789_012_345)
     def bind_hugeint_internal(index, value)
       lower, upper = integer_to_hugeint(value)
       _bind_hugeint(index, lower, upper)
+    end
+
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value must be Integer value.
+    # This method uses duckdb_bind_uhugeint internally.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE uhugeint_col = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_uhugeint(1, (2**128) - 1)
+    def bind_uhugeint(index, value)
+      lower, upper = integer_to_hugeint(value)
+      _bind_uhugeint(index, lower, upper)
     end
 
     # binds i-th parameter with SQL prepared statement.
