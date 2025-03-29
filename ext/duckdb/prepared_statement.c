@@ -32,6 +32,7 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
 static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
 static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
+static VALUE duckdb_prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
 static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale);
 
 static const rb_data_type_t prepared_statement_data_type = {
@@ -442,6 +443,23 @@ static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VAL
 }
 
 /* :nodoc: */
+static VALUE duckdb_prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
+    duckdb_uhugeint uhugeint;
+    rubyDuckDBPreparedStatement *ctx;
+    idx_t idx = check_index(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    uhugeint.lower = NUM2ULL(lower);
+    uhugeint.upper = NUM2ULL(upper);
+
+    if (duckdb_bind_uhugeint(ctx->prepared_statement, idx, uhugeint) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+
+    return self;
+}
+
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
     duckdb_hugeint hugeint;
     duckdb_decimal decimal;
@@ -500,5 +518,6 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp", duckdb_prepared_statement__bind_timestamp, 8);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_interval", duckdb_prepared_statement__bind_interval, 4);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_hugeint", duckdb_prepared_statement__bind_hugeint, 3);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uhugeint", duckdb_prepared_statement__bind_uhugeint, 3);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_decimal", duckdb_prepared_statement__bind_decimal, 5);
 }
