@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+- support Enum type in `DuckDB::LogicalType` class.
+  - `DuckDB::LogicalType#internal_type`, `DuckDB::LogicalType#dictionary_size`,
+    `DuckDB::LogicalType#dictionary_value_at`, and `DuckDB::LogicalType#each_dictionary_value` are
+    available.
 
 # 1.2.1.0 - 2025-03-30
 - bump duckdb v1.2.1 on CI.
