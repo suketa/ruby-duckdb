@@ -225,6 +225,11 @@ module DuckDBTest
       assert_equal(:utinyint, enum_column.logical_type.internal_type)
     end
 
+    def test_enum_dictionary_size
+      enum_column = @columns.find { |column| column.type == :enum }
+      assert_equal(4, enum_column.logical_type.dictionary_size)
+    end
+
     private
 
     def create_data(con)
