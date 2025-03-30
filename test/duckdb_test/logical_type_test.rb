@@ -230,6 +230,13 @@ module DuckDBTest
       assert_equal(4, enum_column.logical_type.dictionary_size)
     end
 
+    def test_enum_each_dictionary_value
+      enum_column = @columns.find { |column| column.type == :enum }
+      enum_logical_type = enum_column.logical_type
+      dictionary_values = enum_logical_type.each_dictionary_value.to_a
+      assert_equal(["sad", "ok", "happy", "𝘾𝝾օɭ 😎"], dictionary_values)
+    end
+
     private
 
     def create_data(con)

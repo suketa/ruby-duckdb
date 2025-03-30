@@ -124,5 +124,27 @@ module DuckDB
         yield child_type_at(i)
       end
     end
+
+    # Iterates over each enum dictionary value.
+    #
+    # When a block is provided, this method yields each enum dictionary value
+    # in order. It also returns the total number of dictionary values yielded.
+    #
+    #   enum_logical_type.each_value do |value|
+    #     puts "Enum value: #{value}"
+    #   end
+    #
+    # If no block is given, an Enumerator is returned, which can be used to
+    # retrieve all enum dictionary values.
+    #
+    #   values = enum_logical_type.each_value.to_a
+    #   # => ["happy", "sad"]
+    def each_dictionary_value
+      return to_enum(__method__) {dictionary_size} unless block_given?
+
+      dictionary_size.times do |i|
+        yield dictionary_value_at(i)
+      end
+    end
   end
 end

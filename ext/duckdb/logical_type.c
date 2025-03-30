@@ -20,6 +20,7 @@ static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx);
 static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx);
 static VALUE duckdb_logical_type__internal_type(VALUE self);
 static VALUE duckdb_logical_type_dictionary_size(VALUE self);
+static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -332,6 +333,30 @@ static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
     return INT2FIX(duckdb_enum_dictionary_size(ctx->logical_type));
 }
 
+/*
+ *  call-seq:
+ *    enum_col.logical_type.dictionary_value_at(index) -> String
+ *
+ *  Returns the dictionary value at the specified index.
+ *
+ */
+static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE dvalue;
+    const char *dict_value;
+    idx_t idx = NUM2ULL(didx);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+
+    dict_value = duckdb_enum_dictionary_value(ctx->logical_type, idx);
+    if (dict_value == NULL) {
+        rb_raise(eDuckDBError, "fail to get dictionary value of %llu", (unsigned long long)idx);
+    }
+    dvalue = rb_utf8_str_new_cstr(dict_value);
+    duckdb_free((void *)dict_value);
+    return dvalue;
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -366,4 +391,5 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "member_type_at", duckdb_logical_type_member_type_at, 1);
     rb_define_method(cDuckDBLogicalType, "_internal_type", duckdb_logical_type__internal_type, 0);
     rb_define_method(cDuckDBLogicalType, "dictionary_size", duckdb_logical_type_dictionary_size, 0);
+    rb_define_method(cDuckDBLogicalType, "dictionary_value_at", duckdb_logical_type_dictionary_value_at, 1);
 }
