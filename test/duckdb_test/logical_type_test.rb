@@ -118,6 +118,11 @@ module DuckDBTest
       assert_equal(EXPECTED_TYPES, logical_types.map(&:type))
     end
 
+    def test_decimal_internal_type
+      decimal_column = @columns.find { |column| column.type == :decimal }
+      assert_equal(:integer, decimal_column.logical_type.internal_type)
+    end
+
     def test_decimal_width
       decimal_column = @columns.find { |column| column.type == :decimal }
       assert_equal(9, decimal_column.logical_type.width)
@@ -213,6 +218,23 @@ module DuckDBTest
       child_types = struct_logical_type.each_child_type.to_a
       assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
       assert_equal([:varchar, :integer], child_types.map(&:type))
+    end
+
+    def test_enum_internal_type
+      enum_column = @columns.find { |column| column.type == :enum }
+      assert_equal(:utinyint, enum_column.logical_type.internal_type)
+    end
+
+    def test_enum_dictionary_size
+      enum_column = @columns.find { |column| column.type == :enum }
+      assert_equal(4, enum_column.logical_type.dictionary_size)
+    end
+
+    def test_enum_each_dictionary_value
+      enum_column = @columns.find { |column| column.type == :enum }
+      enum_logical_type = enum_column.logical_type
+      dictionary_values = enum_logical_type.each_dictionary_value.to_a
+      assert_equal(["sad", "ok", "happy", "𝘾𝝾օɭ 😎"], dictionary_values)
     end
 
     private

@@ -19,6 +19,24 @@ module DuckDB
       DuckDB::Converter::IntToSym.type_to_sym(type_id)
     end
 
+    # returns logical type's internal type symbol for Decimal or Enum types
+    # `:unknown` means that the logical type's type is unknown/unsupported by ruby-duckdb.
+    # `:invalid` means that the logical type's type is invalid in duckdb.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query("CREATE TYPE mood AS ENUM ('happy', 'sad')")
+    #   con.query("CREATE TABLE emotions (id INTEGER, enum_col mood)")
+    #
+    #   users = con.query('SELECT * FROM emotions')
+    #   ernum_col = users.columns.find { |col| col.name == 'enum_col' }
+    #   enum_col.logical_type.internal_type #=> :utinyint
+    def internal_type
+      type_id = _internal_type
+      DuckDB::Converter::IntToSym.type_to_sym(type_id)
+    end
+
     # Iterates over each union member name.
     #
     # When a block is provided, this method yields each union member name in
@@ -104,6 +122,28 @@ module DuckDB
 
       child_count.times do |i|
         yield child_type_at(i)
+      end
+    end
+
+    # Iterates over each enum dictionary value.
+    #
+    # When a block is provided, this method yields each enum dictionary value
+    # in order. It also returns the total number of dictionary values yielded.
+    #
+    #   enum_logical_type.each_value do |value|
+    #     puts "Enum value: #{value}"
+    #   end
+    #
+    # If no block is given, an Enumerator is returned, which can be used to
+    # retrieve all enum dictionary values.
+    #
+    #   values = enum_logical_type.each_value.to_a
+    #   # => ["happy", "sad"]
+    def each_dictionary_value
+      return to_enum(__method__) {dictionary_size} unless block_given?
+
+      dictionary_size.times do |i|
+        yield dictionary_value_at(i)
       end
     end
   end
