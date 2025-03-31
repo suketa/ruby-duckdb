@@ -78,14 +78,19 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-_internal_type">_internal_type</a></li>
       <li ><a href="#method-i-child_count">child_count</a></li>
       <li ><a href="#method-i-child_name_at">child_name_at</a></li>
       <li ><a href="#method-i-child_type">child_type</a></li>
       <li ><a href="#method-i-child_type_at">child_type_at</a></li>
+      <li ><a href="#method-i-dictionary_size">dictionary_size</a></li>
+      <li ><a href="#method-i-dictionary_value_at">dictionary_value_at</a></li>
       <li ><a href="#method-i-each_child_name">each_child_name</a></li>
       <li ><a href="#method-i-each_child_type">each_child_type</a></li>
+      <li ><a href="#method-i-each_dictionary_value">each_dictionary_value</a></li>
       <li ><a href="#method-i-each_member_name">each_member_name</a></li>
       <li ><a href="#method-i-each_member_type">each_member_type</a></li>
+      <li ><a href="#method-i-internal_type">internal_type</a></li>
       <li ><a href="#method-i-key_type">key_type</a></li>
       <li ><a href="#method-i-member_count">member_count</a></li>
       <li ><a href="#method-i-member_name_at">member_name_at</a></li>
@@ -127,6 +132,53 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-_internal_type" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-_internal_type" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.internal_type &rarr; Symbol
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="_internal_type-source">
+            <pre>static VALUE duckdb_logical_type__internal_type(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_type type_id;
+    duckdb_type internal_type_id;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+
+    type_id = duckdb_get_type_id(ctx-&gt;logical_type);
+    switch (type_id) {
+        case DUCKDB_TYPE_DECIMAL:
+            internal_type_id = duckdb_decimal_internal_type(ctx-&gt;logical_type);
+            break;
+        case DUCKDB_TYPE_ENUM:
+            internal_type_id = duckdb_enum_internal_type(ctx-&gt;logical_type);
+            break;
+        default:
+            internal_type_id = DUCKDB_TYPE_INVALID;
+    }
+
+    return INT2FIX(internal_type_id);
+}</pre>
+          </div>
+          <p>Returns the logical type’s internal type.</p>
+        </div>
+
+
+      </div>
 
       <div id="method-i-child_count" class="method-detail anchor-link ">
         <div class="method-header">
@@ -293,6 +345,79 @@
 
       </div>
 
+      <div id="method-i-dictionary_size" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-dictionary_size" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.dictionary_size &rarr; Integer
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="dictionary_size-source">
+            <pre>static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+    return INT2FIX(duckdb_enum_dictionary_size(ctx-&gt;logical_type));
+}</pre>
+          </div>
+          <p>Returns the dictionary size of the enum type.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-dictionary_value_at" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-dictionary_value_at" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.dictionary_value_at(index) &rarr; String
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="dictionary_value_at-source">
+            <pre>static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE dvalue;
+    const char *dict_value;
+    idx_t idx = NUM2ULL(didx);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+
+    dict_value = duckdb_enum_dictionary_value(ctx-&gt;logical_type, idx);
+    if (dict_value == NULL) {
+        rb_raise(eDuckDBError, &quot;fail to get dictionary value of %llu&quot;, (unsigned long long)idx);
+    }
+    dvalue = rb_utf8_str_new_cstr(dict_value);
+    duckdb_free((void *)dict_value);
+    return dvalue;
+}</pre>
+          </div>
+          <p>Returns the dictionary value at the specified index.</p>
+        </div>
+
+
+      </div>
+
       <div id="method-i-each_child_name" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -311,7 +436,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_child_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 80</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 98</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -357,7 +482,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_child_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 102</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 120</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -385,6 +510,52 @@
 
       </div>
 
+      <div id="method-i-each_dictionary_value" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-each_dictionary_value" title="Link to this method">
+                <span class="method-name">each_dictionary_value</span>
+                <span class="method-args">() { |dictionary_value_at(i)| ... }</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="each_dictionary_value-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 142</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_dictionary_value</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">dictionary_size</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+  <span class="ruby-identifier">dictionary_size</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">dictionary_value_at</span>(<span class="ruby-identifier">i</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Iterates over each enum dictionary value.</p>
+
+<p>When a block is provided, this method yields each enum dictionary value in order. It also returns the total number of dictionary values yielded.</p>
+
+<pre class="ruby"><span class="ruby-identifier">enum_logical_type</span>.<span class="ruby-identifier">each_value</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Enum value: #{value}&quot;</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>If no block is given, an Enumerator is returned, which can be used to retrieve all enum dictionary values.</p>
+
+<pre class="ruby"><span class="ruby-identifier">values</span> = <span class="ruby-identifier">enum_logical_type</span>.<span class="ruby-identifier">each_value</span>.<span class="ruby-identifier">to_a</span>
+<span class="ruby-comment"># =&gt; [&quot;happy&quot;, &quot;sad&quot;]</span>
+</pre>
+        </div>
+
+
+      </div>
+
       <div id="method-i-each_member_name" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -403,7 +574,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_member_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 36</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 54</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -449,7 +620,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_member_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 58</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 76</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -471,6 +642,47 @@
 
 <pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">union_logical_type</span>.<span class="ruby-identifier">each_member_type</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:type</span>)
 <span class="ruby-comment"># =&gt; [:varchar, :integer]</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-internal_type" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-internal_type" title="Link to this method">
+                <span class="method-name">internal_type</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="internal_type-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 35</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">internal_type</span>
+  <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_internal_type</span>
+  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>returns logical type’s internal type symbol for Decimal or Enum types ‘:unknown` means that the logical type’s type is unknown/unsupported by ruby-duckdb. ‘:invalid` means that the logical type’s type is invalid in duckdb.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;CREATE TYPE mood AS ENUM (&#39;happy&#39;, &#39;sad&#39;)&quot;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;CREATE TABLE emotions (id INTEGER, enum_col mood)&quot;</span>)
+
+<span class="ruby-identifier">users</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM emotions&#39;</span>)
+<span class="ruby-identifier">ernum_col</span> = <span class="ruby-identifier">users</span>.<span class="ruby-identifier">columns</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">col</span><span class="ruby-operator">|</span> <span class="ruby-identifier">col</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;enum_col&#39;</span> }
+<span class="ruby-identifier">enum_col</span>.<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">internal_type</span> <span class="ruby-comment">#=&gt; :utinyint</span>
 </pre>
         </div>
 
