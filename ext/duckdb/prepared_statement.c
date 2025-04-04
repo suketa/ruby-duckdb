@@ -527,7 +527,7 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_blob", duckdb_prepared_statement_bind_blob, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
-    rb_define_method(cDuckDBPreparedStatement, "_bind_uint8", duckdb_prepared_statement__bind_uint8, 2);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint8", duckdb_prepared_statement__bind_uint8, 2);
     rb_define_private_method(cDuckDBPreparedStatement, "_statement_type", duckdb_prepared_statement__statement_type, 0);
     rb_define_private_method(cDuckDBPreparedStatement, "_param_type", duckdb_prepared_statement__param_type, 1);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", duckdb_prepared_statement__bind_date, 4);
