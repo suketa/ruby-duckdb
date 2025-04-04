@@ -106,6 +106,7 @@
       <li ><a href="#method-i-bind_time">bind_time</a></li>
       <li ><a href="#method-i-bind_timestamp">bind_timestamp</a></li>
       <li ><a href="#method-i-bind_uhugeint">bind_uhugeint</a></li>
+      <li ><a href="#method-i-bind_uint8">bind_uint8</a></li>
       <li ><a href="#method-i-bind_varchar">bind_varchar</a></li>
       <li ><a href="#method-i-clear_bindings">clear_bindings</a></li>
       <li ><a href="#method-i-execute">execute</a></li>
@@ -287,7 +288,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 266</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 276</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">index</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
@@ -454,7 +455,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_date-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 176</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 186</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_date</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">date</span> = <span class="ruby-identifier">_parse_date</span>(<span class="ruby-identifier">value</span>)
 
@@ -495,7 +496,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_decimal-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 248</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 258</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">decimal</span> = <span class="ruby-identifier">_parse_deciaml</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">decimal_to_hugeint</span>(<span class="ruby-identifier">decimal</span>)
@@ -609,7 +610,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_hugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 120</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 130</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_hugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
@@ -651,7 +652,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_hugeint_internal-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 141</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 151</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_hugeint_internal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">_bind_hugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>)
@@ -837,7 +838,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 231</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 241</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_interval</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">to_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">_bind_interval</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">interval_months</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">interval_days</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">interval_micros</span>)
@@ -947,7 +948,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_time-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 195</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 205</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_time</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
@@ -988,7 +989,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_timestamp-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 214</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 224</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_timestamp</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
@@ -1029,7 +1030,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="bind_uhugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 158</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 168</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uhugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">_bind_uhugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>)
@@ -1044,6 +1045,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_uhugeint</span>(<span class="ruby-value">1</span>, (<span class="ruby-value">2</span><span class="ruby-operator">**</span><span class="ruby-value">128</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>)
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-bind_uint8" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-bind_uint8" title="Link to this method">
+                <span class="method-name">bind_uint8</span>
+                <span class="method-args">(index, val)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="bind_uint8-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 112</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uint8</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">_bind_uint8</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">between?</span>(<span class="ruby-value">0</span>, <span class="ruby-value">255</span>)
+
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;can&#39;t bind uint8(bind_uint8) to `#{val}`. The `#{val}` is out of range 0..255.&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value between 0 to 255.</p>
         </div>
 
 
