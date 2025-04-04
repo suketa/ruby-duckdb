@@ -108,6 +108,16 @@ module DuckDB
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
+    # The second argument value is to expected Integer value between 0 to 255.
+    def bind_uint8(index, val)
+      return _bind_uint8(index, val) if val.between?(0, 255)
+
+      raise DuckDB::Error, "can't bind uint8(bind_uint8) to `#{val}`. The `#{val}` is out of range 0..255."
+    end
+
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
     # The second argument value is to expected Integer value.
     # This method uses bind_varchar internally.
     #
