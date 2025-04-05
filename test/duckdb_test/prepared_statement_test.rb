@@ -321,7 +321,7 @@ module DuckDBTest
     end
 
     def test_bind_uint32_with_negative
-      @con.query('CREATE TABLE values (value UINT32)')
+      @con.query('CREATE TABLE values (value UINTEGER)')
 
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
       assert_raises(DuckDB::Error) { stmt.bind_uint32(1, -1) }
