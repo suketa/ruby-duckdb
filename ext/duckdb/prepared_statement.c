@@ -376,6 +376,20 @@ static VALUE duckdb_prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE
 }
 
 /* :nodoc: */
+static VALUE duckdb_prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val) {
+    rubyDuckDBPreparedStatement *ctx;
+    idx_t idx = check_index(vidx);
+    uint16_t ui16val = (uint16_t)NUM2UINT(val);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    if (duckdb_bind_uint16(ctx->prepared_statement, idx, ui16val) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+
+/* :nodoc: */
 static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day) {
     rubyDuckDBPreparedStatement *ctx;
     duckdb_date dt;
@@ -528,6 +542,7 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "bind_blob", duckdb_prepared_statement_bind_blob, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint8", duckdb_prepared_statement__bind_uint8, 2);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint16", duckdb_prepared_statement__bind_uint16, 2);
     rb_define_private_method(cDuckDBPreparedStatement, "_statement_type", duckdb_prepared_statement__statement_type, 0);
     rb_define_private_method(cDuckDBPreparedStatement, "_param_type", duckdb_prepared_statement__param_type, 1);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", duckdb_prepared_statement__bind_date, 4);

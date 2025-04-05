@@ -272,6 +272,26 @@ module DuckDBTest
       assert_nil(stmt.execute.each.first)
     end
 
+    def test_bind_uint16
+      value = (2**16) - 1
+      @con.query('CREATE TABLE values (value USMALLINT)')
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
+      stmt.bind_uint16(1, value)
+      stmt.execute
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
+      stmt.bind_uint16(1, value)
+      assert_equal(value, stmt.execute.each.first[0])
+    end
+
+    def test_bind_uint16_with_negative
+      @con.query('CREATE TABLE values (value UINT16)')
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
+      assert_raises(DuckDB::Error) { stmt.bind_uint16(1, -1) }
+    end
+
     def test_bind_int32
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
 
