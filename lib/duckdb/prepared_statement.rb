@@ -128,6 +128,15 @@ module DuckDB
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
+    # The second argument value is to expected Integer value between 0 to 4294967295.
+    def bind_uint32(index, val)
+      return _bind_uint32(index, val) if val.between?(0, 4_294_967_295)
+
+      raise DuckDB::Error, "can't bind uint32(bind_uint32) to `#{val}`. The `#{val}` is out of range 0..4294967295."
+    end
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
     # The second argument value is to expected Integer value.
     # This method uses bind_varchar internally.
     #
