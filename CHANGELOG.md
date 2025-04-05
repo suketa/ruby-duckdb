@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 # Unreleased
 - add `DuckDB::PreparedStatement#bind_uint8`, `DuckDB::PreparedStatement#bind_uint16`,
-  `DuckDB::PreparedStatement#bind_uint32`.
+  `DuckDB::PreparedStatement#bind_uint32`, `DuckDB::PreparedStatement#bind_uint64`.
 - support Enum type in `DuckDB::LogicalType` class.
   - `DuckDB::LogicalType#internal_type`, `DuckDB::LogicalType#dictionary_size`,
     `DuckDB::LogicalType#dictionary_value_at`, and `DuckDB::LogicalType#each_dictionary_value` are

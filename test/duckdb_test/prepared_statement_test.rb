@@ -342,6 +342,26 @@ module DuckDBTest
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
+    def test_bind_uint64
+      value = (2**64) - 1
+      @con.query('CREATE TABLE values (value UBIGINT)')
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
+      stmt.bind_uint64(1, value)
+      stmt.execute
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
+      stmt.bind_uint64(1, value)
+      assert_equal(value, stmt.execute.each.first[0])
+    end
+
+    def test_bind_uint64_with_negative
+      @con.query('CREATE TABLE values (value UBIGINT)')
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO values(value) VALUES ($1)')
+      assert_raises(DuckDB::Error) { stmt.bind_uint64(1, -1) }
+    end
+
     def test__bind_hugeint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.send(:_bind_hugeint, 1, 18_446_744_073_709_551_615, 9_223_372_036_854_775_807)
