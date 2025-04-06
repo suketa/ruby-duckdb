@@ -3,6 +3,7 @@
 module DuckDB
   class LogicalType
     alias :alias get_alias
+    alias :alias= set_alias
 
     # returns logical type's type symbol
     # `:unknown` means that the logical type's type is unknown/unsupported by ruby-duckdb.
