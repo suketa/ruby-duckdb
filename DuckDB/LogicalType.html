@@ -79,6 +79,8 @@
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-_internal_type">_internal_type</a></li>
+      <li ><a href="#method-i-alias">alias</a></li>
+      <li ><a href="#method-i-alias-3D">alias=</a></li>
       <li ><a href="#method-i-child_count">child_count</a></li>
       <li ><a href="#method-i-child_name_at">child_name_at</a></li>
       <li ><a href="#method-i-child_type">child_type</a></li>
@@ -90,12 +92,14 @@
       <li ><a href="#method-i-each_dictionary_value">each_dictionary_value</a></li>
       <li ><a href="#method-i-each_member_name">each_member_name</a></li>
       <li ><a href="#method-i-each_member_type">each_member_type</a></li>
+      <li ><a href="#method-i-get_alias">get_alias</a></li>
       <li ><a href="#method-i-internal_type">internal_type</a></li>
       <li ><a href="#method-i-key_type">key_type</a></li>
       <li ><a href="#method-i-member_count">member_count</a></li>
       <li ><a href="#method-i-member_name_at">member_name_at</a></li>
       <li ><a href="#method-i-member_type_at">member_type_at</a></li>
       <li ><a href="#method-i-scale">scale</a></li>
+      <li ><a href="#method-i-set_alias">set_alias</a></li>
       <li ><a href="#method-i-size">size</a></li>
       <li ><a href="#method-i-type">type</a></li>
       <li ><a href="#method-i-value_type">value_type</a></li>
@@ -178,6 +182,50 @@
         </div>
 
 
+      </div>
+
+      <div id="method-i-alias" class="method-detail anchor-link method-alias">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-alias" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.alias &rarr; String
+                  </span>
+                </a>
+              </div>
+        </div>
+
+
+        <div class="method-description">
+          
+        </div>
+
+
+        <div class="aliases">
+          Alias for: <a href="LogicalType.html#method-i-get_alias">get_alias</a>
+        </div>
+      </div>
+
+      <div id="method-i-alias-3D" class="method-detail anchor-link method-alias">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-alias-3D" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.alias(alias) &rarr; String
+                  </span>
+                </a>
+              </div>
+        </div>
+
+
+        <div class="method-description">
+          
+        </div>
+
+
+        <div class="aliases">
+          Alias for: <a href="LogicalType.html#method-i-set_alias">set_alias</a>
+        </div>
       </div>
 
       <div id="method-i-child_count" class="method-detail anchor-link ">
@@ -436,7 +484,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_child_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 98</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 101</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -482,7 +530,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_child_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 120</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 123</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -528,7 +576,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_dictionary_value-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 142</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 145</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_dictionary_value</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">dictionary_size</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -574,7 +622,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_member_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 54</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 57</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -620,7 +668,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_member_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 76</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 79</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -648,6 +696,49 @@
 
       </div>
 
+      <div id="method-i-get_alias" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-get_alias" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.alias &rarr; String
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="get_alias-source">
+            <pre>static VALUE duckdb_logical_type__get_alias(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE alias = Qnil;
+    const char *_alias;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+
+    _alias = duckdb_logical_type_get_alias(ctx-&gt;logical_type);
+    if (_alias != NULL) {
+        alias = rb_utf8_str_new_cstr(_alias);
+    }
+    duckdb_free((void *)_alias);
+    return alias;
+}</pre>
+          </div>
+          <p>Returns the alias of the logical type.</p>
+        </div>
+
+        <div class="aliases">
+          Also aliased as: <a href="LogicalType.html#method-i-alias">alias</a>
+        </div>
+
+      </div>
+
       <div id="method-i-internal_type" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -666,7 +757,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="internal_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 35</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 38</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">internal_type</span>
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_internal_type</span>
   <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
@@ -871,6 +962,48 @@
 
       </div>
 
+      <div id="method-i-set_alias" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-set_alias" title="Link to this method">
+                  <span class="method-callseq">
+                    logical_type.alias(alias) &rarr; String
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="set_alias-source">
+            <pre>static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE alias = Qnil;
+    const char *_alias = StringValuePtr(aname);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+    duckdb_logical_type_set_alias(ctx-&gt;logical_type, _alias);
+    if (_alias != NULL) {
+        alias = rb_utf8_str_new_cstr(_alias);
+    }
+
+    return alias;
+}</pre>
+          </div>
+          <p>Return the set alias of the logical type.</p>
+        </div>
+
+        <div class="aliases">
+          Also aliased as: <a href="LogicalType.html#method-i-alias-3D">alias=</a>
+        </div>
+
+      </div>
+
       <div id="method-i-size" class="method-detail anchor-link ">
         <div class="method-header">
               <div class="method-heading">
@@ -920,7 +1053,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 17</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 20</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">type</span>
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_type</span>
   <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
