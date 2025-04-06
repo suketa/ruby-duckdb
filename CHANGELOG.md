@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - add `DuckDB::PreparedStatement#bind_uint8`, `DuckDB::PreparedStatement#bind_uint16`,
   `DuckDB::PreparedStatement#bind_uint32`, `DuckDB::PreparedStatement#bind_uint64`.
-- support Enum type in `DuckDB::LogicalType` class.
-  - `DuckDB::LogicalType#internal_type`, `DuckDB::LogicalType#dictionary_size`,
-    `DuckDB::LogicalType#dictionary_value_at`, and `DuckDB::LogicalType#each_dictionary_value` are
-    available.
+- add `DuckDB::LogicalType` class.
+  - `DuckDB::LogicalType` class is under construction. `DuckDB::LogicalType#internal_type`,
+    `DuckDB::LogicalType#dictionary_size`, `DuckDB::LogicalType#dictionary_value_at`,
+    `DuckDB::LogicalType#each_dictionary_value`, `DuckDB::LogicalType#alias`, and
+    `DuckDB::LogicalType#alias=`are available.
 
 # 1.2.1.0 - 2025-03-30
 - bump duckdb v1.2.1 on CI.

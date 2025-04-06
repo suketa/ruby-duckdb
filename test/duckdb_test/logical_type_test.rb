@@ -118,6 +118,13 @@ module DuckDBTest
       assert_equal(EXPECTED_TYPES, logical_types.map(&:type))
     end
 
+    def test_alias
+      enum_column = @columns.find { |column| column.type == :enum }
+      enum_logical_type = enum_column.logical_type
+      assert_equal("mood", enum_logical_type.alias=("mood"))
+      assert_equal("mood", enum_logical_type.alias)
+    end
+
     def test_decimal_internal_type
       decimal_column = @columns.find { |column| column.type == :decimal }
       assert_equal(:integer, decimal_column.logical_type.internal_type)

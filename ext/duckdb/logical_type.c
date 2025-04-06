@@ -21,6 +21,8 @@ static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx);
 static VALUE duckdb_logical_type__internal_type(VALUE self);
 static VALUE duckdb_logical_type_dictionary_size(VALUE self);
 static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx);
+static VALUE duckdb_logical_type__get_alias(VALUE self);
+static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -357,6 +359,49 @@ static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
     return dvalue;
 }
 
+/*
+ *  call-seq:
+ *    col.logical_type.alias -> String
+ *
+ *  Returns the alias of the logical type.
+ *
+ */
+static VALUE duckdb_logical_type__get_alias(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE alias = Qnil;
+    const char *_alias;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+
+    _alias = duckdb_logical_type_get_alias(ctx->logical_type);
+    if (_alias != NULL) {
+        alias = rb_utf8_str_new_cstr(_alias);
+    }
+    duckdb_free((void *)_alias);
+    return alias;
+}
+
+/*
+ *  call-seq:
+ *    col.logical_type.alias(alias) -> String
+ *
+ *  Return the set alias of the logical type.
+ *
+ */
+static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
+    rubyDuckDBLogicalType *ctx;
+    VALUE alias = Qnil;
+    const char *_alias = StringValuePtr(aname);
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    duckdb_logical_type_set_alias(ctx->logical_type, _alias);
+    if (_alias != NULL) {
+        alias = rb_utf8_str_new_cstr(_alias);
+    }
+
+    return alias;
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -392,4 +437,6 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "_internal_type", duckdb_logical_type__internal_type, 0);
     rb_define_method(cDuckDBLogicalType, "dictionary_size", duckdb_logical_type_dictionary_size, 0);
     rb_define_method(cDuckDBLogicalType, "dictionary_value_at", duckdb_logical_type_dictionary_value_at, 1);
+    rb_define_method(cDuckDBLogicalType, "get_alias", duckdb_logical_type__get_alias, 0);
+    rb_define_method(cDuckDBLogicalType, "set_alias", duckdb_logical_type__set_alias, 1);
 }
