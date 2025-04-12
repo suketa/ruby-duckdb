@@ -50,6 +50,22 @@ module DuckDBTest
       db.close
     end
 
+    def test_get_or_create_with_config
+      cache = DuckDB::InstanceCache.new
+      config = DuckDB::Config.new
+      config['default_order'] = 'DESC'
+      db = cache.get_or_create(nil, config)
+      con = db.connect
+      con.query('CREATE TABLE numbers (number INTEGER)')
+      con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
+
+      result = con.query('SELECT number FROM numbers ORDER BY number')
+      assert_equal(4, result.first.first)
+      con.close
+      db.close
+      cache.destroy
+    end
+
     def test_destroy
       cache = DuckDB::InstanceCache.new
       assert_nil cache.destroy
