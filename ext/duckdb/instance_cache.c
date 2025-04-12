@@ -72,7 +72,9 @@ static VALUE duckdb_instance_cache_get_or_create(int argc, VALUE *argv, VALUE se
 
     if (duckdb_get_or_create_from_cache(ctx->instance_cache, path, &db, config, &error) == DuckDBError) {
         if (error) {
-            rb_raise(eDuckDBError, "%s", error);
+            VALUE message = rb_str_new_cstr(error);
+            duckdb_free(error);
+            rb_raise(eDuckDBError, "%s", StringValuePtr(message))
         } else {
             rb_raise(eDuckDBError, "Failed to get or create database from instance cache");
         }
