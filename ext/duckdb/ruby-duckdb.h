@@ -32,6 +32,10 @@
 #include "./appender.h"
 #include "./config.h"
 
+#ifdef HAVE_DUCKDB_H_GE_V1_2_0
+#include "./instance_cache.h"
+#endif
+
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
 extern VALUE cDuckDBConnection;
@@ -42,5 +46,9 @@ extern VALUE mDuckDBConverter;
 extern VALUE cDuckDBPreparedStatement;
 extern VALUE PositiveInfinity;
 extern VALUE NegativeInfinity;
+
+#ifdef HAVE_DUCKDB_H_GE_V1_2_0
+extern VALUE cDuckDBInstanceCache;
+#endif
 
 #endif
