@@ -35,17 +35,15 @@ static VALUE allocate(VALUE klass) {
 
 static VALUE duckdb_instance_cache_initialize(VALUE self) {
     rubyDuckDBInstanceCache *ctx;
-    VALUE obj;
 
-    obj = allocate(cDuckDBInstanceCache);
-    TypedData_Get_Struct(obj, rubyDuckDBInstanceCache, &instance_cache_data_type, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &instance_cache_data_type, ctx);
 
     ctx->instance_cache = duckdb_create_instance_cache();
     if (ctx->instance_cache == NULL) {
         rb_raise(eDuckDBError, "Failed to create instance cache");
     }
 
-    return obj;
+    return self;
 }
 
 static VALUE duckdb_instance_cache_destroy(VALUE self) {
