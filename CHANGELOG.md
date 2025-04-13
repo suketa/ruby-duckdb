@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+- implement `DuckDB::InstanceCache` class.
 - bump duckdb to 1.2.2 on CI.
 - add `DuckDB::PreparedStatement#bind_uint8`, `DuckDB::PreparedStatement#bind_uint16`,
   `DuckDB::PreparedStatement#bind_uint32`, `DuckDB::PreparedStatement#bind_uint64`.
