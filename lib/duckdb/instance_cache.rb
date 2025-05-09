@@ -11,6 +11,12 @@ module DuckDB
   #   db1 = cache.get(path: 'db.duckdb')
   #   db2 = cache.get(path: 'db.duckdb')
   class InstanceCache
+    # :call-seq:
+    #   instance_cache.get(path:, config:) -> self
+    #
+    # Returns a DuckDB::Database object for the given path and config.
+    #   db1 = cache.get(path: 'db.duckdb')
+    #   db2 = cache.get(path: 'db.duckdb')
     def get(path: nil, config: nil)
       get_or_create(path, config)
     end

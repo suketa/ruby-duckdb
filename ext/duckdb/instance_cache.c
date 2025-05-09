@@ -47,6 +47,7 @@ static VALUE duckdb_instance_cache_initialize(VALUE self) {
     return self;
 }
 
+/* :nodoc: */
 static VALUE duckdb_instance_cache_get_or_create(int argc, VALUE *argv, VALUE self) {
     VALUE vpath = Qnil;
     VALUE vconfig = Qnil;
