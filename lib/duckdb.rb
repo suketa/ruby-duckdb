@@ -15,6 +15,7 @@ require 'duckdb/config'
 require 'duckdb/column'
 require 'duckdb/logical_type'
 require 'duckdb/infinity'
+require 'duckdb/instance_cache'
 
 # DuckDB provides Ruby interface of DuckDB.
 module DuckDB

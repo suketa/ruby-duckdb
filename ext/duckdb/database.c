@@ -118,6 +118,14 @@ static VALUE duckdb_database_close(VALUE self) {
     return self;
 }
 
+VALUE rbduckdb_create_database_obj(duckdb_database db) {
+    VALUE obj = allocate(cDuckDBDatabase);
+    rubyDuckDB *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
+    ctx->db = db;
+    return obj;
+}
+
 void rbduckdb_init_duckdb_database(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
