@@ -9,7 +9,7 @@
 
   <meta name="keywords" content="ruby,class,DuckDB::InstanceCache">
 
-    <meta name="description" content="Documentation for the DuckDB::InstanceCache class">
+    <meta name="description" content="class DuckDB::InstanceCache: InstanceCache.">
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -86,6 +86,7 @@
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-destroy">destroy</a></li>
+      <li ><a href="#method-i-get">get</a></li>
     </ul>
   </div>
 
@@ -106,6 +107,14 @@
 
   <section class="description">
     
+<p>The <a href="InstanceCache.html"><code>DuckDB::InstanceCache</code></a> is necessary if a client/program (re)opens multiple databases to the same file within the same statement.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">cache</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">InstanceCache</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-identifier">db1</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
+<span class="ruby-identifier">db2</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
+</pre>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section anchor-link">
@@ -194,6 +203,40 @@
 }</pre>
           </div>
           
+        </div>
+
+
+      </div>
+
+      <div id="method-i-get" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-get" title="Link to this method">
+                  <span class="method-callseq">
+                    get(path:, config:) &rarr; self
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="get-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/instance_cache.rb, line 20</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get</span>(<span class="ruby-value">path:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">get_or_create</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Returns a <a href="Database.html"><code>DuckDB::Database</code></a> object for the given path and config.</p>
+
+<pre class="ruby"><span class="ruby-identifier">db1</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
+<span class="ruby-identifier">db2</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
+</pre>
         </div>
 
 
