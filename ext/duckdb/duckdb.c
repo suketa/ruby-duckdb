@@ -39,4 +39,7 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_config();
     rbduckdb_init_duckdb_converter();
     rbduckdb_init_duckdb_extracted_statements();
+#ifdef HAVE_DUCKDB_H_GE_V1_2_0
+    rbduckdb_init_duckdb_instance_cache();
+#endif
 }
