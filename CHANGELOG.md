@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 # Unreleased
+
+# 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.
 - implement `DuckDB::InstanceCache` class.
 - bump duckdb to 1.2.2 on CI.
