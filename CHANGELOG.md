@@ -1,7 +1,9 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
 # Unreleased
+- bump duckdb to 1.3.0 on CI.
 
 # 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.
