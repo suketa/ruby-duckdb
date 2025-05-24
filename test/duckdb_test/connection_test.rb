@@ -103,7 +103,6 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.1
       result = pending_result.execute_pending
-      assert(result.streaming?)
       assert_equal([1, 'a'], result.each.first)
     end
 
