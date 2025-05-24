@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - bump duckdb to 1.3.0 on CI.
 
 ## Breaking changes
+- `DuckDB::Result#streaming?` is deplicated.
 - The second argument of `DuckDB::PendingResult.new` is now meaningless. The result is the same when it is set to true.
 - `DuckDB::PreparedStatement#pending_prepared` behaves the same as `DuckDB::PreparedStatement#pending_prepared_stream`.
    - `DuckDB::PreparedStatement#pending_prepared_stream` will be depreacted. Use `pending_prepared` instead.

@@ -26,7 +26,6 @@ static size_t memsize(const void *p);
 static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
-static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult);
 static VALUE destroy_data_chunk(VALUE arg);
 static VALUE duckdb_result__chunk_each(VALUE oDuckDBResult);
 
@@ -166,22 +165,6 @@ static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
         rb_ary_store(ary, col_idx, column);
     }
     return ary;
-}
-
-/*
- * :nodoc:
- */
-static VALUE duckdb_result_streaming_p(VALUE oDuckDBResult) {
-    rubyDuckDBResult *ctx;
-
-#ifdef DUCKDB_API_NO_DEPRECATED
-    return Qtrue;
-#else
-    rb_warn("`DuckDB::Result#streaming?` will be deprecated in the future.");
-    /* FIXME streaming is allways true. so this method is not useful and deprecated. */
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    return duckdb_result_is_streaming(ctx->result) ? Qtrue : Qfalse;
-#endif
 }
 
 static VALUE destroy_data_chunk(VALUE arg) {
@@ -877,7 +860,6 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
-    rb_define_method(cDuckDBResult, "streaming?", duckdb_result_streaming_p, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_each", duckdb_result__chunk_each, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);

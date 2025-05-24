@@ -173,11 +173,6 @@ module DuckDBTest
       end
     end
 
-    def test_streaming?
-      r = @con.query('SELECT 1')
-      assert_equal(false, r.streaming?)
-    end
-
     def prepare_test_table_and_data_for_exception
       @con.query('CREATE TABLE tests (col INTEGER)')
       @con.query('INSERT INTO tests VALUES (1), (2), (3)')
