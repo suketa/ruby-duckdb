@@ -52,7 +52,7 @@ module DuckDB
     end
 
     def pending_prepared_stream
-      warn("`#{self.class}##{__method__}` will be deprecated. use `pending_prepared` instead")
+      warn("`#{self.class}##{__method__}` will be deprecated. use `#{self.class}#pending_prepared` instead")
       pending_prepared
     end
 
