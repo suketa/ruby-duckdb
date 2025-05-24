@@ -52,7 +52,8 @@ module DuckDB
     end
 
     def pending_prepared_stream
-      PendingResult.new(self, true)
+      warn("`#{self.class}##{__method__}` will be deprecated. use `#{self.class}#pending_prepared` instead")
+      pending_prepared
     end
 
     # returns statement type. The return value is one of the following symbols:

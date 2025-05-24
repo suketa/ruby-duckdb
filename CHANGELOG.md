@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 
 ## Breaking changes
 - The second argument of `DuckDB::PendingResult.new` is now meaningless. The result is the same when it is set to true.
+- `DuckDB::PreparedStatement#pending_prepared` behaves the same as `DuckDB::PreparedStatement#pending_prepared_stream`.
+   - `DuckDB::PreparedStatement#pending_prepared_stream` will be depreacted. Use `pending_prepared` instead.
+- `DuckDB::Connection#async_query` behaves the same as `DuckDB::Connection#async_query_stream`.
+   - `DuckDB::Connection#async_query_stream` will be deplicated. Use `async_query` instead.
 
 # 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.
