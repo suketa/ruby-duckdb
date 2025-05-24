@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - bump duckdb to 1.3.0 on CI.
 
+## Breaking changes
+- The second argument of `DuckDB::PendingResult.new` is now meaningless. The result is the same when it is set to true.
+
 # 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.
 - implement `DuckDB::InstanceCache` class.
