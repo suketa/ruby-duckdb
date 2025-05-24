@@ -147,7 +147,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="appender-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 130</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">appender</span>(<span class="ruby-identifier">table</span>)
   <span class="ruby-identifier">appender</span> = <span class="ruby-identifier">create_appender</span>(<span class="ruby-identifier">table</span>)
 
@@ -230,10 +230,9 @@
           <div class="method-source-code" id="async_query_stream-source">
             <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 83</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">async_query_stream</span>(<span class="ruby-identifier">sql</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>)
-  <span class="ruby-identifier">prepare</span>(<span class="ruby-identifier">sql</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">stmt</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_args</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>)
-    <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">pending_prepared_stream</span>
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">warn</span>(<span class="ruby-node">&quot;`#{self.class}#{__method__}` will be deprecated. Use `#{self.class}#async_query` instead.&quot;</span>)
+
+  <span class="ruby-identifier">async_query</span>(<span class="ruby-identifier">sql</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>executes sql with args asynchronously and provides streaming result. The first argument sql must be SQL string. The rest arguments are parameters of SQL string. This method returns <a href="PendingResult.html"><code>DuckDB::PendingResult</code></a> object.</p>
@@ -272,7 +271,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="connect-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 92</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 91</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">connect</span>(<span class="ruby-identifier">db</span>)
   <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">_connect</span>(<span class="ruby-identifier">db</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">conn</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
@@ -391,7 +390,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="prepared_statement-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 122</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 121</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prepared_statement</span>(<span class="ruby-identifier">str</span>, <span class="ruby-operator">&amp;</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">str</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
