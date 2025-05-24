@@ -52,7 +52,7 @@ module DuckDBTest
     end
 
     def test_execute_check_state
-      pending_result = @stmt.pending_prepared_stream
+      pending_result = @stmt.pending_prepared
       state = pending_result.execute_check_state
       assert_equal(:no_tasks, state)
 
