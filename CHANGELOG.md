@@ -6,12 +6,13 @@ All notable changes to this project will be documented in this file.
 - bump duckdb to 1.3.0 on CI.
 
 ## Breaking changes
-- `DuckDB::Result#streaming?` is deplicated.
+- `DuckDB::Result#streaming?` is deprecated.
 - The second argument of `DuckDB::PendingResult.new` is now meaningless. The result is the same when it is set to true.
 - `DuckDB::PreparedStatement#pending_prepared` behaves the same as `DuckDB::PreparedStatement#pending_prepared_stream`.
-   - `DuckDB::PreparedStatement#pending_prepared_stream` will be depreacted. Use `pending_prepared` instead.
+  - `DuckDB::PreparedStatement#pending_prepared_stream` will be depreacted. Use `pending_prepared` instead.
 - `DuckDB::Connection#async_query` behaves the same as `DuckDB::Connection#async_query_stream`.
-   - `DuckDB::Connection#async_query_stream` will be deplicated. Use `async_query` instead.
+  - `DuckDB::Connection#async_query_stream` will be deprecated. Use `async_query` instead.
+- `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each`, `DuckDB::Result.use_chunk_each?` are deprecated.
 
 # 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.

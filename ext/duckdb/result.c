@@ -27,7 +27,6 @@ static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
 static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
 static VALUE duckdb_result_columns(VALUE oDuckDBResult);
 static VALUE destroy_data_chunk(VALUE arg);
-static VALUE duckdb_result__chunk_each(VALUE oDuckDBResult);
 
 static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
 static VALUE yield_rows(VALUE arg);
@@ -171,41 +170,6 @@ static VALUE destroy_data_chunk(VALUE arg) {
     struct chunk_arg *p = (struct chunk_arg *)arg;
     duckdb_destroy_data_chunk(&(p->chunk));
     return Qnil;
-}
-
-/* :nodoc: */
-static VALUE duckdb_result__chunk_each(VALUE oDuckDBResult) {
-/*
-#ifdef HAVE_DUCKDB_H_GE_V1_0_0
-    return duckdb_result__chunk_stream(oDuckDBResult);
-#else
-*/
-    rubyDuckDBResult *ctx;
-    struct chunk_arg arg;
-    idx_t chunk_count;
-    idx_t chunk_idx;
-
-#ifdef DUCKDB_API_NO_DEPRECATED
-    //TODO: use duckdb_fetch_chunk instead of duckdb_result_chunk_count and duckdb_result_get_chunk.
-    // duckdb_result_chunk_count will be deprecated in the future.
-    // duckdb_result_get_chunk will be deprecated in the future.
-#else
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-
-    arg.col_count = duckdb_column_count(&(ctx->result));
-    chunk_count = duckdb_result_chunk_count(ctx->result);
-
-    RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
-
-    for (chunk_idx = 0; chunk_idx < chunk_count; chunk_idx++) {
-        arg.chunk = duckdb_result_get_chunk(ctx->result, chunk_idx);
-        rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
-    }
-#endif
-    return Qnil;
-/*
-#endif
-*/
 }
 
 /* :nodoc: */
@@ -860,7 +824,6 @@ void rbduckdb_init_duckdb_result(void) {
     rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
     rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
-    rb_define_private_method(cDuckDBResult, "_chunk_each", duckdb_result__chunk_each, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
     rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
     rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
