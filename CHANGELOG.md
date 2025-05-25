@@ -6,13 +6,13 @@ All notable changes to this project will be documented in this file.
 - bump duckdb to 1.3.0 on CI.
 
 ## Breaking changes
-- `DuckDB::Result#streaming?` is deprecated.
+- `DuckDB::Result#streaming?` is deplicated.
 - The second argument of `DuckDB::PendingResult.new` is now meaningless. The result is the same when it is set to true.
 - `DuckDB::PreparedStatement#pending_prepared` behaves the same as `DuckDB::PreparedStatement#pending_prepared_stream`.
-   - `DuckDB::PreparedStatement#pending_prepared_stream` will be deprecated. Use `pending_prepared` instead.
+   - `DuckDB::PreparedStatement#pending_prepared_stream` will be depreacted. Use `pending_prepared` instead.
 - `DuckDB::Connection#async_query` behaves the same as `DuckDB::Connection#async_query_stream`.
-   - `DuckDB::Connection#async_query_stream` will be deprecated. Use `async_query` instead.
-- `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each=` `DuckDB::Result.use_chunk_each?` are deprecated.
+   - `DuckDB::Connection#async_query_stream` will be deplicated. Use `async_query` instead.
+- remove `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each`.
 
 # 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.
@@ -58,10 +58,10 @@ All notable changes to this project will be documented in this file.
 - bump ruby in CI. use 3.4.2 on MacOS and Ubuntu, 3.4.1 on Windows.
 
 ## Breaking changes
-- `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are ecated.
-- `DuckDB::Result#use_chunk_each?`, `DuckDB::Result#use_chunk_each=` are ecated.
-- `DuckDB::Result#chunk_each` is ecated.
--  `DuckDB::Result#each` only works at first time because duckdb_chunk_each C-API is ecated.
+- `DuckDB::Result#row_count`, `DuckDB::Result#row_size` are deprecated.
+- `DuckDB::Result#use_chunk_each?`, `DuckDB::Result#use_chunk_each=` are deprecated.
+- `DuckDB::Result#chunk_each` is deprecated.
+-  `DuckDB::Result#each` only works at first time because duckdb_chunk_each C-API is deprecated.
    Calling `DuckDB::Result#each` twice or more does not work.
    ```ruby
    result = con.query('SELECT * FROM table')
@@ -86,7 +86,7 @@ All notable changes to this project will be documented in this file.
      p record # <= this works fine.
    end
    ```
-- `DuckDB::Result#streaming?` will be ecated.
+- `DuckDB::Result#streaming?` will be deprecated.
 
 # 1.1.3.1 - 2024-11-27
 - fix to `DuckDB::Connection#query` with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.
@@ -148,7 +148,7 @@ All notable changes to this project will be documented in this file.
     `:logical_plan`, `:attach`, `:detach`, `:multi`.
 - Add `DuckDB::Result#return_type` to get the return type of the result.
   - The return value is one of the `:invalid`, `:query_result`, `:rows_changed`, `:nothing`.
-- The following method will be ecated.
+- The following method will be deprecated.
   - `DuckDB::Result#use_chunk_each?`
   - `DuckDB::Result#use_chunk_each=`
 
@@ -204,7 +204,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ExtractedStatements#size`.
 - add `DuckDB::ExtractedStatements#prepared_statement`.
 - raise error when `DuckDB::ExtractedStatements#new` is called with invalid SQL.
-- The following public/private methods will be ecated.
+- The following public/private methods will be deprecated.
   - `DuckDB::Result#streaming?`
   - `DuckDB::Result#_null?`
   - `DuckDB::Result#_to_boolean`
@@ -304,7 +304,7 @@ All notable changes to this project will be documented in this file.
 - bump duckdb to 0.9.0.
 
 ## Breaking Changes
-- ecation warning when `DuckDB::Result.each` calling with `DuckDB::Result.use_chunk_each` is false.
+- deprecation warning when `DuckDB::Result.each` calling with `DuckDB::Result.use_chunk_each` is false.
   The `each` behavior will be same as `DuckDB::Result.chunk_each` in the future.
   set `DuckDB::Result.use_chunk_each = true` to suppress the warning.
 - `DuckDB::Result#chunk_each` returns `DuckDB::Interval` class when the column type is INTERVAL.
@@ -378,7 +378,7 @@ All notable changes to this project will be documented in this file.
 
 # 0.6.1
 - bump Ruby to 3.2.0 on CI
-- fix ected warning (double_heap is deprecated in GC.verify_compaction_references) with Ruby 3.2.0 on CI
+- fix deprected warning (double_heap is deprecated in GC.verify_compaction_references) with Ruby 3.2.0 on CI
 - bump duckdb to 0.6.1 on CI
 - add DuckDB::PreparedStatement#bind_hugeint_internal
 - fix gem install error on M1 MacOS
