@@ -28,36 +28,16 @@ module DuckDB
 
     alias column_size column_count
 
-    @use_chunk_each = false
-
     class << self
       def new
         raise DuckDB::Error, 'DuckDB::Result cannot be instantiated directly.'
       end
-
-      attr_writer :use_chunk_each
-
-      def use_chunk_each?
-        @use_chunk_each
-      end
     end
 
     def each(&)
-      if self.class.use_chunk_each?
-        return chunk_each unless block_given?
+      return _chunk_stream unless block_given?
 
-        chunk_each(&)
-      else
-        return _chunk_stream unless block_given?
-
-        _chunk_stream(&)
-      end
-    end
-
-    # :nodoc:
-    def chunk_each(&)
-      warn 'DuckDB::Result#chunk_each will be deprecated.'
-      _chunk_each(&)
+      _chunk_stream(&)
     end
 
     # returns return type. The return value is one of the following symbols:

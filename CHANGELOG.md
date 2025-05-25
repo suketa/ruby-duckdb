@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
    - `DuckDB::PreparedStatement#pending_prepared_stream` will be depreacted. Use `pending_prepared` instead.
 - `DuckDB::Connection#async_query` behaves the same as `DuckDB::Connection#async_query_stream`.
    - `DuckDB::Connection#async_query_stream` will be deplicated. Use `async_query` instead.
+- remove `DuckDB::Result#chunk_each`, `DuckDB::Result.use_chunk_each`.
 
 # 1.2.2.0 - 2025-05-11
 - drop Ruby 3.1.
