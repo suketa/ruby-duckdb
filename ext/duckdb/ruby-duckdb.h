@@ -16,6 +16,10 @@
 #define HAVE_DUCKDB_H_GE_V1_2_0 1
 #endif
 
+#ifdef HAVE_DUCKDB_GET_TABLE_NAMES
+#define HAVE_DUCKDB_H_GE_V1_3_0 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"
