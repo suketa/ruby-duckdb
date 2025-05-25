@@ -312,7 +312,7 @@
 
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
-<p><code>DuckDB::Result#streaming?</code> is deplicated.</p>
+<p><code>DuckDB::Result#streaming?</code> is deprecated.</p>
 </li><li>
 <p>The second argument of <a href="DuckDB/PendingResult.html#method-c-new"><code>DuckDB::PendingResult.new</code></a> is now meaningless. The result is the same when it is set to true.</p>
 </li><li>
@@ -322,7 +322,9 @@
 </li><li>
 <p><a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> behaves the same as <a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a>.</p>
 </li><li>
-<p><a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a> will be deplicated. Use <code>async_query</code> instead.</p>
+<p><a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a> will be deprecated. Use <code>async_query</code> instead.</p>
+</li><li>
+<p><code>DuckDB::Result#chunk_each</code>, <code>DuckDB::Result.use_chunk_each</code>, <code>DuckDB::Result.use_chunk_each?</code> are deprecated.</p>
 </li></ul>
 
 <h1 id="label-1.2.2.0+-+2025-05-11">1.2.2.0 - 2025-05-11<span><a href="#label-1.2.2.0+-+2025-05-11">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -380,7 +382,7 @@
 </li><li>
 <p><code>DuckDB::Result#chunk_each</code> is deprecated.</p>
 </li><li>
-<p><a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> only works at first time because duckdb_chunk_each C-API is deprecated. Calling <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> twice or more does not work. <code>ruby   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again does not work.   result.each do |record| p record # &lt;= this will not work   end </code> If you prefer to use <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> multiple times, set <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each = true</code></a>. But this behavior will be removed in the future release. <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>ruby   DuckDB::Result.use_chunk_each = true   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again works.   result.each do |record| p record # &lt;= this works fine.   end </code></a></p>
+<p><a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> only works at first time because duckdb_chunk_each C-API is deprecated. Calling <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> twice or more does not work. <code>ruby   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again does not work.   result.each do |record| p record # &lt;= this will not work   end </code> If you prefer to use <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> multiple times, set <code>DuckDB::Result.use_chunk_each = true</code>. But this behavior will be removed in the future release. <code>ruby   DuckDB::Result.use_chunk_each = true   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again works.   result.each do |record| p record # &lt;= this works fine.   end </code></p>
 </li><li>
 <p><code>DuckDB::Result#streaming?</code> will be deprecated.</p>
 </li></ul>
@@ -464,11 +466,11 @@
 </li><li>
 <p>The return value is one of the <code>:invalid</code>, <code>:select</code>, <code>:insert</code>, <code>:update</code>, <code>:explain</code>, <code>:delete</code>, <code>:prepare</code>, <code>:create</code>, <code>:execute</code>, <code>:alter</code>, <code>:transaction</code>, <code>:copy</code>, <code>:analyze</code>, <code>:variable_set</code>, <code>:create_func</code>, <code>:drop</code>, <code>:export</code>, <code>:pragma</code>, <code>:vacuum</code>, <code>:call</code>, <code>:set</code>, <code>:load</code>, <code>:relation</code>, <code>:extension</code>, <code>:logical_plan</code>, <code>:attach</code>, <code>:detach</code>, <code>:multi</code>.</p>
 </li><li>
-<p>Add <code>DuckDB::Result#statement_type</code> to get the return type of the statement.</p>
+<p>Add <a href="DuckDB/Result.html#method-i-statement_type"><code>DuckDB::Result#statement_type</code></a> to get the return type of the statement.</p>
 </li><li>
 <p>The return value is one of the <code>:invalid</code>, <code>:select</code>, <code>:insert</code>, <code>:update</code>, <code>:explain</code>, <code>:delete</code>, <code>:prepare</code>, <code>:create</code>, <code>:execute</code>, <code>:alter</code>, <code>:transaction</code>, <code>:copy</code>, <code>:analyze</code>, <code>:variable_set</code>, <code>:create_func</code>, <code>:drop</code>, <code>:export</code>, <code>:pragma</code>, <code>:vacuum</code>, <code>:call</code>, <code>:set</code>, <code>:load</code>, <code>:relation</code>, <code>:extension</code>, <code>:logical_plan</code>, <code>:attach</code>, <code>:detach</code>, <code>:multi</code>.</p>
 </li><li>
-<p>Add <code>DuckDB::Result#return_type</code> to get the return type of the result.</p>
+<p>Add <a href="DuckDB/Result.html#method-i-return_type"><code>DuckDB::Result#return_type</code></a> to get the return type of the result.</p>
 </li><li>
 <p>The return value is one of the <code>:invalid</code>, <code>:query_result</code>, <code>:rows_changed</code>, <code>:nothing</code>.</p>
 </li><li>
@@ -534,25 +536,25 @@
 
 <h1 id="label-1.0.0.2+-+2024-06-23">1.0.0.2 - 2024-06-23<span><a href="#label-1.0.0.2+-+2024-06-23">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMPTZ column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMPTZ column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
 <p>Supporting TIMESTAMPTZ is experimental.</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMETZ column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMETZ column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMP_NS column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMP_NS column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMP_MS column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMP_MS column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMP_S column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMP_S column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports STRUCT column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports STRUCT column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports MAP column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports MAP column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports UNION column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports UNION column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports BIT column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports BIT column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li></ul>
 
 <h1 id="label-1.0.0.1+-+2024-06-16">1.0.0.1 - 2024-06-16<span><a href="#label-1.0.0.1+-+2024-06-16">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -561,9 +563,9 @@
 </li><li>
 <p>add <a href="DuckDB/Appender.html#method-i-append_uhugeint"><code>DuckDB::Appender#append_uhugeint</code></a>.</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports ARRAY column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true).</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports ARRAY column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
-<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports LIST column type (only when <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true). Thanks to stephenprater.</p>
+<p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports LIST column type (only when DuckDB::Result.use_chunk_each is true). Thanks to stephenprater.</p>
 </li></ul>
 
 <h1 id="label-1.0.0.0+-+2024-06-08">1.0.0.0 - 2024-06-08<span><a href="#label-1.0.0.0+-+2024-06-08">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -616,14 +618,14 @@
 </li><li>
 <p><code>DuckDB::Result#_to_blob</code></p>
 </li><li>
-<p><a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each=</code></a></p>
+<p><code>DuckDB::Result.use_chunk_each=</code></p>
 </li><li>
 <p><code>DuckDB::Result#use_chunk_each?</code></p>
 </li></ul>
 
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
-<p><a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is true by default. If you want to use the old behavior, set <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each = false</code></a>. But the old behavior will be removed in the future release.</p>
+<p>DuckDB::Result.use_chunk_each is true by default. If you want to use the old behavior, set <code>DuckDB::Result.use_chunk_each = false</code>. But the old behavior will be removed in the future release.</p>
 </li></ul>
 
 <h1 id="label-0.10.3.0+-+2024-05-25">0.10.3.0 - 2024-05-25<span><a href="#label-0.10.3.0+-+2024-05-25">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -749,7 +751,7 @@
 
 <h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
-<p>deprecation warning when <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result.each</code></a> calling with <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each</code></a> is false. The <code>each</code> behavior will be same as <code>DuckDB::Result.chunk_each</code> in the future. set <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each = true</code></a> to suppress the warning.</p>
+<p>deprecation warning when <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result.each</code></a> calling with <code>DuckDB::Result.use_chunk_each</code> is false. The <code>each</code> behavior will be same as <code>DuckDB::Result.chunk_each</code> in the future. set <code>DuckDB::Result.use_chunk_each = true</code> to suppress the warning.</p>
 </li><li>
 <p><code>DuckDB::Result#chunk_each</code> returns <a href="DuckDB/Interval.html"><code>DuckDB::Interval</code></a> class when the column type is INTERVAL.</p>
 </li></ul>
@@ -789,7 +791,7 @@
 <ul><li>
 <p>bump duckdb to 0.8.1.</p>
 </li><li>
-<p>add <code>DuckDB::Result#chunk_each</code>, <a href="DuckDB/Result.html#attribute-c-use_chunk_each"><code>DuckDB::Result.use_chunk_each=</code></a>, <code>DuckDB::Result#use_chunk_each?</code> The current behavior of <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> is same as older version. But <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> behavior will be changed like as <code>DuckDB::Result#chunk_each</code> in near future release. And there are some breaking changes. Write <code>DuckdDB::Result.use_chunk_each = true</code> if you want to try new behavior.</p>
+<p>add <code>DuckDB::Result#chunk_each</code>, <code>DuckDB::Result.use_chunk_each=</code>, <code>DuckDB::Result#use_chunk_each?</code> The current behavior of <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> is same as older version. But <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> behavior will be changed like as <code>DuckDB::Result#chunk_each</code> in near future release. And there are some breaking changes. Write <code>DuckdDB::Result.use_chunk_each = true</code> if you want to try new behavior.</p>
 
 <pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Result</span>.<span class="ruby-identifier">use_chunk_each</span> = <span class="ruby-keyword">true</span>
 
@@ -905,7 +907,7 @@
 </li><li>
 <p>fix utf-8 encoding.</p>
 </li><li>
-<p>add DuckDB::Result#enum_dictionary_values</p>
+<p>add <a href="DuckDB/Result.html#method-i-enum_dictionary_values"><code>DuckDB::Result#enum_dictionary_values</code></a></p>
 </li><li>
 <p>add DuckDB::Result#row_count, DuckDB::Result#row_size(alias of row_count).</p>
 </li><li>
