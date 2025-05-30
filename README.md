@@ -146,7 +146,7 @@ result = con.prepare('SELECT * FROM users WHERE name = $name AND email = $email'
 You can use async query.
 
 ```ruby
-pending_result = con.async_query_stream('SLOW QUERY')
+pending_result = con.async_query('SLOW QUERY')
 pending_result.execute_task while pending_result.state == :not_ready
 
 result = pending_result.execute_pending
