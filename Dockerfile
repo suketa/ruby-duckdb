@@ -4,8 +4,9 @@ FROM ruby:${RUBY_VERSION}
 ARG DUCKDB_VERSION=1.3.0
 ARG VALGRIND_VERSION=3.21.0
 
-RUN apt update -qq && \
-    apt install -y build-essential curl git wget libc6-dbg
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends build-essential curl git wget libc6-dbg && \
+    apt-get clean
 
 COPY getduckdb.sh .
 RUN ./getduckdb.sh
