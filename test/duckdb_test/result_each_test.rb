@@ -5,7 +5,7 @@ require 'securerandom'
 require 'time'
 
 module DuckDBTest
-  class ResultChunkEach < Minitest::Test
+  class ResultEach < Minitest::Test
     def setup
       @db = DuckDB::Database.open
       @con = @db.connect
