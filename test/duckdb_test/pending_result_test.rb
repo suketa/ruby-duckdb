@@ -34,7 +34,6 @@ module DuckDBTest
 
     def test_execution_finished?
       pending_result = @stmt.pending_prepared
-      skip 'execution_finished? is not available' unless pending_result.respond_to? :execution_finished?
       assert_equal false, pending_result.execution_finished?
 
       pending_result.execute_task while pending_result.state == :not_ready
