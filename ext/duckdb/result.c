@@ -462,7 +462,7 @@ static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
         return obj;
     }
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_s, 1,
-                      INT2FIX(data.seconds)
+                      LL2NUM(data.seconds)
                       );
 #else
     duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
