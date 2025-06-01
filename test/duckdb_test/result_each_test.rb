@@ -132,8 +132,8 @@ module DuckDBTest
       @con.query('SELECT * FROM tests').to_a[0][0]
     end
 
-    def query_stream_test_data
-      res = @con.async_query_stream('SELECT * FROM tests')
+    def async_query_test_data
+      res = @con.async_query('SELECT * FROM tests')
       res.execute_task while res.state == :not_ready
       res.execute_pending.to_a[0][0]
     end
@@ -167,7 +167,7 @@ module DuckDBTest
 
         prepare_test_table_and_data(db_declaration, db_type, string_rep)
 
-        res = query_stream_test_data
+        res = async_query_test_data
 
         do_query_result_assertions(res, ruby_val, db_type, klass)
       end
@@ -178,8 +178,8 @@ module DuckDBTest
       @con.query('INSERT INTO tests VALUES (1), (2), (3)')
     end
 
-    # check that error is not raised when raising an error in the chunk_each block.
-    def test_chunk_each_with_exception
+    # check that error is not raised when raising an error in the each block.
+    def test_query_with_exception
       prepare_test_table_and_data_for_exception
 
       r = query_test_data
@@ -192,10 +192,10 @@ module DuckDBTest
     end
 
     # check that error is not raised when raising an error in the chunk_stream block.
-    def test_chunk_stream_with_exception
+    def test_async_query_with_exception
       prepare_test_table_and_data_for_exception
 
-      r = query_stream_test_data
+      r = async_query_test_data
       assert_raises(StandardError) do
         r.each do |row|
           raise 'error' if row.first == 2
