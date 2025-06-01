@@ -91,6 +91,8 @@ module DuckDBTest
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456489',                            BigDecimal,           BigDecimal('0.00123456')                            ],
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456589',                            BigDecimal,           EXPECTED_DECIMAL_VALUE2                             ],
       [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'2019-11-03 12:34:56.123456789'",          Time,                 Time.local(2019, 11, 3, 12, 34, 56)                 ],
+      [:ng, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'infinity'",                               String,               'infinity'                                          ],
+      [:ng, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123')                ],
       [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123456')             ],
       [:ok, 'ENUM',         'mood',                        "'happy'",                                  String,               'happy'                                             ],
