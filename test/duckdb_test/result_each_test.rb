@@ -22,19 +22,6 @@ module DuckDBTest
     long_bits = '11111111111111111111111111111111111110101010101010101010101010101010101010101011100000000'
     timetz_expected = Time.parse(Time.now.strftime('%Y-%m-%d 12:34:56.123456+04:30'))
 
-    EXPECTED_DECIMAL_VALUE1 = if ::DuckDBTest.duckdb_library_version >= Gem::Version.new('1.1.0')
-                                BigDecimal('1.2345679')
-                              else
-                                BigDecimal('1.23456789')
-                              end
-
-    EXPECTED_DECIMAL_VALUE2 = if ::DuckDBTest.duckdb_library_version >= Gem::Version.new('1.1.0')
-                                BigDecimal('0.00123457')
-                              else
-                                BigDecimal('0.00123456')
-                              end
-    txs = ::DuckDBTest.duckdb_library_version >= Gem::Version.new('1.2.0') ? :ok : :ng
-
     TEST_TABLES = [
       #      DB Type  ,     DB declartion                  String Rep                                  Ruby Type             Ruby Value
       [:ok, 'BOOLEAN',      'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
@@ -88,15 +75,15 @@ module DuckDBTest
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '-2345678901234567890123.45678901',         BigDecimal,           BigDecimal('-2345678901234567890123.45678901')      ],
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '1.23456789',                               BigDecimal,           BigDecimal('1.23456789')                            ],
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '1.234567894',                              BigDecimal,           BigDecimal('1.23456789')                            ],
-      [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '1.234567895',                              BigDecimal,           EXPECTED_DECIMAL_VALUE1                             ],
+      [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '1.234567895',                              BigDecimal,           BigDecimal('1.2345679')                             ],
       [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456489',                            BigDecimal,           BigDecimal('0.00123456')                            ],
-      [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456589',                            BigDecimal,           EXPECTED_DECIMAL_VALUE2                             ],
+      [:ok, 'DECIMAL',      'DECIMAL(38, 8)',              '0.00123456589',                            BigDecimal,           BigDecimal('0.00123457')                            ],
       [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'2019-11-03 12:34:56.123456789'",          Time,                 Time.local(2019, 11, 3, 12, 34, 56)                 ],
-      [txs, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'infinity'",                               String,               'infinity'                                          ],
-      [txs, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'-infinity'",                              String,               '-infinity'                                         ],
+      [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'infinity'",                               String,               'infinity'                                          ],
+      [:ok, 'TIMESTAMP_S',  'TIMESTAMP_S',                 "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123')                ],
-      [txs, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'infinity'",                               String,               'infinity'                                          ],
-      [txs, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'-infinity'",                              String,               '-infinity'                                         ],
+      [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'infinity'",                               String,               'infinity'                                          ],
+      [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123456')             ],
       [:ok, 'ENUM',         'mood',                        "'happy'",                                  String,               'happy'                                             ],
       [:ok, 'LIST',         'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
