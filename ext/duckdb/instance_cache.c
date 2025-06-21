@@ -1,6 +1,5 @@
 #include "ruby-duckdb.h"
 
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
 VALUE cDuckDBInstanceCache;
 
 static void deallocate(void * ctx);
@@ -105,4 +104,3 @@ void rbduckdb_init_duckdb_instance_cache(void) {
     rb_define_method(cDuckDBInstanceCache, "destroy", duckdb_instance_cache_destroy, 0);
     rb_define_alloc_func(cDuckDBInstanceCache, allocate);
 }
-#endif

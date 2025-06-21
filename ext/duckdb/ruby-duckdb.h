@@ -8,14 +8,6 @@
 #include "ruby/thread.h"
 #include <duckdb.h>
 
-#ifdef HAVE_CONST_DUCKDB_TYPE_SQLNULL
-#define HAVE_DUCKDB_H_GE_V1_1_1 1
-#endif
-
-#ifdef HAVE_DUCKDB_CREATE_INSTANCE_CACHE
-#define HAVE_DUCKDB_H_GE_V1_2_0 1
-#endif
-
 #ifdef HAVE_DUCKDB_GET_TABLE_NAMES
 #define HAVE_DUCKDB_H_GE_V1_3_0 1
 #endif
@@ -35,10 +27,7 @@
 #include "./blob.h"
 #include "./appender.h"
 #include "./config.h"
-
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
 #include "./instance_cache.h"
-#endif
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
@@ -50,9 +39,6 @@ extern VALUE mDuckDBConverter;
 extern VALUE cDuckDBPreparedStatement;
 extern VALUE PositiveInfinity;
 extern VALUE NegativeInfinity;
-
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
 extern VALUE cDuckDBInstanceCache;
-#endif
 
 #endif

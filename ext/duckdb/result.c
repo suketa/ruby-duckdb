@@ -48,11 +48,8 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE infinite_timestamp_value(duckdb_timestamp timestamp);
-
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
 static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s);
 static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms);
-#endif
 
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
@@ -229,14 +226,7 @@ static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
 static VALUE duckdb_result__return_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-/*
- * remove this #if ... #else statement when dropping duckdb 1.1.0.
- */
-#if !defined(HAVE_DUCKDB_H_GE_V1_1_1) && defined(DUCKDB_API_NO_DEPRECATED)
-    rb_raise(eDuckDBError, "duckdb_result_return_type C-API is not available with duckdb v1.1.0 with enabled DUCKDB_API_NO_DEPRECATED.");
-#else
     return INT2FIX(duckdb_result_return_type(ctx->result));
-#endif
 }
 
 /* :nodoc: */
@@ -444,7 +434,6 @@ static VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
     return Qnil;
 }
 
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
 static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
     if (duckdb_is_finite_timestamp_s(timestamp_s) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
@@ -453,10 +442,8 @@ static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
     }
     return Qnil;
 }
-#endif
 
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
     duckdb_timestamp_s data = ((duckdb_timestamp_s *)vector_data)[row_idx];
     VALUE obj = infinite_timestamp_s_value(data);
     if (obj != Qnil) {
@@ -465,15 +452,8 @@ static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_s, 1,
                       LL2NUM(data.seconds)
                       );
-#else
-    duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_s, 1,
-                      LL2NUM(data.micros)
-                     );
-#endif
 }
 
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
 static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
     if (duckdb_is_finite_timestamp_ms(timestamp_ms) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
@@ -482,10 +462,8 @@ static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
     }
     return Qnil;
 }
-#endif
 
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
-#ifdef HAVE_DUCKDB_H_GE_V1_2_0
     duckdb_timestamp_ms data = ((duckdb_timestamp_ms *)vector_data)[row_idx];
     VALUE obj = infinite_timestamp_ms_value(data);
     if (obj != Qnil) {
@@ -494,12 +472,6 @@ static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ms, 1,
                       LL2NUM(data.millis)
                       );
-#else
-    duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ms, 1,
-                      LL2NUM(data.micros)
-                      );
-#endif
 }
 
 static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx) {
