@@ -23,6 +23,7 @@ module DuckDBTest
     end
 
     def test_s_new_with_invalid_sql
+      skip('test with ASAN') if ENV['ASAN_TEST'] == '1'
       ex = assert_raises DuckDB::Error do
         DuckDB::ExtractedStatements.new(@con, 'SELECT 1; INVALID STATEMENT; SELECT 3')
       end
