@@ -50,6 +50,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
 static VALUE infinite_timestamp_value(duckdb_timestamp timestamp);
 static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s);
 static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms);
+static VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns);
 
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
@@ -474,10 +475,23 @@ static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
                       );
 }
 
+static VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
+    if (duckdb_is_finite_timestamp_ns(timestamp_ns) == false) {
+        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
+                          LL2NUM(timestamp_ns.nanos)
+                         );
+    }
+    return Qnil;
+}
+
 static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx) {
-    duckdb_timestamp data = ((duckdb_timestamp *)vector_data)[row_idx];
+    duckdb_timestamp_ns data = ((duckdb_timestamp_ns *)vector_data)[row_idx];
+    VALUE obj = infinite_timestamp_ns_value(data);
+    if (obj != Qnil) {
+        return obj;
+    }
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ns, 1,
-                      LL2NUM(data.micros)
+                      LL2NUM(data.nanos)
                       );
 }
 

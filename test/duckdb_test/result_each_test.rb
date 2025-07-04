@@ -85,6 +85,8 @@ module DuckDBTest
       [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'infinity'",                               String,               'infinity'                                          ],
       [:ok, 'TIMESTAMP_MS', 'TIMESTAMP_MS',                "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'2019-11-03 12:34:56.123456789'",          Time,                 Time.parse('2019-11-3 12:34:56.123456')             ],
+      [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'infinity'",                               String,               'infinity'                                          ],
+      [:ok, 'TIMESTAMP_NS', 'TIMESTAMP_NS',                "'-infinity'",                              String,               '-infinity'                                         ],
       [:ok, 'ENUM',         'mood',                        "'happy'",                                  String,               'happy'                                             ],
       [:ok, 'LIST',         'INTEGER[]',                   '[1, 2]',                                   Array,                [1, 2]                                              ],
       [:ok, 'LIST',         'INTEGER[][]',                 '[[1, 2], [3, 4]]',                         Array,                [[1, 2], [3, 4]]                                    ],
