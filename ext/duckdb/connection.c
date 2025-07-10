@@ -10,6 +10,7 @@ static VALUE duckdb_connection_interrupt(VALUE self);
 static VALUE duckdb_connection_query_progress(VALUE self);
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase);
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str);
+static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE funcDef);
 
 static const rb_data_type_t connection_data_type = {
     "DuckDB/Connection",
@@ -152,6 +153,182 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     return result;
 }
 
+typedef struct {
+    VALUE rb_impl_val;
+    duckdb_logical_type duckdb_return_type;
+    long duckdb_parameter_len;
+    duckdb_logical_type *duckdb_parameter_types;
+} scalar_function_impl_wrapper_extra_info;
+
+/* :nodoc: */
+static VALUE scalar_function_impl_wrapper_impl(VALUE args) {
+    VALUE *argv = (VALUE*)args;
+    VALUE recv = argv[0];
+    ID mid = (ID)argv[1];
+    int argc = (int)argv[2];
+    VALUE *func_args = (VALUE*)argv[3];
+
+    return rb_funcallv(recv, mid, argc, func_args);
+}
+
+/* :nodoc: */
+static void scalar_function_impl_wrapper(duckdb_function_info function_info, duckdb_data_chunk input, duckdb_vector output) {
+	idx_t chunkSize = duckdb_data_chunk_get_size(input);
+
+    scalar_function_impl_wrapper_extra_info *extra_info = duckdb_scalar_function_get_extra_info(function_info);
+
+    VALUE *ruby_call_args = malloc(extra_info->duckdb_parameter_len * sizeof(VALUE));
+    ID call_kw = rb_intern("call");
+
+	for(idx_t i = 0; i < chunkSize; i++) {
+	    // Extract parameters
+	    for (long j = 0; j < extra_info->duckdb_parameter_len; j++) {
+	        // TODO: if than calls are expensive then they can be done once, at the expense of one malloc/free (or if
+	        // TODO: there is a hardcoded limits of parameters then we can use a static array)
+	        void* arg_j_vector = duckdb_vector_get_data(duckdb_data_chunk_get_vector(input, j));
+
+            // TODO: extract in its own function
+            switch(duckdb_get_type_id(extra_info->duckdb_return_type)) {
+                case DUCKDB_TYPE_VARCHAR: {
+                    duckdb_string_t duckdb_string = ((duckdb_string_t*)(arg_j_vector))[i];
+                    const char *c_string = duckdb_string_t_data(&duckdb_string);
+                    VALUE ruby_string = rb_str_new_cstr(c_string);
+                    ruby_call_args[j] = ruby_string;
+                    break;
+                }
+                case DUCKDB_TYPE_INTEGER: {
+                    int32_t value = ((int32_t*)(arg_j_vector))[i];
+                    ruby_call_args[j] = INT2NUM(value);
+                    break;
+                }
+                default: {
+                    // TODO: better name
+                    duckdb_scalar_function_set_error(function_info, "ERROR 1 - TODO find a better name");
+
+                    // TODO: free `ruby_call_args`
+                    return;
+                }
+            }
+	    }
+
+	    int ruby_call_error;
+        VALUE args[4] = {
+            extra_info->rb_impl_val,
+            (VALUE)call_kw,
+            (VALUE)((int)(extra_info->duckdb_parameter_len)),
+            (VALUE)ruby_call_args
+        };
+        VALUE ruby_result_val = rb_protect(scalar_function_impl_wrapper_impl, (VALUE)args, &ruby_call_error);
+
+        if (ruby_call_error) {
+            VALUE ruby_err = rb_errinfo();
+            VALUE ruby_err_msg = rb_funcall(ruby_err, rb_intern("message"), 0);
+            const char* ruby_err_msg_cstr = StringValueCStr(ruby_err_msg);
+
+            const char* duckdb_error_msg_prefix = "Ruby error raise while executing the UDF: ";
+            char* duckdb_error_msg = malloc(strlen(duckdb_error_msg_prefix) + strlen(ruby_err_msg_cstr) + 1);
+            strcpy(duckdb_error_msg, duckdb_error_msg_prefix);
+            strcat(duckdb_error_msg, ruby_err_msg_cstr);
+
+            duckdb_scalar_function_set_error(function_info, duckdb_error_msg);
+
+            // TODO: free `ruby_call_args`
+            return;
+        }
+
+        // Convert result and store in output vector
+        // TODO: extract in its own function
+        switch(duckdb_get_type_id(extra_info->duckdb_return_type)) {
+            case DUCKDB_TYPE_VARCHAR: {
+                // TODO: asert that `ruby_result_val` is a string
+
+                duckdb_vector_assign_string_element(output, i, StringValueCStr(ruby_result_val));
+                break;
+            }
+            case DUCKDB_TYPE_INTEGER: {
+                // TODO: asert that `ruby_result_val` is an integer
+
+                int32_t *result_data = duckdb_vector_get_data(output);
+                result_data[i] = NUM2INT(ruby_result_val);
+                break;
+            }
+            default: {
+                // TODO: better name
+                duckdb_scalar_function_set_error(function_info, "ERROR 2 - TODO find a better name");
+
+                // TODO: free `ruby_call_args`
+                return;
+            }
+        }
+	}
+
+	free(ruby_call_args);
+}
+
+/* :nodoc: */
+static duckdb_logical_type sym_to_duckdb_logical_type(VALUE sym) {
+    if (SYM2ID(sym) == rb_intern("text")) {
+        return duckdb_create_logical_type(DUCKDB_TYPE_VARCHAR);
+    }
+    else if (SYM2ID(sym) == rb_intern("integer")) {
+        return duckdb_create_logical_type(DUCKDB_TYPE_INTEGER);
+    }
+    else {
+        // TODO: better name
+        rb_raise(rb_eRuntimeError, "Unknown DuckDB logical type for the symbol");
+    }
+}
+
+/* :nodoc: */
+static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE funcDef) {
+    // Inspired from https://github.com/duckdb/duckdb/blob/8a67a5450dad6b33709b16037f775e800b147ed9/extension/demo_capi/add_numbers.cpp
+
+    rubyDuckDBConnection *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
+
+    VALUE scalarFuncNameVal = rb_hash_aref(funcDef, ID2SYM(rb_intern("name")));
+    VALUE scalarFuncImplVal = rb_hash_aref(funcDef, ID2SYM(rb_intern("impl")));
+    VALUE scalarFuncReturnTypeVal = rb_hash_aref(funcDef, ID2SYM(rb_intern("return_type")));
+    VALUE scalarFuncParameterTypesVal = rb_hash_aref(funcDef, ID2SYM(rb_intern("parameter_types")));
+
+    duckdb_scalar_function scalarFunc = duckdb_create_scalar_function();
+    duckdb_scalar_function_set_name(scalarFunc, StringValueCStr(scalarFuncNameVal));
+    duckdb_scalar_function_set_function(scalarFunc, scalar_function_impl_wrapper);
+
+    // Set return type
+    duckdb_logical_type return_type = sym_to_duckdb_logical_type(scalarFuncReturnTypeVal);
+    duckdb_scalar_function_set_return_type(scalarFunc, return_type);
+
+    // Set extra information
+    scalar_function_impl_wrapper_extra_info *extra_info = malloc(sizeof(scalar_function_impl_wrapper_extra_info));
+    extra_info->rb_impl_val = scalarFuncImplVal;
+    // Is `rb_gc_mark(extra_info->rb_impl_val)` needed?
+    extra_info->duckdb_return_type = return_type;
+    // TODO: Free `extra_info`, `extra_info->duckdb_return_type` the individual parameter types and the array holding
+    // TODO: them in destroy callback of `duckdb_scalar_function_set_extra_info`.
+    duckdb_scalar_function_set_extra_info(scalarFunc, extra_info, NULL);
+
+    // Set parameters
+    long parameterTypesLen = RARRAY_LEN(scalarFuncParameterTypesVal);
+    extra_info->duckdb_parameter_len = parameterTypesLen;
+    extra_info->duckdb_parameter_types = malloc(parameterTypesLen * sizeof(duckdb_logical_type));
+    for (long i = 0; i < parameterTypesLen; i++) {
+        VALUE scalarFuncParameterTypeIVal = RARRAY_AREF(scalarFuncParameterTypesVal, i);
+        duckdb_logical_type parameter_type_i = sym_to_duckdb_logical_type(scalarFuncParameterTypeIVal);
+        duckdb_scalar_function_add_parameter(scalarFunc, parameter_type_i);
+        extra_info->duckdb_parameter_types[i] = parameter_type_i;
+    }
+
+    if (duckdb_register_scalar_function(ctx->con, scalarFunc) != DuckDBSuccess) {
+        rb_raise(rb_eTypeError, "Unable to register scalar function");
+    }
+
+    duckdb_destroy_scalar_function(&scalarFunc);
+
+    return Qnil;
+}
+
 void rbduckdb_init_duckdb_connection(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -165,4 +342,5 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
     /* TODO: query_sql => _query_sql */
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
+    rb_define_private_method(cDuckDBConnection, "_register_scalar_function", duckdb_connection_register_scalar_function, 1);
 }
