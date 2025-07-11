@@ -136,6 +136,15 @@ module DuckDB
       appender.close
     end
 
+    def register_scalar_function(name, callable = nil, return_type:, parameter_types: [], &block)
+      _register_scalar_function({
+        name:,
+        impl: callable || block,
+        return_type:,
+        parameter_types:
+      })
+    end
+
     private
 
     def create_appender(table)
