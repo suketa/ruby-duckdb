@@ -155,10 +155,12 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
 
 typedef struct {
     VALUE rb_impl_val;
-    duckdb_logical_type duckdb_return_type;
+    duckdb_type duckdb_return_type_id;
     long duckdb_parameter_len;
-    duckdb_logical_type *duckdb_parameter_types;
+    duckdb_type *duckdb_parameter_type_ids;
 } scalar_function_impl_wrapper_extra_info;
+
+static const int MAX_SCALAR_FUNCTION_PARAMETERS = 16;
 
 /* :nodoc: */
 static VALUE scalar_function_impl_wrapper_impl(VALUE args) {
@@ -177,35 +179,36 @@ static void scalar_function_impl_wrapper(duckdb_function_info function_info, duc
 
     scalar_function_impl_wrapper_extra_info *extra_info = duckdb_scalar_function_get_extra_info(function_info);
 
-    VALUE *ruby_call_args = malloc(extra_info->duckdb_parameter_len * sizeof(VALUE));
+    VALUE ruby_call_args[MAX_SCALAR_FUNCTION_PARAMETERS];
     ID call_kw = rb_intern("call");
+
+    void *input_vectors_data[MAX_SCALAR_FUNCTION_PARAMETERS];
+    for (long j = 0; j < extra_info->duckdb_parameter_len; j++) {
+        input_vectors_data[j] = duckdb_vector_get_data(duckdb_data_chunk_get_vector(input, j));
+    }
+
+    void *output_vector_data = duckdb_vector_get_data(output);
 
 	for(idx_t i = 0; i < chunkSize; i++) {
 	    // Extract parameters
 	    for (long j = 0; j < extra_info->duckdb_parameter_len; j++) {
-	        // TODO: if than calls are expensive then they can be done once, at the expense of one malloc/free (or if
-	        // TODO: there is a hardcoded limits of parameters then we can use a static array)
-	        void* arg_j_vector = duckdb_vector_get_data(duckdb_data_chunk_get_vector(input, j));
-
             // TODO: extract in its own function
-            switch(duckdb_get_type_id(extra_info->duckdb_return_type)) {
+            switch(extra_info->duckdb_parameter_type_ids[j]) {
                 case DUCKDB_TYPE_VARCHAR: {
-                    duckdb_string_t duckdb_string = ((duckdb_string_t*)(arg_j_vector))[i];
+                    duckdb_string_t duckdb_string = ((duckdb_string_t*)(input_vectors_data[j]))[i];
                     const char *c_string = duckdb_string_t_data(&duckdb_string);
                     VALUE ruby_string = rb_str_new_cstr(c_string);
                     ruby_call_args[j] = ruby_string;
                     break;
                 }
                 case DUCKDB_TYPE_INTEGER: {
-                    int32_t value = ((int32_t*)(arg_j_vector))[i];
+                    int32_t value = ((int32_t*)(input_vectors_data[j]))[i];
                     ruby_call_args[j] = INT2NUM(value);
                     break;
                 }
                 default: {
                     // TODO: better name
                     duckdb_scalar_function_set_error(function_info, "ERROR 1 - TODO find a better name");
-
-                    // TODO: free `ruby_call_args`
                     return;
                 }
             }
@@ -231,14 +234,12 @@ static void scalar_function_impl_wrapper(duckdb_function_info function_info, duc
             strcat(duckdb_error_msg, ruby_err_msg_cstr);
 
             duckdb_scalar_function_set_error(function_info, duckdb_error_msg);
-
-            // TODO: free `ruby_call_args`
             return;
         }
 
         // Convert result and store in output vector
         // TODO: extract in its own function
-        switch(duckdb_get_type_id(extra_info->duckdb_return_type)) {
+        switch(extra_info->duckdb_return_type_id) {
             case DUCKDB_TYPE_VARCHAR: {
                 // TODO: asert that `ruby_result_val` is a string
 
@@ -248,21 +249,17 @@ static void scalar_function_impl_wrapper(duckdb_function_info function_info, duc
             case DUCKDB_TYPE_INTEGER: {
                 // TODO: asert that `ruby_result_val` is an integer
 
-                int32_t *result_data = duckdb_vector_get_data(output);
+                int32_t *result_data = output_vector_data;
                 result_data[i] = NUM2INT(ruby_result_val);
                 break;
             }
             default: {
                 // TODO: better name
                 duckdb_scalar_function_set_error(function_info, "ERROR 2 - TODO find a better name");
-
-                // TODO: free `ruby_call_args`
                 return;
             }
         }
 	}
-
-	free(ruby_call_args);
 }
 
 /* :nodoc: */
@@ -277,6 +274,14 @@ static duckdb_logical_type sym_to_duckdb_logical_type(VALUE sym) {
         // TODO: better name
         rb_raise(rb_eRuntimeError, "Unknown DuckDB logical type for the symbol");
     }
+}
+
+/* :nodoc: */
+static void scalar_function_extra_info_delete_callback(void *raw_extra_info) {
+    scalar_function_impl_wrapper_extra_info *extra_info = raw_extra_info;
+
+    free(extra_info->duckdb_parameter_type_ids);
+    free(raw_extra_info);
 }
 
 /* :nodoc: */
@@ -304,22 +309,29 @@ static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE funcDe
     scalar_function_impl_wrapper_extra_info *extra_info = malloc(sizeof(scalar_function_impl_wrapper_extra_info));
     extra_info->rb_impl_val = scalarFuncImplVal;
     // Is `rb_gc_mark(extra_info->rb_impl_val)` needed?
-    extra_info->duckdb_return_type = return_type;
-    // TODO: Free `extra_info`, `extra_info->duckdb_return_type` the individual parameter types and the array holding
-    // TODO: them in destroy callback of `duckdb_scalar_function_set_extra_info`.
-    duckdb_scalar_function_set_extra_info(scalarFunc, extra_info, NULL);
+    extra_info->duckdb_return_type_id = duckdb_get_type_id(return_type);
+    duckdb_scalar_function_set_extra_info(scalarFunc, extra_info, scalar_function_extra_info_delete_callback);
+
+    duckdb_destroy_logical_type(&return_type);
 
     // Set parameters
     long parameterTypesLen = RARRAY_LEN(scalarFuncParameterTypesVal);
+    if (parameterTypesLen > MAX_SCALAR_FUNCTION_PARAMETERS) {
+        rb_raise(rb_eTypeError, "Too much parameters for the scalar function (ruby-duckdb internal limit)");
+    }
+
     extra_info->duckdb_parameter_len = parameterTypesLen;
-    extra_info->duckdb_parameter_types = malloc(parameterTypesLen * sizeof(duckdb_logical_type));
+    extra_info->duckdb_parameter_type_ids = malloc(parameterTypesLen * sizeof(duckdb_type));
     for (long i = 0; i < parameterTypesLen; i++) {
         VALUE scalarFuncParameterTypeIVal = RARRAY_AREF(scalarFuncParameterTypesVal, i);
         duckdb_logical_type parameter_type_i = sym_to_duckdb_logical_type(scalarFuncParameterTypeIVal);
         duckdb_scalar_function_add_parameter(scalarFunc, parameter_type_i);
-        extra_info->duckdb_parameter_types[i] = parameter_type_i;
+        extra_info->duckdb_parameter_type_ids[i] = duckdb_get_type_id(parameter_type_i);
+
+        duckdb_destroy_logical_type(&parameter_type_i);
     }
 
+    // Register function
     if (duckdb_register_scalar_function(ctx->con, scalarFunc) != DuckDBSuccess) {
         rb_raise(rb_eTypeError, "Unable to register scalar function");
     }
