@@ -40,4 +40,5 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_converter();
     rbduckdb_init_duckdb_extracted_statements();
     rbduckdb_init_duckdb_instance_cache();
+    rbduckdb_init_duckdb_value_impl();
 }

@@ -28,6 +28,7 @@
 #include "./appender.h"
 #include "./config.h"
 #include "./instance_cache.h"
+#include "./value_impl.h"
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
@@ -40,5 +41,6 @@ extern VALUE cDuckDBPreparedStatement;
 extern VALUE PositiveInfinity;
 extern VALUE NegativeInfinity;
 extern VALUE cDuckDBInstanceCache;
+extern VALUE cDuckDBValueImpl;
 
 #endif
