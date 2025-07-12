@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - Support TIMESTAMP_NS infinity, -infinity value.
+- bump duckdb to 1.3.2 on CI.
 
 # 1.3.1.0 - 2025-06-28
 - Support TIMESTAMP_S, TIMESTAMP_MS infinity, -infinity value.
