@@ -29,6 +29,7 @@
 #include "./config.h"
 #include "./instance_cache.h"
 #include "./value_impl.h"
+#include "./scalar_function.h"
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
@@ -42,5 +43,6 @@ extern VALUE PositiveInfinity;
 extern VALUE NegativeInfinity;
 extern VALUE cDuckDBInstanceCache;
 extern VALUE cDuckDBValueImpl;
+extern VALUE cDuckDBScalarFunction;
 
 #endif
