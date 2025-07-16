@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'time'
 
 module DuckDBTest
   class ScalarFunctionTest < Minitest::Test
