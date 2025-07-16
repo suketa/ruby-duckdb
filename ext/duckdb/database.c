@@ -18,7 +18,7 @@ static const rb_data_type_t database_data_type = {
 };
 
 static void close_database(rubyDuckDB *p) {
-    duckdb_close(&(p->db));
+    if (p->db) duckdb_close(&(p->db));
 }
 
 static void deallocate(void * ctx) {
