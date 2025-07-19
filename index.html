@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,7 +10,8 @@
   <meta name="keywords" content="ruby,documentation,RDoc Documentation">
 
 
-    <meta name="description" content="RDoc Documentation: Download the latest C++ package release for DuckDB. Extract the `duckdb.">
+    <meta name="description" content="RDoc Documentation: github. badge.">
+
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "./";
@@ -65,6 +66,47 @@
   </div>
 
   
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+
+
+  <ul class="link-list" role="directory">
+              <li>
+            <details open>
+              <summary>      <a href="#label-ruby-duckdb">ruby-duckdb</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Description">Description</a>
+          <li>      <a href="#label-Requirement">Requirement</a>
+          <li>      <a href="#label-Pre-requisite+setup+-28Linux-29-3A">Pre-requisite setup (Linux):</a>
+          <li>      <a href="#label-Pre-requisite+setup+-28macOS-29-3A">Pre-requisite setup (macOS):</a>
+          <li>      <a href="#label-Pre-requisite+setup+-28Windows-29-3A">Pre-requisite setup (Windows):</a>
+          <li>      <a href="#label-How+to+install">How to install</a>
+          <li>
+            <details open>
+              <summary>      <a href="#label-Usage">Usage</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Using+bind+variables">Using bind variables</a>
+          <li>      <a href="#label-Using+prepared+statement">Using prepared statement</a>
+          <li>      <a href="#label-Using+async+query">Using async query</a>
+          <li>      <a href="#label-Using+BLOB+column">Using BLOB column</a>
+          <li>      <a href="#label-Appender">Appender</a>
+          <li>      <a href="#label-Configuration">Configuration</a>
+
+              </ul>
+            </details>
+          </li>
+
+              </ul>
+            </details>
+          </li>
+
+  </ul>
+</div>
+
+  
 <div id="fileindex-section" class="nav-section">
   <h3>Pages</h3>
 
@@ -79,34 +121,13 @@
   <div id="classindex-section" class="nav-section">
   <h3>Class and Module Index</h3>
 
-  <ul class="link-list">
-  <li><details open><summary><code><a href="./DuckDB.html">DuckDB</a></code></summary>
-  <ul class="link-list">
-  <li><code><a href="./DuckDB/Appender.html">Appender</a></code>
-  <li><code><a href="./DuckDB/Blob.html">Blob</a></code>
-  <li><code><a href="./DuckDB/Column.html">Column</a></code>
-  <li><code><a href="./DuckDB/Config.html">Config</a></code>
-  <li><code><a href="./DuckDB/Connection.html">Connection</a></code>
-  <li><code><a href="./DuckDB/Database.html">Database</a></code>
-  <li><code><a href="./DuckDB/Error.html">Error</a></code>
-  <li><code><a href="./DuckDB/ExtractedStatements.html">ExtractedStatements</a></code>
-  <li><code><a href="./DuckDB/ExtractedStatementsImpl.html">ExtractedStatementsImpl</a></code>
-  <li><code><a href="./DuckDB/Infinity.html">Infinity</a></code>
-  <li><code><a href="./DuckDB/InstanceCache.html">InstanceCache</a></code>
-  <li><code><a href="./DuckDB/Interval.html">Interval</a></code>
-  <li><code><a href="./DuckDB/LogicalType.html">LogicalType</a></code>
-  <li><code><a href="./DuckDB/PendingResult.html">PendingResult</a></code>
-  <li><code><a href="./DuckDB/PreparedStatement.html">PreparedStatement</a></code>
-  <li><code><a href="./DuckDB/Result.html">Result</a></code>
-  <li><code><a href="./DuckDB/ScalarFunction.html">ScalarFunction</a></code>
-  <li><code><a href="./DuckDB/ValueImpl.html">ValueImpl</a></code>
-  </ul></details>
+  <ul class="link-list"><li><details open><summary><code><a href="./DuckDB.html">DuckDB</a></code></summary><ul class="link-list"><li><code><a href="./DuckDB/Appender.html">Appender</a></code></li><li><code><a href="./DuckDB/Blob.html">Blob</a></code></li><li><code><a href="./DuckDB/Column.html">Column</a></code></li><li><code><a href="./DuckDB/Config.html">Config</a></code></li><li><code><a href="./DuckDB/Connection.html">Connection</a></code></li><li><code><a href="./DuckDB/Database.html">Database</a></code></li><li><code><a href="./DuckDB/Error.html">Error</a></code></li><li><code><a href="./DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="./DuckDB/ExtractedStatementsImpl.html">ExtractedStatementsImpl</a></code></li><li><code><a href="./DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="./DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="./DuckDB/Interval.html">Interval</a></code></li><li><code><a href="./DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="./DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="./DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="./DuckDB/Result.html">Result</a></code></li><li><code><a href="./DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="./DuckDB/ValueImpl.html">ValueImpl</a></code></li></ul></details></li></ul>
 </div>
 
 
   <footer id="validator-badges" role="contentinfo">
   <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.10.0.
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
   <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
 </footer>
 
@@ -114,10 +135,10 @@
 
 <main role="main">
 
-
+  
 <h1 id="label-ruby-duckdb">ruby-duckdb<span><a href="#label-ruby-duckdb">&para;</a> <a href="#top">&uarr;</a></span></h1>
 
-<p><a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu"><img src="https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS"><img src="https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows"><img src="https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg"></a> <a href="https://badge.fury.io/rb/duckdb"><img src="https://badge.fury.io/rb/duckdb.svg"></a></p>
+<p><a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu"><img src="https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg" alt="Ubuntu"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS"><img src="https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg" alt="MacOS"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows"><img src="https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg" alt="Windows"></a> <a href="https://badge.fury.io/rb/duckdb"><img src="https://badge.fury.io/rb/duckdb.svg" alt="Gem Version"></a></p>
 
 <h2 id="label-Description">Description<span><a href="#label-Description">&para;</a> <a href="#top">&uarr;</a></span></h2>
 
