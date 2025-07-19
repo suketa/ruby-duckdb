@@ -6,6 +6,7 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_scalar_function_initialize(VALUE self);
+static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name);
 
 static const rb_data_type_t scalar_function_data_type = {
     "DuckDB/ScalarFunction",
@@ -35,6 +36,16 @@ static VALUE duckdb_scalar_function_initialize(VALUE self) {
     return self;
 }
 
+static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name) {
+    rubyDuckDBScalarFunction *p;
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
+
+    const char *str = StringValuePtr(name);
+    duckdb_scalar_function_set_name(p->scalar_function, str);
+
+    return self;
+}
+
 void rbduckdb_init_duckdb_scalar_function(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -42,4 +53,5 @@ void rbduckdb_init_duckdb_scalar_function(void) {
     cDuckDBScalarFunction = rb_define_class_under(mDuckDB, "ScalarFunction", rb_cObject);
     rb_define_alloc_func(cDuckDBScalarFunction, allocate);
     rb_define_method(cDuckDBScalarFunction, "initialize", duckdb_scalar_function_initialize, 0);
+    rb_define_method(cDuckDBScalarFunction, "set_name", rbduckdb_scalar_function_set_name, 1);
 }
