@@ -264,6 +264,21 @@ module DuckDBTest
       end
     end
 
+    def test_new_with_complex_types
+      # DUCKDB_TYPE_DECIMAL = 19, requires width and scale
+      assert_raises(ArgumentError) { DuckDB::LogicalType.new(19) }
+
+      # DUCKDB_TYPE_LIST = 24, requires a child type
+      assert_raises(ArgumentError) { DuckDB::LogicalType.new(24) }
+    end
+
+    def test_new_with_primitive_like_complex_type
+      # DUCKDB_TYPE_BIT = 29
+      bit_type = DuckDB::LogicalType.new(29)
+      assert_instance_of(DuckDB::LogicalType, bit_type)
+      assert_equal(:bit, bit_type.type)
+    end
+
     private
 
     def create_data(con)
