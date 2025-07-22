@@ -74,6 +74,13 @@
   
   
   
+  <div class="nav-section">
+    <h3>Class Methods</h3>
+    <ul class="link-list" role="directory">
+      <li ><a href="#method-c-new">new</a></li>
+    </ul>
+  </div>
+
 
 
   <div class="nav-section">
@@ -151,6 +158,62 @@
 
 
 
+
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-new" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-new" title="Link to this method">
+                <span class="method-name">new</span>
+                <span class="method-args">(p1)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="new-source">
+            <pre>static VALUE initialize(VALUE self, VALUE type_id_arg) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_type type = (duckdb_type)NUM2INT(type_id_arg);
+    duckdb_logical_type new_logical_type;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
+
+    if (ctx-&gt;logical_type) {
+        duckdb_destroy_logical_type(&amp;(ctx-&gt;logical_type));
+    }
+
+    new_logical_type = duckdb_create_logical_type(type);
+
+    if (!new_logical_type || duckdb_get_type_id(new_logical_type) == DUCKDB_TYPE_INVALID) {
+        if (new_logical_type) {
+            duckdb_destroy_logical_type(&amp;new_logical_type);
+        }
+        rb_raise(rb_eArgError, &quot;Invalid or unsupported logical type ID: %d&quot;, type);
+    }
+
+    ctx-&gt;logical_type = new_logical_type;
+
+    return self;
+}</pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+    </section>
 
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
