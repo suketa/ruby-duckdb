@@ -244,6 +244,41 @@ module DuckDBTest
       assert_equal(["sad", "ok", "happy", "𝘾𝝾օɭ 😎"], dictionary_values)
     end
 
+    # This test is for the new DuckDB::LogicalType.new method.
+    def test_new
+      # DUCKDB_TYPE_INTEGER = 4
+      int_type = DuckDB::LogicalType.new(4)
+      assert_instance_of(DuckDB::LogicalType, int_type)
+      assert_equal(:integer, int_type.type)
+
+      # DUCKDB_TYPE_VARCHAR = 17
+      varchar_type = DuckDB::LogicalType.new(17)
+      assert_instance_of(DuckDB::LogicalType, varchar_type)
+      assert_equal(:varchar, varchar_type.type)
+    end
+
+    def test_new_with_invalid_type
+      # Using a currently unassigned integer value
+      assert_raises(ArgumentError) do
+        DuckDB::LogicalType.new(999)
+      end
+    end
+
+    def test_new_with_complex_types
+      # DUCKDB_TYPE_DECIMAL = 19, requires width and scale
+      assert_raises(ArgumentError) { DuckDB::LogicalType.new(19) }
+
+      # DUCKDB_TYPE_LIST = 24, requires a child type
+      assert_raises(ArgumentError) { DuckDB::LogicalType.new(24) }
+    end
+
+    def test_new_with_primitive_like_complex_type
+      # DUCKDB_TYPE_BIT = 29
+      bit_type = DuckDB::LogicalType.new(29)
+      assert_instance_of(DuckDB::LogicalType, bit_type)
+      assert_equal(:bit, bit_type.type)
+    end
+
     private
 
     def create_data(con)
