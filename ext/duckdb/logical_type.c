@@ -23,6 +23,7 @@ static VALUE duckdb_logical_type_dictionary_size(VALUE self);
 static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx);
 static VALUE duckdb_logical_type__get_alias(VALUE self);
 static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
+static VALUE initialize(VALUE self, VALUE type_id_arg);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -47,6 +48,31 @@ static VALUE allocate(VALUE klass) {
 
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBLogicalType);
+}
+
+static VALUE initialize(VALUE self, VALUE type_id_arg) {
+    rubyDuckDBLogicalType *ctx;
+    duckdb_type type = (duckdb_type)NUM2INT(type_id_arg);
+    duckdb_logical_type new_logical_type;
+
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+
+    if (ctx->logical_type) {
+        duckdb_destroy_logical_type(&(ctx->logical_type));
+    }
+
+    new_logical_type = duckdb_create_logical_type(type);
+
+    if (!new_logical_type || duckdb_get_type_id(new_logical_type) == DUCKDB_TYPE_INVALID) {
+        if (new_logical_type) {
+            duckdb_destroy_logical_type(&new_logical_type);
+        }
+        rb_raise(rb_eArgError, "Invalid or unsupported logical type ID: %d", type);
+    }
+
+    ctx->logical_type = new_logical_type;
+
+    return self;
 }
 
 /*
@@ -439,4 +465,6 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "dictionary_value_at", duckdb_logical_type_dictionary_value_at, 1);
     rb_define_method(cDuckDBLogicalType, "get_alias", duckdb_logical_type__get_alias, 0);
     rb_define_method(cDuckDBLogicalType, "set_alias", duckdb_logical_type__set_alias, 1);
+
+    rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
 }
