@@ -55,5 +55,25 @@ module DuckDBTest
         DuckDB::Database.open(nil, config)
       end
     end
+
+    def test_duckdb_api_config_set_to_ruby
+      # Test with default database (no config)
+      db = DuckDB::Database.open
+      conn = db.connect
+      result = conn.query('PRAGMA user_agent')
+      user_agent = result.first[0]
+      assert_includes(user_agent.downcase, 'ruby', "User agent should contain 'ruby', but got: #{user_agent}")
+      db.close
+
+      # Test with custom config
+      config = DuckDB::Config.new
+      config.set_config('threads', '2')
+      db = DuckDB::Database.open(nil, config)
+      conn = db.connect
+      result = conn.query('PRAGMA user_agent')
+      user_agent = result.first[0]
+      assert_includes(user_agent.downcase, 'ruby', "User agent should contain 'ruby' even with custom config, but got: #{user_agent}")
+      db.close
+    end
   end
 end
