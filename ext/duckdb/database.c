@@ -6,6 +6,7 @@ static void close_database(rubyDuckDB *p);
 static void deallocate(void * ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static duckdb_config create_config_with_ruby_api(void);
 static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase);
 static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBDatabase);
 static VALUE duckdb_database_connect(VALUE self);
@@ -43,10 +44,27 @@ rubyDuckDB *rbduckdb_get_struct_database(VALUE obj) {
     return ctx;
 }
 
+static duckdb_config create_config_with_ruby_api(void) {
+    duckdb_config config;
+
+    if (duckdb_create_config(&config) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to create config");
+    }
+
+    if (duckdb_set_config(config, "duckdb_api", "ruby") == DuckDBError) {
+        duckdb_destroy_config(&config);
+        rb_raise(eDuckDBError, "failed to set duckdb_api config");
+    }
+
+    return config;
+}
+
 /* :nodoc: */
 static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase) {
     rubyDuckDB *ctx;
     VALUE obj;
+    duckdb_config config;
+    char *perror = NULL;
 
     char *pfile = NULL;
     VALUE file = Qnil;
@@ -59,9 +77,19 @@ static VALUE duckdb_database_s_open(int argc, VALUE *argv, VALUE cDuckDBDatabase
 
     obj = allocate(cDuckDBDatabase);
     TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
-    if (duckdb_open(pfile, &(ctx->db)) == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to open database"); /* FIXME */
+
+    config = create_config_with_ruby_api();
+
+    if (duckdb_open_ext(pfile, &(ctx->db), config, &perror) == DuckDBError) {
+        VALUE error_msg = rb_str_new_cstr(perror ? perror : "Unknown error");
+        if (perror) {
+            duckdb_free(perror);
+        }
+        duckdb_destroy_config(&config);
+        rb_raise(eDuckDBError, "failed to open database: %s", StringValueCStr(error_msg));
     }
+
+    duckdb_destroy_config(&config);
     return obj;
 }
 
@@ -70,7 +98,9 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
     rubyDuckDB *ctx;
     VALUE obj;
     rubyDuckDBConfig *ctx_config;
-    char *perror;
+    duckdb_config config_to_use;
+    char *perror = NULL;
+    int need_destroy_config = 0;
 
     char *pfile = NULL;
     VALUE file = Qnil;
@@ -84,19 +114,37 @@ static VALUE duckdb_database_s_open_ext(int argc, VALUE *argv, VALUE cDuckDBData
 
     obj = allocate(cDuckDBDatabase);
     TypedData_Get_Struct(obj, rubyDuckDB, &database_data_type, ctx);
+
     if (!NIL_P(config)) {
         if (!rb_obj_is_kind_of(config, cDuckDBConfig)) {
             rb_raise(rb_eTypeError, "The second argument must be DuckDB::Config object.");
         }
         ctx_config = get_struct_config(config);
-        if (duckdb_open_ext(pfile, &(ctx->db), ctx_config->config, &perror) == DuckDBError) {
-            rb_raise(eDuckDBError, "Failed to open database %s", perror);
+        /* Set duckdb_api to "ruby" for the provided config */
+        if (duckdb_set_config(ctx_config->config, "duckdb_api", "ruby") == DuckDBError) {
+            rb_raise(eDuckDBError, "failed to set duckdb_api config");
         }
+        config_to_use = ctx_config->config;
     } else {
-        if (duckdb_open(pfile, &(ctx->db)) == DuckDBError) {
-            rb_raise(eDuckDBError, "Failed to open database"); /* FIXME */
-        }
+        config_to_use = create_config_with_ruby_api();
+        need_destroy_config = 1;
     }
+
+    if (duckdb_open_ext(pfile, &(ctx->db), config_to_use, &perror) == DuckDBError) {
+        VALUE error_msg = rb_str_new_cstr(perror ? perror : "Unknown error");
+        if (perror) {
+            duckdb_free(perror);
+        }
+        if (need_destroy_config) {
+            duckdb_destroy_config(&config_to_use);
+        }
+        rb_raise(eDuckDBError, "failed to open database: %s", StringValueCStr(error_msg));
+    }
+
+    if (need_destroy_config) {
+        duckdb_destroy_config(&config_to_use);
+    }
+
     return obj;
 }
 
