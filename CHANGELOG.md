@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ValueImpl` class. This class is under construction. You must not use this class directly.
 - add `DuckDB::ScalarFunction` class. This class is under construction.
 - add `DuckDB::ScalarFunction#set_name`.
+- add `DuckDB::LogicalType.new(type_id)` to create a logical type from a type ID.
 
 # 1.3.1.0 - 2025-06-28
 - Support TIMESTAMP_S, TIMESTAMP_MS infinity, -infinity value.
