@@ -83,6 +83,13 @@
 
 
 
+  <div class="nav-section">
+    <h3>Instance Methods</h3>
+    <ul class="link-list" role="directory">
+      <li ><a href="#method-i-set_name">set_name</a></li>
+    </ul>
+  </div>
+
 
 
   <footer id="validator-badges" role="contentinfo">
@@ -154,6 +161,47 @@
     rubyDuckDBScalarFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
     p-&gt;scalar_function = duckdb_create_scalar_function();
+    return self;
+}</pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-set_name" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-set_name" title="Link to this method">
+                <span class="method-name">set_name</span>
+                <span class="method-args">(p1)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="set_name-source">
+            <pre>static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name) {
+    rubyDuckDBScalarFunction *p;
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
+
+    const char *str = StringValuePtr(name);
+    duckdb_scalar_function_set_name(p-&gt;scalar_function, str);
+
     return self;
 }</pre>
           </div>
