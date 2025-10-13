@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - Support TIMESTAMP_NS infinity, -infinity value.
-- bump duckdb to 1.3.2 on CI.
+- bump duckdb to 1.3.2, 1.4.1 on CI.
 - add `DuckDB::ValueImpl` class. This class is under construction. You must not use this class directly.
 - add `DuckDB::ScalarFunction` class. This class is under construction.
 - add `DuckDB::ScalarFunction#set_name`.
