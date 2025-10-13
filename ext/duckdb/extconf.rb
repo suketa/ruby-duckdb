@@ -64,6 +64,9 @@ have_func('duckdb_create_instance_cache', 'duckdb.h')
 # check duckdb >= 1.3.0
 have_func('duckdb_get_table_names', 'duckdb.h')
 
+# check duckdb >= 1.4.0
+have_func('duckdb_appender_create_query', 'duckdb.h')
+
 $CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
 
 create_makefile('duckdb/duckdb_native')

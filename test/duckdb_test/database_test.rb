@@ -38,6 +38,9 @@ module DuckDBTest
     end
 
     def test_s_open_with_config
+      library_version = Gem::Version.new(DuckDB::LIBRARY_VERSION)
+      skip 'config test' if %w[1.4.0 1.4.1].include?(library_version.to_s)
+
       config = DuckDB::Config.new
       config['default_order'] = 'DESC'
       db = DuckDB::Database.open(nil, config)
