@@ -93,14 +93,27 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
  */
 static VALUE appender_error_message(VALUE self) {
     rubyDuckDBAppender *ctx;
+#ifdef HAVE_DUCKDB_H_GE_V1_4_0
+    duckdb_error_data error_data;
+#else
     const char *msg;
+#endif
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
+#ifdef HAVE_DUCKDB_H_GE_V1_4_0
+    error_data = duckdb_appender_error_data(ctx->appender);
+    if (duckdb_error_data_has_error(error_data)) {
+        return rb_str_new2(duckdb_error_data_message(error_data));
+    } else {
+        return Qnil;
+    }
+#else
     msg = duckdb_appender_error(ctx->appender);
     if (msg == NULL) {
         return Qnil;
     }
     return rb_str_new2(msg);
+#endif
 }
 
 /* :nodoc: */
