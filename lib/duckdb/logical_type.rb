@@ -49,12 +49,7 @@ module DuckDB
       # time_ns: 39
     }.each do |method_name, type_id|
       define_singleton_method(method_name) do
-        if @logical_types[type_id].nil?
-          logical_type = DuckDB::LogicalType.new(type_id)
-          @logical_types[type_id] = logical_type
-        else
-          @logical_types[type_id]
-        end
+        @logical_types[type_id] ||= DuckDB::LogicalType.new(type_id)
       end
       const_set(method_name.upcase, send(method_name))
     end
