@@ -5,6 +5,60 @@ module DuckDB
     alias :alias get_alias
     alias :alias= set_alias
 
+    @logical_types = {}
+
+    {
+      boolean: 1,
+      tinyint: 2,
+      smallint: 3,
+      integer: 4,
+      bigint: 5,
+      utinyint: 6,
+      usmallint: 7,
+      uinteger: 8,
+      ubigint: 9,
+      float: 10,
+      double: 11,
+      timestamp: 12,
+      date: 13,
+      time: 14,
+      interval: 15,
+      hugeint: 16,
+      uhugeint: 32,
+      varchar: 17,
+      blob: 18,
+      # decimal: 19,
+      timestamp_s: 20,
+      timestamp_ms: 21,
+      timestamp_ns: 22,
+      # enum: 23,
+      # list: 24,
+      # struct: 25,
+      # map: 26,
+      # array: 33,
+      # uuid: 27,
+      # union: 28,
+      bit: 29,
+      time_tz: 30,
+      timestamp_tz: 31,
+      any: 34,
+      bignum: 35,
+      sqlnull: 36,
+      string_literal: 37,
+      integer_literal: 38
+      # time_ns: 39
+    }.each do |method_name, type_id|
+      define_singleton_method(method_name) do
+        if @logical_types[type_id].nil?
+          logical_type = DuckDB::LogicalType.new(type_id)
+          @logical_types[type_id] = logical_type
+        else
+          @logical_types[type_id]
+        end
+      end
+      const_set(method_name.upcase, send(method_name))
+    end
+
     # returns logical type's type symbol
     # `:unknown` means that the logical type's type is unknown/unsupported by ruby-duckdb.
     # `:invalid` means that the logical type's type is invalid in duckdb.
