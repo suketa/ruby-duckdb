@@ -136,6 +136,12 @@ module DuckDB
       appender.close
     end
 
+    if Appender.respond_to?(:create_query)
+      def appender_from_query(query, types, table_name = nil, column_names = nil)
+        Appender.create_query(self, query, types, table_name, column_names)
+      end
+    end
+
     private
 
     def create_appender(table)
