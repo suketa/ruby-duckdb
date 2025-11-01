@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::Appender.create_query.
 - add `DuckDB::LogicalType.boolean`, `DuckDB::LogicalType.tinyint`, `DuckDB::LogicalType.smallint`,
   `DuckDB::LogicalType.integer`, `DuckDB::LogicalType.bigint`, `DuckDB::LogicalType.utinyint`,
   `DuckDB::LogicalType.usmallint`, `DuckDB::LogicalType.uinteger`, `DuckDB::LogicalType.ubigint`,
