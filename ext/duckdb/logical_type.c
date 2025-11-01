@@ -41,6 +41,12 @@ static void deallocate(void *ctx) {
     xfree(p);
 }
 
+rubyDuckDBLogicalType *get_struct_logical_type(VALUE obj) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    return ctx;
+}
+
 static VALUE allocate(VALUE klass) {
     rubyDuckDBLogicalType *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBLogicalType));
     return TypedData_Wrap_Struct(klass, &logical_type_data_type, ctx);

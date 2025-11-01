@@ -53,6 +53,18 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { appender = DuckDB::Appender.new(@con, 'b', 'b') }
     end
 
+    def test_s_create_query
+      unless DuckDB::Appender.respond_to?(:create_query)
+        skip 'DuckDB::Appender.create_query is not supported in this DuckDB version'
+      end
+
+      query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
+      types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+      appender = DuckDB::Appender.create_query(@con, query, types, 'my_appended_data', %w[i val])
+
+      assert_instance_of(DuckDB::Appender, appender)
+    end
+
     def sub_test_append_column2(method, type, values:, expected:)
       create_appender("col #{type}")
       @appender.send(method, *values)

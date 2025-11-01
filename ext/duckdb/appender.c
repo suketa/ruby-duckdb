@@ -5,6 +5,11 @@ static VALUE cDuckDBAppender;
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+
+#ifdef HAVE_DUCKDB_H_GE_V1_4_0
+static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns);
+#endif
+
 static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
 static VALUE appender_error_message(VALUE self);
 static VALUE appender__append_bool(VALUE self, VALUE val);
@@ -55,6 +60,56 @@ static VALUE allocate(VALUE klass) {
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBAppender);
 }
+
+#ifdef HAVE_DUCKDB_H_GE_V1_4_0
+static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns) {
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBAppender *ctx;
+    char *query_str = StringValuePtr(query);
+    char *table_name = NULL;
+    const char **column_names = NULL;
+    idx_t column_count = 0;
+    duckdb_logical_type *type_array = NULL;
+    VALUE appender = Qnil;
+
+    if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
+        rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
+    }
+    if (rb_obj_is_kind_of(types, rb_cArray) == Qfalse) {
+        rb_raise(rb_eTypeError, "2nd argument should be an Array");
+    }
+    column_count = RARRAY_LEN(types);
+    type_array = ALLOCA_N(duckdb_logical_type, (size_t)column_count);
+    for (idx_t i = 0; i < column_count; i++) {
+        VALUE type_val = rb_ary_entry(types, i);
+        rubyDuckDBLogicalType *type_ctx = get_struct_logical_type(type_val);
+        type_array[i] = type_ctx->logical_type;
+    }
+
+    if (table != Qnil) {
+        table_name = StringValuePtr(table);
+    }
+    if (columns != Qnil) {
+        if (rb_obj_is_kind_of(columns, rb_cArray) == Qfalse) {
+            rb_raise(rb_eTypeError, "4th argument should be an Array or nil");
+        }
+        idx_t col_count = RARRAY_LEN(columns);
+        column_names = ALLOCA_N(const char *, (size_t)col_count);
+        for (idx_t i = 0; i < col_count; i++) {
+            VALUE col_name_val = rb_ary_entry(columns, i);
+            column_names[i] = StringValuePtr(col_name_val);
+        }
+    }
+    ctxcon = get_struct_connection(con);
+    appender = allocate(klass);
+    TypedData_Get_Struct(appender, rubyDuckDBAppender, &appender_data_type, ctx);
+    if (duckdb_appender_create_query(ctxcon->con, query_str, column_count, type_array, table_name, column_names, &ctx->appender) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to create appender from query");
+    }
+
+    return appender;
+}
+#endif
 
 static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
 
@@ -389,6 +444,9 @@ void rbduckdb_init_duckdb_appender(void) {
 #endif
     cDuckDBAppender = rb_define_class_under(mDuckDB, "Appender", rb_cObject);
     rb_define_alloc_func(cDuckDBAppender, allocate);
+#ifdef HAVE_DUCKDB_H_GE_V1_4_0
+    rb_define_singleton_method(cDuckDBAppender, "create_query", appender_s_create_query, 5);
+#endif
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
     rb_define_private_method(cDuckDBAppender, "_end_row", appender__end_row, 0);
