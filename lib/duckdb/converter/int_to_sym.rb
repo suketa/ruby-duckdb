@@ -68,7 +68,11 @@ module DuckDB
         28 => :union,
         29 => :bit,
         30 => :time_tz,
-        31 => :timestamp_tz
+        31 => :timestamp_tz,
+        35 => :bignum,
+        36 => :sqlnull,
+        37 => :string_literal,
+        38 => :integer_literal
       }.freeze
 
       module_function

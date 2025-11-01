@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB::LogicalType.boolean`, `DuckDB::LogicalType.tinyint`, `DuckDB::LogicalType.smallint`,
+  `DuckDB::LogicalType.integer`, `DuckDB::LogicalType.bigint`, `DuckDB::LogicalType.utinyint`,
+  `DuckDB::LogicalType.usmallint`, `DuckDB::LogicalType.uinteger`, `DuckDB::LogicalType.ubigint`,
+  `DuckDB::LogicalType.float`, `DuckDB::LogicalType.double`, `DuckDB::LogicalType.timestamp`,
+  `DuckDB::LogicalType.date`, `DuckDB::LogicalType.time`, `DuckDB::LogicalType.interval`,
+  `DuckDB::LogicalType.hugeint`, `DuckDB::LogicalType.uhugeint`, `DuckDB::LogicalType.varchar`,
+  `DuckDB::LogicalType.blob`, `DuckDB::LogicalType.timestamp_s`,
+  `DuckDB::LogicalType.timestamp_ms`, `DuckDB::LogicalType.timestamp_ns`,
+  `DuckDB::LogicalType.bit`, `DuckDB::LogicalType.time_tz`, `DuckDB::LogicalType.timestamp_tz`.
+- add `DuckDB::LogicalType::BOOLEAN`, `DuckDB::LogicalType::TINYINT`, `DuckDB::LogicalType::SMALLINT`,
+  `DuckDB::LogicalType::INTEGER`, `DuckDB::LogicalType::BIGINT`, `DuckDB::LogicalType::UTINYINT`,
+  `DuckDB::LogicalType::USMALLINT`, `DuckDB::LogicalType::UINTEGER`, `DuckDB::LogicalType::UBIGINT`,
+  `DuckDB::LogicalType::FLOAT`, `DuckDB::LogicalType::DOUBLE`, `DuckDB::LogicalType::TIMESTAMP`,
+  `DuckDB::LogicalType::DATE`, `DuckDB::LogicalType::TIME`, `DuckDB::LogicalType::INTERVAL`,
+  `DuckDB::LogicalType::HUGEINT`, `DuckDB::LogicalType::UHUGEINT`, `DuckDB::LogicalType::VARCHAR`,
+  `DuckDB::LogicalType::BLOB`, `DuckDB::LogicalType::TIMESTAMP_S`,
+  `DuckDB::LogicalType::TIMESTAMP_MS`, `DuckDB::LogicalType::TIMESTAMP_NS`,
+  `DuckDB::LogicalType::BIT`, `DuckDB::LogicalType::TIME_TZ`, `DuckDB::LogicalType::TIMESTAMP_TZ`.
 - Support TIMESTAMP_NS infinity, -infinity value.
 - bump duckdb to 1.3.2, 1.4.1 on CI.
 - add `DuckDB::ValueImpl` class. This class is under construction. You must not use this class directly.

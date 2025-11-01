@@ -113,6 +113,44 @@ module DuckDBTest
       @columns = result.columns
     end
 
+    def test_singleton_method_defined
+      %i[
+        boolean
+        tinyint
+        smallint
+        integer
+        bigint
+        utinyint
+        usmallint
+        uinteger
+        ubigint
+        float
+        double
+        timestamp
+        date
+        time
+        interval
+        hugeint
+        uhugeint
+        varchar
+        blob
+        timestamp_s
+        timestamp_ms
+        timestamp_ns
+        bit
+        time_tz
+        timestamp_tz
+        bignum
+        sqlnull
+        string_literal
+        integer_literal
+      ].each do |method_name|
+        logical_type = DuckDB::LogicalType.send(method_name)
+        assert_instance_of(DuckDB::LogicalType, logical_type)
+        assert_equal(method_name, logical_type.type)
+      end
+    end
+
     def test_type
       logical_types = @columns.map(&:logical_type)
       assert_equal(EXPECTED_TYPES, logical_types.map(&:type))
