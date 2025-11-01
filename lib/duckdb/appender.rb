@@ -24,7 +24,7 @@ module DuckDB
     # :startdoc:
 
     class << self
-      alias from_query create_query
+      alias from_query create_query if respond_to?(:create_query)
     end
 
     # :call-seq:
