@@ -62,6 +62,19 @@ static size_t memsize(const void *p) {
 }
 
 #ifdef HAVE_DUCKDB_H_GE_V1_4_0
+/* call-seq:
+ *   DuckDB::Appender.create_query -> DuckDB::Appender
+ *
+ * Returns a new Appender instance created from a query.
+ *
+ *   require 'duckdb'
+ *   db = DuckDB::Database.open
+ *   con = db.connect
+ *   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+ *   query = 'INSERT OR REPLACE INTO users SELECT i, val FROM my_appended_data'
+ *   types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+ *   appender = DuckDB::Appender.create_query(con, query, types, 'my_appended_data', %w[i val])
+ */
 static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBAppender *ctx;

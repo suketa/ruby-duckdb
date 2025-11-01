@@ -23,6 +23,10 @@ module DuckDB
     private_constant :RANGE_INT16, :RANGE_INT32, :RANGE_INT64
     # :startdoc:
 
+    class << self
+      alias from_query create_query
+    end
+
     # :call-seq:
     #   appender.begin_row -> self
     # A nop method, provided for backwards compatibility reasons.

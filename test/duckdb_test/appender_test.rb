@@ -65,6 +65,47 @@ module DuckDBTest
       assert_instance_of(DuckDB::Appender, appender)
     end
 
+    # test for alias of create_query
+    def test_s_from_query
+      unless DuckDB::Appender.respond_to?(:create_from_query)
+        skip 'DuckDB::Appender.create_query is not supported in this DuckDB version'
+      end
+
+      query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
+      types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+      appender = DuckDB::Appender.from_query(@con, query, types, 'my_appended_data', %w[i val])
+
+      assert_instance_of(DuckDB::Appender, appender)
+    end
+
+    def test_s_create_query_append_test
+      unless DuckDB::Appender.respond_to?(:create_query)
+        skip 'DuckDB::Appender.create_query is not supported in this DuckDB version'
+      end
+
+      @con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
+      @con.query("INSERT INTO t VALUES (1, 'hello')")
+
+      query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
+      types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+      appender = DuckDB::Appender.create_query(@con, query, types, 'my_appended_data', %w[i val])
+
+      appender.begin_row
+      appender.append_int32(1)
+      appender.append_varchar('hello world')
+      appender.end_row
+      appender.flush
+
+      appender.begin_row
+      appender.append_int32(2)
+      appender.append_varchar('bye bye')
+      appender.end_row
+      appender.flush
+
+      r = @con.query('SELECT * FROM t ORDER BY i')
+      assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
+    end
+
     def sub_test_append_column2(method, type, values:, expected:)
       create_appender("col #{type}")
       @appender.send(method, *values)
