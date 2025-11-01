@@ -77,6 +77,8 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-create_query">create_query</a></li>
+      <li ><a href="#method-c-from_query">from_query</a></li>
       <li ><a href="#method-c-new">new</a></li>
     </ul>
   </div>
@@ -177,6 +179,113 @@
          <h3>Public Class Methods</h3>
        </header>
 
+      <div id="method-c-create_query" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-create_query" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::Appender.create_query &rarr; DuckDB::Appender
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_query-source">
+            <pre>static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns) {
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBAppender *ctx;
+    char *query_str = StringValuePtr(query);
+    char *table_name = NULL;
+    const char **column_names = NULL;
+    idx_t column_count = 0;
+    duckdb_logical_type *type_array = NULL;
+    VALUE appender = Qnil;
+
+    if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
+        rb_raise(rb_eTypeError, &quot;1st argument should be instance of DackDB::Connection&quot;);
+    }
+    if (rb_obj_is_kind_of(types, rb_cArray) == Qfalse) {
+        rb_raise(rb_eTypeError, &quot;2nd argument should be an Array&quot;);
+    }
+    column_count = RARRAY_LEN(types);
+    type_array = ALLOCA_N(duckdb_logical_type, (size_t)column_count);
+    for (idx_t i = 0; i &lt; column_count; i++) {
+        VALUE type_val = rb_ary_entry(types, i);
+        rubyDuckDBLogicalType *type_ctx = get_struct_logical_type(type_val);
+        type_array[i] = type_ctx-&gt;logical_type;
+    }
+
+    if (table != Qnil) {
+        table_name = StringValuePtr(table);
+    }
+    if (columns != Qnil) {
+        if (rb_obj_is_kind_of(columns, rb_cArray) == Qfalse) {
+            rb_raise(rb_eTypeError, &quot;4th argument should be an Array or nil&quot;);
+        }
+        idx_t col_count = RARRAY_LEN(columns);
+        column_names = ALLOCA_N(const char *, (size_t)col_count);
+        for (idx_t i = 0; i &lt; col_count; i++) {
+            VALUE col_name_val = rb_ary_entry(columns, i);
+            column_names[i] = StringValuePtr(col_name_val);
+        }
+    }
+    ctxcon = get_struct_connection(con);
+    appender = allocate(klass);
+    TypedData_Get_Struct(appender, rubyDuckDBAppender, &amp;appender_data_type, ctx);
+    if (duckdb_appender_create_query(ctxcon-&gt;con, query_str, column_count, type_array, table_name, column_names, &amp;ctx-&gt;appender) == DuckDBError) {
+        rb_raise(eDuckDBError, &quot;failed to create appender from query&quot;);
+    }
+
+    return appender;
+}</pre>
+          </div>
+          <p>Returns a new <a href="Appender.html"><code>Appender</code></a> instance created from a query.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR)&#39;</span>)
+<span class="ruby-identifier">query</span> = <span class="ruby-string">&#39;INSERT OR REPLACE INTO users SELECT i, val FROM my_appended_data&#39;</span>
+<span class="ruby-identifier">types</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>]
+<span class="ruby-identifier">appender</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Appender</span>.<span class="ruby-identifier">create_query</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-string">&#39;my_appended_data&#39;</span>, <span class="ruby-node">%w[i val]</span>)
+</pre>
+        </div>
+
+        <div class="aliases">
+          Also aliased as: <a href="Appender.html#method-c-from_query">from_query</a>
+        </div>
+
+      </div>
+
+      <div id="method-c-from_query" class="method-detail anchor-link method-alias">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-from_query" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::Appender.create_query &rarr; DuckDB::Appender
+                  </span>
+                </a>
+              </div>
+        </div>
+
+
+        <div class="method-description">
+          
+        </div>
+
+
+        <div class="aliases">
+          Alias for: <a href="Appender.html#method-c-create_query">create_query</a>
+        </div>
+      </div>
+
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -195,7 +304,9 @@
 
         <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre>static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
+            <pre>endif
+
+static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
 
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBAppender *ctx;
@@ -249,7 +360,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 579</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 583</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -317,7 +428,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_blob-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 383</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 387</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_blob</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_blob</span>(<span class="ruby-identifier">value</span>)
 
@@ -360,7 +471,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_bool-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 114</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 118</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_bool</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_bool</span>(<span class="ruby-identifier">value</span>)
 
@@ -404,7 +515,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_date-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 491</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 495</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_date</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">date</span> = <span class="ruby-identifier">_parse_date</span>(<span class="ruby-identifier">value</span>)
 
@@ -451,7 +562,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_default-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 425</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 429</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_default</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_default</span>
 
@@ -494,7 +605,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_double-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 323</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 327</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_double</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_double</span>(<span class="ruby-identifier">value</span>)
 
@@ -537,7 +648,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_float-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 303</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 307</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_float</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_float</span>(<span class="ruby-identifier">value</span>)
 
@@ -580,7 +691,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_hugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 445</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 449</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
 
@@ -625,7 +736,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_int16-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 157</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 161</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int16</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int16</span>(<span class="ruby-identifier">value</span>)
 
@@ -669,7 +780,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_int32-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 178</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 182</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int32</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int32</span>(<span class="ruby-identifier">value</span>)
 
@@ -713,7 +824,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_int64-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 199</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 203</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int64</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int64</span>(<span class="ruby-identifier">value</span>)
 
@@ -757,7 +868,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_int8-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 136</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 140</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int8</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int8</span>(<span class="ruby-identifier">value</span>)
 
@@ -801,7 +912,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 561</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 565</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">to_interval</span>(<span class="ruby-identifier">value</span>)
 
@@ -846,7 +957,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_null-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 403</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 407</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_null</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_null</span>
 
@@ -888,7 +999,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 620</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 624</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)
@@ -931,7 +1042,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_time-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 514</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 518</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_time</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
@@ -977,7 +1088,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_timestamp-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 538</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 542</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_timestamp</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">to_time</span>(<span class="ruby-identifier">value</span>)
 
@@ -1024,7 +1135,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_uhugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 467</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 471</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uhugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
 
@@ -1069,7 +1180,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_uint16-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 241</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 245</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint16</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint16</span>(<span class="ruby-identifier">value</span>)
 
@@ -1113,7 +1224,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_uint32-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 262</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 266</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint32</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint32</span>(<span class="ruby-identifier">value</span>)
 
@@ -1157,7 +1268,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_uint64-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 283</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 287</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint64</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint64</span>(<span class="ruby-identifier">value</span>)
 
@@ -1201,7 +1312,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_uint8-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 220</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 224</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint8</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint8</span>(<span class="ruby-identifier">value</span>)
 
@@ -1245,7 +1356,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_varchar-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 343</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 347</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_varchar</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_varchar</span>(<span class="ruby-identifier">value</span>)
 
@@ -1288,7 +1399,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_varchar_length-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 363</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 367</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_varchar_length</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">length</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_varchar_length</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">length</span>)
 
@@ -1345,7 +1456,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="begin_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 30</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 34</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">begin_row</span>
   <span class="ruby-keyword">self</span>
 <span class="ruby-keyword">end</span></pre>
@@ -1375,7 +1486,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="close-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 93</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 97</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">close</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_close</span>
 
@@ -1419,7 +1530,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="end_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 47</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 51</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">end_row</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_end_row</span>
 
@@ -1520,7 +1631,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="flush-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 70</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 74</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">flush</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_flush</span>
 
