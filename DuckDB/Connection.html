@@ -80,6 +80,7 @@
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-appender">appender</a></li>
+      <li ><a href="#method-i-appender_from_query">appender_from_query</a></li>
       <li ><a href="#method-i-async_query">async_query</a></li>
       <li ><a href="#method-i-async_query_stream">async_query_stream</a></li>
       <li ><a href="#method-i-connect">connect</a></li>
@@ -179,6 +180,47 @@
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>returns <a href="Appender.html"><code>Appender</code></a> object. The first argument is table name</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-appender_from_query" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-appender_from_query" title="Link to this method">
+                  <span class="method-callseq">
+                    appender_from_query(query, types, table_name = nil, column_names = nil) &rarr; DuckDB::Appender
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="appender_from_query-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 156</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">appender_from_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-identifier">table_name</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">column_names</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-constant">Appender</span>.<span class="ruby-identifier">create_query</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-identifier">table_name</span>, <span class="ruby-identifier">column_names</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates an appender object that executes the given query with any data appended to it. The ‘table_name` parameter is used to refer to the appended data in the query. If omitted, it defaults to “appended_data”. The `column_names` parameter provides names for the columns of the appended data. If omitted, it defaults to “col1”, “col2”, etc.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)&#39;</span>)
+<span class="ruby-identifier">query</span> = <span class="ruby-string">&#39;INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data&#39;</span>
+<span class="ruby-identifier">types</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>]
+<span class="ruby-identifier">appender</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender_from_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-string">&#39;my_appended_data&#39;</span>, <span class="ruby-node">%w[i val]</span>)
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append_row</span>(<span class="ruby-value">1</span>, <span class="ruby-string">&#39;hello world&#39;</span>)
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">close</span>
+</pre>
         </div>
 
 
