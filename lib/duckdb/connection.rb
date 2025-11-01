@@ -136,6 +136,28 @@ module DuckDB
       appender.close
     end
 
+    if Appender.respond_to?(:create_query)
+      # :call-seq:
+      #   connection.appender_from_query(query, types, table_name = nil, column_names = nil) -> DuckDB::Appender
+      #
+      # Creates an appender object that executes the given query with any data appended to it.
+      # The `table_name` parameter is used to refer to the appended data in the query. If omitted, it defaults to "appended_data".
+      # The `column_names` parameter provides names for the columns of the appended data. If omitted, it defaults to "col1", "col2", etc.
+      #
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
+      #   query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
+      #   types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+      #   appender = con.appender_from_query(query, types, 'my_appended_data', %w[i val])
+      #   appender.append_row(1, 'hello world')
+      #   appender.close
+      def appender_from_query(query, types, table_name = nil, column_names = nil)
+        Appender.create_query(self, query, types, table_name, column_names)
+      end
+    end
+
     private
 
     def create_appender(table)

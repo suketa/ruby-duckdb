@@ -259,5 +259,62 @@ module DuckDBTest
       r = @con.query('SELECT col1, col2 FROM t')
       assert_equal([1, 'foo'], r.first)
     end
+
+    def test_appender_from_query
+      unless DuckDB::Appender.respond_to?(:create_query)
+        skip 'DuckDB::Connection#appender_from_query is not supported in this DuckDB version'
+      end
+
+      @con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
+      @con.query("INSERT INTO t VALUES (1, 'hello')")
+
+      query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
+      types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+      appender = @con.appender_from_query(query, types, 'my_appended_data', %w[i val])
+
+      appender.begin_row
+      appender.append_int32(1)
+      appender.append_varchar('hello world')
+      appender.end_row
+      appender.flush
+
+      appender.begin_row
+      appender.append_int32(2)
+      appender.append_varchar('bye bye')
+      appender.end_row
+      appender.flush
+
+      r = @con.query('SELECT * FROM t ORDER BY i')
+      assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
+    end
+
+    def test_appender_from_query_omitting_args
+      unless DuckDB::Appender.respond_to?(:create_query)
+        skip 'DuckDB::Connection#appender_from_query is not supported in this DuckDB version'
+      end
+
+      @con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
+      @con.query("INSERT INTO t VALUES (1, 'hello')")
+
+      query = 'INSERT OR REPLACE INTO t SELECT col1, col2 FROM appended_data'
+      types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
+
+      appender = @con.appender_from_query(query, types)
+
+      appender.begin_row
+      appender.append_int32(1)
+      appender.append_varchar('hello world')
+      appender.end_row
+      appender.flush
+
+      appender.begin_row
+      appender.append_int32(2)
+      appender.append_varchar('bye bye')
+      appender.end_row
+      appender.flush
+
+      r = @con.query('SELECT * FROM t ORDER BY i')
+      assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
+    end
   end
 end

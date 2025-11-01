@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::Connection#appender_from_query.
 - add DuckDB::Appender.create_query.
 - add `DuckDB::LogicalType.boolean`, `DuckDB::LogicalType.tinyint`, `DuckDB::LogicalType.smallint`,
   `DuckDB::LogicalType.integer`, `DuckDB::LogicalType.bigint`, `DuckDB::LogicalType.utinyint`,
