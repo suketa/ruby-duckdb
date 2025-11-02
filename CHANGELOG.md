@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- drop duckdb v1.2.x.
+- bump duckdb to 1.3.0.
 
 # 1.4.1.1 - 2025-11-03
 - DuckDB::Connection#appender_from_query accepts block.
