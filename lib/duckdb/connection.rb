@@ -126,14 +126,9 @@ module DuckDB
 
     # returns Appender object.
     # The first argument is table name
-    def appender(table)
+    def appender(table, &)
       appender = create_appender(table)
-
-      return appender unless block_given?
-
-      yield appender
-      appender.flush
-      appender.close
+      run_appender_block(appender, &)
     end
 
     if Appender.respond_to?(:create_query)
@@ -141,8 +136,10 @@ module DuckDB
       #   connection.appender_from_query(query, types, table_name = nil, column_names = nil) -> DuckDB::Appender
       #
       # Creates an appender object that executes the given query with any data appended to it.
-      # The `table_name` parameter is used to refer to the appended data in the query. If omitted, it defaults to "appended_data".
-      # The `column_names` parameter provides names for the columns of the appended data. If omitted, it defaults to "col1", "col2", etc.
+      # The `table_name` parameter is used to refer to the appended data in the query. If omitted, it defaults
+      # to "appended_data".
+      # The `column_names` parameter provides names for the columns of the appended data. If omitted, it
+      # defaults to "col1", "col2", etc.
       #
       #   require 'duckdb'
       #   db = DuckDB::Database.open
@@ -153,12 +150,21 @@ module DuckDB
       #   appender = con.appender_from_query(query, types, 'my_appended_data', %w[i val])
       #   appender.append_row(1, 'hello world')
       #   appender.close
-      def appender_from_query(query, types, table_name = nil, column_names = nil)
-        Appender.create_query(self, query, types, table_name, column_names)
+      def appender_from_query(query, types, table_name = nil, column_names = nil, &)
+        appender = Appender.create_query(self, query, types, table_name, column_names)
+        run_appender_block(appender, &)
       end
     end
 
     private
+
+    def run_appender_block(appender, &)
+      return appender unless block_given?
+
+      yield appender
+      appender.flush
+      appender.close
+    end
 
     def create_appender(table)
       t1, t2 = table.split('.')
