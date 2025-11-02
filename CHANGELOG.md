@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
-
+- DuckDB::Connection#appender_from_query accetps block.
 # 1.4.1.0 - 2025-11-01
 - add DuckDB::Connection#appender_from_query.
 - add DuckDB::Appender.create_query.
