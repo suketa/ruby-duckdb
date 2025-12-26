@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add Ruby 4.0.0 on CI.
 - drop duckdb v1.2.x.
 - bump duckdb to 1.3.0.
 - bump duckdb to 1.4.2 on CI.
