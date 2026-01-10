@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+
+# 1.4.3.0 - 2026-01-10
 - bump duckdb to 1.4.3 on CI.
 
 # 1.4.2.0 - 2025-12-27
