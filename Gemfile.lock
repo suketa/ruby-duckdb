@@ -44,7 +44,7 @@ PLATFORMS
 
 DEPENDENCIES
   benchmark-ips
-  bundler (~> 2.3)
+  bundler (~> 4.0)
   duckdb!
   minitest (~> 6.0)
   rake (~> 13.0)
@@ -53,4 +53,4 @@ DEPENDENCIES
   stackprof
 
 BUNDLED WITH
-   2.5.22
+  4.0.4
