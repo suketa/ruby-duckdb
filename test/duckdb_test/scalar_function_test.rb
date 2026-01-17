@@ -15,5 +15,13 @@ module DuckDBTest
       assert_instance_of DuckDB::ScalarFunction, sf1
       assert_equal sf1.__id__, sf.__id__
     end
+
+    def test_set_return_type
+      sf = DuckDB::ScalarFunction.new
+      logical_type = DuckDB::LogicalType.new(4) # DUCKDB_TYPE_INTEGER
+      sf1 = sf.set_return_type(logical_type)
+      assert_instance_of DuckDB::ScalarFunction, sf1
+      assert_equal sf1.__id__, sf.__id__
+    end
   end
 end
