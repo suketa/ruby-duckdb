@@ -156,6 +156,39 @@ module DuckDB
       end
     end
 
+    # Registers a scalar function with the connection.
+    # Scalar functions with Ruby callbacks require single-threaded execution.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #
+    #   # IMPORTANT: Set single-threaded execution before registering
+    #   con.execute('PRAGMA threads=1')
+    #
+    #   sf = DuckDB::ScalarFunction.new
+    #   sf.name = 'add_one'
+    #   sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+    #   sf.set_function { |val| val + 1 }
+    #
+    #   con.register_scalar_function(sf)
+    #
+    # Raises DuckDB::Error if threads setting is not 1.
+    def register_scalar_function(scalar_function)
+      # Check threads setting
+      result = execute("SELECT current_setting('threads')")
+      thread_count = result.first.first.to_i
+      
+      unless thread_count == 1
+        raise DuckDB::Error,
+              "Scalar functions with Ruby callbacks require single-threaded execution. " \
+              "Current threads setting: #{thread_count}. " \
+              "Execute 'PRAGMA threads=1' before registering scalar functions."
+      end
+
+      _register_scalar_function(scalar_function)
+    end
+
     private
 
     def run_appender_block(appender, &)

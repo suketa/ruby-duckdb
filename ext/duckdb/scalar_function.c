@@ -124,6 +124,12 @@ static VALUE rbduckdb_scalar_function_set_function(VALUE self) {
     duckdb_scalar_function_set_extra_info(p->scalar_function, p, NULL);
     duckdb_scalar_function_set_function(p->scalar_function, scalar_function_callback);
     
+    // Mark as volatile to prevent constant folding during query optimization
+    // This prevents DuckDB from evaluating the function at planning time.
+    // NOTE: Ruby scalar functions require single-threaded execution (PRAGMA threads=1)
+    // because Ruby proc callbacks cannot be safely invoked from DuckDB worker threads.
+    duckdb_scalar_function_set_volatile(p->scalar_function);
+    
     return self;
 }
 
