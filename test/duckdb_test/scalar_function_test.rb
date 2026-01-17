@@ -23,5 +23,12 @@ module DuckDBTest
       assert_instance_of DuckDB::ScalarFunction, sf1
       assert_equal sf1.__id__, sf.__id__
     end
+
+    def test_set_function
+      sf = DuckDB::ScalarFunction.new
+      sf1 = sf.set_function { 1 }
+      assert_instance_of DuckDB::ScalarFunction, sf1
+      assert_equal sf1.__id__, sf.__id__
+    end
   end
 end
