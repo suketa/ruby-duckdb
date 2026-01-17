@@ -103,6 +103,13 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     }
 }
 
+rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj) {
+    rubyDuckDBScalarFunction *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBScalarFunction, &scalar_function_data_type, ctx);
+    return ctx;
+}
+
+/* :nodoc: */
 static VALUE rbduckdb_scalar_function_set_function(VALUE self) {
     rubyDuckDBScalarFunction *p;
     

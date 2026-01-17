@@ -9,6 +9,7 @@ struct _rubyDuckDBScalarFunction {
 typedef struct _rubyDuckDBScalarFunction rubyDuckDBScalarFunction;
 
 void rbduckdb_init_duckdb_scalar_function(void);
+rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj);
 
 #endif
 

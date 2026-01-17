@@ -10,6 +10,7 @@ static VALUE duckdb_connection_interrupt(VALUE self);
 static VALUE duckdb_connection_query_progress(VALUE self);
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase);
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str);
+static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar_function);
 
 static const rb_data_type_t connection_data_type = {
     "DuckDB/Connection",
@@ -152,6 +153,24 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     return result;
 }
 
+/* :nodoc: */
+static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar_function) {
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBScalarFunction *ctxsf;
+    duckdb_state state;
+
+    ctxcon = get_struct_connection(self);
+    ctxsf = get_struct_scalar_function(scalar_function);
+
+    state = duckdb_register_scalar_function(ctxcon->con, ctxsf->scalar_function);
+
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "Failed to register scalar function");
+    }
+
+    return self;
+}
+
 void rbduckdb_init_duckdb_connection(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -162,6 +181,7 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
     rb_define_method(cDuckDBConnection, "interrupt", duckdb_connection_interrupt, 0);
     rb_define_method(cDuckDBConnection, "query_progress", duckdb_connection_query_progress, 0);
+    rb_define_method(cDuckDBConnection, "register_scalar_function", duckdb_connection_register_scalar_function, 1);
     rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
     /* TODO: query_sql => _query_sql */
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
