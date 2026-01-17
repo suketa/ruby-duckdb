@@ -9,11 +9,10 @@ module DuckDBTest
       assert_instance_of DuckDB::ScalarFunction, sf
     end
 
-    def test_set_name
+    def test_name_setter
       sf = DuckDB::ScalarFunction.new
-      sf1 = sf.set_name('test_function')
-      assert_instance_of DuckDB::ScalarFunction, sf1
-      assert_equal sf1.__id__, sf.__id__
+      sf.name = 'test_function'
+      assert_instance_of DuckDB::ScalarFunction, sf
     end
 
     def test_return_type_setter
@@ -46,7 +45,7 @@ module DuckDBTest
       con = db.connect
 
       sf = DuckDB::ScalarFunction.new
-      sf.set_name('foo')
+      sf.name = 'foo'
       sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
       sf.set_function { 1 }
 

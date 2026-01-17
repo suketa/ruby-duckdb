@@ -10,17 +10,12 @@ module DuckDB
     # @return [DuckDB::ScalarFunction] self
     # @raise [DuckDB::Error] if the type is not INTEGER
     def return_type=(logical_type)
-      unless logical_type.is_a?(DuckDB::LogicalType)
-        raise DuckDB::Error, 'logical_type must be a DuckDB::LogicalType'
-      end
+      raise DuckDB::Error, 'logical_type must be a DuckDB::LogicalType' unless logical_type.is_a?(DuckDB::LogicalType)
 
       # Check if the type is INTEGER
-      unless logical_type.type == :integer
-        raise DuckDB::Error, 'Only INTEGER return type is currently supported'
-      end
+      raise DuckDB::Error, 'Only INTEGER return type is currently supported' unless logical_type.type == :integer
 
       _set_return_type(logical_type)
-      self
     end
   end
 end
