@@ -68,54 +68,6 @@ static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical
     return self;
 }
 
-// Structure to pass data to the GVL-protected Ruby call
-typedef struct {
-    VALUE proc;
-    VALUE result;
-    int state;
-} ruby_call_args;
-
-// This function will be called by rb_protect
-static VALUE call_proc_wrapper(VALUE proc) {
-    return rb_funcall(proc, rb_intern("call"), 0);
-}
-
-// This function runs with the GVL held
-static void* call_ruby_block_protected(void *data) {
-    ruby_call_args *args = (ruby_call_args *)data;
-    args->result = rb_protect(call_proc_wrapper, args->proc, &args->state);
-    return NULL;
-}
-
-// Helper to call Ruby block with protection
-static VALUE safe_call_ruby_block(VALUE proc, int *error_occurred, char **error_message) {
-    ruby_call_args args = {
-        .proc = proc,
-        .result = Qnil,
-        .state = 0
-    };
-    
-    // Acquire GVL and call Ruby code
-    rb_thread_call_with_gvl(call_ruby_block_protected, &args);
-    
-    if (args.state != 0) {
-        // Exception occurred
-        *error_occurred = 1;
-        VALUE exception = rb_errinfo();
-        if (!NIL_P(exception)) {
-            VALUE msg = rb_funcall(exception, rb_intern("message"), 0);
-            *error_message = StringValueCStr(msg);
-            rb_set_errinfo(Qnil);  // Clear the exception
-        } else {
-            *error_message = "Unknown error occurred in Ruby block";
-        }
-    } else {
-        *error_occurred = 0;
-    }
-    
-    return args.result;
-}
-
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output) {
     rubyDuckDBScalarFunction *ctx;
     VALUE result;
@@ -123,8 +75,6 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     idx_t i;
     int64_t *output_data;
     uint64_t *output_validity;
-    int error_occurred;
-    char *error_message = NULL;
     
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
     
@@ -133,14 +83,8 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         return;
     }
     
-    // Call the Ruby block with GVL and exception protection
-    result = safe_call_ruby_block(ctx->function_proc, &error_occurred, &error_message);
-    
-    if (error_occurred) {
-        // Report error to DuckDB
-        duckdb_scalar_function_set_error(info, error_message);
-        return;
-    }
+    // Call the Ruby block
+    result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
     
     // Get the number of rows to process
     row_count = duckdb_data_chunk_get_size(input);
