@@ -14,6 +14,7 @@ require 'duckdb/appender'
 require 'duckdb/config'
 require 'duckdb/column'
 require 'duckdb/logical_type'
+require 'duckdb/scalar_function'
 require 'duckdb/infinity'
 require 'duckdb/instance_cache'
 

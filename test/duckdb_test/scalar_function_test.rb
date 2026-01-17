@@ -16,12 +16,22 @@ module DuckDBTest
       assert_equal sf1.__id__, sf.__id__
     end
 
-    def test_set_return_type
+    def test_return_type_setter
       sf = DuckDB::ScalarFunction.new
       logical_type = DuckDB::LogicalType.new(4) # DUCKDB_TYPE_INTEGER
-      sf1 = sf.set_return_type(logical_type)
-      assert_instance_of DuckDB::ScalarFunction, sf1
-      assert_equal sf1.__id__, sf.__id__
+      sf.return_type = logical_type
+      assert_instance_of DuckDB::ScalarFunction, sf
+    end
+
+    def test_return_type_setter_raises_error_for_unsupported_type
+      sf = DuckDB::ScalarFunction.new
+      varchar_type = DuckDB::LogicalType.new(17) # DUCKDB_TYPE_VARCHAR
+
+      error = assert_raises(DuckDB::Error) do
+        sf.return_type = varchar_type
+      end
+
+      assert_match(/only.*INTEGER.*supported/i, error.message)
     end
 
     def test_set_function
@@ -37,7 +47,7 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.set_name('foo')
-      sf.set_return_type(DuckDB::LogicalType.new(4)) # INTEGER
+      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
       sf.set_function { 1 }
 
       con.register_scalar_function(sf)
