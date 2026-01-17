@@ -57,5 +57,28 @@ module DuckDBTest
       con&.close
       db&.close
     end
+
+    def test_scalar_function_exception_handling
+      db = DuckDB::Database.open
+      con = db.connect
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'error_func'
+      sf.return_type = DuckDB::LogicalType.new(4)
+      sf.set_function do
+        raise 'Something went wrong!'
+      end
+
+      con.register_scalar_function(sf)
+
+      error = assert_raises(DuckDB::Error) do
+        con.execute('SELECT error_func()')
+      end
+
+      assert_match(/Something went wrong!/, error.message)
+    ensure
+      con&.close
+      db&.close
+    end
   end
 end
