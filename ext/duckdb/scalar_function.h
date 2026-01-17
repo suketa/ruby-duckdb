@@ -3,11 +3,13 @@
 
 struct _rubyDuckDBScalarFunction {
     duckdb_scalar_function scalar_function;
+    VALUE function_proc;
 };
 
 typedef struct _rubyDuckDBScalarFunction rubyDuckDBScalarFunction;
 
 void rbduckdb_init_duckdb_scalar_function(void);
+rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj);
 
 #endif
 
