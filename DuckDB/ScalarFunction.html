@@ -9,7 +9,7 @@
 
   <meta name="keywords" content="ruby,class,DuckDB::ScalarFunction">
 
-    <meta name="description" content="Documentation for the DuckDB::ScalarFunction class">
+    <meta name="description" content="class DuckDB::ScalarFunction: DuckDB::ScalarFunction encapsulates DuckDB&#39;s scalar function">
 
 
 <script type="text/javascript">
@@ -86,8 +86,9 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-name-3D">name=</a></li>
+      <li ><a href="#method-i-return_type-3D">return_type=</a></li>
       <li ><a href="#method-i-set_name">set_name</a></li>
-      <li ><a href="#method-i-set_return_type">set_return_type</a></li>
     </ul>
   </div>
 
@@ -127,6 +128,8 @@
 
   <section class="description">
     
+<p><a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> encapsulates DuckDB’s scalar function</p>
+
   </section>
 
   <section id="5Buntitled-5D" class="documentation-section anchor-link">
@@ -162,6 +165,7 @@
     rubyDuckDBScalarFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
     p-&gt;scalar_function = duckdb_create_scalar_function();
+    p-&gt;function_proc = Qnil;
     return self;
 }</pre>
           </div>
@@ -177,6 +181,63 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-name-3D" class="method-detail anchor-link method-alias">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-name-3D" title="Link to this method">
+                <span class="method-name">name=</span>
+                <span class="method-args">(p1)</span>
+              </a>
+            </div>
+        </div>
+
+
+        <div class="method-description">
+          
+        </div>
+
+
+        <div class="aliases">
+          Alias for: <a href="ScalarFunction.html#method-i-set_name">set_name</a>
+        </div>
+      </div>
+
+      <div id="method-i-return_type-3D" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-return_type-3D" title="Link to this method">
+                <span class="method-name">return_type=</span>
+                <span class="method-args">(logical_type)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="return_type-3D-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 12</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
+
+  <span class="ruby-comment"># Check if the type is INTEGER</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;Only INTEGER return type is currently supported&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:integer</span>
+
+  <span class="ruby-identifier">_set_return_type</span>(<span class="ruby-identifier">logical_type</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Sets the return type for the scalar function. Currently only INTEGER type is supported.</p>
+
+<p>@param logical_type [DuckDB::LogicalType] the return type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not INTEGER</p>
+        </div>
+
+
+      </div>
 
       <div id="method-i-set_name" class="method-detail anchor-link ">
         <div class="method-header">
@@ -209,42 +270,9 @@
           
         </div>
 
-
-      </div>
-
-      <div id="method-i-set_return_type" class="method-detail anchor-link ">
-        <div class="method-header">
-            <div class="method-heading">
-              <a href="#method-i-set_return_type" title="Link to this method">
-                <span class="method-name">set_return_type</span>
-                <span class="method-args">(p1)</span>
-              </a>
-            </div>
+        <div class="aliases">
+          Also aliased as: <a href="ScalarFunction.html#method-i-name-3D">name=</a>
         </div>
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-
-        <div class="method-description">
-          <div class="method-source-code" id="set_return_type-source">
-            <pre>static VALUE rbduckdb_scalar_function_set_return_type(VALUE self, VALUE logical_type) {
-    rubyDuckDBScalarFunction *p;
-    rubyDuckDBLogicalType *lt;
-    
-    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
-    lt = get_struct_logical_type(logical_type);
-    
-    duckdb_scalar_function_set_return_type(p-&gt;scalar_function, lt-&gt;logical_type);
-    
-    return self;
-}</pre>
-          </div>
-          
-        </div>
-
 
       </div>
 
