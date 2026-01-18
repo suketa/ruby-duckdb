@@ -43,9 +43,9 @@ module DuckDBTest
     def test_register_scalar_function
       db = DuckDB::Database.open
       con = db.connect
-      
+
       # Scalar functions with Ruby callbacks require single-threaded execution
-      con.execute('PRAGMA threads=1')
+      con.execute('SET threads=1')
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'foo'
@@ -76,7 +76,7 @@ module DuckDBTest
       end
 
       assert_match(/single-threaded execution/, error.message)
-      assert_match(/PRAGMA threads=1/, error.message)
+      assert_match(/SET threads=1/, error.message)
     ensure
       con&.close
       db&.close

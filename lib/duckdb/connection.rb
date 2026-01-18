@@ -166,7 +166,7 @@ module DuckDB
     #   con = db.connect
     #
     #   # IMPORTANT: Set single-threaded execution before registering
-    #   con.execute('PRAGMA threads=1')
+    #   con.execute('SET threads=1')
     #
     #   sf = DuckDB::ScalarFunction.new
     #   sf.name = 'add_one'
