@@ -157,6 +157,8 @@ module DuckDB
     end
 
     # Registers a scalar function with the connection.
+    # :nodoc:
+    #
     # Scalar functions with Ruby callbacks require single-threaded execution.
     #
     #   require 'duckdb'
