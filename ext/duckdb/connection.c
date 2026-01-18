@@ -181,7 +181,7 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
     rb_define_method(cDuckDBConnection, "interrupt", duckdb_connection_interrupt, 0);
     rb_define_method(cDuckDBConnection, "query_progress", duckdb_connection_query_progress, 0);
-    rb_define_method(cDuckDBConnection, "register_scalar_function", duckdb_connection_register_scalar_function, 1);
+    rb_define_private_method(cDuckDBConnection, "_register_scalar_function", duckdb_connection_register_scalar_function, 1);
     rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
     /* TODO: query_sql => _query_sql */
     rb_define_private_method(cDuckDBConnection, "query_sql", duckdb_connection_query_sql, 1);
