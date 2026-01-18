@@ -181,7 +181,7 @@ module DuckDB
       result = execute("SELECT current_setting('threads')")
       thread_count = result.first.first.to_i
       
-      unless thread_count == 1
+      if thread_count > 1
         raise DuckDB::Error,
               "Scalar functions with Ruby callbacks require single-threaded execution. " \
               "Current threads setting: #{thread_count}. " \
