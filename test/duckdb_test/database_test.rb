@@ -30,7 +30,10 @@ module DuckDBTest
 
       assert_raises(TypeError) { DuckDB::Database.open('foo', 'bar') }
       assert_raises(TypeError) { DuckDB::Database.open(1) }
+    end
 
+    def test_s_open_invalid_argument
+      skip('test with ASAN') if ENV['ASAN_TEST'] == '1'
       assert_raises(DuckDB::Error) do
         not_exist_path = "#{create_path}/#{create_path}"
         DuckDB::Database.open(not_exist_path)
@@ -84,6 +87,7 @@ module DuckDBTest
     end
 
     def test_close
+      skip 'asan test with exception' if ENV['ASAN_TEST'] == '1'
       db = DuckDB::Database.open
       con = db.connect
       db.close

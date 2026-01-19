@@ -42,13 +42,18 @@ module DuckDBTest
     def test_set_config
       config = DuckDB::Config.new
       assert_instance_of(DuckDB::Config, config.set_config('access_mode', 'READ_ONLY'))
+    end
 
+    def test_set_config_with_exception
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
+      config = DuckDB::Config.new
       assert_raises(DuckDB::Error) do
         config.set_config('access_mode', 'INVALID_VALUE')
       end
     end
 
     def test_set_invalid_option
+      skip 'test with ASAN' if ENV['ASAN_TEST'] == '1'
       config = DuckDB::Config.new
       assert_instance_of(DuckDB::Config, config.set_config('aaa_invalid_option', 'READ_ONLY'))
       assert_raises(DuckDB::Error) do
