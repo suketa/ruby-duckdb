@@ -143,7 +143,8 @@ module DuckDB
     def bind_uint64(index, val)
       return _bind_uint64(index, val) if val.between?(0, 18_446_744_073_709_551_615)
 
-      raise DuckDB::Error, "can't bind uint64(bind_uint64) to `#{val}`. The `#{val}` is out of range 0..18446744073709551615."
+      raise DuckDB::Error,
+            "can't bind uint64(bind_uint64) to `#{val}`. The `#{val}` is out of range 0..18446744073709551615."
     end
 
     # binds i-th parameter with SQL prepared statement.
