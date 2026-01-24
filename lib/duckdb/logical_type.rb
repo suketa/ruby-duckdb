@@ -104,7 +104,7 @@ module DuckDB
     #   names = union_logical_type.each_member_name.to_a
     #   # => ["member1", "member2"]
     def each_member_name
-      return to_enum(__method__) {member_count} unless block_given?
+      return to_enum(__method__) { member_count } unless block_given?
 
       member_count.times do |i|
         yield member_name_at(i)
@@ -126,7 +126,7 @@ module DuckDB
     #   names = union_logical_type.each_member_type.map(&:type)
     #   # => [:varchar, :integer]
     def each_member_type
-      return to_enum(__method__) {member_count} unless block_given?
+      return to_enum(__method__) { member_count } unless block_given?
 
       member_count.times do |i|
         yield member_type_at(i)
@@ -148,7 +148,7 @@ module DuckDB
     #   names = struct_logical_type.each_child_name.to_a
     #   # => ["child1", "child2"]
     def each_child_name
-      return to_enum(__method__) {child_count} unless block_given?
+      return to_enum(__method__) { child_count } unless block_given?
 
       child_count.times do |i|
         yield child_name_at(i)
@@ -170,7 +170,7 @@ module DuckDB
     #   types = struct_logical_type.each_child_type.map(&:type)
     #   # => [:integer, :varchar]
     def each_child_type
-      return to_enum(__method__) {child_count} unless block_given?
+      return to_enum(__method__) { child_count } unless block_given?
 
       child_count.times do |i|
         yield child_type_at(i)
@@ -192,7 +192,7 @@ module DuckDB
     #   values = enum_logical_type.each_value.to_a
     #   # => ["happy", "sad"]
     def each_dictionary_value
-      return to_enum(__method__) {dictionary_size} unless block_given?
+      return to_enum(__method__) { dictionary_size } unless block_given?
 
       dictionary_size.times do |i|
         yield dictionary_value_at(i)
