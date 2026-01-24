@@ -186,7 +186,7 @@ module DuckDB
     end
 
     def decimal_to_hugeint(value)
-      integer_value = (value * (10 ** value.scale)).to_i
+      integer_value = (value * (10**value.scale)).to_i
       integer_to_hugeint(integer_value)
     rescue FloatDomainError => e
       raise(ArgumentError, "The argument `#{value.inspect}` must be converted to Integer. #{e.message}")
