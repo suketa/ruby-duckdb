@@ -4,6 +4,16 @@ require 'test_helper'
 
 module DuckDBTest
   class ScalarFunctionTest < Minitest::Test
+    def setup
+      @db = DuckDB::Database.open
+      @con = @db.connect
+    end
+
+    def teardown
+      @con&.close
+      @db&.close
+    end
+
     def test_initialize
       sf = DuckDB::ScalarFunction.new
 
@@ -45,31 +55,22 @@ module DuckDBTest
     end
 
     def test_register_scalar_function
-      db = DuckDB::Database.open
-      con = db.connect
-
       # Scalar functions with Ruby callbacks require single-threaded execution
-      con.execute('SET threads=1')
+      @con.execute('SET threads=1')
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'foo'
       sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
       sf.set_function { 1 }
 
-      con.register_scalar_function(sf)
+      @con.register_scalar_function(sf)
 
-      result = con.execute('SELECT foo()')
+      result = @con.execute('SELECT foo()')
 
       assert_equal 1, result.first.first
-    ensure
-      con&.close
-      db&.close
     end
 
     def test_register_scalar_function_raises_error_without_single_thread
-      db = DuckDB::Database.open
-      con = db.connect
-
       sf = DuckDB::ScalarFunction.new
       sf.name = 'will_fail'
       sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
@@ -77,14 +78,11 @@ module DuckDBTest
 
       # Should raise error because threads is not 1
       error = assert_raises(DuckDB::Error) do
-        con.register_scalar_function(sf)
+        @con.register_scalar_function(sf)
       end
 
       assert_match(/single-threaded execution/, error.message)
       assert_match(/SET threads=1/, error.message)
-    ensure
-      con&.close
-      db&.close
     end
   end
 end
