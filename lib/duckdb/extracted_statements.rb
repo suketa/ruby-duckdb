@@ -6,7 +6,7 @@ module DuckDB
 
     def initialize(con, sql)
       @con = con
-      super(con, sql)
+      super
     end
 
     def each
