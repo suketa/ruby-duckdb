@@ -1,12 +1,13 @@
+# frozen_string_literal: true
+
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 ruby_memcheck_avaiable = begin
-                           require 'ruby_memcheck'
-                           true
-                         rescue LoadError
-                           false
-                         end
-
+  require 'ruby_memcheck'
+  true
+rescue LoadError
+  false
+end
 
 if ruby_memcheck_avaiable
   RubyMemcheck.config(
@@ -31,6 +32,7 @@ end
 
 require 'rake/extensiontask'
 
+desc 'Build the gem'
 task build: :compile
 
 Rake::ExtensionTask.new('duckdb_native') do |ext|
