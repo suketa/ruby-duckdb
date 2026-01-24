@@ -569,7 +569,7 @@
           <div class="method-source-code" id="each_child_name-source">
             <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 150</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_name</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">child_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
   <span class="ruby-identifier">child_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">child_name_at</span>(<span class="ruby-identifier">i</span>)
@@ -615,7 +615,7 @@
           <div class="method-source-code" id="each_child_type-source">
             <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 172</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_type</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">child_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">child_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
   <span class="ruby-identifier">child_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">child_type_at</span>(<span class="ruby-identifier">i</span>)
@@ -661,7 +661,7 @@
           <div class="method-source-code" id="each_dictionary_value-source">
             <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 194</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_dictionary_value</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">dictionary_size</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">dictionary_size</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
   <span class="ruby-identifier">dictionary_size</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">dictionary_value_at</span>(<span class="ruby-identifier">i</span>)
@@ -707,7 +707,7 @@
           <div class="method-source-code" id="each_member_name-source">
             <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 106</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_name</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">member_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
   <span class="ruby-identifier">member_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">member_name_at</span>(<span class="ruby-identifier">i</span>)
@@ -753,7 +753,7 @@
           <div class="method-source-code" id="each_member_type-source">
             <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 128</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_type</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) {<span class="ruby-identifier">member_count</span>} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">member_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
   <span class="ruby-identifier">member_count</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">member_type_at</span>(<span class="ruby-identifier">i</span>)
