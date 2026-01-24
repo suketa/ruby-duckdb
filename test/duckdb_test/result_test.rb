@@ -5,13 +5,18 @@ require 'test_helper'
 module DuckDBTest
   class ResultTest < Minitest::Test
     def setup
-      @con ||= create_data
+      @con = create_data
       @result = @con.query('SELECT * from table1')
 
       # fix for using duckdb_fetch_chunk in Result#chunk_each
       @all_records = @result.to_a
 
       @ary = first_record
+    end
+
+    def teardown
+      @con&.close
+      @db&.close
     end
 
     def test_s_new
@@ -180,7 +185,7 @@ module DuckDBTest
     private
 
     def create_data
-      @db ||= DuckDB::Database.open # FIXME
+      @db = DuckDB::Database.open
       con = @db.connect
       con.query(create_table_sql)
       con.query(insert_sql)
