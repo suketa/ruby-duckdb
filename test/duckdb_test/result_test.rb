@@ -35,6 +35,7 @@ module DuckDBTest
       assert_instance_of(Enumerator, @result.each)
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_each_without_block
       # fix for using duckdb_fetch_chunk in Result#chunk_each
       result = @con.query('SELECT * from table1')
@@ -56,6 +57,7 @@ module DuckDBTest
 
       assert_equal([expected_ary, 0], result.each.with_index.to_a.first)
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def test_result_boolean
       assert_equal(expected_boolean, @ary[0])
