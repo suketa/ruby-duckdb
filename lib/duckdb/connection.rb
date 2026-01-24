@@ -80,10 +80,10 @@ module DuckDB
     #   pending_result.execute_task while pending_result.state == :not_ready
     #   result = pending_result.execute_pending
     #   result.each.first
-    def async_query_stream(sql, *args, **kwargs)
+    def async_query_stream(sql, *, **)
       warn("`#{self.class}#{__method__}` will be deprecated. Use `#{self.class}#async_query` instead.")
 
-      async_query(sql, *args, **kwargs)
+      async_query(sql, *, **)
     end
 
     # connects DuckDB database
