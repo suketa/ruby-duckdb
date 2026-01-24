@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-if defined?(DuckDB::InstanceCache)
-
 module DuckDB
   # The DuckDB::InstanceCache is necessary if a client/program (re)opens
   # multiple databases to the same file within the same statement.
@@ -21,6 +19,4 @@ module DuckDB
       get_or_create(path, config)
     end
   end
-end
-
 end
