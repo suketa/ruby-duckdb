@@ -5,8 +5,8 @@ require 'test_helper'
 module DuckDBTest
   class ResultTest < Minitest::Test
     def setup
-      @@con ||= create_data
-      @result = @@con.query('SELECT * from table1')
+      @con ||= create_data
+      @result = @con.query('SELECT * from table1')
 
       # fix for using duckdb_fetch_chunk in Result#chunk_each
       @all_records = @result.to_a
@@ -32,7 +32,7 @@ module DuckDBTest
 
     def test_each_without_block
       # fix for using duckdb_fetch_chunk in Result#chunk_each
-      result = @@con.query('SELECT * from table1')
+      result = @con.query('SELECT * from table1')
 
       expected_ary = [
         expected_boolean,
@@ -94,7 +94,7 @@ module DuckDBTest
 
     def test_result_null
       # fix for using duckdb_fetch_chunk in Result#chunk_each
-      result = @@con.query('SELECT * from table1')
+      result = @con.query('SELECT * from table1')
 
       assert_equal(Array.new(12), result.reverse_each.first)
     end
@@ -128,7 +128,7 @@ module DuckDBTest
     def test_column_count
       assert_equal(12, @result.column_count)
       assert_equal(12, @result.column_size)
-      r = @@con.query('SELECT boolean_col, smallint_col from table1')
+      r = @con.query('SELECT boolean_col, smallint_col from table1')
 
       assert_equal(2, r.column_count)
       assert_equal(2, r.column_size)
@@ -152,15 +152,15 @@ module DuckDBTest
     end
 
     def test_return_type
-      result = @@con.query('SELECT * from table1')
+      result = @con.query('SELECT * from table1')
 
       assert_equal(:query_result, result.return_type)
 
-      result = @@con.query('CREATE TABLE t2 (id INT)')
+      result = @con.query('CREATE TABLE t2 (id INT)')
 
       assert_equal(:nothing, result.return_type)
 
-      result = @@con.query('INSERT INTO t2 VALUES (1)')
+      result = @con.query('INSERT INTO t2 VALUES (1)')
 
       assert_equal(:changed_rows, result.return_type)
     end
@@ -180,8 +180,8 @@ module DuckDBTest
     private
 
     def create_data
-      @@db ||= DuckDB::Database.open # FIXME
-      con = @@db.connect
+      @db ||= DuckDB::Database.open # FIXME
+      con = @db.connect
       con.query(create_table_sql)
       con.query(insert_sql)
       con
