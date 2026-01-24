@@ -22,6 +22,10 @@ module DuckDBTest
     long_bits = '11111111111111111111111111111111111110101010101010101010101010101010101010101011100000000'
     timetz_expected = Time.parse(Time.now.strftime('%Y-%m-%d 12:34:56.123456+04:30'))
 
+    # rubocop:disable Layout/LineLength, Layout/SpaceInsideArrayLiteralBrackets
+    # rubocop:disable Style/NumericLiterals, Layout/ExtraSpacing
+    # rubocop:disable Layout/SpaceInsideHashLiteralBraces, Layout/SpaceAfterComma
+    # rubocop:disable Style/TrailingCommaInArrayLiteral
     TEST_TABLES = [
       #      DB Type  ,     DB declartion                  String Rep                                  Ruby Type             Ruby Value
       [:ok, 'BOOLEAN',      'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
@@ -104,6 +108,10 @@ module DuckDBTest
       [:ok, 'TIMETZ',       'TIMETZ',                       "'2019-11-03 12:34:56.123456789'",         Time,                 timetz_expected                                     ],
       [:ok, 'TIMESTAMPTZ',  'TIMESTAMPTZ',                  "'2019-11-03 12:34:56.123456789'",         Time,                 Time.parse('2019-11-03 08:04:56.123456+0000')       ],
     ].freeze
+    # rubocop:enable Layout/LineLength, Layout/SpaceInsideArrayLiteralBrackets
+    # rubocop:enable Style/NumericLiterals, Layout/ExtraSpacing
+    # rubocop:enable Layout/SpaceInsideHashLiteralBraces, Layout/SpaceAfterComma
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
 
     def prepare_test_table_and_data(db_declaration, db_type, string_rep)
       prepare_timezone('Asia/Kabul') if %w[TIMETZ TIMESTAMPTZ].include?(db_type)
@@ -141,6 +149,7 @@ module DuckDBTest
       else
         assert_equal(ruby_val, res)
       end
+
       assert_equal(klass, res.class)
     end
 

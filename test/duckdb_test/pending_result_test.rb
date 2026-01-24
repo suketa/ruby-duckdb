@@ -18,34 +18,47 @@ module DuckDBTest
       # pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
     end
 
+    def teardown
+      @con.close
+      @db.close
+    end
+
     def test_state
       pending_result = @stmt.pending_prepared
+
       assert_equal :not_ready, pending_result.state
 
       pending_result.execute_task while pending_result.state == :not_ready
+
       assert_equal(:ready, pending_result.state)
 
       pending_result.execute_pending
+
       assert_equal(:ready, pending_result.state)
 
       pending_result.execute_task
+
       assert_equal(:error, pending_result.state)
     end
 
     def test_execution_finished?
       pending_result = @stmt.pending_prepared
-      assert_equal false, pending_result.execution_finished?
+
+      refute_predicate pending_result, :execution_finished?
 
       pending_result.execute_task while pending_result.state == :not_ready
-      assert_equal true, pending_result.execution_finished?
+
+      assert_predicate pending_result, :execution_finished?
 
       pending_result.execute_task
-      assert_equal true, pending_result.execution_finished?
+
+      assert_predicate pending_result, :execution_finished?
     end
 
     def test_execute_pending
       pending_result = @stmt.pending_prepared
       pending_result.execute_task while pending_result.state == :not_ready
+
       assert_equal :ready, pending_result.state
       assert_equal [[1]], pending_result.execute_pending.to_a
     end
@@ -53,17 +66,14 @@ module DuckDBTest
     def test_execute_check_state
       pending_result = @stmt.pending_prepared
       state = pending_result.execute_check_state
+
       assert_equal(:no_tasks, state)
 
       pending_result.execute_task while pending_result.state == :not_ready
 
       state = pending_result.execute_check_state
-      assert_includes(%i[error ready], state)
-    end
 
-    def teardown
-      @con.close
-      @db.close
+      assert_includes(%i[error ready], state)
     end
   end
 end

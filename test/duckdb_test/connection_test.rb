@@ -15,6 +15,7 @@ module DuckDBTest
 
     def test_query_with_valid_params
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::Result, @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a'))
       r = @con.query('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
 
@@ -26,6 +27,7 @@ module DuckDBTest
 
     def test_query_with_valid_hash_params
       @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::Result, @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1))
       r = @con.query('SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2', col2: 'a', col1: 1)
 
@@ -50,6 +52,7 @@ module DuckDBTest
 
     def test_async_query
       pending_result = @con.async_query('CREATE TABLE table1 (id INTEGER)')
+
       assert_instance_of(DuckDB::PendingResult, pending_result)
     end
 
@@ -60,6 +63,7 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.1
       result = pending_result.execute_pending
+
       assert_equal([1, 'a'], result.each.first)
     end
 
@@ -75,6 +79,7 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.1
       result = pending_result.execute_pending
+
       assert_equal([1, 'a'], result.each.first)
     end
 
@@ -93,6 +98,7 @@ module DuckDBTest
 
     def test_async_query_stream
       pending_result = @con.async_query_stream('CREATE TABLE table1 (id INTEGER)')
+
       assert_instance_of(DuckDB::PendingResult, pending_result)
     end
 
@@ -103,6 +109,7 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.1
       result = pending_result.execute_pending
+
       assert_equal([1, 'a'], result.each.first)
     end
 
@@ -131,11 +138,13 @@ module DuckDBTest
       pending_result.execute_task
       sleep 0.1
       result = pending_result.execute_pending
+
       assert_equal([1, 'a'], result.each.first)
     end
 
     def test_execute
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::Result, @con.execute('INSERT INTO t VALUES(?, ?)', 1, 'a'))
       r = @con.execute('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
 
@@ -154,18 +163,23 @@ module DuckDBTest
 
       assert_equal(-1, @con.query_progress.percentage)
       pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
+
       assert_equal(0, @con.query_progress.percentage)
       pending_result.execute_task while @con.query_progress.percentage.zero?
       query_progress = @con.query_progress
+
       assert_instance_of(DuckDB::QueryProgress, query_progress)
 
       percentage = query_progress.percentage
+
       assert_operator(percentage, :>, 0, "QueryProgress#percentage(#{percentage}) to be > 0")
 
       rows_processed = query_progress.rows_processed
+
       assert_operator(rows_processed, :>, 0, "QueryProgress#rows_processed(#{rows_processed}) to be > 0")
 
       total_rows_to_process = query_progress.total_rows_to_process
+
       assert_operator(
         total_rows_to_process, :>, 0,
         "QueryProgress.total_rows_to_process(#{total_rows_to_process}) to be > 0"
@@ -180,7 +194,8 @@ module DuckDBTest
       @con.interrupt
       while pending_result.state == :not_ready
         pending_result.execute_task
-        assert(pending_result.state != :ready, 'pending_result.state should not be :ready')
+
+        refute_equal(pending_result.state, :ready, 'pending_result.state should not be :ready')
       end
     end
 
@@ -207,11 +222,13 @@ module DuckDBTest
       end
       assert_match(/Database connection closed/, exception.message)
       @con.connect(@db)
+
       assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
 
     def test_connect_with_block
       @con.disconnect
+
       @con.connect(@db) do |con|
         assert_instance_of(DuckDB::Result, con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
       end
@@ -228,26 +245,31 @@ module DuckDBTest
       end
       assert_match(/Database connection closed/, exception.message)
       @con.open(@db)
+
       assert_instance_of(DuckDB::Result, @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)'))
     end
 
     def test_prepared_statement
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::PreparedStatement, @con.prepared_statement('SELECT * FROM t WHERE col1 = $1'))
     end
 
     def test_prepare
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::PreparedStatement, @con.prepare('SELECT * FROM t WHERE col1 = $1'))
     end
 
     def test_appender
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::Appender, @con.appender('t'))
     end
 
     def test_appender_with_schema
       @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (col1 INTEGER, col2 STRING)')
+
       assert_instance_of(DuckDB::Appender, @con.appender('a.b'))
     end
 
@@ -257,6 +279,7 @@ module DuckDBTest
         appender.append_row(1, 'foo')
       end
       r = @con.query('SELECT col1, col2 FROM t')
+
       assert_equal([1, 'foo'], r.first)
     end
 
@@ -285,6 +308,7 @@ module DuckDBTest
       appender.flush
 
       r = @con.query('SELECT * FROM t ORDER BY i')
+
       assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
     end
 
@@ -314,6 +338,7 @@ module DuckDBTest
       appender.flush
 
       r = @con.query('SELECT * FROM t ORDER BY i')
+
       assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
     end
 
@@ -334,6 +359,7 @@ module DuckDBTest
       end
 
       r = @con.query('SELECT * FROM t ORDER BY i')
+
       assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
     end
   end

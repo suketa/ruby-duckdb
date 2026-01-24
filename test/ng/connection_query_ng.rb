@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'duckdb'
 
 temp_file = "#{File.expand_path('.', __dir__)}/data.duckdb"

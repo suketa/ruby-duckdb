@@ -39,7 +39,7 @@ module DuckDBTest
       );
     SQL
 
-    INSERT_SQL = <<~SQL
+    INSERT_SQL = <<~SQL.freeze
       INSERT INTO table1 VALUES
       (
         true,
@@ -142,6 +142,7 @@ module DuckDBTest
 
     def test_logical_type
       logical_types = @columns.map(&:logical_type)
+
       assert(logical_types.all? { |logical_type| logical_type.is_a?(DuckDB::LogicalType) })
     end
 

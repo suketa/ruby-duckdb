@@ -40,14 +40,17 @@ module DuckDBTest
     def test_s_new
       create_table('id INT')
       appender = DuckDB::Appender.new(@con, '', table)
+
       assert_instance_of(DuckDB::Appender, appender)
       appender = DuckDB::Appender.new(@con, nil, table)
+
       assert_instance_of(DuckDB::Appender, appender)
     end
 
     def test_s_new_with_schema
       @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (id INT);')
       appender = DuckDB::Appender.new(@con, 'a', 'b')
+
       assert_instance_of(DuckDB::Appender, appender)
 
       assert_raises(DuckDB::Error) { appender = DuckDB::Appender.new(@con, 'b', 'b') }
@@ -103,6 +106,7 @@ module DuckDBTest
       appender.flush
 
       r = @con.query('SELECT * FROM t ORDER BY i')
+
       assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
     end
 
@@ -112,6 +116,7 @@ module DuckDBTest
       @appender.end_row
       @appender.flush
       r = @con.execute("SELECT col FROM #{table}")
+
       assert_equal(expected, r.first.first, "in #{caller[0]}")
     ensure
       safe_drop_table
@@ -133,6 +138,7 @@ module DuckDBTest
       @appender.end_row
 
       r = @con.execute("SELECT col FROM #{table}")
+
       assert_nil(r.first)
       @appender.flush
 
@@ -144,6 +150,7 @@ module DuckDBTest
 
     def test_begin_row
       appender = create_appender('col BOOLEAN')
+
       assert_equal(appender.__id__, appender.begin_row.__id__)
     end
 
@@ -152,6 +159,7 @@ module DuckDBTest
       appender
         .append_bool(true)
         .end_row
+
       assert_equal(appender.__id__, appender.flush.__id__)
     end
 
@@ -168,6 +176,7 @@ module DuckDBTest
       appender = create_appender('col BOOLEAN')
       appender
         .append_bool(true)
+
       assert_equal(appender.__id__, appender.end_row.__id__)
     end
 
@@ -182,6 +191,7 @@ module DuckDBTest
       appender
         .append_bool(true)
         .end_row
+
       assert_equal(appender.__id__, appender.close.__id__)
     end
 
@@ -408,11 +418,12 @@ module DuckDBTest
         expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 4)
       )
 
-      micros = (12 * 3600 + 34 * 60 + 56) * 1_000_000 + 987_654
+      micros = (((12 * 3600) + (34 * 60) + 56) * 1_000_000) + 987_654
       sub_test_append_column2(:_append_interval,
                               'INTERVAL',
                               values: [14, 3, micros],
-                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654))
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3,
+                                                             interval_micros: 45_296_987_654))
 
       expected_value = DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -45_296_987_654)
       sub_test_append_column2(:_append_interval,
@@ -423,7 +434,8 @@ module DuckDBTest
       sub_test_append_column2(:_append_interval,
                               'INTERVAL',
                               values: [14, 32, micros],
-                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 32, interval_micros: 45_296_987_654))
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 32,
+                                                             interval_micros: 45_296_987_654))
 
       assert_raises(TypeError) do
         sub_test_append_column2(:_append_interval, 'INTERVAL', values: ['a', 1, micros], expected: '')
@@ -465,7 +477,8 @@ module DuckDBTest
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P1Y2M3DT12H34M56.987654S',
-                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654))
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 3,
+                                                             interval_micros: 45_296_987_654))
 
       expected_value = DuckDB::Interval.new(interval_months: -14, interval_days: -3, interval_micros: -45_296_987_654)
       sub_test_append_column2(:append_interval,
@@ -476,12 +489,14 @@ module DuckDBTest
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'P14M32DT12H34M56.987654S',
-                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 32, interval_micros: 45_296_987_654))
+                              expected: DuckDB::Interval.new(interval_months: 14, interval_days: 32,
+                                                             interval_micros: 45_296_987_654))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
                               values: 'PT12H34M56.987654S',
-                              expected: DuckDB::Interval.new(interval_months: 0, interval_days: 0, interval_micros: 45_296_987_654))
+                              expected: DuckDB::Interval.new(interval_months: 0, interval_days: 0,
+                                                             interval_micros: 45_296_987_654))
 
       sub_test_append_column2(:append_interval,
                               'INTERVAL',
@@ -526,7 +541,8 @@ module DuckDBTest
                               'TIME',
                               values: [Time.parse('01:01:01.123456')],
                               expected: Time.parse('01:01:01.123456'))
-      sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'], expected: Time.parse('01:01:01.123456'))
+      sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01.123456'],
+                                                    expected: Time.parse('01:01:01.123456'))
       sub_test_append_column2(:append_time, 'TIME', values: ['01:01:01'], expected: Time.parse('01:01:01'))
       obj = Bar.new
       sub_test_append_column2(:append_time, 'TIME', values: [obj], expected: Time.parse('01:01:01.123456'))
@@ -758,6 +774,7 @@ module DuckDBTest
       appender.flush
       appender.close
       r = @con.query('SELECT * FROM t')
+
       assert_equal([1, 'foo'], r.first)
     end
   end

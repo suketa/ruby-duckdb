@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 module DuckDBTest
@@ -7,6 +9,12 @@ module DuckDBTest
       @conn = @db.connect
     end
 
+    def teardown
+      @conn.execute('DROP TABLE test;')
+      @conn.close
+      @db.close
+    end
+
     def test_result_list
       @conn.execute('CREATE TABLE test (value INTEGER[]);')
       @conn.execute('INSERT INTO test VALUES ([1, 2]);')
@@ -14,6 +22,7 @@ module DuckDBTest
       @conn.execute('INSERT INTO test VALUES ([6, 7, 8, 9]);')
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([[[1, 2]], [[3, 4, 5]], [[6, 7, 8, 9]]], ary)
     end
 
@@ -24,6 +33,7 @@ module DuckDBTest
       @conn.execute('INSERT INTO test VALUES ([6, 7, 8, 9]);')
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([[[1, 2]], [[3, 4, nil]], [[6, 7, 8, 9]]], ary)
     end
 
@@ -34,6 +44,7 @@ module DuckDBTest
       @conn.execute("INSERT INTO test VALUES (['f', 'g', 'h', 'i']);")
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([[%w[a b]], [%w[c d e]], [%w[f g h i]]], ary)
     end
 
@@ -43,6 +54,7 @@ module DuckDBTest
       @conn.execute('INSERT INTO test VALUES ([[6], [7, 8], [9, 10]]);')
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([[[[1, 2, 3], [4, 5]]], [[[6], [7, 8], [9, 10]]]], ary)
     end
 
@@ -51,14 +63,9 @@ module DuckDBTest
       @conn.execute('INSERT INTO test values ([1, 2], [[3, 4]]);')
       result = @conn.execute('SELECT * FROM test;')
       ary = result.each.to_a
+
       assert_equal([1, 2], ary.first[0])
       assert_equal([[3, 4]], ary.first[1])
-    end
-
-    def teardown
-      @conn.execute('DROP TABLE test;')
-      @conn.close
-      @db.close
     end
   end
 end
