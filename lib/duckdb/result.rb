@@ -24,6 +24,7 @@ module DuckDB
   #   end
   class Result
     include Enumerable
+
     RETURN_TYPES = %i[invalid changed_rows nothing query_result].freeze
 
     alias column_size column_count
