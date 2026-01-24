@@ -73,7 +73,7 @@ module DuckDBTest
     end
 
     def expected_row
-      @expected ||= [
+      @expected_row ||= [
         1,
         true,
         127,
@@ -115,12 +115,14 @@ module DuckDBTest
         stmt.bind(1, 1)
         stmt.execute
       end
+
       assert_equal(1, r.first.first)
     end
 
     def test_execute
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a')
       result = stmt.execute
+
       assert_instance_of(DuckDB::Result, result)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a where id = ?')
@@ -129,22 +131,27 @@ module DuckDBTest
 
     def test_nparams
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a')
+
       assert_equal(0, stmt.nparams)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = $1')
+
       assert_equal(1, stmt.nparams)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = ?')
+
       assert_equal(1, stmt.nparams)
     end
 
     def test_statement_type
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a')
+
       assert_equal(:select, stmt.statement_type)
     end
 
     def test_param_type
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = $1')
+
       assert_equal(:invalid, stmt.param_type(0))
       assert_equal(:integer, stmt.param_type(1))
       assert_equal(:invalid, stmt.param_type(2))
@@ -167,6 +174,7 @@ module DuckDBTest
     def test_pending_prepared
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a')
       pending = stmt.pending_prepared
+
       assert_instance_of(DuckDB::PendingResult, pending)
     end
 
@@ -210,9 +218,11 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_bool(2, true) }
 
       stmt.bind_bool(1, true)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind_bool(1, false)
+
       assert_nil(stmt.execute.each.first)
 
       assert_raises(ArgumentError) { stmt.bind_bool(1, 'True') }
@@ -222,6 +232,7 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_tinyint = $1')
 
       stmt.bind_int8(1, 127)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -235,6 +246,7 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
       stmt.bind_uint8(1, value)
+
       assert_equal(value, stmt.execute.each.first[0])
     end
 
@@ -249,14 +261,17 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
 
       stmt.bind_int16(1, 32_767)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_int16(1, 32_767)
+
       assert_nil(stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int16(1, 32_767)
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -270,6 +285,7 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
       stmt.bind_uint16(1, value)
+
       assert_equal(value, stmt.execute.each.first[0])
     end
 
@@ -284,14 +300,17 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
 
       stmt.bind_int32(1, 32_767)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_int32(1, 2_147_483_647)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int32(1, 2_147_483_647)
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -305,6 +324,7 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
       stmt.bind_uint32(1, value)
+
       assert_equal(value, stmt.execute.each.first[0])
     end
 
@@ -319,14 +339,17 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
 
       stmt.bind_int64(1, 32_767)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_int64(1, 2_147_483_647)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int64(1, 9_223_372_036_854_775_807)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -340,6 +363,7 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
       stmt.bind_uint64(1, value)
+
       assert_equal(value, stmt.execute.each.first[0])
     end
 
@@ -353,12 +377,14 @@ module DuckDBTest
     def test__bind_hugeint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.send(:_bind_hugeint, 1, 18_446_744_073_709_551_615, 9_223_372_036_854_775_807)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
     def test__bind_hugeint_internal
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.bind_hugeint_internal(1, 170_141_183_460_469_231_731_687_303_715_884_105_727)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -366,18 +392,22 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
 
       stmt.bind_hugeint(1, 32_767)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_hugeint(1, 2_147_483_647)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_hugeint(1, 9_223_372_036_854_775_807)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.bind_hugeint(1, 170_141_183_460_469_231_731_687_303_715_884_105_727)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
@@ -395,6 +425,7 @@ module DuckDBTest
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM values WHERE value = $1')
       stmt.bind_uhugeint(1, value)
+
       assert_equal(value, stmt.execute.each.first[0])
     end
 
@@ -405,6 +436,7 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_float(2, 12_345.375) }
 
       stmt.bind_float(1, 12_345.375)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       assert_raises(TypeError) { stmt.bind_float(1, 'invalid_float_val') }
@@ -417,6 +449,7 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_double(2, 12_345.6789) }
 
       stmt.bind_double(1, 12_345.6789)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       assert_raises(TypeError) { stmt.bind_double(1, 'invalid_double_val') }
@@ -424,7 +457,8 @@ module DuckDBTest
 
     def test__bind_decimal
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
-      stmt.send(:_bind_decimal, 1, 987654321, 0, 9, 4)
+      stmt.send(:_bind_decimal, 1, 987_654_321, 0, 9, 4)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -435,14 +469,18 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_decimal(2, BigDecimal('98765.4321')) }
 
       e = assert_raises(ArgumentError) { stmt.bind_decimal(1, 'parse_error') }
-      assert_equal('Cannot parse `"parse_error"` to BigDecimal object. invalid value for BigDecimal(): "parse_error"', e.message)
+      assert_equal('Cannot parse `"parse_error"` to BigDecimal object. invalid value for BigDecimal(): "parse_error"',
+                   e.message)
       e = assert_raises(ArgumentError) { stmt.bind_decimal(1, BigDecimal('Infinity')) }
-      assert_equal('The argument `Infinity` must be converted to Integer. Computation results in \'Infinity\'', e.message)
+      assert_equal('The argument `Infinity` must be converted to Integer. Computation results in \'Infinity\'',
+                   e.message)
 
-      stmt.bind_decimal(1, 98765.4321)
+      stmt.bind_decimal(1, 98_765.4321)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind_decimal(1, BigDecimal('98765.4321'))
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -453,6 +491,7 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
       stmt.bind_varchar(1, 'str')
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
 
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = ?')
@@ -462,16 +501,19 @@ module DuckDBTest
 
       stmt.bind_varchar(1, 'str')
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
 
       # SQL injection
       param = "' or 1 = 1 --"
       result = @con.query("SELECT * FROM a WHERE col_varchar = '#{param}'")
+
       assert_equal(expected_row, result.each.first)
 
       # block SQL injection using bind_varchar
       stmt.bind_varchar(1, param)
       result = stmt.execute
+
       assert_nil(result.each.first)
     end
 
@@ -505,6 +547,7 @@ module DuckDBTest
 
       stmt.bind_varchar(1, PreparedStatementTest.today.strftime('%Y-%m-%d'))
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -520,6 +563,7 @@ module DuckDBTest
 
       stmt.bind_varchar(1, '2019/11/09 12:34:56')
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -533,16 +577,20 @@ module DuckDBTest
     def test_bind_blob
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
       stmt.bind_blob(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
+
       assert_instance_of(DuckDB::Result, stmt.execute)
       result = @con.execute('SELECT col_blob FROM a WHERE id IS NULL')
+
       assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
     end
 
     def test_bind_null
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO a(id) VALUES ($1)')
       stmt.bind_null(1)
+
       assert_instance_of(DuckDB::Result, stmt.execute)
       r = @con.query('SELECT * FROM a WHERE id IS NULL')
+
       assert_nil(r.each.first.first)
     end
 
@@ -552,19 +600,23 @@ module DuckDBTest
 
       stmt.bind_date(1, today)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
 
       stmt.bind_date(1, Time.now)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
 
       date_str = Bar.new.to_str
       stmt.bind_date(1, date_str)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
 
       stmt.bind_date(1, Bar.new)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
 
       e = assert_raises(ArgumentError) { stmt.bind_date(1, Foo.new) }
@@ -577,6 +629,7 @@ module DuckDBTest
       today = PreparedStatementTest.today
       stmt.send(:_bind_date, 1, today.year, today.month, today.day)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -593,6 +646,7 @@ module DuckDBTest
       result = result.to_a
 
       dump_now = "data=#{col_time}, data.usec=#{col_time.usec} bind_val=#{bind_val}, bind_val.usec=#{bind_val.usec}"
+
       assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
 
@@ -628,6 +682,7 @@ module DuckDBTest
 
       stmt.send(:_bind_timestamp, 1, 2019, 11, 9, 12, 34, 56, 0)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -636,6 +691,7 @@ module DuckDBTest
 
       stmt.bind_timestamp(1, Time.new(2019, 11, 9, 12, 34, 56))
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -645,6 +701,7 @@ module DuckDBTest
       micros = (((12 * 3600) + (34 * 60) + 56) * 1_000_000) + 987_654
       stmt.send(:_bind_interval, 1, 14, 3, micros)
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -653,6 +710,7 @@ module DuckDBTest
 
       stmt.bind_interval(1, 'P1Y2M3DT12H34M56.987654S')
       result = stmt.execute
+
       assert_equal(1, result.each.first[0])
     end
 
@@ -660,9 +718,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_boolean = $1')
 
       stmt.bind(1, true)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind(1, false)
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -670,9 +730,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
 
       stmt.bind(1, 1)
+
       assert_nil(stmt.execute.each.first)
 
       stmt.bind(1, 32_767)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -680,9 +742,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
 
       stmt.bind(1, 1)
+
       assert_nil(stmt.execute.each.first)
 
       stmt.bind(1, 2_147_483_647)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -690,9 +754,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
 
       stmt.bind(1, 1)
+
       assert_nil(stmt.execute.each.first)
 
       stmt.bind(1, 9_223_372_036_854_775_807)
+
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
@@ -700,9 +766,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_real = $1')
 
       stmt.bind(1, 12_345.375)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind(1, 12_345.376)
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -710,9 +778,11 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_double = $1')
 
       stmt.bind(1, 12_345.6789)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind(1, 12_345.6788)
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -720,10 +790,12 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = $1')
 
       stmt.bind(1, 'str')
+
       assert_equal(1, stmt.execute.each.first[0])
 
       # block SQL injection using bind
       stmt.bind(1, "' or 1 = 1 --")
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -732,16 +804,20 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 0))
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 123_456))
+
       assert_nil(stmt.execute.each.first)
 
       @con.query("UPDATE a SET col_timestamp = '#{now.strftime('%Y/%m/%d %H:%M:%S.%N')}'")
       stmt.bind(1, now)
+
       assert_equal(1, stmt.execute.each.first.first)
 
       stmt.bind(1, now.strftime('%Y/%m/%d %H:%M:%S') + ".#{now.nsec + 1_000_000}")
+
       assert_nil(stmt.execute.each.first)
     end
 
@@ -750,22 +826,28 @@ module DuckDBTest
       date = PreparedStatementTest.today
 
       stmt.bind(1, date)
+
       assert_equal(expected_row, stmt.execute.each.first)
 
       stmt.bind(1, date + 1)
+
       assert_nil(stmt.execute.each.first)
     end
 
     def test_bind_with_blob
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
       stmt.bind(1, DuckDB::Blob.new("\0\1\2\3\4\5"))
+
       assert_instance_of(DuckDB::Result, stmt.execute)
       result = @con.execute('SELECT col_blob FROM a WHERE id IS NULL')
+
       assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
 
       stmt.bind(1, "\0\1\2\3\4\5".encode(Encoding::BINARY))
+
       assert_instance_of(DuckDB::Result, stmt.execute)
       result = @con.execute('SELECT col_blob FROM a WHERE id IS NULL')
+
       assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
     end
 
@@ -775,6 +857,7 @@ module DuckDBTest
       stmt.bind(1, nil)
       stmt.execute
       r = @con.query('SELECT * FROM a WHERE id IS NULL')
+
       assert_nil(r.each.first.first)
     end
 

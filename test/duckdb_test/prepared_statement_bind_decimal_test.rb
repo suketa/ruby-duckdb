@@ -22,7 +22,8 @@ module DuckDBTest
     def test_decimal
       prepare_test_value(1.0)
       r = @prepared.bind(1, BigDecimal('1.0')).execute
-      assert_equal(1.0, r.first.first)
+
+      assert_in_delta(1.0, r.first.first)
     end
   end
 end

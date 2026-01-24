@@ -10,9 +10,9 @@ module DuckDBTest
     end
 
     def teardown
-      File.unlink(@path) if File.exist?(@path)
+      FileUtils.rm_f(@path)
       walf = "#{@path}.wal"
-      File.unlink(walf) if File.exist?(walf)
+      FileUtils.rm_f(walf)
     end
 
     def test_s__open
@@ -25,6 +25,7 @@ module DuckDBTest
 
     def test_s_open_argument
       db = DuckDB::Database.open(@path)
+
       assert_instance_of(DuckDB::Database, db)
       db.close
 
@@ -48,6 +49,7 @@ module DuckDBTest
       conn.execute('CREATE TABLE t (col1 INTEGER);')
       conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
       r = conn.execute('SELECT * FROM t ORDER BY col1')
+
       assert_equal([4], r.first)
 
       config['default_order'] = 'ASC'
@@ -56,6 +58,7 @@ module DuckDBTest
       conn.execute('CREATE TABLE t (col1 INTEGER);')
       conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
       r = conn.execute('SELECT * FROM t ORDER BY col1')
+
       assert_equal([1], r.first)
     end
 
@@ -63,9 +66,11 @@ module DuckDBTest
       result = DuckDB::Database.open do |db|
         assert_instance_of(DuckDB::Database, db)
         con = db.connect
+
         assert_instance_of(DuckDB::Connection, con)
         con.query('CREATE TABLE t (id INTEGER)')
       end
+
       assert_instance_of(DuckDB::Result, result)
     end
 
@@ -80,6 +85,7 @@ module DuckDBTest
           con.query('CREATE TABLE t (id INTEGER)')
         end
       end
+
       assert_instance_of(DuckDB::Result, result)
     end
 

@@ -10,6 +10,11 @@ module DuckDBTest
       @con = @db.connect
     end
 
+    def teardown
+      @con.close
+      @db.close
+    end
+
     def test_s_new
       assert_instance_of DuckDB::ExtractedStatements, DuckDB::ExtractedStatements.new(@con, 'SELECT 1')
 
@@ -31,22 +36,27 @@ module DuckDBTest
 
     def test_size
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+
       assert_equal 3, stmts.size
     end
 
     def test_prepared_statement
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       stmt = stmts.prepared_statement(@con, 0)
+
       assert_instance_of(DuckDB::PreparedStatement, stmt)
       r = stmt.execute
+
       assert_equal([[1]], r.to_a)
 
       stmt = stmts.prepared_statement(@con, 1)
       r = stmt.execute
+
       assert_equal([[2]], r.to_a)
 
       stmt = stmts.prepared_statement(@con, 2)
       r = stmt.execute
+
       assert_equal([[3]], r.to_a)
     end
 
@@ -65,12 +75,14 @@ module DuckDBTest
 
     def test_destroy
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
+
       assert_nil(stmts.destroy)
     end
 
     def test_each_without_block
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       enum_stmts = stmts.each
+
       assert_instance_of(Enumerator, enum_stmts)
       assert_equal(3, enum_stmts.size)
     end
@@ -80,14 +92,10 @@ module DuckDBTest
       i = 1
       stmts.each do |stmt|
         r = stmt.execute
+
         assert_equal([[i]], r.to_a)
         i += 1
       end
-    end
-
-    def teardown
-      @con.close
-      @db.close
     end
   end
 end

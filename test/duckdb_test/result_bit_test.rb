@@ -9,6 +9,12 @@ module DuckDBTest
       @conn = @db.connect
     end
 
+    def teardown
+      @conn.execute('DROP TABLE test;')
+      @conn.close
+      @db.close
+    end
+
     def test_result_bit
       @conn.execute('CREATE TABLE test (value BIT);')
       @conn.execute("INSERT INTO test VALUES ('1'::BIT);")
@@ -17,6 +23,7 @@ module DuckDBTest
       @conn.execute("INSERT INTO test VALUES ('00000000'::BIT);")
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([['1'], ['0101101'], ['0'], ['00000000']], ary)
     end
 
@@ -26,6 +33,7 @@ module DuckDBTest
       @conn.execute("INSERT INTO test VALUES ('#{over_8_bits}'::BIT);")
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([[over_8_bits]], ary)
     end
 
@@ -35,6 +43,7 @@ module DuckDBTest
       @conn.execute("INSERT INTO test VALUES ('#{long_bits}'::BIT);")
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
+
       assert_equal([[long_bits]], ary)
     end
 
@@ -43,13 +52,8 @@ module DuckDBTest
       @conn.execute('INSERT INTO test VALUES (NULL);')
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
-      assert_equal([[nil]], ary)
-    end
 
-    def teardown
-      @conn.execute('DROP TABLE test;')
-      @conn.close
-      @db.close
+      assert_equal([[nil]], ary)
     end
   end
 end

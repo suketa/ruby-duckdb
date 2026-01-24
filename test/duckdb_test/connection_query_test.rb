@@ -3,12 +3,13 @@
 module DuckDBTest
   class ConnectionQueryTest < Minitest::Test
     def teardown
-      File.delete(@file) if File.exist?(@file)
+      FileUtils.rm_f(@file)
     end
 
     def test_prepared_statement_destroy_in_query
       outputs = `ruby -Ilib test/ng/connection_query_ng.rb`
       @file, before, after = outputs.split("\n")
+
       assert_equal(before, after)
     end
   end

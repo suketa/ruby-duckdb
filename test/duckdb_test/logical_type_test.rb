@@ -40,7 +40,7 @@ module DuckDBTest
       );
     SQL
 
-    INSERT_SQL = <<~SQL
+    INSERT_SQL = <<~SQL.freeze
       INSERT INTO table1 VALUES
       (
         true,
@@ -146,6 +146,7 @@ module DuckDBTest
         integer_literal
       ].each do |method_name|
         logical_type = DuckDB::LogicalType.send(method_name)
+
         assert_instance_of(DuckDB::LogicalType, logical_type)
         assert_equal(method_name, logical_type.type)
       end
@@ -153,28 +154,33 @@ module DuckDBTest
 
     def test_type
       logical_types = @columns.map(&:logical_type)
+
       assert_equal(EXPECTED_TYPES, logical_types.map(&:type))
     end
 
     def test_alias
       enum_column = @columns.find { |column| column.type == :enum }
       enum_logical_type = enum_column.logical_type
-      assert_equal("mood", enum_logical_type.alias=("mood"))
-      assert_equal("mood", enum_logical_type.alias)
+
+      assert_equal('mood', enum_logical_type.alias = ('mood'))
+      assert_equal('mood', enum_logical_type.alias)
     end
 
     def test_decimal_internal_type
       decimal_column = @columns.find { |column| column.type == :decimal }
+
       assert_equal(:integer, decimal_column.logical_type.internal_type)
     end
 
     def test_decimal_width
       decimal_column = @columns.find { |column| column.type == :decimal }
+
       assert_equal(9, decimal_column.logical_type.width)
     end
 
     def test_decimal_scale
       decimal_column = @columns.find { |column| column.type == :decimal }
+
       assert_equal(6, decimal_column.logical_type.scale)
     end
 
@@ -183,14 +189,16 @@ module DuckDBTest
       child_types = list_columns.map do |list_column|
         list_column.logical_type.child_type
       end
+
       assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
-      assert_equal([:integer, :varchar], child_types.map(&:type))
+      assert_equal(%i[integer varchar], child_types.map(&:type))
     end
 
     def test_map_child_type
       map_column = @columns.detect { |column| column.type == :map }
       child_type = map_column.logical_type.child_type
-      assert(child_type.is_a?(DuckDB::LogicalType))
+
+      assert_kind_of(DuckDB::LogicalType, child_type)
       assert_equal(:struct, child_type.type)
     end
 
@@ -199,8 +207,9 @@ module DuckDBTest
       child_types = array_columns.map do |array_column|
         array_column.logical_type.child_type
       end
+
       assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
-      assert_equal([:integer, :varchar], child_types.map(&:type))
+      assert_equal(%i[integer varchar], child_types.map(&:type))
     end
 
     def test_array_size
@@ -208,25 +217,29 @@ module DuckDBTest
       array_sizes = array_columns.map do |array_column|
         array_column.logical_type.size
       end
+
       assert_equal([3, 2], array_sizes)
     end
 
     def test_map_key_type
       map_column = @columns.find { |column| column.type == :map }
       key_type = map_column.logical_type.key_type
-      assert(key_type.is_a?(DuckDB::LogicalType))
+
+      assert_kind_of(DuckDB::LogicalType, key_type)
       assert_equal(:integer, key_type.type)
     end
 
     def test_map_value_type
       map_column = @columns.find { |column| column.type == :map }
       value_type = map_column.logical_type.value_type
-      assert(value_type.is_a?(DuckDB::LogicalType))
+
+      assert_kind_of(DuckDB::LogicalType, value_type)
       assert_equal(:varchar, value_type.type)
     end
 
     def test_union_member_count
       union_column = @columns.find { |column| column.type == :union }
+
       assert_equal(2, union_column.logical_type.member_count)
     end
 
@@ -234,19 +247,22 @@ module DuckDBTest
       union_column = @columns.find { |column| column.type == :union }
       union_logical_type = union_column.logical_type
       member_names = union_logical_type.each_member_name.to_a
-      assert_equal(["num", "str"], member_names)
+
+      assert_equal(%w[num str], member_names)
     end
 
     def test_union_each_member_type
       union_column = @columns.find { |column| column.type == :union }
       union_logical_type = union_column.logical_type
       member_types = union_logical_type.each_member_type.to_a
+
       assert(member_types.all? { |member_type| member_type.is_a?(DuckDB::LogicalType) })
-      assert_equal([:integer, :varchar], member_types.map(&:type))
+      assert_equal(%i[integer varchar], member_types.map(&:type))
     end
 
     def test_struct_child_count
       struct_column = @columns.find { |column| column.type == :struct }
+
       assert_equal(2, struct_column.logical_type.child_count)
     end
 
@@ -254,24 +270,28 @@ module DuckDBTest
       struct_column = @columns.find { |column| column.type == :struct }
       struct_logical_type = struct_column.logical_type
       child_names = struct_logical_type.each_child_name.to_a
-      assert_equal(["word", "length"], child_names)
+
+      assert_equal(%w[word length], child_names)
     end
 
     def test_struct_each_child_type
       struct_column = @columns.find { |column| column.type == :struct }
       struct_logical_type = struct_column.logical_type
       child_types = struct_logical_type.each_child_type.to_a
+
       assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
-      assert_equal([:varchar, :integer], child_types.map(&:type))
+      assert_equal(%i[varchar integer], child_types.map(&:type))
     end
 
     def test_enum_internal_type
       enum_column = @columns.find { |column| column.type == :enum }
+
       assert_equal(:utinyint, enum_column.logical_type.internal_type)
     end
 
     def test_enum_dictionary_size
       enum_column = @columns.find { |column| column.type == :enum }
+
       assert_equal(4, enum_column.logical_type.dictionary_size)
     end
 
@@ -279,18 +299,21 @@ module DuckDBTest
       enum_column = @columns.find { |column| column.type == :enum }
       enum_logical_type = enum_column.logical_type
       dictionary_values = enum_logical_type.each_dictionary_value.to_a
-      assert_equal(["sad", "ok", "happy", "𝘾𝝾օɭ 😎"], dictionary_values)
+
+      assert_equal(['sad', 'ok', 'happy', '𝘾𝝾օɭ 😎'], dictionary_values)
     end
 
     # This test is for the new DuckDB::LogicalType.new method.
     def test_new
       # DUCKDB_TYPE_INTEGER = 4
       int_type = DuckDB::LogicalType.new(4)
+
       assert_instance_of(DuckDB::LogicalType, int_type)
       assert_equal(:integer, int_type.type)
 
       # DUCKDB_TYPE_VARCHAR = 17
       varchar_type = DuckDB::LogicalType.new(17)
+
       assert_instance_of(DuckDB::LogicalType, varchar_type)
       assert_equal(:varchar, varchar_type.type)
     end
@@ -313,6 +336,7 @@ module DuckDBTest
     def test_new_with_primitive_like_complex_type
       # DUCKDB_TYPE_BIT = 29
       bit_type = DuckDB::LogicalType.new(29)
+
       assert_instance_of(DuckDB::LogicalType, bit_type)
       assert_equal(:bit, bit_type.type)
     end

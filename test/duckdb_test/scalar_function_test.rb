@@ -6,12 +6,14 @@ module DuckDBTest
   class ScalarFunctionTest < Minitest::Test
     def test_initialize
       sf = DuckDB::ScalarFunction.new
+
       assert_instance_of DuckDB::ScalarFunction, sf
     end
 
     def test_name_setter
       sf = DuckDB::ScalarFunction.new
       sf.name = 'test_function'
+
       assert_instance_of DuckDB::ScalarFunction, sf
     end
 
@@ -19,6 +21,7 @@ module DuckDBTest
       sf = DuckDB::ScalarFunction.new
       logical_type = DuckDB::LogicalType.new(4) # DUCKDB_TYPE_INTEGER
       sf.return_type = logical_type
+
       assert_instance_of DuckDB::ScalarFunction, sf
     end
 
@@ -36,6 +39,7 @@ module DuckDBTest
     def test_set_function
       sf = DuckDB::ScalarFunction.new
       sf1 = sf.set_function { 1 }
+
       assert_instance_of DuckDB::ScalarFunction, sf1
       assert_equal sf1.__id__, sf.__id__
     end
@@ -55,6 +59,7 @@ module DuckDBTest
       con.register_scalar_function(sf)
 
       result = con.execute('SELECT foo()')
+
       assert_equal 1, result.first.first
     ensure
       con&.close

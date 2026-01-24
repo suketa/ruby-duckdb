@@ -19,7 +19,13 @@ module DuckDBTest
       stmt = @con.prepared_statement('SELECT hugeint_value FROM hugeints WHERE hugeint_value = ?')
       stmt.bind_hugeint_internal(1, value)
       result = stmt.execute
+
       assert_equal(value, result.first[0])
+    end
+
+    def teardown
+      @con.close
+      @db.close
     end
 
     def test_bind_internal_positive1
@@ -55,11 +61,6 @@ module DuckDBTest
         do_bind_internal_test('170141183460469231731687303715884105727')
       end
       assert_equal('The argument `"170141183460469231731687303715884105727"` must be Integer.', exception.message)
-    end
-
-    def teardown
-      @con.close
-      @db.close
     end
   end
 end

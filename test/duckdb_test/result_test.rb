@@ -107,14 +107,19 @@ module DuckDBTest
       DuckDB::Database.open do |db|
         db.connect do |con|
           r = con.query('CREATE TABLE t2 (id INT)')
+
           assert_equal(0, r.rows_changed)
           r = con.query('INSERT INTO t2 VALUES (1), (2), (3)')
+
           assert_equal(3, r.rows_changed)
           r = con.query('UPDATE t2 SET id = id + 1 WHERE id > 1')
+
           assert_equal(2, r.rows_changed)
           r = con.query('DELETE FROM t2 WHERE id = 0')
+
           assert_equal(0, r.rows_changed)
           r = con.query('DELETE FROM t2 WHERE id = 4')
+
           assert_equal(1, r.rows_changed)
         end
       end
@@ -124,6 +129,7 @@ module DuckDBTest
       assert_equal(12, @result.column_count)
       assert_equal(12, @result.column_size)
       r = @@con.query('SELECT boolean_col, smallint_col from table1')
+
       assert_equal(2, r.column_count)
       assert_equal(2, r.column_size)
     end
@@ -147,12 +153,15 @@ module DuckDBTest
 
     def test_return_type
       result = @@con.query('SELECT * from table1')
+
       assert_equal(:query_result, result.return_type)
 
       result = @@con.query('CREATE TABLE t2 (id INT)')
+
       assert_equal(:nothing, result.return_type)
 
       result = @@con.query('INSERT INTO t2 VALUES (1)')
+
       assert_equal(:changed_rows, result.return_type)
     end
 
@@ -160,11 +169,13 @@ module DuckDBTest
       assert_equal(:select, @result.statement_type)
     end
 
+    # rubocop:disable Minitest/TestMethodName
     def xtest__to_hugeint
       assert_only_without_chunk_each do
         assert_equal(expected_hugeint, @result.send(:_to_hugeint, 0, 4))
       end
     end
+    # rubocop:enable Minitest/TestMethodName
 
     private
 
