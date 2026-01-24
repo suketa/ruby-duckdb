@@ -270,7 +270,7 @@
             <div class="method-heading">
               <a href="#method-i-async_query_stream" title="Link to this method">
                 <span class="method-name">async_query_stream</span>
-                <span class="method-args">(sql, *args, **kwargs)</span>
+                <span class="method-args">(sql, *, **)</span>
               </a>
             </div>
         </div>
@@ -284,10 +284,10 @@
         <div class="method-description">
           <div class="method-source-code" id="async_query_stream-source">
             <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 83</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">async_query_stream</span>(<span class="ruby-identifier">sql</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>)
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">async_query_stream</span>(<span class="ruby-identifier">sql</span>, <span class="ruby-operator">*</span>, <span class="ruby-operator">**</span>)
   <span class="ruby-identifier">warn</span>(<span class="ruby-node">&quot;`#{self.class}#{__method__}` will be deprecated. Use `#{self.class}#async_query` instead.&quot;</span>)
 
-  <span class="ruby-identifier">async_query</span>(<span class="ruby-identifier">sql</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>)
+  <span class="ruby-identifier">async_query</span>(<span class="ruby-identifier">sql</span>, <span class="ruby-operator">*</span>, <span class="ruby-operator">**</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>executes sql with args asynchronously and provides streaming result. The first argument sql must be SQL string. The rest arguments are parameters of SQL string. This method returns <a href="PendingResult.html"><code>DuckDB::PendingResult</code></a> object.</p>
