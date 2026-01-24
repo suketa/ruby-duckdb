@@ -11,7 +11,8 @@ Gem::Specification.new do |spec|
   spec.email         = ['masaki.suketa@nifty.ne.jp']
 
   spec.summary       = 'This module is Ruby binding for DuckDB database engine.'
-  spec.description   = 'This module is Ruby binding for DuckDB database engine. You must have the DuckDB engine installed to build/use this module.'
+  spec.description   = 'This module is Ruby binding for DuckDB database engine. ' \
+                       'You must have the DuckDB engine installed to build/use this module.'
   spec.homepage      = 'https://github.com/suketa/ruby-duckdb'
   spec.license       = 'MIT'
 
@@ -29,10 +30,4 @@ Gem::Specification.new do |spec|
   spec.extensions    = ['ext/duckdb/extconf.rb']
   spec.required_ruby_version = '>= 3.2.0'
   spec.add_dependency 'bigdecimal', '>= 3.1.4'
-
-  spec.add_development_dependency 'bundler', '~> 4.0'
-  spec.add_development_dependency 'irb'
-  spec.add_development_dependency 'minitest', '~> 6.0'
-  spec.add_development_dependency 'rake', '~> 13.0'
-  spec.add_development_dependency 'rake-compiler'
 end
