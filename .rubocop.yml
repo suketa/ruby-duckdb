@@ -17,6 +17,9 @@ Metrics/BlockLength:
     - 'test/**/*'
     - 'duckdb.gemspec'
 
+Minitest/MultipleAssertions:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
