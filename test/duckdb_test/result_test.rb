@@ -41,7 +41,7 @@ module DuckDBTest
       result = @con.query('SELECT * from table1')
 
       expected_ary = [
-        expected_boolean,
+        expected_bool_true,
         expected_smallint,
         expected_integer,
         expected_bigint,
@@ -52,7 +52,7 @@ module DuckDBTest
         Date.parse(expected_date),
         Time.parse(expected_timestamp),
         expected_blob,
-        expected_boolean_false
+        expected_bool_false
       ]
 
       assert_equal([expected_ary, 0], result.each.with_index.to_a.first)
@@ -60,7 +60,7 @@ module DuckDBTest
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def test_result_boolean
-      assert_equal(expected_boolean, @ary[0])
+      assert_equal(expected_bool_true, @ary[0])
     end
 
     def test_result_smallint
@@ -232,7 +232,7 @@ module DuckDBTest
       <<-SQL
         INSERT INTO table1 VALUES
         (
-          #{expected_boolean},
+          #{expected_bool_true},
           #{expected_smallint},
           #{expected_integer},
           #{expected_bigint},
@@ -243,17 +243,17 @@ module DuckDBTest
           '#{expected_date}',
           '#{expected_timestamp}',
           '#{expected_blob}',
-          '#{expected_boolean_false}'
+          '#{expected_bool_false}'
         ),
         (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
       SQL
     end
 
-    def expected_boolean
+    def expected_bool_true # rubocop:disable Naming/PredicateMethod
       true
     end
 
-    def expected_boolean_false
+    def expected_bool_false # rubocop:disable Naming/PredicateMethod
       false
     end
 
