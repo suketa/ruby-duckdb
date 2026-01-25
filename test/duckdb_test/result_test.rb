@@ -110,26 +110,41 @@ module DuckDBTest
       assert_includes(DuckDB::Result.ancestors, Enumerable)
     end
 
-    def test_rows_changed
-      DuckDB::Database.open do |db|
-        db.connect do |con|
-          r = con.query('CREATE TABLE t2 (id INT)')
+    def test_rows_changed_create
+      r = @con.query('CREATE TABLE rows_changed_test_create (id INT)')
 
-          assert_equal(0, r.rows_changed)
-          r = con.query('INSERT INTO t2 VALUES (1), (2), (3)')
+      assert_equal(0, r.rows_changed)
+    end
 
-          assert_equal(3, r.rows_changed)
-          r = con.query('UPDATE t2 SET id = id + 1 WHERE id > 1')
+    def test_rows_changed_insert
+      @con.query('CREATE TABLE rows_changed_test_insert (id INT)')
+      r = @con.query('INSERT INTO rows_changed_test_insert VALUES (1), (2), (3)')
 
-          assert_equal(2, r.rows_changed)
-          r = con.query('DELETE FROM t2 WHERE id = 0')
+      assert_equal(3, r.rows_changed)
+    end
 
-          assert_equal(0, r.rows_changed)
-          r = con.query('DELETE FROM t2 WHERE id = 4')
+    def test_rows_changed_update
+      @con.query('CREATE TABLE rows_changed_test_update (id INT)')
+      @con.query('INSERT INTO rows_changed_test_update VALUES (1), (2), (3)')
+      r = @con.query('UPDATE rows_changed_test_update SET id = id + 1 WHERE id > 1')
 
-          assert_equal(1, r.rows_changed)
-        end
-      end
+      assert_equal(2, r.rows_changed)
+    end
+
+    def test_rows_changed_delete_no_match
+      @con.query('CREATE TABLE rows_changed_test_delete_no_match (id INT)')
+      @con.query('INSERT INTO rows_changed_test_delete_no_match VALUES (1), (2), (3)')
+      r = @con.query('DELETE FROM rows_changed_test_delete_no_match WHERE id = 0')
+
+      assert_equal(0, r.rows_changed)
+    end
+
+    def test_rows_changed_delete
+      @con.query('CREATE TABLE rows_changed_test_delete (id INT)')
+      @con.query('INSERT INTO rows_changed_test_delete VALUES (1), (2), (3)')
+      r = @con.query('DELETE FROM rows_changed_test_delete WHERE id = 3')
+
+      assert_equal(1, r.rows_changed)
     end
 
     def test_column_count
