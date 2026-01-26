@@ -161,7 +161,7 @@ module DuckDBTest
     end
 
     def test__column_type # rubocop:disable Metrics/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
-      # TODO: duplicate Result#_column_type private method.
+      # TODO: deprecate Result#_column_type private method.
       assert_equal(1, @result.send(:_column_type, 0))
       assert_equal(1, @result.send(:_column_type, 0))
       assert_equal(3, @result.send(:_column_type, 1))
