@@ -602,22 +602,38 @@ module DuckDBTest
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_date_with_time
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_date = $1')
 
       stmt.bind_date(1, Time.now)
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_date_with_string
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_date = $1')
 
       date_str = Bar.new.to_str
       stmt.bind_date(1, date_str)
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_date_with_object
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_date = $1')
 
       stmt.bind_date(1, Bar.new)
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_date_with_invalid_argument
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_date = $1')
 
       e = assert_raises(ArgumentError) { stmt.bind_date(1, Foo.new) }
       assert_match(/Cannot parse `#<DuckDBTest::PreparedStatementTest::Foo/, e.message)
