@@ -800,22 +800,36 @@ module DuckDBTest
     end
 
     def test_bind_with_time
-      now = Time.now
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 0))
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
+
+    def test_bind_with_time_microseconds
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind(1, Time.mktime(2019, 11, 9, 12, 34, 56, 123_456))
 
       assert_nil(stmt.execute.each.first)
+    end
+
+    def test_bind_with_time_now
+      now = Time.now
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       @con.query("UPDATE a SET col_timestamp = '#{now.strftime('%Y/%m/%d %H:%M:%S.%N')}'")
       stmt.bind(1, now)
 
       assert_equal(1, stmt.execute.each.first.first)
+    end
 
+    def test_bind_with_time_string
+      now = Time.now
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
+
+      @con.query("UPDATE a SET col_timestamp = '#{now.strftime('%Y/%m/%d %H:%M:%S.%N')}'")
       stmt.bind(1, now.strftime('%Y/%m/%d %H:%M:%S') + ".#{now.nsec + 1_000_000}")
 
       assert_nil(stmt.execute.each.first)
