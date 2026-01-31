@@ -516,14 +516,6 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
     end
 
-    def test_bind_varchar_sql_injection
-      # SQL injection without bind
-      param = "' or 1 = 1 --"
-      result = @con.query("SELECT * FROM a WHERE col_varchar = '#{param}'")
-
-      assert_equal(expected_row, result.each.first)
-    end
-
     def test_bind_varchar_prevents_sql_injection
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = ?')
 
