@@ -487,30 +487,40 @@ module DuckDBTest
     def test_bind_varchar
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_varchar(0, 'str') }
-      assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
       stmt.bind_varchar(1, 'str')
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])
+    end
 
+    def test_bind_varchar_with_invalid_index
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_varchar(0, 'str') }
+      assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
+    end
+
+    def test_bind_varchar_with_question_mark
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = ?')
+
+      stmt.bind_varchar(1, 'str')
+      result = stmt.execute
+
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_varchar_with_question_mark_invalid_index
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = ?')
 
       assert_raises(ArgumentError) { stmt.bind_varchar(0, 'str') }
       assert_raises(DuckDB::Error) { stmt.bind_varchar(2, 'str') }
+    end
 
-      stmt.bind_varchar(1, 'str')
-      result = stmt.execute
-
-      assert_equal(1, result.each.first[0])
-
-      # SQL injection
-      param = "' or 1 = 1 --"
-      result = @con.query("SELECT * FROM a WHERE col_varchar = '#{param}'")
-
-      assert_equal(expected_row, result.each.first)
+    def test_bind_varchar_prevents_sql_injection
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_varchar = ?')
 
       # block SQL injection using bind_varchar
+      param = "' or 1 = 1 --"
       stmt.bind_varchar(1, param)
       result = stmt.execute
 
