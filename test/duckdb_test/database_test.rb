@@ -39,27 +39,19 @@ module DuckDBTest
     end
 
     def test_s_open_with_config
-      library_version = Gem::Version.new(DuckDB::LIBRARY_VERSION)
-      skip 'config test' if %w[1.4.0 1.4.1 1.4.2 1.4.3].include?(library_version.to_s)
-
       config = DuckDB::Config.new
-      config['default_order'] = 'DESC'
       db = DuckDB::Database.open(nil, config)
       conn = db.connect
-      conn.execute('CREATE TABLE t (col1 INTEGER);')
-      conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
-      r = conn.execute('SELECT * FROM t ORDER BY col1')
+      r = conn.execute("SELECT CURRENT_SETTING('logging_level');")
 
-      assert_equal([4], r.first)
+      assert_equal('INFO', r.first.first)
 
-      config['default_order'] = 'ASC'
+      config['logging_level'] = 'DEBUG'
       db = DuckDB::Database.open(nil, config)
       conn = db.connect
-      conn.execute('CREATE TABLE t (col1 INTEGER);')
-      conn.execute('INSERT INTO t VALUES(3),(1),(4),(2);')
-      r = conn.execute('SELECT * FROM t ORDER BY col1')
+      r = conn.execute("SELECT CURRENT_SETTING('logging_level');")
 
-      assert_equal([1], r.first)
+      assert_equal('DEBUG', r.first.first)
     end
 
     def test_s_open_block
