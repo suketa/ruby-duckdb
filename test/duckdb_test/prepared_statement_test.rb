@@ -465,23 +465,40 @@ module DuckDBTest
     def test_bind_decimal
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_decimal(0, BigDecimal('98765.4321')) }
-      assert_raises(DuckDB::Error) { stmt.bind_decimal(2, BigDecimal('98765.4321')) }
-
-      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, 'parse_error') }
-      assert_equal('Cannot parse `"parse_error"` to BigDecimal object. invalid value for BigDecimal(): "parse_error"',
-                   e.message)
-      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, BigDecimal('Infinity')) }
-      assert_equal('The argument `Infinity` must be converted to Integer. Computation results in \'Infinity\'',
-                   e.message)
-
       stmt.bind_decimal(1, 98_765.4321)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
+
+    def test_bind_decimal_with_bigdecimal
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
 
       stmt.bind_decimal(1, BigDecimal('98765.4321'))
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
+
+    def test_bind_decimal_with_invalid_index
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_decimal(0, BigDecimal('98765.4321')) }
+      assert_raises(DuckDB::Error) { stmt.bind_decimal(2, BigDecimal('98765.4321')) }
+    end
+
+    def test_bind_decimal_with_invalid_value
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
+
+      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, 'parse_error') }
+      assert_equal('Cannot parse `"parse_error"` to BigDecimal object. invalid value for BigDecimal(): "parse_error"',
+                   e.message)
+    end
+
+    def test_bind_decimal_with_infinity
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
+
+      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, BigDecimal('Infinity')) }
+      assert_equal('The argument `Infinity` must be converted to Integer. Computation results in \'Infinity\'',
+                   e.message)
     end
 
     def test_bind_varchar
