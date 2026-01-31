@@ -17,6 +17,10 @@ Metrics/BlockLength:
     - 'test/**/*'
     - 'duckdb.gemspec'
 
+Metrics/ClassLength:
+  Exclude:
+    - 'test/**/*_test.rb'
+
 Style/Documentation:
   Enabled: false
 
