@@ -445,12 +445,20 @@ module DuckDBTest
     def test_bind_double
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_double = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_double(0, 12_345.6789) }
-      assert_raises(DuckDB::Error) { stmt.bind_double(2, 12_345.6789) }
-
       stmt.bind_double(1, 12_345.6789)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
+
+    def test_bind_double_with_invalid_index
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_double = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_double(0, 12_345.6789) }
+      assert_raises(DuckDB::Error) { stmt.bind_double(2, 12_345.6789) }
+    end
+
+    def test_bind_double_with_invalid_type
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_double = $1')
 
       assert_raises(TypeError) { stmt.bind_double(1, 'invalid_double_val') }
     end
