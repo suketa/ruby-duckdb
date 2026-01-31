@@ -46,12 +46,12 @@ module DuckDBTest
 
       assert_equal('automatic', r.first.first)
 
-      config['access_mode'] = 'READ_ONLY'
+      config['access_mode'] = 'read_write'
       db = DuckDB::Database.open(nil, config)
       conn = db.connect
       r = conn.execute("SELECT current_setting('access_mode') AS access_mode;")
 
-      assert_equal('READ_ONLY', r.first.first)
+      assert_equal('read_write', r.first.first)
     end
 
     def test_s_open_block
