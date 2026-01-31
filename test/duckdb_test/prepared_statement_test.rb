@@ -842,7 +842,10 @@ module DuckDBTest
       result = @con.execute('SELECT col_blob FROM a WHERE id IS NULL')
 
       assert_equal("\0\1\2\3\4\5".encode(Encoding::BINARY), result.first.first)
+    end
 
+    def test_bind_with_blob_binary_string
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO a(id, col_blob) VALUES (NULL, $1)')
       stmt.bind(1, "\0\1\2\3\4\5".encode(Encoding::BINARY))
 
       assert_instance_of(DuckDB::Result, stmt.execute)
