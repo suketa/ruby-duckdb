@@ -636,8 +636,6 @@ module DuckDBTest
     def test_bind_time
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_time = $1')
 
-      col_time = @con.query('SELECT col_time from a').first.first
-
       bind_val = Time.local(1970, 1, 1, 12, 34, 56, 1)
       stmt.bind_time(1, bind_val)
       result = stmt.execute
@@ -645,10 +643,13 @@ module DuckDBTest
       # fix for using duckdb_fetch_chunk in Result#chunk_each
       result = result.to_a
 
-      dump_now = "data=#{col_time}, data.usec=#{col_time.usec} bind_val=#{bind_val}, bind_val.usec=#{bind_val.usec}"
-
-      assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_time_with_string
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_time = $1')
+
+      bind_val = Time.local(1970, 1, 1, 12, 34, 56, 1)
 
       stmt.bind_time(1, bind_val.strftime('%F %T.%N'))
       result = stmt.execute
@@ -656,8 +657,11 @@ module DuckDBTest
       # fix for using duckdb_fetch_chunk in Result#chunk_each
       result = result.to_a
 
-      assert_instance_of(Array, result.each.first, dump_now)
       assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_time_with_invalid_argument
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_time = $1')
 
       e = assert_raises(ArgumentError) { stmt.bind_time(1, Foo.new) }
       assert_match(/Cannot parse `#<DuckDBTest::PreparedStatementTest::Foo/, e.message)
