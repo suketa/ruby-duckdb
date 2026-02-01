@@ -200,6 +200,13 @@ module DuckDBTest
 
       assert_equal('id', stmt.parameter_name(1))
       assert_equal('col_boolean', stmt.parameter_name(2))
+    end
+
+    def test_bind_parameter_name_with_invalid_index
+      stmt = DuckDB::PreparedStatement.new(
+        @con,
+        'SELECT * FROM a WHERE id = $id AND col_boolean = $col_boolean AND id = $id'
+      )
 
       assert_raises(ArgumentError) { stmt.parameter_name(0) }
       assert_raises(DuckDB::Error) { stmt.parameter_name(3) }
