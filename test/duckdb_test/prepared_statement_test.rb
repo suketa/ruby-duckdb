@@ -432,12 +432,20 @@ module DuckDBTest
     def test_bind_float
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_real = $1')
 
-      assert_raises(ArgumentError) { stmt.bind_float(0, 12_345.375) }
-      assert_raises(DuckDB::Error) { stmt.bind_float(2, 12_345.375) }
-
       stmt.bind_float(1, 12_345.375)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
+
+    def test_bind_float_with_invalid_index
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_real = $1')
+
+      assert_raises(ArgumentError) { stmt.bind_float(0, 12_345.375) }
+      assert_raises(DuckDB::Error) { stmt.bind_float(2, 12_345.375) }
+    end
+
+    def test_bind_float_with_invalid_type
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_real = $1')
 
       assert_raises(TypeError) { stmt.bind_float(1, 'invalid_float_val') }
     end
