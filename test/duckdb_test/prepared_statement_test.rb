@@ -259,16 +259,19 @@ module DuckDBTest
 
     def test_bind_int16
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
-
       stmt.bind_int16(1, 32_767)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_int16_with_integer
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_int16(1, 32_767)
 
       assert_nil(stmt.execute.each.first)
+    end
 
+    def test_bind_int16_with_bigint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int16(1, 32_767)
 
