@@ -211,19 +211,29 @@ module DuckDBTest
       assert_equal('fail to bind 2 parameter', exception.message)
     end
 
-    def test_bind_bool
+    def test_bind_bool_with_invalid_index
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_boolean = $1')
 
       assert_raises(ArgumentError) { stmt.bind_bool(0, true) }
       assert_raises(DuckDB::Error) { stmt.bind_bool(2, true) }
+    end
 
+    def test_bind_bool_with_true
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_boolean = $1')
       stmt.bind_bool(1, true)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_bool_with_false
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_boolean = $1')
       stmt.bind_bool(1, false)
 
       assert_nil(stmt.execute.each.first)
+    end
+
+    def test_bind_bool_with_invalid_type
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_boolean = $1')
 
       assert_raises(ArgumentError) { stmt.bind_bool(1, 'True') }
     end
