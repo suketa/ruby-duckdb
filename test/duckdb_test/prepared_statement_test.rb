@@ -296,18 +296,21 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_uint16(1, -1) }
     end
 
-    def test_bind_int32
+    def test_bind_int32_with_smallint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
-
       stmt.bind_int32(1, 32_767)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_int32
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_int32(1, 2_147_483_647)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_int32_with_bigint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_int32(1, 2_147_483_647)
 
