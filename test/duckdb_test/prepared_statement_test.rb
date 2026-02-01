@@ -388,28 +388,35 @@ module DuckDBTest
       assert_equal(expected_row, stmt.execute.each.first)
     end
 
-    def test_bind_hugeint
+    def test_bind_hugeint_with_smallint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_smallint = $1')
-
       stmt.bind_hugeint(1, 32_767)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_hugeint_with_integer
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_integer = $1')
       stmt.bind_hugeint(1, 2_147_483_647)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_hugeint_with_bigint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_bigint = $1')
       stmt.bind_hugeint(1, 9_223_372_036_854_775_807)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_hugeint
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.bind_hugeint(1, 170_141_183_460_469_231_731_687_303_715_884_105_727)
 
       assert_equal(expected_row, stmt.execute.each.first)
+    end
 
+    def test_bind_hugeint_with_invalid_type
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       e = assert_raises(ArgumentError) { stmt.bind_hugeint(1, 1.5) }
       assert_equal('2nd argument `1.5` must be Integer.', e.message)
