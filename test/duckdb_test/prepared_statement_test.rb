@@ -157,13 +157,15 @@ module DuckDBTest
       assert_equal(:invalid, stmt.param_type(2))
     end
 
-    def test_clear_bindings
+    def test_clear_bindings_with_positional_parameter
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = $1')
       stmt.bind(1, 1)
       stmt.clear_bindings
       res = assert_raises(DuckDB::Error) { stmt.execute }
       assert_match(/Values were not provided for the following prepared.*: 1/, res.message)
+    end
 
+    def test_clear_bindings_with_named_parameter
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = $id')
       stmt.bind(:id, 1)
       stmt.clear_bindings
