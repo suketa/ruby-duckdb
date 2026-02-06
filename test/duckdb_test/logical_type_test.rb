@@ -105,6 +105,38 @@ module DuckDBTest
       union
     ].freeze
 
+    SINGLETON_METHOD_NAMES = %i[
+      boolean
+      tinyint
+      smallint
+      integer
+      bigint
+      utinyint
+      usmallint
+      uinteger
+      ubigint
+      float
+      double
+      timestamp
+      date
+      time
+      interval
+      hugeint
+      uhugeint
+      varchar
+      blob
+      timestamp_s
+      timestamp_ms
+      timestamp_ns
+      bit
+      time_tz
+      timestamp_tz
+      bignum
+      sqlnull
+      string_literal
+      integer_literal
+    ].freeze
+
     def setup
       @db = DuckDB::Database.open
       @con = @db.connect
@@ -114,37 +146,7 @@ module DuckDBTest
     end
 
     def test_singleton_method_defined
-      %i[
-        boolean
-        tinyint
-        smallint
-        integer
-        bigint
-        utinyint
-        usmallint
-        uinteger
-        ubigint
-        float
-        double
-        timestamp
-        date
-        time
-        interval
-        hugeint
-        uhugeint
-        varchar
-        blob
-        timestamp_s
-        timestamp_ms
-        timestamp_ns
-        bit
-        time_tz
-        timestamp_tz
-        bignum
-        sqlnull
-        string_literal
-        integer_literal
-      ].each do |method_name|
+      SINGLETON_METHOD_NAMES.each do |method_name|
         logical_type = DuckDB::LogicalType.send(method_name)
 
         assert_instance_of(DuckDB::LogicalType, logical_type)
@@ -304,13 +306,15 @@ module DuckDBTest
     end
 
     # This test is for the new DuckDB::LogicalType.new method.
-    def test_new
+    def test_new_integer
       # DUCKDB_TYPE_INTEGER = 4
       int_type = DuckDB::LogicalType.new(4)
 
       assert_instance_of(DuckDB::LogicalType, int_type)
       assert_equal(:integer, int_type.type)
+    end
 
+    def test_new_varchar
       # DUCKDB_TYPE_VARCHAR = 17
       varchar_type = DuckDB::LogicalType.new(17)
 
