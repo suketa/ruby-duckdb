@@ -23,11 +23,14 @@ module DuckDBTest
       @db.close
     end
 
-    def test_state
+    def test_state_not_ready
       pending_result = @stmt.pending_prepared
 
       assert_equal :not_ready, pending_result.state
+    end
 
+    def test_state_ready_after_execute
+      pending_result = @stmt.pending_prepared
       pending_result.execute_task while pending_result.state == :not_ready
 
       assert_equal(:ready, pending_result.state)
@@ -35,7 +38,12 @@ module DuckDBTest
       pending_result.execute_pending
 
       assert_equal(:ready, pending_result.state)
+    end
 
+    def test_state_error_after_execute_task
+      pending_result = @stmt.pending_prepared
+      pending_result.execute_task while pending_result.state == :not_ready
+      pending_result.execute_pending
       pending_result.execute_task
 
       assert_equal(:error, pending_result.state)
