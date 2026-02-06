@@ -15,18 +15,7 @@ if defined?(DuckDB::InstanceCache)
         cache = DuckDB::InstanceCache.new
         path = 'test_shared_db.db'
         30.times do
-          thread = Thread.new do
-            db = cache.get_or_create(path)
-
-            assert_instance_of DuckDB::Database, db
-            db.close
-          end
-          db = cache.get_or_create(path)
-
-          assert_instance_of DuckDB::Database, db
-          db.close
-          thread.join
-
+          run_threaded_cache_test(cache, path)
           FileUtils.rm_f(path)
         end
       end
@@ -57,12 +46,10 @@ if defined?(DuckDB::InstanceCache)
 
       def test_get_or_create_with_config
         cache = DuckDB::InstanceCache.new
-        config = DuckDB::Config.new
-        config['default_order'] = 'DESC'
+        config = create_desc_config
         db = cache.get_or_create(nil, config)
         con = db.connect
-        con.query('CREATE TABLE numbers (number INTEGER)')
-        con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
+        setup_test_table(con)
 
         result = con.query('SELECT number FROM numbers ORDER BY number')
 
@@ -76,6 +63,33 @@ if defined?(DuckDB::InstanceCache)
         cache = DuckDB::InstanceCache.new
 
         assert_nil cache.destroy
+      end
+
+      private
+
+      def run_threaded_cache_test(cache, path)
+        thread = Thread.new do
+          db = cache.get_or_create(path)
+
+          assert_instance_of DuckDB::Database, db
+          db.close
+        end
+        db = cache.get_or_create(path)
+
+        assert_instance_of DuckDB::Database, db
+        db.close
+        thread.join
+      end
+
+      def create_desc_config
+        config = DuckDB::Config.new
+        config['default_order'] = 'DESC'
+        config
+      end
+
+      def setup_test_table(con)
+        con.query('CREATE TABLE numbers (number INTEGER)')
+        con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
       end
     end
   end
