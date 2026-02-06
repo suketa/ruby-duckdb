@@ -320,6 +320,7 @@ module DuckDB
 
     private
 
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
     def bind_with_index(index, value)
       case value
       when NilClass
@@ -327,14 +328,9 @@ module DuckDB
       when Float
         bind_double(index, value)
       when Integer
-        case value
-        when RANGE_INT64
-          bind_int64(index, value)
-        else
-          bind_varchar(index, value.to_s)
-        end
+        bind_integer_value(index, value)
       when String
-        blob?(value) ? bind_blob(index, value) : bind_varchar(index, value)
+        bind_string_value(index, value)
       when TrueClass, FalseClass
         bind_bool(index, value)
       when Time
@@ -345,6 +341,23 @@ module DuckDB
         bind_decimal(index, value)
       else
         raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
+      end
+    end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength
+
+    def bind_integer_value(index, value)
+      if RANGE_INT64.cover?(value)
+        bind_int64(index, value)
+      else
+        bind_varchar(index, value.to_s)
+      end
+    end
+
+    def bind_string_value(index, value)
+      if blob?(value)
+        bind_blob(index, value)
+      else
+        bind_varchar(index, value)
       end
     end
 

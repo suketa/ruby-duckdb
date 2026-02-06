@@ -20,6 +20,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - 'test/**/*_test.rb'
+    - 'lib/duckdb/prepared_statement.rb'
 
 Style/Documentation:
   Enabled: false
