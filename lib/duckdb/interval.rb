@@ -62,7 +62,7 @@ module DuckDB
       #
       #   DuckDB::Interval.mk_interval(year: 1, month: 2, day: 3, hour: 4, min: 5, sec: 6, usec: 123456)
       #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
-      def mk_interval(year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0)
+      def mk_interval(year: 0, month: 0, day: 0, hour: 0, min: 0, sec: 0, usec: 0) # rubocop:disable Metrics/ParameterLists
         Interval.new(
           interval_months: (year * 12) + month,
           interval_days: day,
