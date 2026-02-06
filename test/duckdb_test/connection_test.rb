@@ -39,15 +39,13 @@ module DuckDBTest
 
     def test_query_with_invalid_params
       assert_raises(DuckDB::Error) { @con.query('foo', 'bar') }
-
       assert_raises(ArgumentError) { @con.query }
-
       assert_raises(TypeError) { @con.query(1) }
+    end
 
-      assert_raises(DuckDB::Error) do
-        invalid_sql = 'CREATE TABLE table1 ('
-        @con.query(invalid_sql)
-      end
+    def test_query_with_invalid_sql
+      invalid_sql = 'CREATE TABLE table1 ('
+      assert_raises(DuckDB::Error) { @con.query(invalid_sql) }
     end
 
     def test_async_query
@@ -72,9 +70,7 @@ module DuckDBTest
       @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)
 
       pending_result = @con.async_query(
-        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2',
-        col2: 'a',
-        col1: 1
+        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2', col2: 'a', col1: 1
       )
       pending_result.execute_task
       sleep 0.1
@@ -85,15 +81,13 @@ module DuckDBTest
 
     def test_async_query_with_invalid_params
       assert_raises(DuckDB::Error) { @con.async_query('foo', 'bar') }
-
       assert_raises(ArgumentError) { @con.async_query }
-
       assert_raises(TypeError) { @con.async_query(1) }
+    end
 
-      assert_raises(DuckDB::Error) do
-        invalid_sql = 'CREATE TABLE table1 ('
-        @con.async_query(invalid_sql)
-      end
+    def test_async_query_with_invalid_sql
+      invalid_sql = 'CREATE TABLE table1 ('
+      assert_raises(DuckDB::Error) { @con.async_query(invalid_sql) }
     end
 
     def test_async_query_stream
@@ -115,15 +109,13 @@ module DuckDBTest
 
     def test_async_query_stream_with_invalid_params
       assert_raises(DuckDB::Error) { @con.async_query_stream('foo', 'bar') }
-
       assert_raises(ArgumentError) { @con.async_query_stream }
-
       assert_raises(TypeError) { @con.async_query_stream(1) }
+    end
 
-      assert_raises(DuckDB::Error) do
-        invalid_sql = 'CREATE TABLE table1 ('
-        @con.async_query_stream(invalid_sql)
-      end
+    def test_async_query_stream_with_invalid_sql
+      invalid_sql = 'CREATE TABLE table1 ('
+      assert_raises(DuckDB::Error) { @con.async_query_stream(invalid_sql) }
     end
 
     def test_async_query_stream_with_valid_hash_params
@@ -131,9 +123,7 @@ module DuckDBTest
       @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)
 
       pending_result = @con.async_query_stream(
-        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2',
-        col2: 'a',
-        col1: 1
+        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2', col2: 'a', col1: 1
       )
       pending_result.execute_task
       sleep 0.1
@@ -154,43 +144,62 @@ module DuckDBTest
       assert_equal('a', r.each.first[1])
     end
 
-    def test_query_progress
+    def test_query_progress_initial_state
+      @con.query('SET threads=1')
+
+      assert_equal(-1, @con.query_progress.percentage)
+    end
+
+    def test_query_progress_tracking
       @con.query('SET threads=1')
       @con.query('CREATE TABLE tbl as SELECT range a, mod(range, 10) b FROM range(10000)')
       @con.query('CREATE TABLE tbl2 as SELECT range a, FROM range(10000)')
       @con.query('SET ENABLE_PROGRESS_BAR=true')
       @con.query('SET ENABLE_PROGRESS_BAR_PRINT=false')
 
-      assert_equal(-1, @con.query_progress.percentage)
       pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
 
       assert_equal(0, @con.query_progress.percentage)
       pending_result.execute_task while @con.query_progress.percentage.zero?
+
+      assert_instance_of(DuckDB::QueryProgress, @con.query_progress)
+    end
+
+    def test_query_progress_values
+      @con.query('SET threads=1')
+      @con.query('CREATE TABLE tbl as SELECT range a, mod(range, 10) b FROM range(10000)')
+      @con.query('CREATE TABLE tbl2 as SELECT range a, FROM range(10000)')
+      @con.query('SET ENABLE_PROGRESS_BAR=true; SET ENABLE_PROGRESS_BAR_PRINT=false')
+
+      pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
+      pending_result.execute_task while @con.query_progress.percentage.zero?
       query_progress = @con.query_progress
 
-      assert_instance_of(DuckDB::QueryProgress, query_progress)
+      assert_operator(query_progress.percentage, :>, 0)
+      assert_operator(query_progress.rows_processed, :>, 0)
+    end
 
-      percentage = query_progress.percentage
+    def test_query_progress_totals
+      @con.query('SET threads=1')
+      @con.query('CREATE TABLE tbl as SELECT range a, mod(range, 10) b FROM range(10000)')
+      @con.query('CREATE TABLE tbl2 as SELECT range a, FROM range(10000)')
+      @con.query('SET ENABLE_PROGRESS_BAR=true; SET ENABLE_PROGRESS_BAR_PRINT=false')
 
-      assert_operator(percentage, :>, 0, "QueryProgress#percentage(#{percentage}) to be > 0")
+      pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
+      pending_result.execute_task while @con.query_progress.percentage.zero?
+      query_progress = @con.query_progress
 
-      rows_processed = query_progress.rows_processed
+      assert_operator(query_progress.total_rows_to_process, :>, 0)
+      assert_operator(query_progress.total_rows_to_process, :>=, query_progress.rows_processed)
+    end
 
-      assert_operator(rows_processed, :>, 0, "QueryProgress#rows_processed(#{rows_processed}) to be > 0")
+    def test_query_progress_interrupt
+      @con.query('SET threads=1')
+      @con.query('CREATE TABLE tbl as SELECT range a, mod(range, 10) b FROM range(10000)')
+      @con.query('CREATE TABLE tbl2 as SELECT range a, FROM range(10000)')
+      @con.query('SET ENABLE_PROGRESS_BAR=true; SET ENABLE_PROGRESS_BAR_PRINT=false')
 
-      total_rows_to_process = query_progress.total_rows_to_process
-
-      assert_operator(
-        total_rows_to_process, :>, 0,
-        "QueryProgress.total_rows_to_process(#{total_rows_to_process}) to be > 0"
-      )
-
-      assert_operator(
-        total_rows_to_process, :>=, rows_processed,
-        "QueryProgress: total_rows_to_process(#{total_rows_to_process}) to be >= rows_processed(#{rows_processed})"
-      )
-
-      # test interrupt
+      pending_result = @con.async_query('SELECT count(*) FROM tbl where a = (SELECT min(a) FROM tbl2)')
       @con.interrupt
       while pending_result.state == :not_ready
         pending_result.execute_task
@@ -283,10 +292,9 @@ module DuckDBTest
       assert_equal([1, 'foo'], r.first)
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_appender_from_query
-      unless DuckDB::Appender.respond_to?(:create_query)
-        skip 'DuckDB::Connection#appender_from_query is not supported in this DuckDB version'
-      end
+      skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
 
       @con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
       @con.query("INSERT INTO t VALUES (1, 'hello')")
@@ -300,29 +308,25 @@ module DuckDBTest
       appender.append_varchar('hello world')
       appender.end_row
       appender.flush
-
       appender.begin_row
       appender.append_int32(2)
       appender.append_varchar('bye bye')
       appender.end_row
       appender.flush
 
-      r = @con.query('SELECT * FROM t ORDER BY i')
-
-      assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
+      assert_equal([[1, 'hello world'], [2, 'bye bye']], @con.query('SELECT * FROM t ORDER BY i').to_a)
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_appender_from_query_omitting_args
-      unless DuckDB::Appender.respond_to?(:create_query)
-        skip 'DuckDB::Connection#appender_from_query is not supported in this DuckDB version'
-      end
+      skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
 
       @con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
       @con.query("INSERT INTO t VALUES (1, 'hello')")
 
       query = 'INSERT OR REPLACE INTO t SELECT col1, col2 FROM appended_data'
       types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
-
       appender = @con.appender_from_query(query, types)
 
       appender.begin_row
@@ -330,22 +334,18 @@ module DuckDBTest
       appender.append_varchar('hello world')
       appender.end_row
       appender.flush
-
       appender.begin_row
       appender.append_int32(2)
       appender.append_varchar('bye bye')
       appender.end_row
       appender.flush
 
-      r = @con.query('SELECT * FROM t ORDER BY i')
-
-      assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
+      assert_equal([[1, 'hello world'], [2, 'bye bye']], @con.query('SELECT * FROM t ORDER BY i').to_a)
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def test_appender_from_query_with_block
-      unless DuckDB::Appender.respond_to?(:create_query)
-        skip 'DuckDB::Connection#appender_from_query is not supported in this DuckDB version'
-      end
+      skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
 
       @con.query('CREATE TABLE t (i INT PRIMARY KEY, value VARCHAR)')
       @con.query("INSERT INTO t VALUES (1, 'hello')")
@@ -358,9 +358,7 @@ module DuckDBTest
         appender.append_row(2, 'bye bye')
       end
 
-      r = @con.query('SELECT * FROM t ORDER BY i')
-
-      assert_equal([[1, 'hello world'], [2, 'bye bye']], r.to_a)
+      assert_equal([[1, 'hello world'], [2, 'bye bye']], @con.query('SELECT * FROM t ORDER BY i').to_a)
     end
   end
 end
