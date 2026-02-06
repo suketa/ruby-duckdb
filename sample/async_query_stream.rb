@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'duckdb'
 
 DuckDB::Database.open do |db|
