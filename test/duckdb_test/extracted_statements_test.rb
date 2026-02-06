@@ -40,7 +40,7 @@ module DuckDBTest
       assert_equal 3, stmts.size
     end
 
-    def test_prepared_statement
+    def test_prepared_statement_first
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       stmt = stmts.prepared_statement(@con, 0)
 
@@ -48,28 +48,39 @@ module DuckDBTest
       r = stmt.execute
 
       assert_equal([[1]], r.to_a)
+    end
 
+    def test_prepared_statement_second
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       stmt = stmts.prepared_statement(@con, 1)
       r = stmt.execute
 
       assert_equal([[2]], r.to_a)
+    end
 
+    def test_prepared_statement_third
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       stmt = stmts.prepared_statement(@con, 2)
       r = stmt.execute
 
       assert_equal([[3]], r.to_a)
     end
 
-    def test_prepared_statement_with_invalid_index
+    def test_prepared_statement_with_invalid_positive_index
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       ex = assert_raises DuckDB::Error do
         stmts.prepared_statement(@con, 3)
       end
-      assert_equal 'Failed to create DuckDB::PreparedStatement object.', ex.message
 
+      assert_equal 'Failed to create DuckDB::PreparedStatement object.', ex.message
+    end
+
+    def test_prepared_statement_with_invalid_negative_index
+      stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
       ex = assert_raises DuckDB::Error do
         stmts.prepared_statement(@con, -1)
       end
+
       assert_equal 'Failed to create DuckDB::PreparedStatement object.', ex.message
     end
 
