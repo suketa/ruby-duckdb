@@ -101,14 +101,17 @@ module DuckDBTest
       assert_instance_of(DuckDB::PreparedStatement, DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a'))
     end
 
-    def test_s_new_raises_errors
+    def test_s_new_argument_errors
       assert_raises(ArgumentError) { DuckDB::PreparedStatement.new(@con) }
       assert_raises(ArgumentError) { DuckDB::PreparedStatement.new }
-      assert_raises(TypeError) { DuckDB::PreparedStatement.new(@con, 1) }
     end
 
-    def test_s_new_type_and_sql_errors
+    def test_s_new_type_errors
+      assert_raises(TypeError) { DuckDB::PreparedStatement.new(@con, 1) }
       assert_raises(TypeError) { DuckDB::PreparedStatement.new(1, 1) }
+    end
+
+    def test_s_new_invalid_sql
       assert_raises(DuckDB::Error) { DuckDB::PreparedStatement.new(@con, 'SELECT * FROM') }
     end
 
