@@ -19,7 +19,9 @@ module DuckDBTest
 
       assert_equal('access_mode', key)
       assert_match(/\AAccess mode of the database/, value)
+    end
 
+    def test_s_get_config_flag_with_invalid_arguments
       assert_raises(TypeError) do
         DuckDB::Config.get_config_flag('foo')
       end
@@ -62,8 +64,7 @@ module DuckDBTest
       end
     end
 
-    def test_duckdb_api_config_set_to_ruby
-      # Test with default database (no config)
+    def test_duckdb_api_config_set_to_ruby_default
       db = DuckDB::Database.open
       conn = db.connect
       result = conn.query('PRAGMA user_agent')
@@ -71,8 +72,9 @@ module DuckDBTest
 
       assert_includes(user_agent.downcase, 'ruby', "User agent should contain 'ruby', but got: #{user_agent}")
       db.close
+    end
 
-      # Test with custom config
+    def test_duckdb_api_config_set_to_ruby_custom
       config = DuckDB::Config.new
       config.set_config('threads', '2')
       db = DuckDB::Database.open(nil, config)
