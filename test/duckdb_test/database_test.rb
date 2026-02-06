@@ -28,14 +28,16 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Database, db)
       db.close
+    end
 
+    def test_s_open_type_errors
       assert_raises(TypeError) { DuckDB::Database.open('foo', 'bar') }
       assert_raises(TypeError) { DuckDB::Database.open(1) }
+    end
 
-      assert_raises(DuckDB::Error) do
-        not_exist_path = "#{create_path}/#{create_path}"
-        DuckDB::Database.open(not_exist_path)
-      end
+    def test_s_open_invalid_path
+      not_exist_path = "#{create_path}/#{create_path}"
+      assert_raises(DuckDB::Error) { DuckDB::Database.open(not_exist_path) }
     end
 
     def test_s_open_with_config
