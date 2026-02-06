@@ -63,19 +63,10 @@ module DuckDBTest
 
     def expected_row
       @expected_row ||= [
-        1,
-        true,
-        127,
-        32_767,
-        2_147_483_647,
-        9_223_372_036_854_775_807,
+        1, true, 127, 32_767, 2_147_483_647, 9_223_372_036_854_775_807,
         170_141_183_460_469_231_731_687_303_715_884_105_727,
-        12_345.375,
-        12_345.6789,
-        98_765.4321,
-        'str',
-        self.class.today,
-        Time.parse('2019-11-09 12:34:56'),
+        12_345.375, 12_345.6789, 98_765.4321, 'str',
+        self.class.today, Time.parse('2019-11-09 12:34:56'),
         Time.local(self.class.now.year, self.class.now.month, self.class.now.day, 12, 34, 56, 1),
         'blob data',
         DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654)
