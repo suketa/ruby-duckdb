@@ -21,6 +21,7 @@ Metrics/ClassLength:
   Exclude:
     - 'test/**/*_test.rb'
     - 'lib/duckdb/prepared_statement.rb'
+    - 'lib/duckdb/appender.rb'
 
 Metrics/ModuleLength:
   Exclude:

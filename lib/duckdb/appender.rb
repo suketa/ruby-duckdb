@@ -580,6 +580,7 @@ module DuckDB
     #   appender.append(1)
     #   appender.append('Alice')
     #   appender.end_row
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
     def append(value)
       case value
       when NilClass
@@ -587,18 +588,9 @@ module DuckDB
       when Float
         append_double(value)
       when Integer
-        case value
-        when RANGE_INT16
-          append_int16(value)
-        when RANGE_INT32
-          append_int32(value)
-        when RANGE_INT64
-          append_int64(value)
-        else
-          append_hugeint(value)
-        end
+        append_integer_value(value)
       when String
-        blob?(value) ? append_blob(value) : append_varchar(value)
+        append_string_value(value)
       when TrueClass, FalseClass
         append_bool(value)
       when Time
@@ -611,6 +603,7 @@ module DuckDB
         raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength
 
     # append a row.
     #
@@ -637,6 +630,23 @@ module DuckDB
 
     def blob?(value) # :nodoc:
       value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
+    end
+
+    def append_integer_value(value) # :nodoc:
+      case value
+      when RANGE_INT16
+        append_int16(value)
+      when RANGE_INT32
+        append_int32(value)
+      when RANGE_INT64
+        append_int64(value)
+      else
+        append_hugeint(value)
+      end
+    end
+
+    def append_string_value(value) # :nodoc:
+      blob?(value) ? append_blob(value) : append_varchar(value)
     end
 
     def to_time(value) # :nodoc:
