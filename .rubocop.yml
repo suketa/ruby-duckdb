@@ -22,6 +22,10 @@ Metrics/ClassLength:
     - 'test/**/*_test.rb'
     - 'lib/duckdb/prepared_statement.rb'
 
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/duckdb/converter.rb'
+
 Style/Documentation:
   Enabled: false
 

@@ -28,9 +28,11 @@ module DuckDB
       Date.new(year, month, day)
     end
 
+    # rubocop:disable Metrics/ParameterLists
     def _to_time(year, month, day, hour, minute, second, microsecond)
       Time.local(year, month, day, hour, minute, second, microsecond)
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def _to_time_from_duckdb_time(hour, minute, second, microsecond)
       Time.parse(
@@ -59,46 +61,17 @@ module DuckDB
     end
 
     def _to_time_from_duckdb_time_tz(hour, min, sec, micro, timezone)
-      sign = '+'
-      if timezone.negative?
-        timezone = -timezone
-        sign = '-'
-      end
-
-      tzhour = timezone / 3600
-      tzmin = (timezone % 3600) / 60
-
-      Time.parse(
-        format(
-          '%<hour>02d:%<min>02d:%<sec>02d.%<micro>06d%<sign>s%<tzhour>02d:%<tzmin>02d',
-          hour: hour,
-          min: min,
-          sec: sec,
-          micro: micro,
-          sign: sign,
-          tzhour: tzhour,
-          tzmin: tzmin
-        )
-      )
+      tz_offset = format_timezone_offset(timezone)
+      time_str = format('%<hour>02d:%<min>02d:%<sec>02d.%<micro>06d%<tz>s',
+                        hour: hour, min: min, sec: sec, micro: micro, tz: tz_offset)
+      Time.parse(time_str)
     end
 
     def _to_time_from_duckdb_timestamp_tz(bits)
       micro = bits % 1_000_000
-      sec = (bits / 1_000_000)
-      time = EPOCH_UTC + sec
-
-      Time.parse(
-        format(
-          '%<year>04d-%<mon>02d-%<day>02d %<hour>02d:%<min>02d:%<sec>02d.%<micro>06d +0000',
-          year: time.year,
-          mon: time.month,
-          day: time.day,
-          hour: time.hour,
-          min: time.min,
-          sec: time.sec,
-          micro: micro
-        )
-      )
+      time = EPOCH_UTC + (bits / 1_000_000)
+      timestamp_str = format_timestamp_with_micro(time, micro)
+      Time.parse(timestamp_str)
     end
 
     def _to_hugeint_from_vector(lower, upper)
@@ -170,6 +143,20 @@ module DuckDB
 
     def _to_query_progress(percentage, rows_processed, total_rows_to_process)
       DuckDB::QueryProgress.new(percentage, rows_processed, total_rows_to_process).freeze
+    end
+
+    def format_timezone_offset(timezone)
+      sign = timezone.negative? ? '-' : '+'
+      offset = timezone.abs
+      tzhour = offset / 3600
+      tzmin = (offset % 3600) / 60
+      format('%<sign>s%<hour>02d:%<min>02d', sign: sign, hour: tzhour, min: tzmin)
+    end
+
+    def format_timestamp_with_micro(time, micro)
+      format('%<year>04d-%<mon>02d-%<day>02d %<hour>02d:%<min>02d:%<sec>02d.%<micro>06d +0000',
+             year: time.year, mon: time.month, day: time.day,
+             hour: time.hour, min: time.min, sec: time.sec, micro: micro)
     end
 
     private
