@@ -100,7 +100,7 @@ static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_ty
 
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output) {
     rubyDuckDBScalarFunction *ctx;
-    idx_t i, j;
+    idx_t i;
     struct callback_arg arg;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
