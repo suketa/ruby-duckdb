@@ -84,5 +84,15 @@ module DuckDBTest
       assert_match(/single-threaded execution/, error.message)
       assert_match(/SET threads=1/, error.message)
     end
+
+    def test_add_parameter
+      sf = DuckDB::ScalarFunction.new
+      logical_type = DuckDB::LogicalType.new(4) # DUCKDB_TYPE_INTEGER
+
+      result = sf.add_parameter(logical_type)
+
+      assert_instance_of DuckDB::ScalarFunction, result
+      assert_equal sf.__id__, result.__id__
+    end
   end
 end
