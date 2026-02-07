@@ -37,13 +37,13 @@ module DuckDBTest
 
     def test_return_type_setter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      varchar_type = DuckDB::LogicalType.new(17) # DUCKDB_TYPE_VARCHAR
+      timestamp_type = DuckDB::LogicalType.new(13) # DUCKDB_TYPE_TIMESTAMP (unsupported)
 
       error = assert_raises(DuckDB::Error) do
-        sf.return_type = varchar_type
+        sf.return_type = timestamp_type
       end
 
-      assert_match(/only.*INTEGER.*supported/i, error.message)
+      assert_match(/only.*supported/i, error.message)
     end
 
     def test_set_function
@@ -213,6 +213,23 @@ module DuckDBTest
       result = @con.execute('SELECT add_half(value) FROM test_table')
 
       assert_in_delta 3.0, result.first.first, 0.0001
+    end
+
+    def test_scalar_function_varchar_return_type # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (name VARCHAR)')
+      @con.execute("INSERT INTO test_table VALUES ('Alice'), ('Bob')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_greeting'
+      sf.add_parameter(DuckDB::LogicalType.new(17)) # VARCHAR (type ID 17)
+      sf.return_type = DuckDB::LogicalType.new(17) # VARCHAR
+      sf.set_function { |name| "Hello, #{name}!" }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_greeting(name) FROM test_table ORDER BY name')
+
+      assert_equal [['Hello, Alice!'], ['Hello, Bob!']], result.to_a
     end
   end
 end
