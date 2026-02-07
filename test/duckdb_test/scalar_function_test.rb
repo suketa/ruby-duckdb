@@ -163,5 +163,22 @@ module DuckDBTest
 
       assert_equal 9_223_372_036_854_775_806, result.first.first
     end
+
+    def test_scalar_function_double_return_type # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value DOUBLE)')
+      @con.execute('INSERT INTO test_table VALUES (3.14159)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'multiply_by_two'
+      sf.add_parameter(DuckDB::LogicalType.new(11)) # DOUBLE (type ID 11)
+      sf.return_type = DuckDB::LogicalType.new(11) # DOUBLE
+      sf.set_function { |v| v * 2 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT multiply_by_two(value) FROM test_table')
+
+      assert_in_delta 6.28318, result.first.first, 0.00001
+    end
   end
 end
