@@ -12,6 +12,7 @@ static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical
 static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_scalar_function_set_function(VALUE self);
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output);
+static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value);
 
 static const rb_data_type_t scalar_function_data_type = {
     "DuckDB/ScalarFunction",
@@ -87,9 +88,9 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     idx_t row_count;
     idx_t col_count;
     idx_t i, j;
-    uint64_t *output_validity;
     duckdb_vector *input_vectors;
     duckdb_logical_type *input_types;
+    duckdb_logical_type output_type;
     VALUE *args;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
@@ -103,24 +104,15 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     row_count = duckdb_data_chunk_get_size(input);
     col_count = duckdb_data_chunk_get_column_count(input);
 
-    // Get output vector data (INTEGER type uses int32_t)
-    int32_t *output_data_int32 = (int32_t *)duckdb_vector_get_data(output);
+    // Get output vector type
+    output_type = duckdb_vector_get_column_type(output);
 
     // If no parameters, call block once and replicate result to all rows
     if (col_count == 0) {
-        int32_t *output_data_int32 = (int32_t *)duckdb_vector_get_data(output);
         result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
 
-        if (result == Qnil) {
-            duckdb_vector_ensure_validity_writable(output);
-            output_validity = duckdb_vector_get_validity(output);
-            for (i = 0; i < row_count; i++) {
-                duckdb_validity_set_row_invalid(output_validity, i);
-            }
-        } else {
-            for (i = 0; i < row_count; i++) {
-                output_data_int32[i] = NUM2INT(result);
-            }
+        for (i = 0; i < row_count; i++) {
+            vector_set_value_at(output, output_type, i, result);
         }
         return;
     }
@@ -136,10 +128,6 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         input_types[j] = duckdb_vector_get_column_type(input_vectors[j]);
     }
 
-    // Ensure output validity is writable (needed if any row might return NULL)
-    duckdb_vector_ensure_validity_writable(output);
-    output_validity = duckdb_vector_get_validity(output);
-
     // Process each row
     for (i = 0; i < row_count; i++) {
         // Build arguments array for this row using vector_value_at
@@ -150,18 +138,40 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         // Call the Ruby block with the arguments
         result = rb_funcallv(ctx->function_proc, rb_intern("call"), col_count, args);
 
-        // Write result to output
-        if (result == Qnil) {
-            duckdb_validity_set_row_invalid(output_validity, i);
-        } else {
-            output_data_int32[i] = NUM2INT(result);
-        }
+        // Write result to output using helper function
+        vector_set_value_at(output, output_type, i, result);
     }
 
     // Free allocated memory
     xfree(args);
     xfree(input_types);
     xfree(input_vectors);
+}
+
+static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value) {
+    duckdb_type type_id;
+    void* vector_data;
+    uint64_t *validity;
+
+    // Handle NULL values
+    if (value == Qnil) {
+        duckdb_vector_ensure_validity_writable(vector);
+        validity = duckdb_vector_get_validity(vector);
+        duckdb_validity_set_row_invalid(validity, index);
+        return;
+    }
+
+    type_id = duckdb_get_type_id(element_type);
+    vector_data = duckdb_vector_get_data(vector);
+
+    switch(type_id) {
+        case DUCKDB_TYPE_INTEGER:
+            ((int32_t *)vector_data)[index] = NUM2INT(value);
+            break;
+        default:
+            rb_raise(rb_eArgError, "Unsupported return type for scalar function");
+            break;
+    }
 }
 
 rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj) {
