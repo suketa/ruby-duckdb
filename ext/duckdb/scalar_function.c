@@ -87,11 +87,9 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     idx_t row_count;
     idx_t col_count;
     idx_t i, j;
-    int64_t *output_data;
     uint64_t *output_validity;
     duckdb_vector *input_vectors;
-    int64_t **input_data_arrays;
-    uint64_t **input_validity_arrays;
+    duckdb_logical_type *input_types;
     VALUE *args;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
@@ -105,11 +103,12 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     row_count = duckdb_data_chunk_get_size(input);
     col_count = duckdb_data_chunk_get_column_count(input);
 
-    // Get output vector data
-    output_data = (int64_t *)duckdb_vector_get_data(output);
+    // Get output vector data (INTEGER type uses int32_t)
+    int32_t *output_data_int32 = (int32_t *)duckdb_vector_get_data(output);
 
     // If no parameters, call block once and replicate result to all rows
     if (col_count == 0) {
+        int32_t *output_data_int32 = (int32_t *)duckdb_vector_get_data(output);
         result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
 
         if (result == Qnil) {
@@ -120,23 +119,21 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
             }
         } else {
             for (i = 0; i < row_count; i++) {
-                output_data[i] = NUM2LL(result);
+                output_data_int32[i] = NUM2INT(result);
             }
         }
         return;
     }
 
-    // Allocate arrays to hold input vectors and their data
+    // Allocate arrays to hold input vectors and their types
     input_vectors = ALLOC_N(duckdb_vector, col_count);
-    input_data_arrays = ALLOC_N(int64_t *, col_count);
-    input_validity_arrays = ALLOC_N(uint64_t *, col_count);
+    input_types = ALLOC_N(duckdb_logical_type, col_count);
     args = ALLOC_N(VALUE, col_count);
 
-    // Get all input vectors and their data pointers
+    // Get all input vectors and their types
     for (j = 0; j < col_count; j++) {
         input_vectors[j] = duckdb_data_chunk_get_vector(input, j);
-        input_data_arrays[j] = (int64_t *)duckdb_vector_get_data(input_vectors[j]);
-        input_validity_arrays[j] = duckdb_vector_get_validity(input_vectors[j]);
+        input_types[j] = duckdb_vector_get_column_type(input_vectors[j]);
     }
 
     // Ensure output validity is writable (needed if any row might return NULL)
@@ -145,15 +142,9 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
 
     // Process each row
     for (i = 0; i < row_count; i++) {
-        // Build arguments array for this row
+        // Build arguments array for this row using vector_value_at
         for (j = 0; j < col_count; j++) {
-            // Check if this value is NULL
-            // Note: if validity array is NULL, all values are valid
-            if (input_validity_arrays[j] != NULL && !duckdb_validity_row_is_valid(input_validity_arrays[j], i)) {
-                args[j] = Qnil;
-            } else {
-                args[j] = LL2NUM(input_data_arrays[j][i]);
-            }
+            args[j] = rbduckdb_vector_value_at(input_vectors[j], input_types[j], i);
         }
 
         // Call the Ruby block with the arguments
@@ -163,14 +154,13 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         if (result == Qnil) {
             duckdb_validity_set_row_invalid(output_validity, i);
         } else {
-            output_data[i] = NUM2LL(result);
+            output_data_int32[i] = NUM2INT(result);
         }
     }
 
     // Free allocated memory
     xfree(args);
-    xfree(input_validity_arrays);
-    xfree(input_data_arrays);
+    xfree(input_types);
     xfree(input_vectors);
 }
 
