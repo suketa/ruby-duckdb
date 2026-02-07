@@ -4,16 +4,18 @@ module DuckDB
   # DuckDB::ScalarFunction encapsulates DuckDB's scalar function
   class ScalarFunction
     # Sets the return type for the scalar function.
-    # Currently only INTEGER type is supported.
+    # Currently supports INTEGER and BIGINT types.
     #
     # @param logical_type [DuckDB::LogicalType] the return type
     # @return [DuckDB::ScalarFunction] self
-    # @raise [DuckDB::Error] if the type is not INTEGER
+    # @raise [DuckDB::Error] if the type is not INTEGER or BIGINT
     def return_type=(logical_type)
       raise DuckDB::Error, 'logical_type must be a DuckDB::LogicalType' unless logical_type.is_a?(DuckDB::LogicalType)
 
-      # Check if the type is INTEGER
-      raise DuckDB::Error, 'Only INTEGER return type is currently supported' unless logical_type.type == :integer
+      # Check if the type is supported
+      unless %i[integer bigint].include?(logical_type.type)
+        raise DuckDB::Error, 'Only INTEGER and BIGINT return types are currently supported'
+      end
 
       _set_return_type(logical_type)
     end
