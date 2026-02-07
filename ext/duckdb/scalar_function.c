@@ -251,6 +251,14 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
             break;
         }
+        case DUCKDB_TYPE_BLOB: {
+            // BLOB uses same API as VARCHAR, but expects binary data
+            VALUE str = rb_obj_as_string(value);
+            const char *str_ptr = StringValuePtr(str);
+            idx_t str_len = RSTRING_LEN(str);
+            duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
+            break;
+        }
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;

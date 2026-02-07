@@ -231,5 +231,25 @@ module DuckDBTest
 
       assert_equal [['Hello, Alice!'], ['Hello, Bob!']], result.to_a
     end
+
+    def test_scalar_function_blob_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (data BLOB)')
+      @con.execute("INSERT INTO test_table VALUES ('\\x00\\x01\\x02\\x03'::BLOB), ('\\x00\\xAA\\xBB\\xCC'::BLOB)")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_prefix'
+      sf.add_parameter(DuckDB::LogicalType.new(18)) # BLOB (type ID 18)
+      sf.return_type = DuckDB::LogicalType.new(18) # BLOB
+      sf.set_function { |data| DuckDB::Blob.new("\xFF".b + data) }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_prefix(data) FROM test_table ORDER BY data')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal "\xFF\x00\x01\x02\x03".b, rows[0][0]
+      assert_equal "\xFF\x00\xAA\xBB\xCC".b, rows[1][0]
+    end
   end
 end
