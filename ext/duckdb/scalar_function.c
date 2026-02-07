@@ -134,17 +134,6 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         return;
     }
 
-    // Allocate arrays to hold input vectors and their types
-    arg.input_vectors = ALLOC_N(duckdb_vector, arg.col_count);
-    arg.input_types = ALLOC_N(duckdb_logical_type, arg.col_count);
-    arg.args = ALLOC_N(VALUE, arg.col_count);
-
-    // Get all input vectors and their types
-    for (j = 0; j < arg.col_count; j++) {
-        arg.input_vectors[j] = duckdb_data_chunk_get_vector(input, j);
-        arg.input_types[j] = duckdb_vector_get_column_type(arg.input_vectors[j]);
-    }
-
     // Process rows with proper cleanup on exception
     rb_ensure(process_rows, (VALUE)&arg, cleanup_callback, (VALUE)&arg);
 }
@@ -167,6 +156,17 @@ static VALUE process_rows(VALUE varg) {
     struct callback_arg *arg = (struct callback_arg *)varg;
     idx_t i, j;
     VALUE result;
+
+    // Allocate arrays to hold input vectors and their types
+    arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
+    arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
+    arg->args = ALLOC_N(VALUE, arg->col_count);
+
+    // Get all input vectors and their types
+    for (j = 0; j < arg->col_count; j++) {
+        arg->input_vectors[j] = duckdb_data_chunk_get_vector(arg->input, j);
+        arg->input_types[j] = duckdb_vector_get_column_type(arg->input_vectors[j]);
+    }
 
     // Process each row
     for (i = 0; i < arg->row_count; i++) {
