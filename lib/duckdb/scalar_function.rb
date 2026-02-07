@@ -14,7 +14,8 @@ module DuckDB
 
       # Check if the type is supported
       unless %i[boolean integer bigint float double varchar].include?(logical_type.type)
-        raise DuckDB::Error, 'Only BOOLEAN, INTEGER, BIGINT, FLOAT, DOUBLE, and VARCHAR return types are currently supported'
+        raise DuckDB::Error,
+              'Only BOOLEAN, INTEGER, BIGINT, FLOAT, DOUBLE, and VARCHAR return types are currently supported'
       end
 
       _set_return_type(logical_type)
