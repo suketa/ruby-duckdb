@@ -228,6 +228,9 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
     vector_data = duckdb_vector_get_data(vector);
 
     switch(type_id) {
+        case DUCKDB_TYPE_BOOLEAN:
+            ((bool *)vector_data)[index] = RTEST(value);
+            break;
         case DUCKDB_TYPE_INTEGER:
             ((int32_t *)vector_data)[index] = NUM2INT(value);
             break;
