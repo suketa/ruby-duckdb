@@ -14,6 +14,21 @@ static VALUE rbduckdb_scalar_function_set_function(VALUE self);
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output);
 static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value);
 
+struct callback_arg {
+    rubyDuckDBScalarFunction *ctx;
+    duckdb_data_chunk input;
+    duckdb_vector output;
+    duckdb_logical_type output_type;
+    duckdb_vector *input_vectors;
+    duckdb_logical_type *input_types;
+    VALUE *args;
+    idx_t row_count;
+    idx_t col_count;
+};
+
+static VALUE process_rows(VALUE arg);
+static VALUE cleanup_callback(VALUE arg);
+
 static const rb_data_type_t scalar_function_data_type = {
     "DuckDB/ScalarFunction",
     {mark, deallocate, memsize,},
@@ -85,13 +100,8 @@ static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_ty
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output) {
     rubyDuckDBScalarFunction *ctx;
     VALUE result;
-    idx_t row_count;
-    idx_t col_count;
     idx_t i, j;
-    duckdb_vector *input_vectors;
-    duckdb_logical_type *input_types;
-    duckdb_logical_type output_type;
-    VALUE *args;
+    struct callback_arg arg;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
 
@@ -100,52 +110,89 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         return;
     }
 
-    // Get the number of rows and columns
-    row_count = duckdb_data_chunk_get_size(input);
-    col_count = duckdb_data_chunk_get_column_count(input);
-
-    // Get output vector type
-    output_type = duckdb_vector_get_column_type(output);
+    // Initialize callback argument structure
+    arg.ctx = ctx;
+    arg.input = input;
+    arg.output = output;
+    arg.output_type = duckdb_vector_get_column_type(output);
+    arg.input_vectors = NULL;
+    arg.input_types = NULL;
+    arg.args = NULL;
+    arg.row_count = duckdb_data_chunk_get_size(input);
+    arg.col_count = duckdb_data_chunk_get_column_count(input);
 
     // If no parameters, call block once and replicate result to all rows
-    if (col_count == 0) {
+    if (arg.col_count == 0) {
         result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
 
-        for (i = 0; i < row_count; i++) {
-            vector_set_value_at(output, output_type, i, result);
+        for (i = 0; i < arg.row_count; i++) {
+            vector_set_value_at(output, arg.output_type, i, result);
         }
+        duckdb_destroy_logical_type(&arg.output_type);
         return;
     }
 
     // Allocate arrays to hold input vectors and their types
-    input_vectors = ALLOC_N(duckdb_vector, col_count);
-    input_types = ALLOC_N(duckdb_logical_type, col_count);
-    args = ALLOC_N(VALUE, col_count);
+    arg.input_vectors = ALLOC_N(duckdb_vector, arg.col_count);
+    arg.input_types = ALLOC_N(duckdb_logical_type, arg.col_count);
+    arg.args = ALLOC_N(VALUE, arg.col_count);
 
     // Get all input vectors and their types
-    for (j = 0; j < col_count; j++) {
-        input_vectors[j] = duckdb_data_chunk_get_vector(input, j);
-        input_types[j] = duckdb_vector_get_column_type(input_vectors[j]);
+    for (j = 0; j < arg.col_count; j++) {
+        arg.input_vectors[j] = duckdb_data_chunk_get_vector(input, j);
+        arg.input_types[j] = duckdb_vector_get_column_type(arg.input_vectors[j]);
     }
 
+    // Process rows with proper cleanup on exception
+    rb_ensure(process_rows, (VALUE)&arg, cleanup_callback, (VALUE)&arg);
+}
+
+static VALUE process_rows(VALUE varg) {
+    struct callback_arg *arg = (struct callback_arg *)varg;
+    idx_t i, j;
+    VALUE result;
+
     // Process each row
-    for (i = 0; i < row_count; i++) {
+    for (i = 0; i < arg->row_count; i++) {
         // Build arguments array for this row using vector_value_at
-        for (j = 0; j < col_count; j++) {
-            args[j] = rbduckdb_vector_value_at(input_vectors[j], input_types[j], i);
+        for (j = 0; j < arg->col_count; j++) {
+            arg->args[j] = rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i);
         }
 
         // Call the Ruby block with the arguments
-        result = rb_funcallv(ctx->function_proc, rb_intern("call"), col_count, args);
+        result = rb_funcallv(arg->ctx->function_proc, rb_intern("call"), arg->col_count, arg->args);
 
         // Write result to output using helper function
-        vector_set_value_at(output, output_type, i, result);
+        vector_set_value_at(arg->output, arg->output_type, i, result);
     }
 
+    return Qnil;
+}
+
+static VALUE cleanup_callback(VALUE varg) {
+    struct callback_arg *arg = (struct callback_arg *)varg;
+    idx_t j;
+
+    // Destroy all logical types
+    if (arg->input_types != NULL) {
+        for (j = 0; j < arg->col_count; j++) {
+            duckdb_destroy_logical_type(&arg->input_types[j]);
+        }
+    }
+    duckdb_destroy_logical_type(&arg->output_type);
+
     // Free allocated memory
-    xfree(args);
-    xfree(input_types);
-    xfree(input_vectors);
+    if (arg->args != NULL) {
+        xfree(arg->args);
+    }
+    if (arg->input_types != NULL) {
+        xfree(arg->input_types);
+    }
+    if (arg->input_vectors != NULL) {
+        xfree(arg->input_vectors);
+    }
+
+    return Qnil;
 }
 
 static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value) {
