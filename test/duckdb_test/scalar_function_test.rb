@@ -129,5 +129,22 @@ module DuckDBTest
 
       assert_equal [[8], [12], [19]], result.to_a
     end
+
+    def test_scalar_function_with_null_input # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value INTEGER)')
+      @con.execute('INSERT INTO test_table VALUES (5), (NULL), (15)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double'
+      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
+      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.set_function { |col1| col1.nil? ? nil : 2 * col1 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT double(value) FROM test_table ORDER BY value')
+
+      assert_equal [[10], [30], [nil]], result.to_a
+    end
   end
 end

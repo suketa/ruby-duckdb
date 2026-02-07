@@ -57,7 +57,6 @@ static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
-static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
@@ -528,7 +527,7 @@ static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t ro
 
     ary = rb_ary_new2(size);
     for (idx_t i = bgn; i < end; ++i) {
-        value = vector_value_at(child, child_logical_type, i);
+        value = rbduckdb_vector_value_at(child, child_logical_type, i);
         rb_ary_store(ary, i - bgn, value);
     }
 
@@ -536,7 +535,7 @@ static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t ro
     return ary;
 }
 
-static VALUE vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index) {
+VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index) {
     uint64_t *validity;
     duckdb_type type_id;
     void* vector_data;
@@ -676,7 +675,7 @@ static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void * ve
     duckdb_vector child = duckdb_list_vector_get_child(vector);
 
     for (i = bgn; i < end; ++i) {
-        value = vector_value_at(child, child_logical_type, i);
+        value = rbduckdb_vector_value_at(child, child_logical_type, i);
         rb_ary_store(ary, i - bgn, value);
     }
     duckdb_destroy_logical_type(&child_logical_type);
@@ -701,8 +700,8 @@ static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vect
     duckdb_vector value_vector = duckdb_struct_vector_get_child(child, 1);
 
     for (idx_t i = bgn; i < end; ++i) {
-        key = vector_value_at(key_vector, key_logical_type, i);
-        value = vector_value_at(value_vector, value_logical_type, i);
+        key = rbduckdb_vector_value_at(key_vector, key_logical_type, i);
+        value = rbduckdb_vector_value_at(value_vector, value_logical_type, i);
         rb_hash_aset(hash, key, value);
     }
 
@@ -727,7 +726,7 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
             key = ID2SYM(rb_intern_const(p));
             child = duckdb_struct_vector_get_child(vector, i);
             child_type = duckdb_struct_type_child_type(ty, i);
-            value = vector_value_at(child, child_type, row_idx);
+            value = rbduckdb_vector_value_at(child, child_type, row_idx);
             rb_hash_aset(hash, key, value);
             duckdb_destroy_logical_type(&child_type);
             duckdb_free(p);
@@ -746,7 +745,7 @@ static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* ve
     duckdb_logical_type  child_type = duckdb_union_type_member_type(ty, index);
 
     duckdb_vector vector_value = duckdb_struct_vector_get_child(vector, index + 1);
-    value = vector_value_at(vector_value, child_type, row_idx);
+    value = rbduckdb_vector_value_at(vector_value, child_type, row_idx);
     duckdb_destroy_logical_type(&child_type);
     return value;
 }
@@ -830,7 +829,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
 
     ty = duckdb_vector_get_column_type(vector);
 
-    obj = vector_value_at(vector, ty, row_idx);
+    obj = rbduckdb_vector_value_at(vector, ty, row_idx);
 
     duckdb_destroy_logical_type(&ty);
     return obj;
