@@ -251,5 +251,25 @@ module DuckDBTest
       assert_equal "\xFF\x00\x01\x02\x03".b, rows[0][0]
       assert_equal "\xFF\x00\xAA\xBB\xCC".b, rows[1][0]
     end
+
+    def test_scalar_function_timestamp_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00'), ('2024-12-25 23:59:59')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_hour'
+      sf.add_parameter(DuckDB::LogicalType.new(12)) # TIMESTAMP (type ID 12)
+      sf.return_type = DuckDB::LogicalType.new(12) # TIMESTAMP
+      sf.set_function { |ts| ts + 3600 } # Add 1 hour (3600 seconds)
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_hour(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal Time.new(2024, 1, 15, 11, 30, 0), rows[0][0]
+      assert_equal Time.new(2024, 12, 26, 0, 59, 59), rows[1][0]
+    end
   end
 end
