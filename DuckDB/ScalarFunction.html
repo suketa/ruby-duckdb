@@ -86,6 +86,7 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-add_parameter">add_parameter</a></li>
       <li ><a href="#method-i-name-3D">name=</a></li>
       <li ><a href="#method-i-return_type-3D">return_type=</a></li>
       <li ><a href="#method-i-set_name">set_name</a></li>
@@ -181,6 +182,42 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-add_parameter" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-add_parameter" title="Link to this method">
+                <span class="method-name">add_parameter</span>
+                <span class="method-args">(p1)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="add_parameter-source">
+            <pre>static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type) {
+    rubyDuckDBScalarFunction *p;
+    rubyDuckDBLogicalType *lt;
+
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
+    lt = get_struct_logical_type(logical_type);
+
+    duckdb_scalar_function_add_parameter(p-&gt;scalar_function, lt-&gt;logical_type);
+
+    return self;
+}</pre>
+          </div>
+          
+        </div>
+
+
+      </div>
 
       <div id="method-i-name-3D" class="method-detail anchor-link method-alias">
         <div class="method-header">
