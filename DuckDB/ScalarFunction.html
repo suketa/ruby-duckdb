@@ -262,15 +262,17 @@
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
-  <span class="ruby-comment"># Check if the type is INTEGER</span>
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;Only INTEGER return type is currently supported&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:integer</span>
+  <span class="ruby-comment"># Check if the type is supported</span>
+  <span class="ruby-keyword">unless</span> <span class="ruby-node">%i[integer bigint]</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;Only INTEGER and BIGINT return types are currently supported&#39;</span>
+  <span class="ruby-keyword">end</span>
 
   <span class="ruby-identifier">_set_return_type</span>(<span class="ruby-identifier">logical_type</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Sets the return type for the scalar function. Currently only INTEGER type is supported.</p>
+          <p>Sets the return type for the scalar function. Currently supports INTEGER and BIGINT types.</p>
 
-<p>@param logical_type [DuckDB::LogicalType] the return type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not INTEGER</p>
+<p>@param logical_type [DuckDB::LogicalType] the return type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not INTEGER or BIGINT</p>
         </div>
 
 
