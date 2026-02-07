@@ -180,5 +180,22 @@ module DuckDBTest
 
       assert_in_delta 6.28318, result.first.first, 0.00001
     end
+
+    def test_scalar_function_boolean_return_type # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value INTEGER)')
+      @con.execute('INSERT INTO test_table VALUES (5), (10), (15)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'is_greater_than_ten'
+      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
+      sf.return_type = DuckDB::LogicalType.new(1) # BOOLEAN (type ID 1)
+      sf.set_function { |v| v > 10 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT is_greater_than_ten(value) FROM test_table ORDER BY value')
+
+      assert_equal [[false], [false], [true]], result.to_a
+    end
   end
 end
