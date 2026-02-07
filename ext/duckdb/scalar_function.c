@@ -27,6 +27,7 @@ struct callback_arg {
 };
 
 static VALUE process_rows(VALUE arg);
+static VALUE process_no_param_rows(VALUE arg);
 static VALUE cleanup_callback(VALUE arg);
 
 static const rb_data_type_t scalar_function_data_type = {
@@ -99,14 +100,20 @@ static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_ty
 
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output) {
     rubyDuckDBScalarFunction *ctx;
-    VALUE result;
     idx_t i, j;
     struct callback_arg arg;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
 
     if (ctx == NULL || ctx->function_proc == Qnil) {
+        // Mark all rows as NULL to avoid returning uninitialized data
+        idx_t row_count = duckdb_data_chunk_get_size(input);
+        uint64_t *validity;
         duckdb_vector_ensure_validity_writable(output);
+        validity = duckdb_vector_get_validity(output);
+        for (i = 0; i < row_count; i++) {
+            duckdb_validity_set_row_invalid(validity, i);
+        }
         return;
     }
 
@@ -123,12 +130,7 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
 
     // If no parameters, call block once and replicate result to all rows
     if (arg.col_count == 0) {
-        result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
-
-        for (i = 0; i < arg.row_count; i++) {
-            vector_set_value_at(output, arg.output_type, i, result);
-        }
-        duckdb_destroy_logical_type(&arg.output_type);
+        rb_ensure(process_no_param_rows, (VALUE)&arg, cleanup_callback, (VALUE)&arg);
         return;
     }
 
@@ -145,6 +147,20 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
 
     // Process rows with proper cleanup on exception
     rb_ensure(process_rows, (VALUE)&arg, cleanup_callback, (VALUE)&arg);
+}
+
+static VALUE process_no_param_rows(VALUE varg) {
+    struct callback_arg *arg = (struct callback_arg *)varg;
+    idx_t i;
+    VALUE result;
+
+    result = rb_funcall(arg->ctx->function_proc, rb_intern("call"), 0);
+
+    for (i = 0; i < arg->row_count; i++) {
+        vector_set_value_at(arg->output, arg->output_type, i, result);
+    }
+
+    return Qnil;
 }
 
 static VALUE process_rows(VALUE varg) {
