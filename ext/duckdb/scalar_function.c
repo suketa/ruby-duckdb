@@ -85,9 +85,14 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     rubyDuckDBScalarFunction *ctx;
     VALUE result;
     idx_t row_count;
-    idx_t i;
+    idx_t col_count;
+    idx_t i, j;
     int64_t *output_data;
     uint64_t *output_validity;
+    duckdb_vector *input_vectors;
+    int64_t **input_data_arrays;
+    uint64_t **input_validity_arrays;
+    VALUE *args;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
 
@@ -96,24 +101,77 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
         return;
     }
 
-    // Call the Ruby block
-    result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
-
-    // Get the number of rows to process
+    // Get the number of rows and columns
     row_count = duckdb_data_chunk_get_size(input);
+    col_count = duckdb_data_chunk_get_column_count(input);
 
     // Get output vector data
     output_data = (int64_t *)duckdb_vector_get_data(output);
+
+    // If no parameters, call block once and replicate result to all rows
+    if (col_count == 0) {
+        result = rb_funcall(ctx->function_proc, rb_intern("call"), 0);
+
+        if (result == Qnil) {
+            duckdb_vector_ensure_validity_writable(output);
+            output_validity = duckdb_vector_get_validity(output);
+            for (i = 0; i < row_count; i++) {
+                duckdb_validity_set_row_invalid(output_validity, i);
+            }
+        } else {
+            for (i = 0; i < row_count; i++) {
+                output_data[i] = NUM2LL(result);
+            }
+        }
+        return;
+    }
+
+    // Allocate arrays to hold input vectors and their data
+    input_vectors = ALLOC_N(duckdb_vector, col_count);
+    input_data_arrays = ALLOC_N(int64_t *, col_count);
+    input_validity_arrays = ALLOC_N(uint64_t *, col_count);
+    args = ALLOC_N(VALUE, col_count);
+
+    // Get all input vectors and their data pointers
+    for (j = 0; j < col_count; j++) {
+        input_vectors[j] = duckdb_data_chunk_get_vector(input, j);
+        input_data_arrays[j] = (int64_t *)duckdb_vector_get_data(input_vectors[j]);
+        input_validity_arrays[j] = duckdb_vector_get_validity(input_vectors[j]);
+    }
+
+    // Ensure output validity is writable (needed if any row might return NULL)
+    duckdb_vector_ensure_validity_writable(output);
     output_validity = duckdb_vector_get_validity(output);
 
-    // Write the result to all rows
+    // Process each row
     for (i = 0; i < row_count; i++) {
+        // Build arguments array for this row
+        for (j = 0; j < col_count; j++) {
+            // Check if this value is NULL
+            // Note: if validity array is NULL, all values are valid
+            if (input_validity_arrays[j] != NULL && !duckdb_validity_row_is_valid(input_validity_arrays[j], i)) {
+                args[j] = Qnil;
+            } else {
+                args[j] = LL2NUM(input_data_arrays[j][i]);
+            }
+        }
+
+        // Call the Ruby block with the arguments
+        result = rb_funcallv(ctx->function_proc, rb_intern("call"), col_count, args);
+
+        // Write result to output
         if (result == Qnil) {
             duckdb_validity_set_row_invalid(output_validity, i);
         } else {
             output_data[i] = NUM2LL(result);
         }
     }
+
+    // Free allocated memory
+    xfree(args);
+    xfree(input_validity_arrays);
+    xfree(input_data_arrays);
+    xfree(input_vectors);
 }
 
 rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj) {

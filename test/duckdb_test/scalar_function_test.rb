@@ -94,5 +94,40 @@ module DuckDBTest
       assert_instance_of DuckDB::ScalarFunction, result
       assert_equal sf.__id__, result.__id__
     end
+
+    def test_scalar_function_with_one_parameter # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value INTEGER)')
+      @con.execute('INSERT INTO test_table VALUES (5), (10), (15)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double'
+      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
+      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.set_function { |col1| 2 * col1 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT double(value) FROM test_table ORDER BY value')
+
+      assert_equal [[10], [20], [30]], result.to_a
+    end
+
+    def test_scalar_function_with_two_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (a INTEGER, b INTEGER)')
+      @con.execute('INSERT INTO test_table VALUES (5, 3), (10, 2), (15, 4)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_nums'
+      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
+      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
+      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.set_function { |a, b| a + b }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_nums(a, b) FROM test_table ORDER BY a')
+
+      assert_equal [[8], [12], [19]], result.to_a
+    end
   end
 end
