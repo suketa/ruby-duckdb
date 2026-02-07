@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::ScalarFunction#add_parameter.
 - add DuckDB::ScalarFunction#set_return_type.
 - bump bundler 4.0 in duckdb.gemspec.
 
