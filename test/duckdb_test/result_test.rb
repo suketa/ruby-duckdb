@@ -163,7 +163,7 @@ module DuckDBTest
       assert_instance_of(DuckDB::Column, @result.columns.first)
     end
 
-    def test__column_type # rubocop:disable Metrics/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
+    def test__column_type # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
       # TODO: deprecate Result#_column_type private method.
       assert_equal(1, @result.send(:_column_type, 0))
       assert_equal(1, @result.send(:_column_type, 0))
