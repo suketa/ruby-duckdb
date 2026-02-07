@@ -197,5 +197,22 @@ module DuckDBTest
 
       assert_equal [[false], [false], [true]], result.to_a
     end
+
+    def test_scalar_function_float_return_type # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value FLOAT)')
+      @con.execute('INSERT INTO test_table VALUES (2.5)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_half'
+      sf.add_parameter(DuckDB::LogicalType.new(10)) # FLOAT (type ID 10)
+      sf.return_type = DuckDB::LogicalType.new(10) # FLOAT
+      sf.set_function { |v| v + 0.5 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_half(value) FROM test_table')
+
+      assert_in_delta 3.0, result.first.first, 0.0001
+    end
   end
 end
