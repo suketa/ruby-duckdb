@@ -231,6 +231,9 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
         case DUCKDB_TYPE_INTEGER:
             ((int32_t *)vector_data)[index] = NUM2INT(value);
             break;
+        case DUCKDB_TYPE_BIGINT:
+            ((int64_t *)vector_data)[index] = NUM2LL(value);
+            break;
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;
