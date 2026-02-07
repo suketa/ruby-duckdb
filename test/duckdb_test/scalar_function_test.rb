@@ -37,10 +37,10 @@ module DuckDBTest
 
     def test_return_type_setter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      timestamp_type = DuckDB::LogicalType.new(13) # DUCKDB_TYPE_TIMESTAMP (unsupported)
+      time_type = DuckDB::LogicalType.new(14) # DUCKDB_TYPE_TIME (unsupported)
 
       error = assert_raises(DuckDB::Error) do
-        sf.return_type = timestamp_type
+        sf.return_type = time_type
       end
 
       assert_match(/only.*supported/i, error.message)
@@ -270,6 +270,26 @@ module DuckDBTest
       assert_equal 2, rows.size
       assert_equal Time.new(2024, 1, 15, 11, 30, 0), rows[0][0]
       assert_equal Time.new(2024, 12, 26, 0, 59, 59), rows[1][0]
+    end
+
+    def test_scalar_function_date_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (d DATE)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15'), ('2024-12-25')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_day'
+      sf.add_parameter(DuckDB::LogicalType.new(13)) # DATE (type ID 13)
+      sf.return_type = DuckDB::LogicalType.new(13) # DATE
+      sf.set_function { |date| date + 1 } # Add 1 day
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_day(d) FROM test_table ORDER BY d')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal Date.new(2024, 1, 16), rows[0][0]
+      assert_equal Date.new(2024, 12, 26), rows[1][0]
     end
   end
 end
