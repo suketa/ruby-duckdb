@@ -360,7 +360,7 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
 
         <div class="method-description">
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 583</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 584</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -368,18 +368,9 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Float</span>
     <span class="ruby-identifier">append_double</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
-    <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
-    <span class="ruby-keyword">when</span> <span class="ruby-constant">RANGE_INT16</span>
-      <span class="ruby-identifier">append_int16</span>(<span class="ruby-identifier">value</span>)
-    <span class="ruby-keyword">when</span> <span class="ruby-constant">RANGE_INT32</span>
-      <span class="ruby-identifier">append_int32</span>(<span class="ruby-identifier">value</span>)
-    <span class="ruby-keyword">when</span> <span class="ruby-constant">RANGE_INT64</span>
-      <span class="ruby-identifier">append_int64</span>(<span class="ruby-identifier">value</span>)
-    <span class="ruby-keyword">else</span>
-      <span class="ruby-identifier">append_hugeint</span>(<span class="ruby-identifier">value</span>)
-    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">append_integer_value</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span>
-    <span class="ruby-identifier">blob?</span>(<span class="ruby-identifier">value</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">append_blob</span>(<span class="ruby-identifier">value</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">append_varchar</span>(<span class="ruby-identifier">value</span>)
+    <span class="ruby-identifier">append_string_value</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-constant">TrueClass</span>, <span class="ruby-constant">FalseClass</span>
     <span class="ruby-identifier">append_bool</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Time</span>
@@ -404,6 +395,8 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append</span>(<span class="ruby-string">&#39;Alice&#39;</span>)
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 </pre>
+
+<p>rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
         </div>
 
 
@@ -999,7 +992,7 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
 
         <div class="method-description">
           <div class="method-source-code" id="append_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 624</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 617</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)
