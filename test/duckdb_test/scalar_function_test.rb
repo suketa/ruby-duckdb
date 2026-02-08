@@ -378,5 +378,26 @@ module DuckDBTest
       assert_equal 110, rows[1][0] # 100 + 10
       assert_equal 9, rows[2][0]   # 255 + 10 = 265, overflows to 9
     end
+
+    def test_scalar_function_ubigint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value UBIGINT)')
+      @con.execute('INSERT INTO test_table VALUES (9223372036854775807), (0), (1000000000)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double_value'
+      sf.add_parameter(DuckDB::LogicalType.new(9)) # UBIGINT (type ID 9)
+      sf.return_type = DuckDB::LogicalType.new(9) # UBIGINT
+      sf.set_function { |v| v * 2 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT double_value(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      assert_equal 0, rows[0][0] # 0 * 2
+      assert_equal 2_000_000_000, rows[1][0] # 1000000000 * 2
+      assert_equal 18_446_744_073_709_551_614, rows[2][0] # 9223372036854775807 * 2
+    end
   end
 end
