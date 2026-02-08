@@ -401,6 +401,27 @@ module DuckDBTest
       assert_equal 99, rows[2][0]    # 65535 + 100 = 65635, overflows to 99
     end
 
+    def test_scalar_function_uinteger_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value UINTEGER)')
+      @con.execute('INSERT INTO test_table VALUES (4294967200), (0), (1000000)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_100'
+      sf.add_parameter(DuckDB::LogicalType.new(8)) # UINTEGER (type ID 8)
+      sf.return_type = DuckDB::LogicalType.new(8) # UINTEGER
+      sf.set_function { |v| v + 100 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_100(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      assert_equal 100, rows[0][0] # 0 + 100
+      assert_equal 1_000_100, rows[1][0] # 1000000 + 100
+      assert_equal 4, rows[2][0] # 4294967200 + 100 = 4294967300, overflows to 4
+    end
+
     def test_scalar_function_ubigint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       @con.execute('SET threads=1')
       @con.execute('CREATE TABLE test_table (value UBIGINT)')
