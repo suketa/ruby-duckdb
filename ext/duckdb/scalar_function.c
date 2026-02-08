@@ -231,6 +231,15 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
         case DUCKDB_TYPE_BOOLEAN:
             ((bool *)vector_data)[index] = RTEST(value);
             break;
+        case DUCKDB_TYPE_TINYINT:
+            ((int8_t *)vector_data)[index] = (int8_t)NUM2INT(value);
+            break;
+        case DUCKDB_TYPE_UTINYINT:
+            ((uint8_t *)vector_data)[index] = (uint8_t)NUM2UINT(value);
+            break;
+        case DUCKDB_TYPE_SMALLINT:
+            ((int16_t *)vector_data)[index] = (int16_t)NUM2INT(value);
+            break;
         case DUCKDB_TYPE_INTEGER:
             ((int32_t *)vector_data)[index] = NUM2INT(value);
             break;

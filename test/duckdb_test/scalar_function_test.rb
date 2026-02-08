@@ -314,5 +314,26 @@ module DuckDBTest
       assert_equal 0, rows[1][0].hour
       assert_equal 59, rows[1][0].min
     end
+
+    def test_scalar_function_utinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value UTINYINT)')
+      @con.execute('INSERT INTO test_table VALUES (255), (0), (100)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_10'
+      sf.add_parameter(DuckDB::LogicalType.new(6)) # UTINYINT (type ID 6)
+      sf.return_type = DuckDB::LogicalType.new(6) # UTINYINT
+      sf.set_function { |v| v + 10 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_10(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      assert_equal 10, rows[0][0]  # 0 + 10
+      assert_equal 110, rows[1][0] # 100 + 10
+      assert_equal 9, rows[2][0]   # 255 + 10 = 265, overflows to 9
+    end
   end
 end
