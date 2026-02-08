@@ -3,6 +3,7 @@
 VALUE cDuckDBConnection;
 
 static void deallocate(void *ctx);
+static void mark(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_connection_disconnect(VALUE self);
@@ -14,7 +15,7 @@ static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar
 
 static const rb_data_type_t connection_data_type = {
     "DuckDB/Connection",
-    {NULL, deallocate, memsize,},
+    {mark, deallocate, memsize,},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
@@ -25,9 +26,18 @@ static void deallocate(void *ctx) {
     xfree(p);
 }
 
+static void mark(void *ctx) {
+    rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;
+    rb_gc_mark(p->registered_functions);
+}
+
 static VALUE allocate(VALUE klass) {
     rubyDuckDBConnection *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConnection));
-    return TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
+    VALUE obj = TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
+    VALUE registered_functions = rb_ary_new();
+    ctx->registered_functions = registered_functions;
+    RB_GC_GUARD(registered_functions);
+    return obj;
 }
 
 static size_t memsize(const void *p) {
@@ -62,6 +72,9 @@ static VALUE duckdb_connection_disconnect(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
     duckdb_disconnect(&(ctx->con));
+
+    /* Clear registered functions to release memory */
+    rb_ary_clear(ctx->registered_functions);
 
     return self;
 }
@@ -167,6 +180,9 @@ static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar
     if (state == DuckDBError) {
         rb_raise(eDuckDBError, "Failed to register scalar function");
     }
+
+    /* Keep reference to prevent GC while connection is alive */
+    rb_ary_push(ctxcon->registered_functions, scalar_function);
 
     return self;
 }
