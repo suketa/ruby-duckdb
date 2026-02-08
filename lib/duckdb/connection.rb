@@ -200,7 +200,7 @@ module DuckDB
     #     return_type: DuckDB::LogicalType::INTEGER,
     #     parameter_types: [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::INTEGER]
     #   ) { |a, b| a + b }
-    def register_scalar_function(scalar_function = nil, **kwargs, &) # rubocop:disable Metrics/MethodLength
+    def register_scalar_function(scalar_function = nil, **kwargs, &)
       # Validate: can't pass both object and inline arguments
       if scalar_function.is_a?(ScalarFunction)
         raise ArgumentError, 'Cannot pass both ScalarFunction object and keyword arguments' if kwargs.any?
@@ -213,21 +213,23 @@ module DuckDB
         sf = ScalarFunction.create(**kwargs, &)
       end
 
-      # Check threads setting
-      result = execute("SELECT current_setting('threads')")
-      thread_count = result.first.first.to_i
-
-      if thread_count > 1
-        raise DuckDB::Error,
-              'Scalar functions with Ruby callbacks require single-threaded execution. ' \
-              "Current threads setting: #{thread_count}. " \
-              "Execute 'SET threads=1' before registering scalar functions."
-      end
-
+      check_threads
       _register_scalar_function(sf)
     end
 
     private
+
+    def check_threads
+      result = execute("SELECT current_setting('threads')")
+      thread_count = result.first.first.to_i
+
+      return unless thread_count > 1
+
+      raise DuckDB::Error,
+            'Scalar functions with Ruby callbacks require single-threaded execution. ' \
+            "Current threads setting: #{thread_count}. " \
+            "Execute 'SET threads=1' before registering scalar functions."
+    end
 
     def run_appender_block(appender, &)
       return appender unless block_given?
