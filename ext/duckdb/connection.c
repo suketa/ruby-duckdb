@@ -33,8 +33,11 @@ static void mark(void *ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBConnection *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConnection));
-    ctx->registered_functions = rb_ary_new();
-    return TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
+    VALUE obj = TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
+    VALUE registered_functions = rb_ary_new();
+    ctx->registered_functions = registered_functions;
+    RB_GC_GUARD(registered_functions);
+    return obj;
 }
 
 static size_t memsize(const void *p) {
@@ -69,6 +72,9 @@ static VALUE duckdb_connection_disconnect(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
     duckdb_disconnect(&(ctx->con));
+
+    /* Clear registered functions to release memory */
+    rb_ary_clear(ctx->registered_functions);
 
     return self;
 }

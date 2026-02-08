@@ -454,17 +454,21 @@ module DuckDBTest
       end)
 
       # Force aggressive GC to try to collect the ScalarFunction object
-      10.times do
-        GC.start
-        sleep 0.01
+      old_stress = GC.stress
+      GC.stress = true
+
+      begin
+        3.times { GC.start }
+
+        # Should NOT crash - the connection keeps the function alive
+        result = @con.execute('SELECT test_func()')
+        rows = result.to_a
+
+        assert_equal 1, rows.size
+        assert_equal 42, rows[0][0]
+      ensure
+        GC.stress = old_stress
       end
-
-      # Should NOT crash - the connection keeps the function alive
-      result = @con.execute('SELECT test_func()')
-      rows = result.to_a
-
-      assert_equal 1, rows.size
-      assert_equal 42, rows[0][0]
     end
   end
 end
