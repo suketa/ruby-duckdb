@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::ScalarFunction.create class method for declarative API.
 - add FLOAT support to DuckDB::ScalarFunction return type.
 - add BOOLEAN support to DuckDB::ScalarFunction return type.
 - add DOUBLE support to DuckDB::ScalarFunction return type.

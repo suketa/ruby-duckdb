@@ -491,5 +491,137 @@ module DuckDBTest
         GC.stress = old_stress
       end
     end
+
+    # Tests for ScalarFunction.create class method
+
+    def test_create_with_single_parameter # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :triple,
+        return_type: DuckDB::LogicalType::INTEGER,
+        parameter_type: DuckDB::LogicalType::INTEGER
+      ) { |v| v * 3 }
+
+      assert_instance_of DuckDB::ScalarFunction, sf
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT triple(5)')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal 15, rows[0][0]
+    end
+
+    def test_create_with_multiple_parameters # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :add_numbers,
+        return_type: DuckDB::LogicalType::INTEGER,
+        parameter_types: [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::INTEGER]
+      ) { |a, b| a + b }
+
+      assert_instance_of DuckDB::ScalarFunction, sf
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_numbers(10, 20)')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal 30, rows[0][0]
+    end
+
+    def test_create_with_no_parameters # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :constant_value,
+        return_type: DuckDB::LogicalType::INTEGER
+      ) { 42 }
+
+      assert_instance_of DuckDB::ScalarFunction, sf
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT constant_value()')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal 42, rows[0][0]
+    end
+
+    def test_create_requires_block
+      error = assert_raises(ArgumentError) do
+        DuckDB::ScalarFunction.create(
+          name: :test,
+          return_type: DuckDB::LogicalType::INTEGER
+        )
+      end
+
+      assert_match(/block required/i, error.message)
+    end
+
+    def test_create_rejects_both_parameter_type_and_parameter_types
+      error = assert_raises(ArgumentError) do
+        DuckDB::ScalarFunction.create(
+          name: :test,
+          return_type: DuckDB::LogicalType::INTEGER,
+          parameter_type: DuckDB::LogicalType::INTEGER,
+          parameter_types: [DuckDB::LogicalType::INTEGER]
+        ) { |v| v }
+      end
+
+      assert_match(/cannot specify both/i, error.message)
+    end
+
+    def test_create_accepts_symbol_for_name
+      @con.execute('SET threads=1')
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :symbol_name,
+        return_type: DuckDB::LogicalType::INTEGER
+      ) { 123 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT symbol_name()')
+      rows = result.to_a
+
+      assert_equal 123, rows[0][0]
+    end
+
+    def test_create_accepts_string_for_name
+      @con.execute('SET threads=1')
+
+      sf = DuckDB::ScalarFunction.create(
+        name: 'string_name',
+        return_type: DuckDB::LogicalType::INTEGER
+      ) { 456 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT string_name()')
+      rows = result.to_a
+
+      assert_equal 456, rows[0][0]
+    end
+
+    def test_create_with_different_types # rubocop:disable Metrics/MethodLength
+      @con.execute('SET threads=1')
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :concat_with_separator,
+        return_type: DuckDB::LogicalType::VARCHAR,
+        parameter_types: [
+          DuckDB::LogicalType::VARCHAR,
+          DuckDB::LogicalType::VARCHAR,
+          DuckDB::LogicalType::VARCHAR
+        ]
+      ) { |a, sep, b| "#{a}#{sep}#{b}" }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute("SELECT concat_with_separator('Hello', ' - ', 'World')")
+      rows = result.to_a
+
+      assert_equal 'Hello - World', rows[0][0]
+    end
   end
 end
