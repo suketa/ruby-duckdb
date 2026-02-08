@@ -90,6 +90,7 @@
       <li ><a href="#method-i-query">query</a></li>
       <li ><a href="#method-i-query_multi_sql">query_multi_sql</a></li>
       <li ><a href="#method-i-query_progress">query_progress</a></li>
+      <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
     </ul>
   </div>
 
@@ -262,6 +263,9 @@
 </pre>
         </div>
 
+        <div class="aliases">
+          Also aliased as: <a href="Connection.html#method-i-async_execute">async_execute</a>
+        </div>
 
       </div>
 
@@ -341,6 +345,9 @@
           <p>connects <a href="../DuckDB.html"><code>DuckDB</code></a> database The first argument is <a href="Database.html"><code>DuckDB::Database</code></a> object</p>
         </div>
 
+        <div class="aliases">
+          Also aliased as: <a href="Connection.html#method-i-open">open</a>
+        </div>
 
       </div>
 
@@ -377,6 +384,9 @@
           
         </div>
 
+        <div class="aliases">
+          Also aliased as: <a href="Connection.html#method-i-close">close</a>
+        </div>
 
       </div>
 
@@ -468,6 +478,9 @@
 </pre>
         </div>
 
+        <div class="aliases">
+          Also aliased as: <a href="Connection.html#method-i-prepare">prepare</a>
+        </div>
 
       </div>
 
@@ -515,6 +528,9 @@
 </pre>
         </div>
 
+        <div class="aliases">
+          Also aliased as: <a href="Connection.html#method-i-execute">execute</a>
+        </div>
 
       </div>
 
@@ -596,6 +612,93 @@
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query_progress</span> <span class="ruby-comment"># =&gt; 0.0</span>
 <span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">execute_task</span>
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query_progress</span> <span class="ruby-comment"># =&gt; Float</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-register_scalar_function" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_scalar_function" title="Link to this method">
+                <span class="method-name">register_scalar_function</span>
+                <span class="method-args">(scalar_function = nil, **kwargs, &amp;)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_scalar_function-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 203</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_scalar_function</span>(<span class="ruby-identifier">scalar_function</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>, <span class="ruby-operator">&amp;</span>)
+  <span class="ruby-comment"># Validate: can&#39;t pass both object and inline arguments</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">scalar_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ScalarFunction</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Cannot pass both ScalarFunction object and keyword arguments&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">kwargs</span>.<span class="ruby-identifier">any?</span>
+
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Cannot pass both ScalarFunction object and block&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">check_threads</span>
+  <span class="ruby-identifier">sf</span> = <span class="ruby-identifier">scalar_function</span> <span class="ruby-operator">||</span> <span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>, <span class="ruby-operator">&amp;</span>)
+  <span class="ruby-identifier">_register_scalar_function</span>(<span class="ruby-identifier">sf</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Registers a scalar function with the connection.</p>
+
+<p>Scalar functions with Ruby callbacks require single-threaded execution.</p>
+
+<p>@overload <a href="Connection.html#method-i-register_scalar_function"><code>register_scalar_function</code></a>(scalar_function)</p>
+
+<pre>Register a pre-created ScalarFunction object.
+@param scalar_function [DuckDB::ScalarFunction] the scalar function to register</pre>
+
+<p>@overload <a href="Connection.html#method-i-register_scalar_function"><code>register_scalar_function</code></a>(name:, return_type:, **kwargs, &amp;block)</p>
+
+<pre>Create and register a scalar function inline.
+@param name [String, Symbol] the function name
+@param return_type [DuckDB::LogicalType] the return type
+@param parameter_type [DuckDB::LogicalType, nil] single parameter type
+@param parameter_types [Array&lt;DuckDB::LogicalType&gt;, nil] multiple parameter types
+@yield [*args] the function implementation</pre>
+
+<p>@raise [DuckDB::Error] if threads setting is not 1 @raise [ArgumentError] if both object and keywords/block are provided @return [void]</p>
+
+<p>@example Register pre-created function</p>
+
+<pre class="ruby"><span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
+<span class="ruby-identifier">sf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-value">:triple</span>,
+  <span class="ruby-value">return_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>,
+  <span class="ruby-value">parameter_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>
+) { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">*</span> <span class="ruby-value">3</span> }
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_scalar_function</span>(<span class="ruby-identifier">sf</span>)
+</pre>
+
+<p>@example Register inline (single parameter)</p>
+
+<pre class="ruby"><span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_scalar_function</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-value">:triple</span>,
+  <span class="ruby-value">return_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>,
+  <span class="ruby-value">parameter_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>
+) { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">*</span> <span class="ruby-value">3</span> }
+</pre>
+
+<p>@example Register inline (multiple parameters)</p>
+
+<pre class="ruby"><span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_scalar_function</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-value">:add</span>,
+  <span class="ruby-value">return_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>,
+  <span class="ruby-value">parameter_types:</span> [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>]
+) { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">b</span> }
 </pre>
         </div>
 
