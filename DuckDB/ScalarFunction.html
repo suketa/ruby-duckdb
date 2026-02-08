@@ -193,7 +193,7 @@
             <div class="method-heading">
               <a href="#method-i-add_parameter" title="Link to this method">
                 <span class="method-name">add_parameter</span>
-                <span class="method-args">(p1)</span>
+                <span class="method-args">(logical_type)</span>
               </a>
             </div>
         </div>
@@ -206,19 +206,22 @@
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre>static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type) {
-    rubyDuckDBScalarFunction *p;
-    rubyDuckDBLogicalType *lt;
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 39</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
-    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
-    lt = get_struct_logical_type(logical_type);
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">SUPPORTED_TYPES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>)
+    <span class="ruby-identifier">type_list</span> = <span class="ruby-constant">SUPPORTED_TYPES</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:upcase</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;, &#39;</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>,
+          <span class="ruby-node">&quot;Only #{type_list} parameter types are currently supported&quot;</span>
+  <span class="ruby-keyword">end</span>
 
-    duckdb_scalar_function_add_parameter(p-&gt;scalar_function, lt-&gt;logical_type);
-
-    return self;
-}</pre>
+  <span class="ruby-identifier">_add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
+<span class="ruby-keyword">end</span></pre>
           </div>
-          
+          <p>Adds a parameter to the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP, TINYINT, UBIGINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.</p>
+
+<p>@param logical_type [DuckDB::LogicalType] the parameter type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
         </div>
 
 
@@ -263,12 +266,12 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 39</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 58</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
-  <span class="ruby-keyword">unless</span> <span class="ruby-constant">SUPPORTED_RETURN_TYPES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>)
-    <span class="ruby-identifier">type_list</span> = <span class="ruby-constant">SUPPORTED_RETURN_TYPES</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:upcase</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;, &#39;</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">SUPPORTED_TYPES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>)
+    <span class="ruby-identifier">type_list</span> = <span class="ruby-constant">SUPPORTED_TYPES</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:upcase</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;, &#39;</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>,
           <span class="ruby-node">&quot;Only #{type_list} return types are currently supported&quot;</span>
   <span class="ruby-keyword">end</span>
