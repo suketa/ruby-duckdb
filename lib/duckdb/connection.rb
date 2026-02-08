@@ -206,14 +206,10 @@ module DuckDB
         raise ArgumentError, 'Cannot pass both ScalarFunction object and keyword arguments' if kwargs.any?
 
         raise ArgumentError, 'Cannot pass both ScalarFunction object and block' if block_given?
-
-        sf = scalar_function
-      else
-        # Inline style: create ScalarFunction from keyword arguments
-        sf = ScalarFunction.create(**kwargs, &)
       end
 
       check_threads
+      sf = scalar_function || ScalarFunction.create(**kwargs, &)
       _register_scalar_function(sf)
     end
 
