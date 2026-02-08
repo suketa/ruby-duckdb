@@ -258,17 +258,14 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 35</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
-  <span class="ruby-comment"># Check if the type is supported</span>
-  <span class="ruby-identifier">supported_types</span> = <span class="ruby-node">%i[bigint blob boolean date double float integer smallint time timestamp tinyint ubigint
-                       uinteger usmallint utinyint varchar]</span>
-  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">supported_types</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">SUPPORTED_RETURN_TYPES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>)
+    <span class="ruby-identifier">type_list</span> = <span class="ruby-constant">SUPPORTED_RETURN_TYPES</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:upcase</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;, &#39;</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>,
-          <span class="ruby-string">&#39;Only BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP, TINYINT, &#39;</span> \
-          <span class="ruby-string">&#39;UBIGINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR return types are currently supported&#39;</span>
+          <span class="ruby-node">&quot;Only #{type_list} return types are currently supported&quot;</span>
   <span class="ruby-keyword">end</span>
 
   <span class="ruby-identifier">_set_return_type</span>(<span class="ruby-identifier">logical_type</span>)
