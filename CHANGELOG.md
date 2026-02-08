@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.
 - add FLOAT support to DuckDB::ScalarFunction return type.
 - add BOOLEAN support to DuckDB::ScalarFunction return type.

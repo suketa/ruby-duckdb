@@ -157,41 +157,75 @@ module DuckDB
     end
 
     # Registers a scalar function with the connection.
-    # :nodoc:
     #
     # Scalar functions with Ruby callbacks require single-threaded execution.
     #
-    #   require 'duckdb'
-    #   db = DuckDB::Database.open
-    #   con = db.connect
+    # @overload register_scalar_function(scalar_function)
+    #   Register a pre-created ScalarFunction object.
+    #   @param scalar_function [DuckDB::ScalarFunction] the scalar function to register
     #
-    #   # IMPORTANT: Set single-threaded execution before registering
+    # @overload register_scalar_function(name:, return_type:, **kwargs, &block)
+    #   Create and register a scalar function inline.
+    #   @param name [String, Symbol] the function name
+    #   @param return_type [DuckDB::LogicalType] the return type
+    #   @param parameter_type [DuckDB::LogicalType, nil] single parameter type
+    #   @param parameter_types [Array<DuckDB::LogicalType>, nil] multiple parameter types
+    #   @yield [*args] the function implementation
+    #
+    # @raise [DuckDB::Error] if threads setting is not 1
+    # @raise [ArgumentError] if both object and keywords/block are provided
+    # @return [void]
+    #
+    # @example Register pre-created function
     #   con.execute('SET threads=1')
-    #
-    #   sf = DuckDB::ScalarFunction.new
-    #   sf.name = 'add_one'
-    #   sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
-    #   sf.set_function { |val| val + 1 }
-    #
+    #   sf = DuckDB::ScalarFunction.create(
+    #     name: :triple,
+    #     return_type: DuckDB::LogicalType::INTEGER,
+    #     parameter_type: DuckDB::LogicalType::INTEGER
+    #   ) { |v| v * 3 }
     #   con.register_scalar_function(sf)
     #
-    # Raises DuckDB::Error if threads setting is not 1.
-    def register_scalar_function(scalar_function)
-      # Check threads setting
-      result = execute("SELECT current_setting('threads')")
-      thread_count = result.first.first.to_i
+    # @example Register inline (single parameter)
+    #   con.execute('SET threads=1')
+    #   con.register_scalar_function(
+    #     name: :triple,
+    #     return_type: DuckDB::LogicalType::INTEGER,
+    #     parameter_type: DuckDB::LogicalType::INTEGER
+    #   ) { |v| v * 3 }
+    #
+    # @example Register inline (multiple parameters)
+    #   con.execute('SET threads=1')
+    #   con.register_scalar_function(
+    #     name: :add,
+    #     return_type: DuckDB::LogicalType::INTEGER,
+    #     parameter_types: [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::INTEGER]
+    #   ) { |a, b| a + b }
+    def register_scalar_function(scalar_function = nil, **kwargs, &)
+      # Validate: can't pass both object and inline arguments
+      if scalar_function.is_a?(ScalarFunction)
+        raise ArgumentError, 'Cannot pass both ScalarFunction object and keyword arguments' if kwargs.any?
 
-      if thread_count > 1
-        raise DuckDB::Error,
-              'Scalar functions with Ruby callbacks require single-threaded execution. ' \
-              "Current threads setting: #{thread_count}. " \
-              "Execute 'SET threads=1' before registering scalar functions."
+        raise ArgumentError, 'Cannot pass both ScalarFunction object and block' if block_given?
       end
 
-      _register_scalar_function(scalar_function)
+      check_threads
+      sf = scalar_function || ScalarFunction.create(**kwargs, &)
+      _register_scalar_function(sf)
     end
 
     private
+
+    def check_threads
+      result = execute("SELECT current_setting('threads')")
+      thread_count = result.first.first.to_i
+
+      return unless thread_count > 1
+
+      raise DuckDB::Error,
+            'Scalar functions with Ruby callbacks require single-threaded execution. ' \
+            "Current threads setting: #{thread_count}. " \
+            "Execute 'SET threads=1' before registering scalar functions."
+    end
 
     def run_appender_block(appender, &)
       return appender unless block_given?
