@@ -9,7 +9,7 @@
 
   <meta name="keywords" content="ruby,class,DuckDB::ScalarFunction">
 
-    <meta name="description" content="class DuckDB::ScalarFunction: DuckDB::ScalarFunction encapsulates DuckDB&#39;s scalar function">
+    <meta name="description" content="class DuckDB::ScalarFunction: ScalarFunction is experimental. ScalarFunction must be used with threads=1 in DuckDB.">
 
 
 <script type="text/javascript">
@@ -130,6 +130,11 @@
   <section class="description">
     
 <p><a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> encapsulates DuckDB’s scalar function</p>
+
+<p>@note <a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> is experimental. @note <a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> must be used with threads=1 in <a href="../DuckDB.html"><code>DuckDB</code></a>.</p>
+
+<pre class="ruby"><span class="ruby-constant">Set</span> <span class="ruby-identifier">this</span> <span class="ruby-value">with:</span> <span class="ruby-identifier">connection</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
+</pre>
 
   </section>
 
@@ -258,7 +263,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 35</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 39</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
