@@ -368,6 +368,9 @@
     TypedData_Get_Struct(self, rubyDuckDBConnection, &amp;connection_data_type, ctx);
     duckdb_disconnect(&amp;(ctx-&gt;con));
 
+    /* Clear registered functions to release memory */
+    rb_ary_clear(ctx-&gt;registered_functions);
+
     return self;
 }</pre>
           </div>
