@@ -442,5 +442,29 @@ module DuckDBTest
       assert_equal 2_000_000_000, rows[1][0] # 1000000000 * 2
       assert_equal 18_446_744_073_709_551_614, rows[2][0] # 9223372036854775807 * 2
     end
+
+    def test_scalar_function_gc_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('SET threads=1')
+
+      # Register function and immediately lose reference
+      @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
+        sf.name = 'test_func'
+        sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+        sf.set_function { 42 }
+      end)
+
+      # Force aggressive GC to try to collect the ScalarFunction object
+      10.times do
+        GC.start
+        sleep 0.01
+      end
+
+      # Should NOT crash - the connection keeps the function alive
+      result = @con.execute('SELECT test_func()')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal 42, rows[0][0]
+    end
   end
 end

@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBConnection {
     duckdb_connection con;
+    VALUE registered_functions;
 };
 
 typedef struct _rubyDuckDBConnection rubyDuckDBConnection;
