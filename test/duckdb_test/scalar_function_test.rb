@@ -313,6 +313,28 @@ module DuckDBTest
       assert_equal 30, rows[0][0].min
       assert_equal 0, rows[1][0].hour
       assert_equal 59, rows[1][0].min
+      assert_equal 59, rows[1][0].min
+    end
+
+    def test_scalar_function_smallint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value SMALLINT)')
+      @con.execute('INSERT INTO test_table VALUES (32767), (-32768), (1000)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_100'
+      sf.add_parameter(DuckDB::LogicalType.new(3)) # SMALLINT (type ID 3)
+      sf.return_type = DuckDB::LogicalType.new(3) # SMALLINT
+      sf.set_function { |v| v + 100 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_100(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      assert_equal(-32_668, rows[0][0]) # -32768 + 100
+      assert_equal 1100, rows[1][0] # 1000 + 100
+      assert_equal(-32_669, rows[2][0]) # 32767 + 100 = 32867, overflows to -32669
     end
 
     def test_scalar_function_utinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
