@@ -337,6 +337,27 @@ module DuckDBTest
       assert_equal(-32_669, rows[2][0]) # 32767 + 100 = 32867, overflows to -32669
     end
 
+    def test_scalar_function_tinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value TINYINT)')
+      @con.execute('INSERT INTO test_table VALUES (100), (-50), (0)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double_value'
+      sf.add_parameter(DuckDB::LogicalType.new(2)) # TINYINT (type ID 2)
+      sf.return_type = DuckDB::LogicalType.new(2) # TINYINT
+      sf.set_function { |v| v * 2 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT double_value(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      assert_equal(-100, rows[0][0]) # -50 * 2
+      assert_equal 0, rows[1][0]     # 0 * 2
+      assert_equal(-56, rows[2][0])  # 100 * 2 = 200, overflows to -56
+    end
+
     def test_scalar_function_utinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       @con.execute('SET threads=1')
       @con.execute('CREATE TABLE test_table (value UTINYINT)')
