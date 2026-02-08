@@ -4,7 +4,7 @@ module DuckDB
   # DuckDB::ScalarFunction encapsulates DuckDB's scalar function
   #
   # @note DuckDB::ScalarFunction is experimental.
-  # @note DuckDB::ScalarFunction must be used with thread=1 in DuckDB.
+  # @note DuckDB::ScalarFunction must be used with threads=1 in DuckDB.
   #       Set this with: connection.execute('SET threads=1')
   class ScalarFunction
     # Supported return types for scalar functions
