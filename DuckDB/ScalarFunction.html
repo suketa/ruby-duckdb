@@ -77,6 +77,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-create">create</a></li>
       <li ><a href="#method-c-new">new</a></li>
     </ul>
   </div>
@@ -149,6 +150,79 @@
          <h3>Public Class Methods</h3>
        </header>
 
+      <div id="method-c-create" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create" title="Link to this method">
+                <span class="method-name">create</span>
+                <span class="method-args">(name:, return_type:, parameter_type: nil, parameter_types: nil, &amp;)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 39</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">return_type:</span>, <span class="ruby-value">parameter_type:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">parameter_types:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>) <span class="ruby-comment"># rubocop:disable Metrics/MethodLength</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Block required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Cannot specify both parameter_type and parameter_types&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">parameter_type</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">parameter_types</span>
+
+  <span class="ruby-identifier">params</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">parameter_type</span>
+             [<span class="ruby-identifier">parameter_type</span>]
+           <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">parameter_types</span>
+             <span class="ruby-identifier">parameter_types</span>
+           <span class="ruby-keyword">else</span>
+             []
+           <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">sf</span> = <span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-identifier">return_type</span>
+  <span class="ruby-identifier">params</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">type</span><span class="ruby-operator">|</span> <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-identifier">type</span>) }
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">set_function</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-identifier">sf</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Create and configure a scalar function in one call</p>
+
+<p>@param name [String, Symbol] the function name @param return_type [DuckDB::LogicalType] the return type @param parameter_type [DuckDB::LogicalType, nil] single parameter type (use this OR parameter_types) @param parameter_types [Array&lt;DuckDB::LogicalType&gt;, nil] multiple parameter types @yield [*args] the function implementation @return [DuckDB::ScalarFunction] configured scalar function ready to register @raise [ArgumentError] if block is not provided or both parameter_type and parameter_types are specified</p>
+
+<p>@example Single parameter function</p>
+
+<pre class="ruby"><span class="ruby-identifier">sf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-value">:triple</span>,
+  <span class="ruby-value">return_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>,
+  <span class="ruby-value">parameter_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>
+) { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">*</span> <span class="ruby-value">3</span> }
+</pre>
+
+<p>@example Multiple parameters</p>
+
+<pre class="ruby"><span class="ruby-identifier">sf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-value">:add</span>,
+  <span class="ruby-value">return_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>,
+  <span class="ruby-value">parameter_types:</span> [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>]
+) { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">b</span> }
+</pre>
+
+<p>@example No parameters (constant function)</p>
+
+<pre class="ruby"><span class="ruby-identifier">sf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-value">:random_num</span>,
+  <span class="ruby-value">return_type:</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>
+) { <span class="ruby-identifier">rand</span>(<span class="ruby-value">100</span>) }
+</pre>
+        </div>
+
+
+      </div>
+
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -206,7 +280,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 39</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 88</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
@@ -266,7 +340,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 58</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 107</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
