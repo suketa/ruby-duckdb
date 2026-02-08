@@ -12,6 +12,8 @@ if defined?(DuckDB::InstanceCache)
       end
 
       def test_get_or_create
+        skip 'Thread.join hangs on Windows' if RUBY_PLATFORM.match?(/mingw|mswin|cygwin/)
+
         cache = DuckDB::InstanceCache.new
         path = 'test_shared_db.db'
         30.times do
