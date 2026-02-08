@@ -29,7 +29,7 @@ module DuckDBTest
 
     def test_return_type_setter
       sf = DuckDB::ScalarFunction.new
-      logical_type = DuckDB::LogicalType.new(4) # DUCKDB_TYPE_INTEGER
+      logical_type = DuckDB::LogicalType::INTEGER
       sf.return_type = logical_type
 
       assert_instance_of DuckDB::ScalarFunction, sf
@@ -37,7 +37,7 @@ module DuckDBTest
 
     def test_return_type_setter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      interval_type = DuckDB::LogicalType.new(15) # DUCKDB_TYPE_INTERVAL (unsupported)
+      interval_type = DuckDB::LogicalType::INTERVAL # Unsupported type for testing
 
       error = assert_raises(DuckDB::Error) do
         sf.return_type = interval_type
@@ -60,7 +60,7 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'foo'
-      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.return_type = DuckDB::LogicalType::INTEGER
       sf.set_function { 1 }
 
       @con.register_scalar_function(sf)
@@ -73,7 +73,7 @@ module DuckDBTest
     def test_register_scalar_function_raises_error_without_single_thread
       sf = DuckDB::ScalarFunction.new
       sf.name = 'will_fail'
-      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.return_type = DuckDB::LogicalType::INTEGER
       sf.set_function { 1 }
 
       # Should raise error because threads is not 1
@@ -87,7 +87,7 @@ module DuckDBTest
 
     def test_add_parameter
       sf = DuckDB::ScalarFunction.new
-      logical_type = DuckDB::LogicalType.new(4) # DUCKDB_TYPE_INTEGER
+      logical_type = DuckDB::LogicalType::INTEGER
 
       result = sf.add_parameter(logical_type)
 
@@ -97,7 +97,7 @@ module DuckDBTest
 
     def test_add_parameter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      interval_type = DuckDB::LogicalType.new(15) # DUCKDB_TYPE_INTERVAL (unsupported)
+      interval_type = DuckDB::LogicalType::INTERVAL # Unsupported type for testing
 
       error = assert_raises(DuckDB::Error) do
         sf.add_parameter(interval_type)
@@ -123,8 +123,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'double'
-      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
-      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
       sf.set_function { |col1| 2 * col1 }
 
       @con.register_scalar_function(sf)
@@ -133,16 +133,16 @@ module DuckDBTest
       assert_equal [[10], [20], [30]], result.to_a
     end
 
-    def test_scalar_function_with_two_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_with_two_parameters # rubocop:disable Metrics/MethodLength
       @con.execute('SET threads=1')
       @con.execute('CREATE TABLE test_table (a INTEGER, b INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (5, 3), (10, 2), (15, 4)')
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_nums'
-      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
-      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
-      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
       sf.set_function { |a, b| a + b }
 
       @con.register_scalar_function(sf)
@@ -158,8 +158,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'double'
-      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
-      sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
       sf.set_function { |col1| col1.nil? ? nil : 2 * col1 }
 
       @con.register_scalar_function(sf)
@@ -175,8 +175,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'subtract_one'
-      sf.add_parameter(DuckDB::LogicalType.new(5)) # BIGINT
-      sf.return_type = DuckDB::LogicalType.new(5) # BIGINT
+      sf.add_parameter(DuckDB::LogicalType::BIGINT)
+      sf.return_type = DuckDB::LogicalType::BIGINT
       sf.set_function { |v| v - 1 } # Subtract to avoid overflow
 
       @con.register_scalar_function(sf)
@@ -192,8 +192,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'multiply_by_two'
-      sf.add_parameter(DuckDB::LogicalType.new(11)) # DOUBLE (type ID 11)
-      sf.return_type = DuckDB::LogicalType.new(11) # DOUBLE
+      sf.add_parameter(DuckDB::LogicalType::DOUBLE)
+      sf.return_type = DuckDB::LogicalType::DOUBLE # DOUBLE
       sf.set_function { |v| v * 2 }
 
       @con.register_scalar_function(sf)
@@ -209,8 +209,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'is_greater_than_ten'
-      sf.add_parameter(DuckDB::LogicalType.new(4)) # INTEGER
-      sf.return_type = DuckDB::LogicalType.new(1) # BOOLEAN (type ID 1)
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::BOOLEAN # BOOLEAN (type ID 1)
       sf.set_function { |v| v > 10 }
 
       @con.register_scalar_function(sf)
@@ -226,8 +226,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_half'
-      sf.add_parameter(DuckDB::LogicalType.new(10)) # FLOAT (type ID 10)
-      sf.return_type = DuckDB::LogicalType.new(10) # FLOAT
+      sf.add_parameter(DuckDB::LogicalType::FLOAT)
+      sf.return_type = DuckDB::LogicalType::FLOAT # FLOAT
       sf.set_function { |v| v + 0.5 }
 
       @con.register_scalar_function(sf)
@@ -243,8 +243,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_greeting'
-      sf.add_parameter(DuckDB::LogicalType.new(17)) # VARCHAR (type ID 17)
-      sf.return_type = DuckDB::LogicalType.new(17) # VARCHAR
+      sf.add_parameter(DuckDB::LogicalType::VARCHAR)
+      sf.return_type = DuckDB::LogicalType::VARCHAR # VARCHAR
       sf.set_function { |name| "Hello, #{name}!" }
 
       @con.register_scalar_function(sf)
@@ -260,8 +260,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_prefix'
-      sf.add_parameter(DuckDB::LogicalType.new(18)) # BLOB (type ID 18)
-      sf.return_type = DuckDB::LogicalType.new(18) # BLOB
+      sf.add_parameter(DuckDB::LogicalType::BLOB)
+      sf.return_type = DuckDB::LogicalType::BLOB # BLOB
       sf.set_function { |data| DuckDB::Blob.new("\xFF".b + data) }
 
       @con.register_scalar_function(sf)
@@ -280,8 +280,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_one_hour'
-      sf.add_parameter(DuckDB::LogicalType.new(12)) # TIMESTAMP (type ID 12)
-      sf.return_type = DuckDB::LogicalType.new(12) # TIMESTAMP
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP)
+      sf.return_type = DuckDB::LogicalType::TIMESTAMP # TIMESTAMP
       sf.set_function { |ts| ts + 3600 } # Add 1 hour (3600 seconds)
 
       @con.register_scalar_function(sf)
@@ -300,8 +300,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_one_day'
-      sf.add_parameter(DuckDB::LogicalType.new(13)) # DATE (type ID 13)
-      sf.return_type = DuckDB::LogicalType.new(13) # DATE
+      sf.add_parameter(DuckDB::LogicalType::DATE)
+      sf.return_type = DuckDB::LogicalType::DATE # DATE
       sf.set_function { |date| date + 1 } # Add 1 day
 
       @con.register_scalar_function(sf)
@@ -320,8 +320,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_one_hour'
-      sf.add_parameter(DuckDB::LogicalType.new(14)) # TIME (type ID 14)
-      sf.return_type = DuckDB::LogicalType.new(14) # TIME
+      sf.add_parameter(DuckDB::LogicalType::TIME)
+      sf.return_type = DuckDB::LogicalType::TIME # TIME
       sf.set_function { |time| time + 3600 } # Add 1 hour (3600 seconds)
 
       @con.register_scalar_function(sf)
@@ -344,8 +344,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_100'
-      sf.add_parameter(DuckDB::LogicalType.new(3)) # SMALLINT (type ID 3)
-      sf.return_type = DuckDB::LogicalType.new(3) # SMALLINT
+      sf.add_parameter(DuckDB::LogicalType::SMALLINT)
+      sf.return_type = DuckDB::LogicalType::SMALLINT # SMALLINT
       sf.set_function { |v| v + 100 }
 
       @con.register_scalar_function(sf)
@@ -365,8 +365,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'double_value'
-      sf.add_parameter(DuckDB::LogicalType.new(2)) # TINYINT (type ID 2)
-      sf.return_type = DuckDB::LogicalType.new(2) # TINYINT
+      sf.add_parameter(DuckDB::LogicalType::TINYINT)
+      sf.return_type = DuckDB::LogicalType::TINYINT # TINYINT
       sf.set_function { |v| v * 2 }
 
       @con.register_scalar_function(sf)
@@ -386,8 +386,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_10'
-      sf.add_parameter(DuckDB::LogicalType.new(6)) # UTINYINT (type ID 6)
-      sf.return_type = DuckDB::LogicalType.new(6) # UTINYINT
+      sf.add_parameter(DuckDB::LogicalType::UTINYINT)
+      sf.return_type = DuckDB::LogicalType::UTINYINT # UTINYINT
       sf.set_function { |v| v + 10 }
 
       @con.register_scalar_function(sf)
@@ -408,8 +408,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_100'
-      sf.add_parameter(DuckDB::LogicalType.new(7)) # USMALLINT (type ID 7)
-      sf.return_type = DuckDB::LogicalType.new(7) # USMALLINT
+      sf.add_parameter(DuckDB::LogicalType::USMALLINT)
+      sf.return_type = DuckDB::LogicalType::USMALLINT # USMALLINT
       sf.set_function { |v| v + 100 }
 
       @con.register_scalar_function(sf)
@@ -429,8 +429,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_100'
-      sf.add_parameter(DuckDB::LogicalType.new(8)) # UINTEGER (type ID 8)
-      sf.return_type = DuckDB::LogicalType.new(8) # UINTEGER
+      sf.add_parameter(DuckDB::LogicalType::UINTEGER)
+      sf.return_type = DuckDB::LogicalType::UINTEGER # UINTEGER
       sf.set_function { |v| v + 100 }
 
       @con.register_scalar_function(sf)
@@ -450,8 +450,8 @@ module DuckDBTest
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'double_value'
-      sf.add_parameter(DuckDB::LogicalType.new(9)) # UBIGINT (type ID 9)
-      sf.return_type = DuckDB::LogicalType.new(9) # UBIGINT
+      sf.add_parameter(DuckDB::LogicalType::UBIGINT)
+      sf.return_type = DuckDB::LogicalType::UBIGINT # UBIGINT
       sf.set_function { |v| v * 2 }
 
       @con.register_scalar_function(sf)
@@ -470,7 +470,7 @@ module DuckDBTest
       # Register function and immediately lose reference
       @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
         sf.name = 'test_func'
-        sf.return_type = DuckDB::LogicalType.new(4) # INTEGER
+        sf.return_type = DuckDB::LogicalType::INTEGER
         sf.set_function { 42 }
       end)
 
