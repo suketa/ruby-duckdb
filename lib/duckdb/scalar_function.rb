@@ -7,8 +7,8 @@ module DuckDB
   # @note DuckDB::ScalarFunction must be used with threads=1 in DuckDB.
   #       Set this with: connection.execute('SET threads=1')
   class ScalarFunction
-    # Supported return types for scalar functions
-    SUPPORTED_RETURN_TYPES = %i[
+    # Supported types for scalar function parameters and return values
+    SUPPORTED_TYPES = %i[
       bigint
       blob
       boolean
@@ -27,7 +27,7 @@ module DuckDB
       varchar
     ].freeze
 
-    private_constant :SUPPORTED_RETURN_TYPES
+    private_constant :SUPPORTED_TYPES
 
     # Sets the return type for the scalar function.
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP, TINYINT,
@@ -39,8 +39,8 @@ module DuckDB
     def return_type=(logical_type)
       raise DuckDB::Error, 'logical_type must be a DuckDB::LogicalType' unless logical_type.is_a?(DuckDB::LogicalType)
 
-      unless SUPPORTED_RETURN_TYPES.include?(logical_type.type)
-        type_list = SUPPORTED_RETURN_TYPES.map(&:upcase).join(', ')
+      unless SUPPORTED_TYPES.include?(logical_type.type)
+        type_list = SUPPORTED_TYPES.map(&:upcase).join(', ')
         raise DuckDB::Error,
               "Only #{type_list} return types are currently supported"
       end
