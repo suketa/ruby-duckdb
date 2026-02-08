@@ -95,6 +95,27 @@ module DuckDBTest
       assert_equal sf.__id__, result.__id__
     end
 
+    def test_add_parameter_raises_error_for_unsupported_type
+      sf = DuckDB::ScalarFunction.new
+      interval_type = DuckDB::LogicalType.new(15) # DUCKDB_TYPE_INTERVAL (unsupported)
+
+      error = assert_raises(DuckDB::Error) do
+        sf.add_parameter(interval_type)
+      end
+
+      assert_match(/only.*parameter types.*supported/i, error.message)
+    end
+
+    def test_add_parameter_raises_error_for_invalid_argument
+      sf = DuckDB::ScalarFunction.new
+
+      error = assert_raises(DuckDB::Error) do
+        sf.add_parameter('not a logical type')
+      end
+
+      assert_match(/must be a DuckDB::LogicalType/i, error.message)
+    end
+
     def test_scalar_function_with_one_parameter # rubocop:disable Metrics/MethodLength
       @con.execute('SET threads=1')
       @con.execute('CREATE TABLE test_table (value INTEGER)')
