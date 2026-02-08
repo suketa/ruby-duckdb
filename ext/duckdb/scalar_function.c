@@ -240,8 +240,14 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
         case DUCKDB_TYPE_SMALLINT:
             ((int16_t *)vector_data)[index] = (int16_t)NUM2INT(value);
             break;
+        case DUCKDB_TYPE_USMALLINT:
+            ((uint16_t *)vector_data)[index] = (uint16_t)NUM2UINT(value);
+            break;
         case DUCKDB_TYPE_INTEGER:
             ((int32_t *)vector_data)[index] = NUM2INT(value);
+            break;
+        case DUCKDB_TYPE_UINTEGER:
+            ((uint32_t *)vector_data)[index] = (uint32_t)NUM2ULL(value);
             break;
         case DUCKDB_TYPE_BIGINT:
             ((int64_t *)vector_data)[index] = NUM2LL(value);
