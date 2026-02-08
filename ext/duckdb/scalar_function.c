@@ -294,6 +294,21 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ((duckdb_date *)vector_data)[index] = date;
             break;
         }
+        case DUCKDB_TYPE_TIME: {
+            // Convert Ruby Time to DuckDB time (time-of-day only)
+            if (!rb_obj_is_kind_of(value, rb_cTime)) {
+                rb_raise(rb_eTypeError, "Expected Time object for TIME");
+            }
+            
+            VALUE hour = rb_funcall(value, rb_intern("hour"), 0);
+            VALUE min = rb_funcall(value, rb_intern("min"), 0);
+            VALUE sec = rb_funcall(value, rb_intern("sec"), 0);
+            VALUE usec = rb_funcall(value, rb_intern("usec"), 0);
+            
+            duckdb_time time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, usec);
+            ((duckdb_time *)vector_data)[index] = time;
+            break;
+        }
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;

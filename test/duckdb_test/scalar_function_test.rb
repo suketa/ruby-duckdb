@@ -37,10 +37,10 @@ module DuckDBTest
 
     def test_return_type_setter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      time_type = DuckDB::LogicalType.new(14) # DUCKDB_TYPE_TIME (unsupported)
+      interval_type = DuckDB::LogicalType.new(15) # DUCKDB_TYPE_INTERVAL (unsupported)
 
       error = assert_raises(DuckDB::Error) do
-        sf.return_type = time_type
+        sf.return_type = interval_type
       end
 
       assert_match(/only.*supported/i, error.message)
@@ -290,6 +290,29 @@ module DuckDBTest
       assert_equal 2, rows.size
       assert_equal Date.new(2024, 1, 16), rows[0][0]
       assert_equal Date.new(2024, 12, 26), rows[1][0]
+    end
+
+    def test_scalar_function_time_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (t TIME)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00'), ('23:59:59')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_hour'
+      sf.add_parameter(DuckDB::LogicalType.new(14)) # TIME (type ID 14)
+      sf.return_type = DuckDB::LogicalType.new(14) # TIME
+      sf.set_function { |time| time + 3600 } # Add 1 hour (3600 seconds)
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_hour(t) FROM test_table ORDER BY t')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      # TIME values are returned as Time objects with today's date
+      assert_equal 11, rows[0][0].hour
+      assert_equal 30, rows[0][0].min
+      assert_equal 0, rows[1][0].hour
+      assert_equal 59, rows[1][0].min
     end
   end
 end
