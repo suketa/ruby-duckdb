@@ -2,6 +2,7 @@
 
 static VALUE cDuckDBTableFunction;
 extern VALUE cDuckDBBindInfo;
+extern VALUE cDuckDBInitInfo;
 extern VALUE cDuckDBFunctionInfo;
 extern VALUE cDuckDBDataChunk;
 
@@ -15,6 +16,8 @@ static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_typ
 static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type);
 static VALUE rbduckdb_table_function_set_bind(VALUE self);
 static void table_function_bind_callback(duckdb_bind_info info);
+static VALUE rbduckdb_table_function_set_init(VALUE self);
+static void table_function_init_callback(duckdb_init_info info);
 static VALUE rbduckdb_table_function_set_execute(VALUE self);
 static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output);
 
@@ -27,6 +30,7 @@ static const rb_data_type_t table_function_data_type = {
 static void mark(void *ctx) {
     rubyDuckDBTableFunction *p = (rubyDuckDBTableFunction *)ctx;
     rb_gc_mark(p->bind_proc);
+    rb_gc_mark(p->init_proc);
     rb_gc_mark(p->execute_proc);
 }
 
@@ -220,6 +224,64 @@ static void table_function_bind_callback(duckdb_bind_info info) {
 
 /*
  * call-seq:
+ *   table_function.init { |init_info| ... } -> table_function
+ *
+ * Sets the init callback for the table function.
+ * The callback is invoked once during query initialization to set up execution state.
+ *
+ *   table_function.init do |init_info|
+ *     # Initialize execution state
+ *   end
+ */
+static VALUE rbduckdb_table_function_set_init(VALUE self) {
+    rubyDuckDBTableFunction *ctx;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, "block is required for init");
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+
+    ctx->init_proc = rb_block_proc();
+    duckdb_table_function_set_init(ctx->table_function, table_function_init_callback);
+    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
+
+    return self;
+}
+
+static VALUE call_init_proc(VALUE args_val) {
+    VALUE *args = (VALUE *)args_val;
+    return rb_funcall(args[0], rb_intern("call"), 1, args[1]);
+}
+
+static void table_function_init_callback(duckdb_init_info info) {
+    VALUE self = (VALUE)duckdb_init_get_extra_info(info);
+    rubyDuckDBTableFunction *ctx;
+    VALUE init_info_obj;
+    rubyDuckDBInitInfo *init_info_ctx;
+    int state = 0;
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+
+    // Create InitInfo wrapper
+    init_info_obj = rb_funcall(cDuckDBInitInfo, rb_intern("allocate"), 0);
+    init_info_ctx = get_struct_init_info(init_info_obj);
+    init_info_ctx->info = info;
+
+    // Call Ruby block with exception protection
+    VALUE call_args[2] = { ctx->init_proc, init_info_obj };
+    rb_protect(call_init_proc, (VALUE)call_args, &state);
+
+    if (state) {
+        VALUE err = rb_errinfo();
+        VALUE msg = rb_funcall(err, rb_intern("message"), 0);
+        duckdb_init_set_error(info, StringValueCStr(msg));
+        rb_set_errinfo(Qnil); // Clear the error
+    }
+}
+
+/*
+ * call-seq:
  *   table_function.execute { |function_info, output| ... } -> table_function
  *
  * Sets the execute callback for the table function.
@@ -304,5 +366,6 @@ void rbduckdb_init_duckdb_table_function(void) {
     rb_define_method(cDuckDBTableFunction, "add_parameter", rbduckdb_table_function_add_parameter, 1);
     rb_define_method(cDuckDBTableFunction, "add_named_parameter", rbduckdb_table_function_add_named_parameter, 2);
     rb_define_method(cDuckDBTableFunction, "bind", rbduckdb_table_function_set_bind, 0);
+    rb_define_method(cDuckDBTableFunction, "init", rbduckdb_table_function_set_init, 0);
     rb_define_method(cDuckDBTableFunction, "execute", rbduckdb_table_function_set_execute, 0);
 }
