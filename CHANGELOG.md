@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::Vector#logical_type method to get the column type of a vector.
 - add DuckDB::TableFunction class (Phase 1: Core container).
 - add DuckDB::TableFunction#initialize for standard Ruby allocation pattern.
 - add DuckDB::TableFunction#name= for setting function name.
