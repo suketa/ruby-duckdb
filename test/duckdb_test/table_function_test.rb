@@ -48,7 +48,7 @@ module DuckDBTest
     private
 
     def setup_incomplete_function
-      database = DuckDB::Database.new
+      database = DuckDB::Database.open
       conn = database.connect
       table_function = DuckDB::TableFunction.new
       table_function.name = 'incomplete_function'
