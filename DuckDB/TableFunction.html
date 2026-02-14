@@ -9,7 +9,7 @@
 
   <meta name="keywords" content="ruby,class,DuckDB::TableFunction">
 
-    <meta name="description" content="class DuckDB::TableFunction: TableFunction encapsulates a DuckDB table function. Database.">
+    <meta name="description" content="class DuckDB::TableFunction: TableFunction encapsulates a DuckDB table function. TableFunction is experimental now.">
 
 
 <script type="text/javascript">
@@ -135,6 +135,8 @@
     
 <p>The <a href="TableFunction.html"><code>DuckDB::TableFunction</code></a> encapsulates a <a href="../DuckDB.html"><code>DuckDB</code></a> table function.</p>
 
+<p>NOTE: <a href="TableFunction.html"><code>DuckDB::TableFunction</code></a> is experimental now.</p>
+
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>
@@ -198,7 +200,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="create-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 74</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 76</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">columns:</span>, <span class="ruby-value">parameters:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;name is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">name</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;columns are required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">columns</span>
