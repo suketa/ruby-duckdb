@@ -9,6 +9,7 @@ module DuckDB
   #   db = DuckDB::Database.new
   #   conn = db.connect
   #
+  #   # Low-level API:
   #   tf = DuckDB::TableFunction.new
   #   tf.name = 'my_function'
   #   tf.add_parameter(DuckDB::LogicalType::BIGINT)
@@ -19,10 +20,20 @@ module DuckDB
   #
   #   tf.execute do |func_info, output|
   #     # Fill output data...
-  #     output.size = 0
+  #     0  # Return 0 to signal done
   #   end
   #
   #   conn.register_table_function(tf)
+  #
+  #   # High-level API (recommended):
+  #   tf = DuckDB::TableFunction.create(
+  #     name: 'my_function',
+  #     parameters: [DuckDB::LogicalType::BIGINT],
+  #     columns: { 'value' => DuckDB::LogicalType::BIGINT }
+  #   ) do |func_info, output|
+  #     # Fill output data...
+  #     0  # Return row count (0 when done)
+  #   end
   #
   class TableFunction
     # TableFunction#initialize is defined in C extension
@@ -92,7 +103,7 @@ module DuckDB
       end
 
       # Wrap execute block with done flag pattern
-      done = false
+      done = nil
 
       tf.init do |_init_info|
         done = false
