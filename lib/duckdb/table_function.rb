@@ -4,6 +4,8 @@ module DuckDB
   #
   # The DuckDB::TableFunction encapsulates a DuckDB table function.
   #
+  # NOTE: DuckDB::TableFunction is experimental now.
+  #
   #   require 'duckdb'
   #
   #   db = DuckDB::Database.new
