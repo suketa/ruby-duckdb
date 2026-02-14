@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased - bump duckdb to 1.">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Core container).">
 
 
 <script type="text/javascript">
@@ -314,6 +314,16 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>add <a href="DuckDB/TableFunction.html"><code>DuckDB::TableFunction</code></a> class (Phase 1: Core container).</p>
+</li><li>
+<p>add DuckDB::TableFunction#initialize for standard Ruby allocation pattern.</p>
+</li><li>
+<p>add <a href="DuckDB/TableFunction.html#method-i-name-3D"><code>DuckDB::TableFunction#name=</code></a> for setting function name.</p>
+</li><li>
+<p>add <a href="DuckDB/TableFunction.html#method-i-add_parameter"><code>DuckDB::TableFunction#add_parameter</code></a> for positional parameters.</p>
+</li><li>
+<p>add <a href="DuckDB/TableFunction.html#method-i-add_named_parameter"><code>DuckDB::TableFunction#add_named_parameter</code></a> for named parameters.</p>
+</li><li>
 <p>bump duckdb to 1.4.4 on CI.</p>
 </li><li>
 <p>add inline style to <a href="DuckDB/Connection.html#method-i-register_scalar_function"><code>DuckDB::Connection#register_scalar_function</code></a> (accepts keyword arguments + block).</p>
