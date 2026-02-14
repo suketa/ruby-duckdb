@@ -88,6 +88,7 @@
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-add_named_parameter">add_named_parameter</a></li>
       <li ><a href="#method-i-add_parameter">add_parameter</a></li>
+      <li ><a href="#method-i-bind">bind</a></li>
       <li ><a href="#method-i-name-3D">name=</a></li>
       <li ><a href="#method-i-set_name">set_name</a></li>
     </ul>
@@ -188,14 +189,16 @@
           <div class="method-source-code" id="new-source">
             <pre>static VALUE duckdb_table_function_initialize(VALUE self) {
     rubyDuckDBTableFunction *ctx;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
-    
+
     ctx-&gt;table_function = duckdb_create_table_function();
     if (!ctx-&gt;table_function) {
         rb_raise(eDuckDBError, &quot;Failed to create table function&quot;);
     }
-    
+
+    ctx-&gt;bind_proc = Qnil;
+
     return self;
 }</pre>
           </div>
@@ -240,17 +243,17 @@
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *param_name;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
-    
+
     if (!ctx-&gt;table_function) {
         rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
     }
-    
+
     param_name = StringValueCStr(name);
     ctx_logical_type = get_struct_logical_type(logical_type);
     duckdb_table_function_add_named_parameter(ctx-&gt;table_function, param_name, ctx_logical_type-&gt;logical_type);
-    
+
     return self;
 }</pre>
           </div>
@@ -285,16 +288,16 @@
             <pre>static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_type) {
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
-    
+
     if (!ctx-&gt;table_function) {
         rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
     }
-    
+
     ctx_logical_type = get_struct_logical_type(logical_type);
     duckdb_table_function_add_parameter(ctx-&gt;table_function, ctx_logical_type-&gt;logical_type);
-    
+
     return self;
 }</pre>
           </div>
@@ -302,6 +305,58 @@
 
 <pre class="ruby"><span class="ruby-identifier">tf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
 <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>)
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-bind" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-bind" title="Link to this method">
+                  <span class="method-callseq">
+                    bind { |bind_info| ... } &rarr; self
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="bind-source">
+            <pre>static VALUE rbduckdb_table_function_set_bind(VALUE self) {
+    rubyDuckDBTableFunction *ctx;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, &quot;block is required&quot;);
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
+
+    if (!ctx-&gt;table_function) {
+        rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
+    }
+
+    ctx-&gt;bind_proc = rb_block_proc();
+
+    duckdb_table_function_set_extra_info(ctx-&gt;table_function, ctx, NULL);
+    duckdb_table_function_set_bind(ctx-&gt;table_function, table_function_bind_callback);
+
+    return self;
+}</pre>
+          </div>
+          <p>Sets the bind callback for the table function. The callback is called when the function is used in a query.</p>
+
+<pre class="ruby"><span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">bind</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">add_result_column</span>(<span class="ruby-string">&#39;id&#39;</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
+  <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">add_result_column</span>(<span class="ruby-string">&#39;name&#39;</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>)
+<span class="ruby-keyword">end</span>
 </pre>
         </div>
 
@@ -355,16 +410,16 @@
             <pre>static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name) {
     rubyDuckDBTableFunction *ctx;
     const char *func_name;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
-    
+
     if (!ctx-&gt;table_function) {
         rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
     }
-    
+
     func_name = StringValueCStr(name);
     duckdb_table_function_set_name(ctx-&gt;table_function, func_name);
-    
+
     return name;
 }</pre>
           </div>
