@@ -16,6 +16,15 @@ All notable changes to this project will be documented in this file.
 - add DuckDB::BindInfo#add_result_column for defining output schema.
 - add DuckDB::BindInfo#set_cardinality for performance hints.
 - add DuckDB::BindInfo#set_error for reporting bind errors.
+- add DuckDB::DataChunk class for table function output data (Phase 3).
+- add DuckDB::DataChunk#column_count for getting number of columns.
+- add DuckDB::DataChunk#size for getting number of rows.
+- add DuckDB::DataChunk#size= for setting number of rows.
+- add DuckDB::DataChunk#get_vector for accessing column vectors.
+- add DuckDB::Vector class for column data access (Phase 3).
+- add DuckDB::Vector#get_data for raw data pointer access.
+- add DuckDB::Vector#get_validity for validity mask access.
+- add DuckDB::Vector#assign_string_element for writing string values.
 - bump duckdb to 1.4.4 on CI.
 - add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.
