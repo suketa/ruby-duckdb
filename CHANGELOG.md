@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - add DuckDB::TableFunction.create class method for declarative table function creation
-  - Automatically handles "done flag" pattern internally
+  - Automatically sets output.size from return value
   - Supports positional and named parameters
   - Execute block returns row count (0 when done)
   - Simplifies table function development with cleaner API
