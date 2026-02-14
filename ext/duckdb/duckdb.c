@@ -43,6 +43,7 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_value_impl();
     rbduckdb_init_duckdb_scalar_function();
     rbduckdb_init_duckdb_bind_info();
+    rbduckdb_init_duckdb_init_info();
     rbduckdb_init_duckdb_function_info();
     rbduckdb_init_duckdb_vector();
     rbduckdb_init_duckdb_data_chunk();
