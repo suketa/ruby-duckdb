@@ -41,10 +41,6 @@ module DuckDB
     #
     # Creates a new table function with a declarative API.
     #
-    # The create method automatically handles the "done flag" pattern
-    # required by table functions. The block should return the number
-    # of rows generated (return 0 when done).
-    #
     # @param name [String] The name of the table function
     # @param parameters [Array<LogicalType>, Hash<String, LogicalType>] Function parameters (optional)
     # @param columns [Hash<String, LogicalType>] Output columns (required)
@@ -102,25 +98,15 @@ module DuckDB
         end
       end
 
-      # Wrap execute block with done flag pattern
-      done = nil
-
+      # Set init callback (required by DuckDB)
       tf.init do |_init_info|
-        done = false
+        # No-op
       end
 
+      # Set execute callback - user's block returns row count
       tf.execute do |func_info, output|
-        if done
-          output.size = 0
-          next
-        end
-
-        # Call user's block and get returned size
         size = yield(func_info, output)
-
-        # Set output size and check if done
         output.size = size
-        done = true if size.zero?
       end
 
       tf
