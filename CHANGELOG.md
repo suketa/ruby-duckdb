@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::TableFunction.create class method for declarative table function creation
+  - Automatically handles "done flag" pattern internally
+  - Supports positional and named parameters
+  - Execute block returns row count (0 when done)
+  - Simplifies table function development with cleaner API
 - add DuckDB::DataChunk#set_value method for high-level value writing with automatic type conversion.
 - add DuckDB::MemoryHelper write methods for all numeric types (boolean, tinyint, smallint, utinyint, usmallint, uinteger, ubigint, float).
 - add DuckDB::Vector#set_validity method to mark rows as NULL or valid.
