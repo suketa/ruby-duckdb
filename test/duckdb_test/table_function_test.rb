@@ -128,6 +128,49 @@ module DuckDBTest
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
+    # Test: Create function with set_value (high-level API)
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_create_with_set_value
+      db = DuckDB::Database.open
+      conn = db.connect
+      conn.query('SET threads=1')
+
+      called = 0
+
+      tf = DuckDB::TableFunction.create(
+        name: 'test_set_value',
+        columns: { 'id' => DuckDB::LogicalType::BIGINT, 'name' => DuckDB::LogicalType::VARCHAR }
+      ) do |_func_info, output|
+        called += 1
+        if called > 1
+          0 # Return 0 rows (done)
+        else
+          # Use high-level set_value API
+          output.set_value(0, 0, 1)
+          output.set_value(1, 0, 'Alice')
+
+          output.set_value(0, 1, 2)
+          output.set_value(1, 1, 'Bob')
+
+          2 # Return 2 rows
+        end
+      end
+
+      conn.register_table_function(tf)
+      result = conn.query('SELECT * FROM test_set_value()')
+      rows = result.each.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 1, rows[0][0]
+      assert_equal 'Alice', rows[0][1]
+      assert_equal 2, rows[1][0]
+      assert_equal 'Bob', rows[1][1]
+
+      conn.disconnect
+      db.close
+    end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+
     # Test: Create with named parameters
     def test_create_with_named_parameters
       tf = DuckDB::TableFunction.create(
