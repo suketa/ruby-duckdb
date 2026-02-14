@@ -77,8 +77,9 @@ static VALUE duckdb_table_function_initialize(VALUE self) {
     ctx->init_proc = Qnil;
     ctx->execute_proc = Qnil;
 
-    // Set extra_info to self so callbacks can access the Ruby object
-    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
+    // Set extra_info to the C struct pointer (safe with GC compaction)
+    // Store ctx instead of self - ctx is xmalloc'd and won't move during GC
+    duckdb_table_function_set_extra_info(ctx->table_function, ctx, NULL);
 
     return self;
 }
@@ -196,16 +197,14 @@ static VALUE call_bind_proc(VALUE arg) {
 }
 
 static void table_function_bind_callback(duckdb_bind_info info) {
-    VALUE self;
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBBindInfo *bind_info_ctx;
     VALUE bind_info_obj;
     int state = 0;
 
-    self = (VALUE)duckdb_bind_get_extra_info(info);
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
-    
-    if (ctx->bind_proc == Qnil) {
+    // Get the C struct pointer (safe with GC compaction)
+    ctx = (rubyDuckDBTableFunction *)duckdb_bind_get_extra_info(info);
+    if (!ctx || ctx->bind_proc == Qnil) {
         return;
     }
 
@@ -262,13 +261,16 @@ static VALUE call_init_proc(VALUE args_val) {
 }
 
 static void table_function_init_callback(duckdb_init_info info) {
-    VALUE self = (VALUE)duckdb_init_get_extra_info(info);
     rubyDuckDBTableFunction *ctx;
     VALUE init_info_obj;
     rubyDuckDBInitInfo *init_info_ctx;
     int state = 0;
 
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+    // Get the C struct pointer (safe with GC compaction)
+    ctx = (rubyDuckDBTableFunction *)duckdb_init_get_extra_info(info);
+    if (!ctx || ctx->init_proc == Qnil) {
+        return;
+    }
 
     // Create InitInfo wrapper
     init_info_obj = rb_class_new_instance(0, NULL, cDuckDBInitInfo);
@@ -321,7 +323,6 @@ static VALUE call_execute_proc(VALUE args_val) {
 }
 
 static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output) {
-    VALUE self = (VALUE)duckdb_function_get_extra_info(info);
     rubyDuckDBTableFunction *ctx;
     VALUE func_info_obj;
     VALUE data_chunk_obj;
@@ -329,7 +330,11 @@ static void table_function_execute_callback(duckdb_function_info info, duckdb_da
     rubyDuckDBDataChunk *data_chunk_ctx;
     int state = 0;
 
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+    // Get the C struct pointer (safe with GC compaction)
+    ctx = (rubyDuckDBTableFunction *)duckdb_function_get_extra_info(info);
+    if (!ctx || ctx->execute_proc == Qnil) {
+        return;
+    }
 
     // Create FunctionInfo wrapper
     func_info_obj = rb_class_new_instance(0, NULL, cDuckDBFunctionInfo);

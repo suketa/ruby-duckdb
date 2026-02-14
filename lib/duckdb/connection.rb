@@ -238,9 +238,9 @@ module DuckDB
       return unless thread_count > 1
 
       raise DuckDB::Error,
-            'Scalar functions with Ruby callbacks require single-threaded execution. ' \
+            'Functions with Ruby callbacks require single-threaded execution. ' \
             "Current threads setting: #{thread_count}. " \
-            "Execute 'SET threads=1' before registering scalar functions."
+            "Execute 'SET threads=1' before registering functions."
     end
 
     def run_appender_block(appender, &)
