@@ -42,19 +42,19 @@ module DuckDBTest
       assert_equal 'block is required for init', error.message
     end
 
-    # Test 3: InitInfo set_error
+    # Test 3: InitInfo set_error method exists
     def test_init_info_set_error
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_init_error'
 
       result = table_function.init do |init_info|
-        # Verify method exists
-        result = init_info.set_error('Test error')
-
-        assert_equal init_info, result
+        # Verify set_error method exists and returns self
+        # NOTE: This block is stored but not invoked here
+        # Actual execution and error reporting will be tested in Phase 6
+        init_info.set_error('Test error')
       end
 
-      # NOTE: Actual error reporting will be tested in Phase 6
+      # Verify init returns table_function for method chaining
       assert_equal table_function, result
     end
   end

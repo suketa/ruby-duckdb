@@ -242,6 +242,10 @@ static VALUE rbduckdb_table_function_set_init(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
 
+    if (!ctx->table_function) {
+        rb_raise(eDuckDBError, "Table function is destroyed");
+    }
+
     ctx->init_proc = rb_block_proc();
     duckdb_table_function_set_init(ctx->table_function, table_function_init_callback);
     duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
