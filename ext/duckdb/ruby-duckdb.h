@@ -30,6 +30,7 @@
 #include "./instance_cache.h"
 #include "./value_impl.h"
 #include "./scalar_function.h"
+#include "./bind_info.h"
 #include "./table_function.h"
 
 extern VALUE mDuckDB;
