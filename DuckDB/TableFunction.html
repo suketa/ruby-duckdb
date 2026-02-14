@@ -89,6 +89,7 @@
       <li ><a href="#method-i-add_named_parameter">add_named_parameter</a></li>
       <li ><a href="#method-i-add_parameter">add_parameter</a></li>
       <li ><a href="#method-i-bind">bind</a></li>
+      <li ><a href="#method-i-execute">execute</a></li>
       <li ><a href="#method-i-name-3D">name=</a></li>
       <li ><a href="#method-i-set_name">set_name</a></li>
     </ul>
@@ -356,6 +357,54 @@
 <pre class="ruby"><span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">bind</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
   <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">add_result_column</span>(<span class="ruby-string">&#39;id&#39;</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
   <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">add_result_column</span>(<span class="ruby-string">&#39;name&#39;</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>)
+<span class="ruby-keyword">end</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-execute" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-execute" title="Link to this method">
+                  <span class="method-callseq">
+                    execute { |function_info, output| ... } &rarr; table_function
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="execute-source">
+            <pre>static VALUE rbduckdb_table_function_set_execute(VALUE self) {
+    rubyDuckDBTableFunction *ctx;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, &quot;block is required for execute&quot;);
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
+
+    ctx-&gt;execute_proc = rb_block_proc();
+    duckdb_table_function_set_function(ctx-&gt;table_function, table_function_execute_callback);
+    duckdb_table_function_set_extra_info(ctx-&gt;table_function, (void *)self, NULL);
+
+    return self;
+}</pre>
+          </div>
+          <p>Sets the execute callback for the table function. The callback is invoked during query execution to generate output rows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">execute</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">10</span>
+  <span class="ruby-identifier">vec</span> = <span class="ruby-identifier">output</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
+  <span class="ruby-comment"># Write data...</span>
 <span class="ruby-keyword">end</span>
 </pre>
         </div>
