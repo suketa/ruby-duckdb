@@ -340,6 +340,24 @@
 </li><li>
 <p>add DuckDB::BindInfo#set_error for reporting bind errors.</p>
 </li><li>
+<p>add <a href="DuckDB/DataChunk.html"><code>DuckDB::DataChunk</code></a> class for table function output data (Phase 3).</p>
+</li><li>
+<p>add <a href="DuckDB/DataChunk.html#method-i-column_count"><code>DuckDB::DataChunk#column_count</code></a> for getting number of columns.</p>
+</li><li>
+<p>add <a href="DuckDB/DataChunk.html#method-i-size"><code>DuckDB::DataChunk#size</code></a> for getting number of rows.</p>
+</li><li>
+<p>add <a href="DuckDB/DataChunk.html#method-i-size-3D"><code>DuckDB::DataChunk#size=</code></a> for setting number of rows.</p>
+</li><li>
+<p>add <a href="DuckDB/DataChunk.html#method-i-get_vector"><code>DuckDB::DataChunk#get_vector</code></a> for accessing column vectors.</p>
+</li><li>
+<p>add <a href="DuckDB/Vector.html"><code>DuckDB::Vector</code></a> class for column data access (Phase 3).</p>
+</li><li>
+<p>add <a href="DuckDB/Vector.html#method-i-get_data"><code>DuckDB::Vector#get_data</code></a> for raw data pointer access.</p>
+</li><li>
+<p>add <a href="DuckDB/Vector.html#method-i-get_validity"><code>DuckDB::Vector#get_validity</code></a> for validity mask access.</p>
+</li><li>
+<p>add <a href="DuckDB/Vector.html#method-i-assign_string_element"><code>DuckDB::Vector#assign_string_element</code></a> for writing string values.</p>
+</li><li>
 <p>bump duckdb to 1.4.4 on CI.</p>
 </li><li>
 <p>add inline style to <a href="DuckDB/Connection.html#method-i-register_scalar_function"><code>DuckDB::Connection#register_scalar_function</code></a> (accepts keyword arguments + block).</p>
