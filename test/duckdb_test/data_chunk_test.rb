@@ -55,7 +55,7 @@ module DuckDBTest
     end
 
     # Test 4: Vector#logical_type returns LogicalType
-    def test_vector_logical_type
+    def test_vector_logical_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       @conn.execute('SET threads=1')
 
       table_function = DuckDB::TableFunction.new
@@ -67,7 +67,7 @@ module DuckDBTest
         bind_info.add_result_column('double_col', DuckDB::LogicalType::DOUBLE)
       end
 
-      table_function.init { |_init_info| }
+      table_function.init { |_init_info| } # rubocop:disable Lint/EmptyBlock
 
       table_function.execute do |_func_info, output|
         # Get vectors
