@@ -77,6 +77,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-create">create</a></li>
       <li ><a href="#method-c-new">new</a></li>
     </ul>
   </div>
@@ -139,6 +140,7 @@
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
 
+<span class="ruby-comment"># Low-level API:</span>
 <span class="ruby-identifier">tf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&#39;my_function&#39;</span>
 <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
@@ -149,13 +151,21 @@
 
 <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">execute</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
   <span class="ruby-comment"># Fill output data...</span>
-  <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">0</span>
+  <span class="ruby-value">0</span>  <span class="ruby-comment"># Return 0 to signal done</span>
 <span class="ruby-keyword">end</span>
 
 <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">register_table_function</span>(<span class="ruby-identifier">tf</span>)
-</pre>
 
-<p>rubocop:disable Lint/EmptyClass</p>
+<span class="ruby-comment"># High-level API (recommended):</span>
+<span class="ruby-identifier">tf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-string">&#39;my_function&#39;</span>,
+  <span class="ruby-value">parameters:</span> [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>],
+  <span class="ruby-value">columns:</span> { <span class="ruby-string">&#39;value&#39;</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span> }
+) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+  <span class="ruby-comment"># Fill output data...</span>
+  <span class="ruby-value">0</span>  <span class="ruby-comment"># Return row count (0 when done)</span>
+<span class="ruby-keyword">end</span>
+</pre>
 
   </section>
 
@@ -169,6 +179,100 @@
        <header>
          <h3>Public Class Methods</h3>
        </header>
+
+      <div id="method-c-create" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create" title="Link to this method">
+                <span class="method-name">create</span>
+                <span class="method-args">(name:, columns:, parameters: nil, &amp;) { |func_info, output| ... }</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 74</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">columns:</span>, <span class="ruby-value">parameters:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;name is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">name</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;columns are required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">columns</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;block is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+
+  <span class="ruby-identifier">tf</span> = <span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>
+
+  <span class="ruby-comment"># Add parameters (positional or named)</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">parameters</span>
+    <span class="ruby-keyword">case</span> <span class="ruby-identifier">parameters</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Array</span>
+      <span class="ruby-identifier">parameters</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">type</span><span class="ruby-operator">|</span> <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-identifier">type</span>) }
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Hash</span>
+      <span class="ruby-identifier">parameters</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">param_name</span>, <span class="ruby-identifier">type</span><span class="ruby-operator">|</span> <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">add_named_parameter</span>(<span class="ruby-identifier">param_name</span>, <span class="ruby-identifier">type</span>) }
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;parameters must be Array or Hash&#39;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Set bind callback to add result columns</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">bind</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">columns</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">col_name</span>, <span class="ruby-identifier">col_type</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">add_result_column</span>(<span class="ruby-identifier">col_name</span>, <span class="ruby-identifier">col_type</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Set init callback (required by DuckDB)</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">init</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_init_info</span><span class="ruby-operator">|</span>
+    <span class="ruby-comment"># No-op</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># Set execute callback - user&#39;s block returns row count</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">execute</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">size</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span>)
+    <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">size</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">tf</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a new table function with a declarative API.</p>
+
+<p>@param name [String] The name of the table function @param parameters [Array&lt;LogicalType&gt;, Hash&lt;String, LogicalType&gt;] Function parameters (optional) @param columns [Hash&lt;String, LogicalType&gt;] Output columns (required) @yield [func_info, output] The execute block that generates data @yieldparam func_info [FunctionInfo] Function execution context @yieldparam output [DataChunk] Output data chunk to fill @yieldreturn [Integer] Number of rows generated (0 when done) @return [TableFunction] The configured table function</p>
+
+<p>@example Simple range function</p>
+
+<pre class="ruby"><span class="ruby-identifier">tf</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-string">&#39;my_range&#39;</span>,
+  <span class="ruby-value">parameters:</span> [<span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>],
+  <span class="ruby-value">columns:</span> { <span class="ruby-string">&#39;value&#39;</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span> }
+) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+  <span class="ruby-comment"># Generate data...</span>
+  <span class="ruby-value">0</span>  <span class="ruby-comment"># Signal done</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>@example Function that returns data</p>
+
+<pre class="ruby"><span class="ruby-identifier">tf</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(
+  <span class="ruby-value">name:</span> <span class="ruby-string">&#39;my_function&#39;</span>,
+  <span class="ruby-value">columns:</span> { <span class="ruby-string">&#39;value&#39;</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span> }
+) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">vec</span> = <span class="ruby-identifier">output</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
+  <span class="ruby-comment"># Fill vector...</span>
+  <span class="ruby-value">3</span>  <span class="ruby-comment"># Return row count</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity</p>
+        </div>
+
+
+      </div>
 
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">

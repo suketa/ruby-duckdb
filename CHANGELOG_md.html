@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. DataChunk#set_value method for high-level value writing with automatic">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. TableFunction.">
 
 
 <script type="text/javascript">
@@ -314,6 +314,16 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>add <a href="DuckDB/TableFunction.html#method-c-create"><code>DuckDB::TableFunction.create</code></a> class method for declarative table function creation</p>
+</li><li>
+<p>Automatically sets output.size from return value</p>
+</li><li>
+<p>Supports positional and named parameters</p>
+</li><li>
+<p>Execute block returns row count (0 when done)</p>
+</li><li>
+<p>Simplifies table function development with cleaner API</p>
+</li><li>
 <p>add <a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> method for high-level value writing with automatic type conversion.</p>
 </li><li>
 <p>add <a href="DuckDB/MemoryHelper.html"><code>DuckDB::MemoryHelper</code></a> write methods for all numeric types (boolean, tinyint, smallint, utinyint, usmallint, uinteger, ubigint, float).</p>
