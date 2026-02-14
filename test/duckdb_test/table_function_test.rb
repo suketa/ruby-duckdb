@@ -247,7 +247,7 @@ module DuckDBTest
       end
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
     def test_gc_compaction_safety
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
@@ -296,6 +296,7 @@ module DuckDBTest
       3.times do
         result = conn.query('SELECT * FROM test_gc_compact()')
         rows = result.each.to_a
+
         assert_equal 2, rows.size
         assert_equal 1, rows[0][0]
         assert_equal 20, rows[0][1], 'Execute callback failed after GC compaction'
@@ -306,12 +307,13 @@ module DuckDBTest
       GC.compact
       result = conn.query('SELECT * FROM test_gc_compact()')
       rows = result.each.to_a
+
       assert_equal 2, rows.size
 
       conn.disconnect
       db.close
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
 
     private
 

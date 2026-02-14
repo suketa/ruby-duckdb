@@ -512,12 +512,14 @@ module DuckDBTest
       # Execute query multiple times to ensure callback still works
       5.times do
         result = @con.execute('SELECT multiply_by_ten(7)')
+
         assert_equal 70, result.first.first, 'Callback failed after GC compaction'
       end
 
       # Force another compaction and test again
       GC.compact
       result = @con.execute('SELECT multiply_by_ten(3)')
+
       assert_equal 30, result.first.first
     end
 
@@ -539,11 +541,13 @@ module DuckDBTest
       # Compact and query
       GC.compact
       result = @con.execute('SELECT square(value) FROM test_table ORDER BY value')
+
       assert_equal [[1], [4], [9], [16], [25]], result.to_a
 
       # Compact again and query again
       GC.compact
       result = @con.execute('SELECT square(value) FROM test_table ORDER BY value')
+
       assert_equal [[1], [4], [9], [16], [25]], result.to_a
     end
 

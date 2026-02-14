@@ -39,6 +39,7 @@ module DuckDBTest
         5.times do |i|
           result = @con.execute("SELECT multiply_by_#{i + 1}(10)")
           expected = 10 * (i + 1)
+
           assert_equal expected, result.first.first, "Function #{i + 1} failed after compaction"
         end
       end
@@ -68,6 +69,7 @@ module DuckDBTest
           GC.compact if i.even?
 
           result = @con.execute('SELECT complex_calc(3)')
+
           assert_equal 800, result.first.first # (3 + 5) * 100
         end
       ensure
@@ -75,6 +77,7 @@ module DuckDBTest
       end
     end
 
+    # rubocop:disable Minitest/MultipleAssertions
     def test_table_function_with_gc_compaction
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
@@ -113,6 +116,7 @@ module DuckDBTest
 
         result = @con.query('SELECT * FROM test_gc_table() ORDER BY value')
         rows = result.each.to_a
+
         assert_equal 3, rows.size
         assert_equal 0, rows[0][0]
         assert_equal 3, rows[1][0]
@@ -122,6 +126,7 @@ module DuckDBTest
         done = false
       end
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
     def test_mixed_functions_gc_stress
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
@@ -166,8 +171,9 @@ module DuckDBTest
 
         result = @con.query('SELECT double_it(n) as doubled FROM simple_range() ORDER BY n')
         rows = result.each.to_a
+
         assert_equal 5, rows.size
-        assert_equal [0, 2, 4, 6, 8], rows.map { |r| r[0] }
+        assert_equal([0, 2, 4, 6, 8], rows.map { |r| r[0] })
 
         done = false
       end

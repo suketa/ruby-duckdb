@@ -6,6 +6,7 @@ static void mark(void *);
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static void compact(void *);
 static VALUE duckdb_scalar_function_initialize(VALUE self);
 static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name);
 static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical_type);
@@ -32,7 +33,7 @@ static VALUE cleanup_callback(VALUE arg);
 
 static const rb_data_type_t scalar_function_data_type = {
     "DuckDB/ScalarFunction",
-    {mark, deallocate, memsize,},
+    {mark, deallocate, memsize, compact},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
@@ -45,6 +46,19 @@ static void deallocate(void * ctx) {
     rubyDuckDBScalarFunction *p = (rubyDuckDBScalarFunction *)ctx;
     duckdb_destroy_scalar_function(&(p->scalar_function));
     xfree(p);
+}
+
+/*
+ * GC compaction callback - updates VALUE references that may have moved during compaction.
+ * This is critical for Ruby 2.7+ where GC can move objects in memory.
+ * Without this, the function_proc VALUE could become a stale pointer after compaction,
+ * leading to crashes when DuckDB invokes the callback.
+ */
+static void compact(void *ctx) {
+    rubyDuckDBScalarFunction *p = (rubyDuckDBScalarFunction *)ctx;
+    if (p->function_proc != Qnil) {
+        p->function_proc = rb_gc_location(p->function_proc);
+    }
 }
 
 static VALUE allocate(VALUE klass) {
