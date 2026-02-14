@@ -4,55 +4,35 @@ require 'test_helper'
 
 module DuckDBTest
   class TableFunctionTest < Minitest::Test
-    # Test 1: Create and destroy
-    def test_create_and_destroy
-      tf = DuckDB::TableFunction.create
+    # Test 1: Create using new
+    def test_new
+      tf = DuckDB::TableFunction.new
 
       assert_instance_of DuckDB::TableFunction, tf
-      tf.destroy
     end
 
-    # Test 2: Double destroy should not crash
-    def test_double_destroy
-      tf = DuckDB::TableFunction.create
-      tf.destroy
-      tf.destroy # Should be safe
-    end
-
-    # Test 3: Set name
+    # Test 2: Set name
     def test_set_name
-      tf = DuckDB::TableFunction.create
+      tf = DuckDB::TableFunction.new
       tf.name = 'my_function'
-      tf.destroy
+      tf
     end
 
-    # Test 4: Add positional parameter
+    # Test 3: Add positional parameter
     def test_add_parameter
-      tf = DuckDB::TableFunction.create
+      tf = DuckDB::TableFunction.new
       tf.name = 'my_function'
       tf.add_parameter(DuckDB::LogicalType::BIGINT)
-      tf.destroy
     end
 
-    # Test 5: Add named parameter
+    # Test 4: Add named parameter
     def test_add_named_parameter
-      tf = DuckDB::TableFunction.create
+      tf = DuckDB::TableFunction.new
       tf.name = 'my_function'
       tf.add_named_parameter('limit', DuckDB::LogicalType::BIGINT)
-      tf.destroy
     end
 
-    # Test 6: Block form for auto-cleanup
-    def test_create_with_block
-      result = DuckDB::TableFunction.create do |tf|
-        tf.name = 'my_function'
-        :block_result
-      end
-
-      assert_equal :block_result, result
-    end
-
-    # Test 7: Register without callbacks (should fail gracefully)
+    # Test 5: Register without callbacks (should fail gracefully)
     # TODO: Enable this test once database connection issue is resolved
     def _test_register_without_callbacks
       database, conn, table_function = setup_incomplete_function
@@ -70,14 +50,13 @@ module DuckDBTest
     def setup_incomplete_function
       database = DuckDB::Database.new
       conn = database.connect
-      table_function = DuckDB::TableFunction.create
+      table_function = DuckDB::TableFunction.new
       table_function.name = 'incomplete_function'
       table_function.add_parameter(DuckDB::LogicalType::BIGINT)
       [database, conn, table_function]
     end
 
-    def cleanup_function(table_function, conn, database)
-      table_function.destroy
+    def cleanup_function(_table_function, conn, database)
       conn.disconnect
       database.close
     end

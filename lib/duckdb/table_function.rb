@@ -9,25 +9,24 @@ module DuckDB
   #   db = DuckDB::Database.new
   #   conn = db.connect
   #
-  #   DuckDB::TableFunction.create do |tf|
-  #     tf.name = 'my_function'
-  #     tf.add_parameter(DuckDB::LogicalType::BIGINT)
+  #   tf = DuckDB::TableFunction.new
+  #   tf.name = 'my_function'
+  #   tf.add_parameter(DuckDB::LogicalType::BIGINT)
   #
-  #     tf.bind do |bind_info|
-  #       bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
-  #     end
-  #
-  #     tf.execute do |func_info, output|
-  #       # Fill output data...
-  #       output.size = 0
-  #     end
-  #
-  #     conn.register_table_function(tf)
+  #   tf.bind do |bind_info|
+  #     bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
   #   end
+  #
+  #   tf.execute do |func_info, output|
+  #     # Fill output data...
+  #     output.size = 0
+  #   end
+  #
+  #   conn.register_table_function(tf)
   #
   # rubocop:disable Lint/EmptyClass
   class TableFunction
-    # TableFunction.create is defined in C extension
+    # TableFunction#initialize is defined in C extension
     # Additional Ruby methods can be added here in future phases
   end
   # rubocop:enable Lint/EmptyClass

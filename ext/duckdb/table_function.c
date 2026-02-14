@@ -5,8 +5,7 @@ static VALUE cDuckDBTableFunction;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_table_function_s_create(VALUE self);
-static VALUE duckdb_table_function_destroy(VALUE self);
+static VALUE duckdb_table_function_initialize(VALUE self);
 static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name);
 static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type);
@@ -38,58 +37,25 @@ static size_t memsize(const void *p) {
 
 /*
  * call-seq:
- *   DuckDB::TableFunction.create -> DuckDB::TableFunction
- *   DuckDB::TableFunction.create { |tf| ... } -> result
+ *   DuckDB::TableFunction.new -> DuckDB::TableFunction
  *
  * Creates a new table function.
- * If a block is given, the table function is yielded and automatically destroyed.
  *
- *   tf = DuckDB::TableFunction.create
+ *   tf = DuckDB::TableFunction.new
  *   tf.name = "my_function"
  *   # ... configure tf ...
- *   tf.destroy
- *
- *   # Or with block:
- *   DuckDB::TableFunction.create do |tf|
- *     tf.name = "my_function"
- *     # ... configure tf ...
- *   end
  */
-static VALUE duckdb_table_function_s_create(VALUE self) {
-    VALUE obj = allocate(cDuckDBTableFunction);
+static VALUE duckdb_table_function_initialize(VALUE self) {
     rubyDuckDBTableFunction *ctx;
     
-    TypedData_Get_Struct(obj, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
     
     ctx->table_function = duckdb_create_table_function();
     if (!ctx->table_function) {
         rb_raise(eDuckDBError, "Failed to create table function");
     }
     
-    if (rb_block_given_p()) {
-        return rb_ensure(rb_yield, obj, duckdb_table_function_destroy, obj);
-    }
-    
-    return obj;
-}
-
-/*
- * call-seq:
- *   table_function.destroy -> nil
- *
- * Destroys the table function and releases its resources.
- * Safe to call multiple times.
- */
-static VALUE duckdb_table_function_destroy(VALUE self) {
-    rubyDuckDBTableFunction *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
-    
-    if (ctx->table_function) {
-        duckdb_destroy_table_function(&(ctx->table_function));
-        ctx->table_function = NULL;
-    }
-    
-    return Qnil;
+    return self;
 }
 
 /*
@@ -174,12 +140,14 @@ rubyDuckDBTableFunction *get_struct_table_function(VALUE self) {
 }
 
 void rbduckdb_init_duckdb_table_function(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
     cDuckDBTableFunction = rb_define_class_under(mDuckDB, "TableFunction", rb_cObject);
-    
     rb_define_alloc_func(cDuckDBTableFunction, allocate);
     
-    rb_define_singleton_method(cDuckDBTableFunction, "create", duckdb_table_function_s_create, 0);
-    rb_define_method(cDuckDBTableFunction, "destroy", duckdb_table_function_destroy, 0);
+    rb_define_method(cDuckDBTableFunction, "initialize", duckdb_table_function_initialize, 0);
+    rb_define_method(cDuckDBTableFunction, "set_name", rbduckdb_table_function_set_name, 1);
     rb_define_method(cDuckDBTableFunction, "name=", rbduckdb_table_function_set_name, 1);
     rb_define_method(cDuckDBTableFunction, "add_parameter", rbduckdb_table_function_add_parameter, 1);
     rb_define_method(cDuckDBTableFunction, "add_named_parameter", rbduckdb_table_function_add_named_parameter, 2);
