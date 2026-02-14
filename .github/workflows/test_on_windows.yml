@@ -17,7 +17,7 @@ concurrency:
 jobs:
   test:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     strategy:
       matrix:
         ruby: ['3.2.9', '3.3.10', '3.4.8', '4.0.1', 'ucrt', 'mingw', 'mswin', 'head']
