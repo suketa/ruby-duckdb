@@ -106,7 +106,7 @@ module DuckDB
       # Set execute callback - user's block returns row count
       tf.execute do |func_info, output|
         size = yield(func_info, output)
-        output.size = size
+        output.size = Integer(size)
       end
 
       tf

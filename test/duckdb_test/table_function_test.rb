@@ -177,8 +177,8 @@ module DuckDBTest
         name: 'test_named',
         parameters: { 'limit' => DuckDB::LogicalType::BIGINT },
         columns: { 'value' => DuckDB::LogicalType::BIGINT }
-      ) do |_func_info, _output| # Return 0 rows (done)
-        false
+      ) do |_func_info, _output|
+        0 # Return 0 rows (done)
       end
 
       assert_instance_of DuckDB::TableFunction, tf
@@ -195,8 +195,8 @@ module DuckDBTest
           'name' => DuckDB::LogicalType::VARCHAR,
           'value' => DuckDB::LogicalType::DOUBLE
         }
-      ) do |_func_info, _output| # Return 0 rows (done)
-        false
+      ) do |_func_info, _output|
+        0 # Return 0 rows (done)
       end
 
       assert_instance_of DuckDB::TableFunction, tf
@@ -208,8 +208,8 @@ module DuckDBTest
       tf = DuckDB::TableFunction.create(
         name: 'test_no_params',
         columns: { 'value' => DuckDB::LogicalType::BIGINT }
-      ) do |_func_info, _output| # Return 0 rows (done)
-        false
+      ) do |_func_info, _output|
+        0 # Return 0 rows (done)
       end
 
       assert_instance_of DuckDB::TableFunction, tf
