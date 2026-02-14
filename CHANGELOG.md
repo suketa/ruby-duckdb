@@ -25,6 +25,9 @@ All notable changes to this project will be documented in this file.
 - add DuckDB::Vector#get_data for raw data pointer access.
 - add DuckDB::Vector#get_validity for validity mask access.
 - add DuckDB::Vector#assign_string_element for writing string values.
+- add DuckDB::TableFunction#execute for setting execute callback (Phase 4).
+- add DuckDB::FunctionInfo class for table function execution context (Phase 4).
+- add DuckDB::FunctionInfo#set_error for reporting execution errors.
 - bump duckdb to 1.4.4 on CI.
 - add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.
