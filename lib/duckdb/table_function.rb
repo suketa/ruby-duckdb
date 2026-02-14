@@ -25,7 +25,10 @@ module DuckDB
   #     conn.register_table_function(tf)
   #   end
   #
+  # rubocop:disable Lint/EmptyClass
   class TableFunction
     # TableFunction.create is defined in C extension
+    # Additional Ruby methods can be added here in future phases
   end
+  # rubocop:enable Lint/EmptyClass
 end
