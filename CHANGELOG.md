@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::TableFunction class (Phase 1: Core container).
+- add DuckDB::TableFunction#initialize for standard Ruby allocation pattern.
+- add DuckDB::TableFunction#name= for setting function name.
+- add DuckDB::TableFunction#add_parameter for positional parameters.
+- add DuckDB::TableFunction#add_named_parameter for named parameters.
 - bump duckdb to 1.4.4 on CI.
 - add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.
