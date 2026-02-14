@@ -267,7 +267,43 @@ module DuckDBTest
       assert_equal 100, rows[2].first
     end
 
-    # Test 10: DataChunk#set_value with multiple columns
+    # Test 10: DataChunk#set_value with BLOB
+    def test_data_chunk_set_value_blob # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @conn.execute('SET threads=1')
+
+      done = false
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_set_value_blob'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('data', DuckDB::LogicalType::BLOB)
+      end
+
+      table_function.init { |_init_info| done = false }
+
+      table_function.execute do |_func_info, output|
+        if done
+          output.size = 0
+        else
+          blob1 = "\x00\x01\x02\x03".b
+          blob2 = "binary\x00data".b
+          output.set_value(0, 0, blob1)
+          output.set_value(0, 1, blob2)
+          output.size = 2
+          done = true
+        end
+      end
+
+      @conn.register_table_function(table_function)
+      result = @conn.query('SELECT * FROM test_set_value_blob()')
+      rows = result.each.to_a
+
+      assert_equal 2, rows.length
+      assert_equal "\x00\x01\x02\x03".b, rows[0].first
+      assert_equal "binary\x00data".b, rows[1].first
+    end
+
+    # Test 11: DataChunk#set_value with multiple columns
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
     def test_data_chunk_set_value_multiple_columns
       @conn.execute('SET threads=1')

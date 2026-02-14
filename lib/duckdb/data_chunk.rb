@@ -90,8 +90,10 @@ module DuckDB
       when :double
         data = vector.get_data
         MemoryHelper.write_double(data, row_idx, value)
-      when :varchar, :blob
+      when :varchar
         vector.assign_string_element(row_idx, value.to_s)
+      when :blob
+        vector.assign_string_element_len(row_idx, value.to_s)
       else
         raise ArgumentError, "Unsupported type for DataChunk#set_value: #{type_id}"
       end
