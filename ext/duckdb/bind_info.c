@@ -49,11 +49,11 @@ rubyDuckDBBindInfo *get_struct_bind_info(VALUE obj) {
 static VALUE rbduckdb_bind_info_parameter_count(VALUE self) {
     rubyDuckDBBindInfo *ctx;
     idx_t count;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    
+
     count = duckdb_bind_get_parameter_count(ctx->bind_info);
-    
+
     return ULL2NUM(count);
 }
 
@@ -72,16 +72,16 @@ static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index) {
     duckdb_logical_type logical_type;
     duckdb_type type_id;
     VALUE result;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    
+
     idx = NUM2ULL(index);
     param_value = duckdb_bind_get_parameter(ctx->bind_info, idx);
-    
+
     // Get the logical type of the value
-    logical_type = duckdb_get_value_type(&param_value);
+    logical_type = duckdb_get_value_type(param_value);
     type_id = duckdb_get_type_id(logical_type);
-    
+
     // Convert to Ruby value based on type
     switch (type_id) {
         case DUCKDB_TYPE_BIGINT:
@@ -107,10 +107,10 @@ static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index) {
             result = Qnil;
             break;
     }
-    
+
     duckdb_destroy_logical_type(&logical_type);
     duckdb_destroy_value(&param_value);
-    
+
     return result;
 }
 
@@ -129,21 +129,21 @@ static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name) {
     duckdb_logical_type logical_type;
     duckdb_type type_id;
     VALUE result;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    
+
     param_name = StringValueCStr(name);
     param_value = duckdb_bind_get_named_parameter(ctx->bind_info, param_name);
-    
+
     // If parameter not found, return nil
     if (!param_value) {
         return Qnil;
     }
-    
+
     // Get the logical type of the value
-    logical_type = duckdb_get_value_type(&param_value);
+    logical_type = duckdb_get_value_type(param_value);
     type_id = duckdb_get_type_id(logical_type);
-    
+
     // Convert to Ruby value based on type
     switch (type_id) {
         case DUCKDB_TYPE_BIGINT:
@@ -168,10 +168,10 @@ static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name) {
             result = Qnil;
             break;
     }
-    
+
     duckdb_destroy_logical_type(&logical_type);
     duckdb_destroy_value(&param_value);
-    
+
     return result;
 }
 
@@ -188,13 +188,13 @@ static VALUE rbduckdb_bind_info_add_result_column(VALUE self, VALUE column_name,
     rubyDuckDBBindInfo *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *col_name;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
     ctx_logical_type = get_struct_logical_type(logical_type);
-    
+
     col_name = StringValueCStr(column_name);
     duckdb_bind_add_result_column(ctx->bind_info, col_name, ctx_logical_type->logical_type);
-    
+
     return self;
 }
 
@@ -211,14 +211,14 @@ static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, V
     rubyDuckDBBindInfo *ctx;
     idx_t card;
     bool exact;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    
+
     card = NUM2ULL(cardinality);
     exact = RTEST(is_exact);
-    
+
     duckdb_bind_set_cardinality(ctx->bind_info, card, exact);
-    
+
     return self;
 }
 
@@ -233,12 +233,12 @@ static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, V
 static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBBindInfo *ctx;
     const char *error_msg;
-    
+
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    
+
     error_msg = StringValueCStr(error);
     duckdb_bind_set_error(ctx->bind_info, error_msg);
-    
+
     return self;
 }
 
@@ -248,7 +248,7 @@ void rbduckdb_init_duckdb_bind_info(void) {
 #endif
     cDuckDBBindInfo = rb_define_class_under(mDuckDB, "BindInfo", rb_cObject);
     rb_define_alloc_func(cDuckDBBindInfo, allocate);
-    
+
     rb_define_method(cDuckDBBindInfo, "parameter_count", rbduckdb_bind_info_parameter_count, 0);
     rb_define_method(cDuckDBBindInfo, "get_parameter", rbduckdb_bind_info_get_parameter, 1);
     rb_define_method(cDuckDBBindInfo, "get_named_parameter", rbduckdb_bind_info_get_named_parameter, 1);
