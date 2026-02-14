@@ -346,7 +346,7 @@
 
     ctx-&gt;bind_proc = rb_block_proc();
 
-    duckdb_table_function_set_extra_info(ctx-&gt;table_function, ctx, NULL);
+    duckdb_table_function_set_extra_info(ctx-&gt;table_function, (void *)self, NULL);
     duckdb_table_function_set_bind(ctx-&gt;table_function, table_function_bind_callback);
 
     return self;
