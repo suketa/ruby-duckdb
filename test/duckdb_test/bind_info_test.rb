@@ -117,5 +117,18 @@ module DuckDBTest
         table_function.bind
       end
     end
+
+    # Test 9: Exception in bind block is caught safely
+    def test_bind_exception_handling
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_exception'
+
+      # Should not crash - exception should be caught by rb_protect
+      result = table_function.bind do |_bind_info|
+        raise StandardError, 'Test exception in bind'
+      end
+
+      assert_equal table_function, result
+    end
   end
 end

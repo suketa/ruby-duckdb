@@ -177,10 +177,16 @@ static VALUE rbduckdb_table_function_set_bind(VALUE self) {
     return self;
 }
 
+static VALUE call_bind_proc(VALUE arg) {
+    VALUE *args = (VALUE *)arg;
+    return rb_funcall(args[0], rb_intern("call"), 1, args[1]);
+}
+
 static void table_function_bind_callback(duckdb_bind_info info) {
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBBindInfo *bind_info_ctx;
     VALUE bind_info_obj;
+    int state = 0;
 
     ctx = (rubyDuckDBTableFunction *)duckdb_bind_get_extra_info(info);
     if (!ctx || ctx->bind_proc == Qnil) {
@@ -192,8 +198,16 @@ static void table_function_bind_callback(duckdb_bind_info info) {
     bind_info_ctx = get_struct_bind_info(bind_info_obj);
     bind_info_ctx->bind_info = info;
 
-    // Call Ruby block
-    rb_funcall(ctx->bind_proc, rb_intern("call"), 1, bind_info_obj);
+    // Call Ruby block with exception protection
+    VALUE call_args[2] = { ctx->bind_proc, bind_info_obj };
+    rb_protect(call_bind_proc, (VALUE)call_args, &state);
+
+    if (state) {
+        VALUE err = rb_errinfo();
+        VALUE msg = rb_funcall(err, rb_intern("message"), 0);
+        duckdb_bind_set_error(info, StringValueCStr(msg));
+        rb_set_errinfo(Qnil); // Clear the error
+    }
 }
 
 rubyDuckDBTableFunction *get_struct_table_function(VALUE self) {
