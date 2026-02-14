@@ -25,12 +25,17 @@ All notable changes to this project will be documented in this file.
 - add DuckDB::Vector#get_data for raw data pointer access.
 - add DuckDB::Vector#get_validity for validity mask access.
 - add DuckDB::Vector#assign_string_element for writing string values.
+- add DuckDB::MemoryHelper module for writing primitive values to vectors.
+- add DuckDB::MemoryHelper.write_bigint for writing BIGINT values.
+- add DuckDB::MemoryHelper.write_integer for writing INTEGER values.
+- add DuckDB::MemoryHelper.write_double for writing DOUBLE values.
 - add DuckDB::TableFunction#execute for setting execute callback (Phase 4).
 - add DuckDB::FunctionInfo class for table function execution context (Phase 4).
 - add DuckDB::FunctionInfo#set_error for reporting execution errors.
 - add DuckDB::TableFunction#init for setting init callback (Phase 5).
 - add DuckDB::InitInfo class for table function initialization context (Phase 5).
 - add DuckDB::InitInfo#set_error for reporting initialization errors.
+- add DuckDB::Connection#register_table_function for registering table functions (Phase 6).
 - bump duckdb to 1.4.4 on CI.
 - add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.

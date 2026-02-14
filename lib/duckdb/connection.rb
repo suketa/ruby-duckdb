@@ -213,6 +213,22 @@ module DuckDB
       _register_scalar_function(sf)
     end
 
+    #
+    # Registers a table function with the database connection.
+    #
+    #   table_function = DuckDB::TableFunction.new
+    #   table_function.name = 'my_function'
+    #   table_function.bind { |bind_info| ... }
+    #   table_function.execute { |func_info, output| ... }
+    #   connection.register_table_function(table_function)
+    #
+    def register_table_function(table_function)
+      raise ArgumentError, 'table_function must be a TableFunction' unless table_function.is_a?(TableFunction)
+
+      check_threads
+      _register_table_function(table_function)
+    end
+
     private
 
     def check_threads
@@ -222,9 +238,9 @@ module DuckDB
       return unless thread_count > 1
 
       raise DuckDB::Error,
-            'Scalar functions with Ruby callbacks require single-threaded execution. ' \
+            'Functions with Ruby callbacks require single-threaded execution. ' \
             "Current threads setting: #{thread_count}. " \
-            "Execute 'SET threads=1' before registering scalar functions."
+            "Execute 'SET threads=1' before registering functions."
     end
 
     def run_appender_block(appender, &)
