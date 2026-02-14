@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBTableFunction {
     duckdb_table_function table_function;
+    VALUE bind_proc;
 };
 
 typedef struct _rubyDuckDBTableFunction rubyDuckDBTableFunction;

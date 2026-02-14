@@ -282,7 +282,7 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             if (!rb_obj_is_kind_of(value, rb_cTime)) {
                 rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP");
             }
-            
+
             duckdb_timestamp_struct ts_struct;
             ts_struct.date.year = NUM2INT(rb_funcall(value, rb_intern("year"), 0));
             ts_struct.date.month = NUM2INT(rb_funcall(value, rb_intern("month"), 0));
@@ -291,7 +291,7 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ts_struct.time.min = NUM2INT(rb_funcall(value, rb_intern("min"), 0));
             ts_struct.time.sec = NUM2INT(rb_funcall(value, rb_intern("sec"), 0));
             ts_struct.time.micros = NUM2INT(rb_funcall(value, rb_intern("usec"), 0));
-            
+
             duckdb_timestamp ts = duckdb_to_timestamp(ts_struct);
             ((duckdb_timestamp *)vector_data)[index] = ts;
             break;
@@ -303,11 +303,11 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             if (!rb_obj_is_kind_of(value, date_class)) {
                 rb_raise(rb_eTypeError, "Expected Date object for DATE");
             }
-            
+
             VALUE year = rb_funcall(value, rb_intern("year"), 0);
             VALUE month = rb_funcall(value, rb_intern("month"), 0);
             VALUE day = rb_funcall(value, rb_intern("day"), 0);
-            
+
             duckdb_date date = rbduckdb_to_duckdb_date_from_value(year, month, day);
             ((duckdb_date *)vector_data)[index] = date;
             break;
@@ -317,12 +317,12 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             if (!rb_obj_is_kind_of(value, rb_cTime)) {
                 rb_raise(rb_eTypeError, "Expected Time object for TIME");
             }
-            
+
             VALUE hour = rb_funcall(value, rb_intern("hour"), 0);
             VALUE min = rb_funcall(value, rb_intern("min"), 0);
             VALUE sec = rb_funcall(value, rb_intern("sec"), 0);
             VALUE usec = rb_funcall(value, rb_intern("usec"), 0);
-            
+
             duckdb_time time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, usec);
             ((duckdb_time *)vector_data)[index] = time;
             break;

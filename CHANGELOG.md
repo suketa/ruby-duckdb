@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 - add DuckDB::TableFunction#name= for setting function name.
 - add DuckDB::TableFunction#add_parameter for positional parameters.
 - add DuckDB::TableFunction#add_named_parameter for named parameters.
+- add DuckDB::TableFunction#bind for setting bind callback (Phase 2).
+- add DuckDB::BindInfo class for table function bind phase (Phase 2).
+- add DuckDB::BindInfo#parameter_count for getting parameter count.
+- add DuckDB::BindInfo#get_parameter for accessing positional parameters.
+- add DuckDB::BindInfo#get_named_parameter for accessing named parameters.
+- add DuckDB::BindInfo#add_result_column for defining output schema.
+- add DuckDB::BindInfo#set_cardinality for performance hints.
+- add DuckDB::BindInfo#set_error for reporting bind errors.
 - bump duckdb to 1.4.4 on CI.
 - add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.
