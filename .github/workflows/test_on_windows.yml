@@ -52,7 +52,7 @@ jobs:
 
     - name: rake test
       run: |
-        rake test
+        bundle exec rake test TESTOPTS="--verbose"
 
   post-test:
     name: All tests passed on Windows
