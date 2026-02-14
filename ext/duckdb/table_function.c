@@ -2,6 +2,8 @@
 
 static VALUE cDuckDBTableFunction;
 extern VALUE cDuckDBBindInfo;
+extern VALUE cDuckDBFunctionInfo;
+extern VALUE cDuckDBDataChunk;
 
 static void mark(void *ctx);
 static void deallocate(void *ctx);
@@ -13,6 +15,8 @@ static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_typ
 static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type);
 static VALUE rbduckdb_table_function_set_bind(VALUE self);
 static void table_function_bind_callback(duckdb_bind_info info);
+static VALUE rbduckdb_table_function_set_execute(VALUE self);
+static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output);
 
 static const rb_data_type_t table_function_data_type = {
     "DuckDB/TableFunction",
@@ -23,6 +27,7 @@ static const rb_data_type_t table_function_data_type = {
 static void mark(void *ctx) {
     rubyDuckDBTableFunction *p = (rubyDuckDBTableFunction *)ctx;
     rb_gc_mark(p->bind_proc);
+    rb_gc_mark(p->execute_proc);
 }
 
 static void deallocate(void *ctx) {
@@ -210,6 +215,73 @@ static void table_function_bind_callback(duckdb_bind_info info) {
     }
 }
 
+/*
+ * call-seq:
+ *   table_function.execute { |function_info, output| ... } -> table_function
+ *
+ * Sets the execute callback for the table function.
+ * The callback is invoked during query execution to generate output rows.
+ *
+ *   table_function.execute do |func_info, output|
+ *     output.size = 10
+ *     vec = output.get_vector(0)
+ *     # Write data...
+ *   end
+ */
+static VALUE rbduckdb_table_function_set_execute(VALUE self) {
+    rubyDuckDBTableFunction *ctx;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, "block is required for execute");
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+
+    ctx->execute_proc = rb_block_proc();
+    duckdb_table_function_set_function(ctx->table_function, table_function_execute_callback);
+    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
+
+    return self;
+}
+
+static VALUE call_execute_proc(VALUE args_val) {
+    VALUE *args = (VALUE *)args_val;
+    return rb_funcall(args[0], rb_intern("call"), 2, args[1], args[2]);
+}
+
+static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output) {
+    VALUE self = (VALUE)duckdb_function_get_extra_info(info);
+    rubyDuckDBTableFunction *ctx;
+    VALUE func_info_obj;
+    VALUE data_chunk_obj;
+    rubyDuckDBFunctionInfo *func_info_ctx;
+    rubyDuckDBDataChunk *data_chunk_ctx;
+    int state = 0;
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+
+    // Create FunctionInfo wrapper
+    func_info_obj = rb_funcall(cDuckDBFunctionInfo, rb_intern("allocate"), 0);
+    func_info_ctx = get_struct_function_info(func_info_obj);
+    func_info_ctx->info = info;
+
+    // Create DataChunk wrapper
+    data_chunk_obj = rb_funcall(cDuckDBDataChunk, rb_intern("allocate"), 0);
+    data_chunk_ctx = get_struct_data_chunk(data_chunk_obj);
+    data_chunk_ctx->data_chunk = output;
+
+    // Call Ruby block with exception protection
+    VALUE call_args[3] = { ctx->execute_proc, func_info_obj, data_chunk_obj };
+    rb_protect(call_execute_proc, (VALUE)call_args, &state);
+
+    if (state) {
+        VALUE err = rb_errinfo();
+        VALUE msg = rb_funcall(err, rb_intern("message"), 0);
+        duckdb_function_set_error(info, StringValueCStr(msg));
+        rb_set_errinfo(Qnil); // Clear the error
+    }
+}
+
 rubyDuckDBTableFunction *get_struct_table_function(VALUE self) {
     rubyDuckDBTableFunction *ctx;
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
@@ -229,4 +301,5 @@ void rbduckdb_init_duckdb_table_function(void) {
     rb_define_method(cDuckDBTableFunction, "add_parameter", rbduckdb_table_function_add_parameter, 1);
     rb_define_method(cDuckDBTableFunction, "add_named_parameter", rbduckdb_table_function_add_named_parameter, 2);
     rb_define_method(cDuckDBTableFunction, "bind", rbduckdb_table_function_set_bind, 0);
+    rb_define_method(cDuckDBTableFunction, "execute", rbduckdb_table_function_set_execute, 0);
 }
