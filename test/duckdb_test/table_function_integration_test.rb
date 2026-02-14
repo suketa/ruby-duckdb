@@ -16,6 +16,7 @@ module DuckDBTest
     end
 
     # Test 1: Simple table function returning data
+    # rubocop:disable Minitest/MultipleAssertions
     def test_simple_table_function
       table_function = create_simple_function
 
@@ -23,13 +24,16 @@ module DuckDBTest
       result = @connection.query('SELECT * FROM simple_function()')
 
       rows = result.each.to_a
+
       assert_equal 3, rows.count
       assert_equal [1, 'Alice'], rows[0]
       assert_equal [2, 'Bob'], rows[1]
       assert_equal [3, 'Charlie'], rows[2]
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
     # Test 2: Table function with parameters
+    # rubocop:disable Minitest/MultipleAssertions
     def test_table_function_with_parameters
       table_function = create_parameterized_function
 
@@ -37,11 +41,13 @@ module DuckDBTest
       result = @connection.query("SELECT * FROM repeat_string('hello', 3)")
 
       rows = result.each.to_a
+
       assert_equal 3, rows.count
       assert_equal ['test'], rows[0]
       assert_equal ['test'], rows[1]
       assert_equal ['test'], rows[2]
     end
+    # rubocop:enable Minitest/MultipleAssertions
 
     # Test 3: Connection#register_table_function without block
     def test_register_table_function_without_block
@@ -54,9 +60,9 @@ module DuckDBTest
 
     private
 
-    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     def create_simple_function
-      done = false  # Track state with closure variable
+      done = false # Track state with closure variable
 
       table_function = DuckDB::TableFunction.new
       table_function.name = 'simple_function'
@@ -98,7 +104,7 @@ module DuckDBTest
     end
 
     def create_parameterized_function
-      done = false  # Track state
+      done = false # Track state
 
       table_function = DuckDB::TableFunction.new
       table_function.name = 'repeat_string'
@@ -130,7 +136,7 @@ module DuckDBTest
 
       table_function
     end
-    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
     def create_minimal_function
       table_function = DuckDB::TableFunction.new
