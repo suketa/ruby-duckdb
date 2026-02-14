@@ -10,6 +10,7 @@ static void mark(void *ctx);
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static void compact(void *ctx);
 static VALUE duckdb_table_function_initialize(VALUE self);
 static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name);
 static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_type);
@@ -23,7 +24,7 @@ static void table_function_execute_callback(duckdb_function_info info, duckdb_da
 
 static const rb_data_type_t table_function_data_type = {
     "DuckDB/TableFunction",
-    {mark, deallocate, memsize,},
+    {mark, deallocate, memsize, compact},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
@@ -42,6 +43,26 @@ static void deallocate(void *ctx) {
         p->table_function = NULL;
     }
     xfree(p);
+}
+
+/*
+ * GC compaction callback - updates VALUE references that may have moved during compaction.
+ * This is critical for Ruby 2.7+ where GC can move objects in memory.
+ * TableFunction has three callback procs (bind, init, execute) that all need updating.
+ * Without this, these VALUE pointers could become stale after compaction,
+ * leading to crashes when DuckDB invokes the callbacks.
+ */
+static void compact(void *ctx) {
+    rubyDuckDBTableFunction *p = (rubyDuckDBTableFunction *)ctx;
+    if (p->bind_proc != Qnil) {
+        p->bind_proc = rb_gc_location(p->bind_proc);
+    }
+    if (p->init_proc != Qnil) {
+        p->init_proc = rb_gc_location(p->init_proc);
+    }
+    if (p->execute_proc != Qnil) {
+        p->execute_proc = rb_gc_location(p->execute_proc);
+    }
 }
 
 static VALUE allocate(VALUE klass) {

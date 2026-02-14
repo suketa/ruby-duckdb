@@ -492,6 +492,65 @@ module DuckDBTest
       end
     end
 
+    def test_gc_compaction_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+
+      @con.execute('SET threads=1')
+
+      # Register scalar function with callback that captures local variable
+      multiplier = 10
+      @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
+        sf.name = 'multiply_by_ten'
+        sf.add_parameter(DuckDB::LogicalType::INTEGER)
+        sf.return_type = DuckDB::LogicalType::INTEGER
+        sf.set_function { |v| v * multiplier }
+      end)
+
+      # Force GC compaction - this may move the Proc object
+      GC.compact
+
+      # Execute query multiple times to ensure callback still works
+      5.times do
+        result = @con.execute('SELECT multiply_by_ten(7)')
+
+        assert_equal 70, result.first.first, 'Callback failed after GC compaction'
+      end
+
+      # Force another compaction and test again
+      GC.compact
+      result = @con.execute('SELECT multiply_by_ten(3)')
+
+      assert_equal 30, result.first.first
+    end
+
+    def test_gc_compaction_with_table_scan # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+
+      @con.execute('SET threads=1')
+      @con.execute('CREATE TABLE test_table (value INTEGER)')
+      @con.execute('INSERT INTO test_table VALUES (1), (2), (3), (4), (5)')
+
+      # Register function
+      @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
+        sf.name = 'square'
+        sf.add_parameter(DuckDB::LogicalType::INTEGER)
+        sf.return_type = DuckDB::LogicalType::INTEGER
+        sf.set_function { |v| v * v }
+      end)
+
+      # Compact and query
+      GC.compact
+      result = @con.execute('SELECT square(value) FROM test_table ORDER BY value')
+
+      assert_equal [[1], [4], [9], [16], [25]], result.to_a
+
+      # Compact again and query again
+      GC.compact
+      result = @con.execute('SELECT square(value) FROM test_table ORDER BY value')
+
+      assert_equal [[1], [4], [9], [16], [25]], result.to_a
+    end
+
     # Tests for ScalarFunction.create class method
 
     def test_create_with_single_parameter # rubocop:disable Metrics/MethodLength
