@@ -268,7 +268,7 @@ static void table_function_init_callback(duckdb_init_info info) {
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
 
     // Create InitInfo wrapper
-    init_info_obj = rb_funcall(cDuckDBInitInfo, rb_intern("allocate"), 0);
+    init_info_obj = rb_class_new_instance(0, NULL, cDuckDBInitInfo);
     init_info_ctx = get_struct_init_info(init_info_obj);
     init_info_ctx->info = info;
 
@@ -330,12 +330,12 @@ static void table_function_execute_callback(duckdb_function_info info, duckdb_da
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
 
     // Create FunctionInfo wrapper
-    func_info_obj = rb_funcall(cDuckDBFunctionInfo, rb_intern("allocate"), 0);
+    func_info_obj = rb_class_new_instance(0, NULL, cDuckDBFunctionInfo);
     func_info_ctx = get_struct_function_info(func_info_obj);
     func_info_ctx->info = info;
 
     // Create DataChunk wrapper
-    data_chunk_obj = rb_funcall(cDuckDBDataChunk, rb_intern("allocate"), 0);
+    data_chunk_obj = rb_class_new_instance(0, NULL, cDuckDBDataChunk);
     data_chunk_ctx = get_struct_data_chunk(data_chunk_obj);
     data_chunk_ctx->data_chunk = output;
 
