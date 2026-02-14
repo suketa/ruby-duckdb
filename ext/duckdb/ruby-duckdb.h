@@ -31,6 +31,8 @@
 #include "./value_impl.h"
 #include "./scalar_function.h"
 #include "./bind_info.h"
+#include "./vector.h"
+#include "./data_chunk.h"
 #include "./table_function.h"
 
 extern VALUE mDuckDB;
