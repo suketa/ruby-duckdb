@@ -176,7 +176,7 @@ static VALUE rbduckdb_table_function_set_bind(VALUE self) {
 
     ctx->bind_proc = rb_block_proc();
 
-    duckdb_table_function_set_extra_info(ctx->table_function, ctx, NULL);
+    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
     duckdb_table_function_set_bind(ctx->table_function, table_function_bind_callback);
 
     return self;
@@ -188,13 +188,16 @@ static VALUE call_bind_proc(VALUE arg) {
 }
 
 static void table_function_bind_callback(duckdb_bind_info info) {
+    VALUE self;
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBBindInfo *bind_info_ctx;
     VALUE bind_info_obj;
     int state = 0;
 
-    ctx = (rubyDuckDBTableFunction *)duckdb_bind_get_extra_info(info);
-    if (!ctx || ctx->bind_proc == Qnil) {
+    self = (VALUE)duckdb_bind_get_extra_info(info);
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+    
+    if (ctx->bind_proc == Qnil) {
         return;
     }
 
