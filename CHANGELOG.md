@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB::DataChunk#set_value method for high-level value writing with automatic type conversion.
+- add DuckDB::MemoryHelper write methods for all numeric types (boolean, tinyint, smallint, utinyint, usmallint, uinteger, ubigint, float).
+- add DuckDB::Vector#set_validity method to mark rows as NULL or valid.
+- add DuckDB::Vector#assign_string_element_len method for BLOB data with null bytes.
 - add DuckDB::Vector#logical_type method to get the column type of a vector.
 - add DuckDB::TableFunction class (Phase 1: Core container).
 - add DuckDB::TableFunction#initialize for standard Ruby allocation pattern.

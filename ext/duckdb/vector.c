@@ -8,7 +8,9 @@ static size_t memsize(const void *p);
 static VALUE rbduckdb_vector_get_data(VALUE self);
 static VALUE rbduckdb_vector_get_validity(VALUE self);
 static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALUE str);
+static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, VALUE str);
 static VALUE rbduckdb_vector_logical_type(VALUE self);
+static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid);
 
 static const rb_data_type_t vector_data_type = {
     "DuckDB/Vector",
@@ -105,6 +107,32 @@ static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALU
 
 /*
  * call-seq:
+ *   vector.assign_string_element_len(index, str) -> self
+ *
+ * Assigns a string/blob value at the specified index with explicit length.
+ * Supports strings containing null bytes (for BLOB columns).
+ *
+ *   vector.assign_string_element_len(0, "\x00\x01\x02\x03")
+ */
+static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
+    rubyDuckDBVector *ctx;
+    idx_t idx;
+    const char *string_val;
+    idx_t str_len;
+
+    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+
+    idx = NUM2ULL(index);
+    string_val = StringValuePtr(str);
+    str_len = RSTRING_LEN(str);
+
+    duckdb_vector_assign_string_element_len(ctx->vector, idx, string_val, str_len);
+
+    return self;
+}
+
+/*
+ * call-seq:
  *   vector.logical_type -> DuckDB::LogicalType
  *
  * Gets the logical type of the vector.
@@ -124,6 +152,39 @@ static VALUE rbduckdb_vector_logical_type(VALUE self) {
     return rbduckdb_create_logical_type(logical_type);
 }
 
+/*
+ * call-seq:
+ *   vector.set_validity(index, valid) -> self
+ *
+ * Sets the validity of a value at the specified index.
+ *
+ *   vector.set_validity(0, false)  # Mark row 0 as NULL
+ *   vector.set_validity(1, true)   # Mark row 1 as valid
+ */
+static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid) {
+    rubyDuckDBVector *ctx;
+    idx_t idx;
+    uint64_t *validity;
+
+    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+
+    idx = NUM2ULL(index);
+
+    if (RTEST(valid)) {
+        // Setting to valid - ensure validity mask exists and set bit
+        duckdb_vector_ensure_validity_writable(ctx->vector);
+        validity = duckdb_vector_get_validity(ctx->vector);
+        duckdb_validity_set_row_valid(validity, idx);
+    } else {
+        // Setting to invalid (NULL)
+        duckdb_vector_ensure_validity_writable(ctx->vector);
+        validity = duckdb_vector_get_validity(ctx->vector);
+        duckdb_validity_set_row_invalid(validity, idx);
+    }
+
+    return self;
+}
+
 void rbduckdb_init_duckdb_vector(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -134,5 +195,7 @@ void rbduckdb_init_duckdb_vector(void) {
     rb_define_method(cDuckDBVector, "get_data", rbduckdb_vector_get_data, 0);
     rb_define_method(cDuckDBVector, "get_validity", rbduckdb_vector_get_validity, 0);
     rb_define_method(cDuckDBVector, "assign_string_element", rbduckdb_vector_assign_string_element, 2);
+    rb_define_method(cDuckDBVector, "assign_string_element_len", rbduckdb_vector_assign_string_element_len, 2);
     rb_define_method(cDuckDBVector, "logical_type", rbduckdb_vector_logical_type, 0);
+    rb_define_method(cDuckDBVector, "set_validity", rbduckdb_vector_set_validity, 2);
 }
