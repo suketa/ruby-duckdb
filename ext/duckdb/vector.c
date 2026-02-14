@@ -8,6 +8,7 @@ static size_t memsize(const void *p);
 static VALUE rbduckdb_vector_get_data(VALUE self);
 static VALUE rbduckdb_vector_get_validity(VALUE self);
 static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALUE str);
+static VALUE rbduckdb_vector_logical_type(VALUE self);
 
 static const rb_data_type_t vector_data_type = {
     "DuckDB/Vector",
@@ -102,6 +103,27 @@ static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALU
     return self;
 }
 
+/*
+ * call-seq:
+ *   vector.logical_type -> DuckDB::LogicalType
+ *
+ * Gets the logical type of the vector.
+ *
+ *   vector = output.get_vector(0)
+ *   type = vector.logical_type
+ *   type.id  #=> DuckDB::Type::BIGINT
+ */
+static VALUE rbduckdb_vector_logical_type(VALUE self) {
+    rubyDuckDBVector *ctx;
+    duckdb_logical_type logical_type;
+
+    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+
+    logical_type = duckdb_vector_get_column_type(ctx->vector);
+
+    return rbduckdb_create_logical_type(logical_type);
+}
+
 void rbduckdb_init_duckdb_vector(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -112,4 +134,5 @@ void rbduckdb_init_duckdb_vector(void) {
     rb_define_method(cDuckDBVector, "get_data", rbduckdb_vector_get_data, 0);
     rb_define_method(cDuckDBVector, "get_validity", rbduckdb_vector_get_validity, 0);
     rb_define_method(cDuckDBVector, "assign_string_element", rbduckdb_vector_assign_string_element, 2);
+    rb_define_method(cDuckDBVector, "logical_type", rbduckdb_vector_logical_type, 0);
 }
