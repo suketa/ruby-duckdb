@@ -74,8 +74,16 @@
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-c-write_bigint">write_bigint</a></li>
+      <li ><a href="#method-c-write_boolean">write_boolean</a></li>
       <li ><a href="#method-c-write_double">write_double</a></li>
+      <li ><a href="#method-c-write_float">write_float</a></li>
       <li ><a href="#method-c-write_integer">write_integer</a></li>
+      <li ><a href="#method-c-write_smallint">write_smallint</a></li>
+      <li ><a href="#method-c-write_tinyint">write_tinyint</a></li>
+      <li ><a href="#method-c-write_ubigint">write_ubigint</a></li>
+      <li ><a href="#method-c-write_uinteger">write_uinteger</a></li>
+      <li ><a href="#method-c-write_usmallint">write_usmallint</a></li>
+      <li ><a href="#method-c-write_utinyint">write_utinyint</a></li>
     </ul>
   </div>
 
@@ -178,6 +186,44 @@
 
       </div>
 
+      <div id="method-c-write_boolean" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_boolean" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_boolean(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_boolean-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_boolean(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    bool *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (bool *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = RTEST(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a boolean to raw memory.</p>
+        </div>
+
+
+      </div>
+
       <div id="method-c-write_double" class="method-detail anchor-link ">
         <div class="method-header">
               <div class="method-heading">
@@ -223,6 +269,44 @@
 
       </div>
 
+      <div id="method-c-write_float" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_float" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_float(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_float-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_float(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    float *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (float *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = (float)NUM2DBL(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a 32-bit floating point number (FLOAT) to raw memory.</p>
+        </div>
+
+
+      </div>
+
       <div id="method-c-write_integer" class="method-detail anchor-link ">
         <div class="method-header">
               <div class="method-heading">
@@ -263,6 +347,234 @@
 <pre class="ruby"><span class="ruby-identifier">ptr</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
 <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_integer</span>(<span class="ruby-identifier">ptr</span>, <span class="ruby-value">0</span>, <span class="ruby-value">42</span>)
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_smallint" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_smallint" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_smallint(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_smallint-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_smallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    int16_t *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (int16_t *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = (int16_t)NUM2INT(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a 16-bit signed integer (SMALLINT) to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_tinyint" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_tinyint" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_tinyint(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_tinyint-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_tinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    int8_t *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (int8_t *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = (int8_t)NUM2INT(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes an 8-bit signed integer (TINYINT) to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_ubigint" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_ubigint" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_ubigint(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_ubigint-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_ubigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    uint64_t *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (uint64_t *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = NUM2ULL(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a 64-bit unsigned integer (UBIGINT) to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_uinteger" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_uinteger" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_uinteger(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_uinteger-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_uinteger(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    uint32_t *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (uint32_t *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = (uint32_t)NUM2ULL(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a 32-bit unsigned integer (UINTEGER) to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_usmallint" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_usmallint" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_usmallint(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_usmallint-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_usmallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    uint16_t *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (uint16_t *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = (uint16_t)NUM2UINT(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a 16-bit unsigned integer (USMALLINT) to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_utinyint" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_utinyint" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_utinyint(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_utinyint-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_utinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    uint8_t *data;
+    idx_t idx;
+
+    (void)self;
+
+    data = (uint8_t *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+    data[idx] = (uint8_t)NUM2UINT(value);
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes an 8-bit unsigned integer (UTINYINT) to raw memory.</p>
         </div>
 
 

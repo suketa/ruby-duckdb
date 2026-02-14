@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Vector#logical_type method to get the column type of a vector.">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. DataChunk#set_value method for high-level value writing with automatic">
 
 
 <script type="text/javascript">
@@ -314,6 +314,14 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>add <a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> method for high-level value writing with automatic type conversion.</p>
+</li><li>
+<p>add <a href="DuckDB/MemoryHelper.html"><code>DuckDB::MemoryHelper</code></a> write methods for all numeric types (boolean, tinyint, smallint, utinyint, usmallint, uinteger, ubigint, float).</p>
+</li><li>
+<p>add <a href="DuckDB/Vector.html#method-i-set_validity"><code>DuckDB::Vector#set_validity</code></a> method to mark rows as NULL or valid.</p>
+</li><li>
+<p>add <a href="DuckDB/Vector.html#method-i-assign_string_element_len"><code>DuckDB::Vector#assign_string_element_len</code></a> method for BLOB data with null bytes.</p>
+</li><li>
 <p>add <a href="DuckDB/Vector.html#method-i-logical_type"><code>DuckDB::Vector#logical_type</code></a> method to get the column type of a vector.</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction.html"><code>DuckDB::TableFunction</code></a> class (Phase 1: Core container).</p>

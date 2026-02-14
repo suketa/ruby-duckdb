@@ -80,9 +80,11 @@
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-assign_string_element">assign_string_element</a></li>
+      <li ><a href="#method-i-assign_string_element_len">assign_string_element_len</a></li>
       <li ><a href="#method-i-get_data">get_data</a></li>
       <li ><a href="#method-i-get_validity">get_validity</a></li>
       <li ><a href="#method-i-logical_type">logical_type</a></li>
+      <li ><a href="#method-i-set_validity">set_validity</a></li>
     </ul>
   </div>
 
@@ -185,6 +187,51 @@
           <p>Assigns a string value at the specified index.</p>
 
 <pre class="ruby"><span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-value">0</span>, <span class="ruby-string">&#39;hello&#39;</span>)
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-assign_string_element_len" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-assign_string_element_len" title="Link to this method">
+                  <span class="method-callseq">
+                    assign_string_element_len(index, str) &rarr; self
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="assign_string_element_len-source">
+            <pre>static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
+    rubyDuckDBVector *ctx;
+    idx_t idx;
+    const char *string_val;
+    idx_t str_len;
+
+    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
+
+    idx = NUM2ULL(index);
+    string_val = StringValuePtr(str);
+    str_len = RSTRING_LEN(str);
+
+    duckdb_vector_assign_string_element_len(ctx-&gt;vector, idx, string_val, str_len);
+
+    return self;
+}</pre>
+          </div>
+          <p>Assigns a string/blob value at the specified index with explicit length. Supports strings containing null bytes (for BLOB columns).</p>
+
+<pre class="ruby"><span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element_len</span>(<span class="ruby-value">0</span>, <span class="ruby-string">&quot;\x00\x01\x02\x03&quot;</span>)
 </pre>
         </div>
 
@@ -308,6 +355,59 @@
 <pre class="ruby"><span class="ruby-identifier">vector</span> = <span class="ruby-identifier">output</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
 <span class="ruby-identifier">type</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">logical_type</span>
 <span class="ruby-identifier">type</span>.<span class="ruby-identifier">id</span>  <span class="ruby-comment">#=&gt; DuckDB::Type::BIGINT</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-set_validity" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-set_validity" title="Link to this method">
+                  <span class="method-callseq">
+                    set_validity(index, valid) &rarr; self
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="set_validity-source">
+            <pre>static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid) {
+    rubyDuckDBVector *ctx;
+    idx_t idx;
+    uint64_t *validity;
+
+    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
+
+    idx = NUM2ULL(index);
+
+    if (RTEST(valid)) {
+        // Setting to valid - ensure validity mask exists and set bit
+        duckdb_vector_ensure_validity_writable(ctx-&gt;vector);
+        validity = duckdb_vector_get_validity(ctx-&gt;vector);
+        duckdb_validity_set_row_valid(validity, idx);
+    } else {
+        // Setting to invalid (NULL)
+        duckdb_vector_ensure_validity_writable(ctx-&gt;vector);
+        validity = duckdb_vector_get_validity(ctx-&gt;vector);
+        duckdb_validity_set_row_invalid(validity, idx);
+    }
+
+    return self;
+}</pre>
+          </div>
+          <p>Sets the validity of a value at the specified index.</p>
+
+<pre class="ruby"><span class="ruby-identifier">vector</span>.<span class="ruby-identifier">set_validity</span>(<span class="ruby-value">0</span>, <span class="ruby-keyword">false</span>)  <span class="ruby-comment"># Mark row 0 as NULL</span>
+<span class="ruby-identifier">vector</span>.<span class="ruby-identifier">set_validity</span>(<span class="ruby-value">1</span>, <span class="ruby-keyword">true</span>)   <span class="ruby-comment"># Mark row 1 as valid</span>
 </pre>
         </div>
 

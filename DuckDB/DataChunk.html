@@ -81,6 +81,7 @@
     <ul class="link-list" role="directory">
       <li ><a href="#method-i-column_count">column_count</a></li>
       <li ><a href="#method-i-get_vector">get_vector</a></li>
+      <li ><a href="#method-i-set_value">set_value</a></li>
       <li ><a href="#method-i-size">size</a></li>
       <li ><a href="#method-i-size-3D">size=</a></li>
     </ul>
@@ -128,18 +129,21 @@
 
 <p>Example:</p>
 
-<pre class="ruby"><span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">execute</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
-  <span class="ruby-comment"># Set number of rows to output</span>
-  <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">10</span>
+<pre class="ruby"><span class="ruby-identifier">done</span> = <span class="ruby-keyword">false</span>
+<span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">init</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">_init_info</span><span class="ruby-operator">|</span> <span class="ruby-identifier">done</span> = <span class="ruby-keyword">false</span> }
 
-  <span class="ruby-comment"># Get vector for column 0</span>
-  <span class="ruby-identifier">vector</span> = <span class="ruby-identifier">output</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
-
-  <span class="ruby-comment"># Write data to vector...</span>
+<span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">execute</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">done</span>
+    <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">0</span>  <span class="ruby-comment"># Signal completion</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-comment"># High-level API</span>
+    <span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">0</span>, <span class="ruby-value">42</span>)        <span class="ruby-comment"># column 0, row 0, value 42</span>
+    <span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">1</span>, <span class="ruby-value">0</span>, <span class="ruby-string">&#39;Alice&#39;</span>)   <span class="ruby-comment"># column 1, row 0, value &#39;Alice&#39;</span>
+    <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">1</span>
+    <span class="ruby-identifier">done</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span>
 </pre>
-
-<p>rubocop:disable Lint/EmptyClass</p>
 
   </section>
 
@@ -236,6 +240,106 @@
 
 <pre class="ruby"><span class="ruby-identifier">vector</span> = <span class="ruby-identifier">data_chunk</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-set_value" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-set_value" title="Link to this method">
+                <span class="method-name">set_value</span>
+                <span class="method-args">(col_idx, row_idx, value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="set_value-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 48</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_value</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">vector</span> = <span class="ruby-identifier">get_vector</span>(<span class="ruby-identifier">col_idx</span>)
+  <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">logical_type</span>
+  <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>
+
+  <span class="ruby-comment"># Handle NULL</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">set_validity</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-keyword">false</span>)
+    <span class="ruby-keyword">return</span> <span class="ruby-identifier">value</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">type_id</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:boolean</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_boolean</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:tinyint</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_tinyint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:smallint</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_smallint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:integer</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_integer</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:bigint</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_bigint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:utinyint</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_utinyint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:usmallint</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_usmallint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:uinteger</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_uinteger</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:ubigint</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_ubigint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:float</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_float</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:double</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_double</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:varchar</span>
+    <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:blob</span>
+    <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element_len</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unsupported type for DataChunk#set_value: #{type_id}&quot;</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">value</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Sets a value at the specified column and row index. Type conversion is automatic based on the column’s logical type.</p>
+
+<p>@param col_idx [Integer] <a href="Column.html"><code>Column</code></a> index (0-based) @param row_idx [Integer] Row index (0-based) @param value [Object] Value to set (Integer, Float, String, Time, Date, nil) @return [Object] The value that was set</p>
+
+<p>@example Set integer value</p>
+
+<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">0</span>, <span class="ruby-value">42</span>)
+</pre>
+
+<p>@example Set string value</p>
+
+<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">1</span>, <span class="ruby-value">0</span>, <span class="ruby-string">&#39;hello&#39;</span>)
+</pre>
+
+<p>@example Set NULL value</p>
+
+<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">1</span>, <span class="ruby-keyword">nil</span>)
+</pre>
+
+<p>rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
         </div>
 
 
