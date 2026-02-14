@@ -19,6 +19,7 @@ module DuckDBTest
 
     def test_multiple_scalar_functions_with_gc_compaction
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       # Register multiple scalar functions
       5.times do |i|
@@ -47,6 +48,7 @@ module DuckDBTest
 
     def test_scalar_function_aggressive_gc_stress
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       # Capture multiple local variables
       base = 100
@@ -80,6 +82,7 @@ module DuckDBTest
     # rubocop:disable Minitest/MultipleAssertions
     def test_table_function_with_gc_compaction
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       # Capture local variables
       multiplier = 3
@@ -130,6 +133,7 @@ module DuckDBTest
 
     def test_mixed_functions_gc_stress
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       # Register both scalar and table functions
       @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
