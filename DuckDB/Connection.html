@@ -91,6 +91,7 @@
       <li ><a href="#method-i-query_multi_sql">query_multi_sql</a></li>
       <li ><a href="#method-i-query_progress">query_progress</a></li>
       <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
+      <li ><a href="#method-i-register_table_function">register_table_function</a></li>
     </ul>
   </div>
 
@@ -700,6 +701,44 @@
   <span class="ruby-value">parameter_types:</span> [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>]
 ) { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">b</span> }
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-register_table_function" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_table_function" title="Link to this method">
+                <span class="method-name">register_table_function</span>
+                <span class="method-args">(table_function)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_table_function-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 225</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
+
+  <span class="ruby-identifier">check_threads</span>
+  <span class="ruby-identifier">_register_table_function</span>(<span class="ruby-identifier">table_function</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Registers a table function with the database connection.</p>
+
+<pre>table_function = DuckDB::TableFunction.new
+table_function.name = &#39;my_function&#39;
+table_function.bind { |bind_info| ... }
+table_function.execute { |func_info, output| ... }
+connection.register_table_function(table_function)</pre>
         </div>
 
 

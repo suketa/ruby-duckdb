@@ -200,6 +200,12 @@
     }
 
     ctx-&gt;bind_proc = Qnil;
+    ctx-&gt;init_proc = Qnil;
+    ctx-&gt;execute_proc = Qnil;
+
+    // Set extra_info to the C struct pointer (safe with GC compaction)
+    // Store ctx instead of self - ctx is xmalloc&#39;d and won&#39;t move during GC
+    duckdb_table_function_set_extra_info(ctx-&gt;table_function, ctx, NULL);
 
     return self;
 }</pre>
@@ -347,7 +353,6 @@
 
     ctx-&gt;bind_proc = rb_block_proc();
 
-    duckdb_table_function_set_extra_info(ctx-&gt;table_function, (void *)self, NULL);
     duckdb_table_function_set_bind(ctx-&gt;table_function, table_function_bind_callback);
 
     return self;
@@ -395,7 +400,6 @@
 
     ctx-&gt;execute_proc = rb_block_proc();
     duckdb_table_function_set_function(ctx-&gt;table_function, table_function_execute_callback);
-    duckdb_table_function_set_extra_info(ctx-&gt;table_function, (void *)self, NULL);
 
     return self;
 }</pre>
@@ -447,7 +451,6 @@
 
     ctx-&gt;init_proc = rb_block_proc();
     duckdb_table_function_set_init(ctx-&gt;table_function, table_function_init_callback);
-    duckdb_table_function_set_extra_info(ctx-&gt;table_function, (void *)self, NULL);
 
     return self;
 }</pre>
