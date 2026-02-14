@@ -35,6 +35,7 @@
 #include "./function_info.h"
 #include "./vector.h"
 #include "./data_chunk.h"
+#include "./memory_helper.h"
 #include "./table_function.h"
 
 extern VALUE mDuckDB;

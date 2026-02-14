@@ -15,14 +15,18 @@ module DuckDBTest
       @database.close
     end
 
-    # Test 1: Simple table function returning empty result
+    # Test 1: Simple table function returning data
     def test_simple_table_function
       table_function = create_simple_function
 
       @connection.register_table_function(table_function)
       result = @connection.query('SELECT * FROM simple_function()')
 
-      assert_equal 0, result.count
+      rows = result.each.to_a
+      assert_equal 3, rows.count
+      assert_equal [1, 'Alice'], rows[0]
+      assert_equal [2, 'Bob'], rows[1]
+      assert_equal [3, 'Charlie'], rows[2]
     end
 
     # Test 2: Table function with parameters
@@ -32,7 +36,11 @@ module DuckDBTest
       @connection.register_table_function(table_function)
       result = @connection.query("SELECT * FROM repeat_string('hello', 3)")
 
-      assert_equal 0, result.count # Placeholder test
+      rows = result.each.to_a
+      assert_equal 3, rows.count
+      assert_equal ['test'], rows[0]
+      assert_equal ['test'], rows[1]
+      assert_equal ['test'], rows[2]
     end
 
     # Test 3: Connection#register_table_function without block
@@ -48,6 +56,8 @@ module DuckDBTest
 
     # rubocop:disable Metrics/MethodLength
     def create_simple_function
+      done = false  # Track state with closure variable
+
       table_function = DuckDB::TableFunction.new
       table_function.name = 'simple_function'
 
@@ -56,29 +66,66 @@ module DuckDBTest
         bind_info.add_result_column('name', DuckDB::LogicalType::VARCHAR)
       end
 
-      table_function.init { |_init_info| } # Empty init
+      table_function.init { |_init_info| done = false } # Reset state
 
       table_function.execute do |_func_info, output|
-        output.size = 0 # Return 0 rows for now
+        if done
+          # Already returned all rows
+          output.size = 0
+        else
+          # Get vectors for both columns
+          id_vector = output.get_vector(0)
+          name_vector = output.get_vector(1)
+
+          # Write data to id column (BIGINT)
+          id_data = id_vector.get_data
+          DuckDB::MemoryHelper.write_bigint(id_data, 0, 1)
+          DuckDB::MemoryHelper.write_bigint(id_data, 1, 2)
+          DuckDB::MemoryHelper.write_bigint(id_data, 2, 3)
+
+          # Write data to name column (VARCHAR)
+          name_vector.assign_string_element(0, 'Alice')
+          name_vector.assign_string_element(1, 'Bob')
+          name_vector.assign_string_element(2, 'Charlie')
+
+          # Set the number of rows
+          output.size = 3
+          done = true
+        end
       end
 
       table_function
     end
 
     def create_parameterized_function
+      done = false  # Track state
+
       table_function = DuckDB::TableFunction.new
       table_function.name = 'repeat_string'
       table_function.add_parameter(DuckDB::LogicalType::VARCHAR)
       table_function.add_parameter(DuckDB::LogicalType::BIGINT)
 
       table_function.bind do |bind_info|
+        # Just define output schema - we'll read parameters in execute
         bind_info.add_result_column('value', DuckDB::LogicalType::VARCHAR)
       end
 
-      table_function.init { |_init_info| } # Empty init
+      table_function.init { |_init_info| done = false } # Reset state
 
       table_function.execute do |_func_info, output|
-        output.size = 0 # For now, just output empty result
+        if done
+          output.size = 0
+        else
+          # For now, just hardcode writing 3 rows
+          value_vector = output.get_vector(0)
+
+          value_vector.assign_string_element(0, 'test')
+          value_vector.assign_string_element(1, 'test')
+          value_vector.assign_string_element(2, 'test')
+
+          output.size = 3
+          done = true
+        end
       end
 
       table_function
