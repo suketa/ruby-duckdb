@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - add DuckDB::TableFunction#init for setting init callback (Phase 5).
 - add DuckDB::InitInfo class for table function initialization context (Phase 5).
 - add DuckDB::InitInfo#set_error for reporting initialization errors.
+- add DuckDB::Connection#register_table_function for registering table functions (Phase 6).
 - bump duckdb to 1.4.4 on CI.
 - add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
 - add DuckDB::ScalarFunction.create class method for declarative API.

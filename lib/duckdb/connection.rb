@@ -213,6 +213,22 @@ module DuckDB
       _register_scalar_function(sf)
     end
 
+    #
+    # Registers a table function with the database connection.
+    #
+    #   table_function = DuckDB::TableFunction.new
+    #   table_function.name = 'my_function'
+    #   table_function.bind { |bind_info| ... }
+    #   table_function.execute { |func_info, output| ... }
+    #   connection.register_table_function(table_function)
+    #
+    def register_table_function(table_function)
+      raise ArgumentError, 'table_function must be a TableFunction' unless table_function.is_a?(TableFunction)
+
+      check_threads
+      _register_table_function(table_function)
+    end
+
     private
 
     def check_threads

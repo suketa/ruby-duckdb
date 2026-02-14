@@ -74,6 +74,11 @@ static VALUE duckdb_table_function_initialize(VALUE self) {
     }
 
     ctx->bind_proc = Qnil;
+    ctx->init_proc = Qnil;
+    ctx->execute_proc = Qnil;
+
+    // Set extra_info to self so callbacks can access the Ruby object
+    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
 
     return self;
 }
@@ -180,7 +185,6 @@ static VALUE rbduckdb_table_function_set_bind(VALUE self) {
 
     ctx->bind_proc = rb_block_proc();
 
-    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
     duckdb_table_function_set_bind(ctx->table_function, table_function_bind_callback);
 
     return self;
@@ -248,7 +252,6 @@ static VALUE rbduckdb_table_function_set_init(VALUE self) {
 
     ctx->init_proc = rb_block_proc();
     duckdb_table_function_set_init(ctx->table_function, table_function_init_callback);
-    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
 
     return self;
 }
@@ -308,7 +311,6 @@ static VALUE rbduckdb_table_function_set_execute(VALUE self) {
 
     ctx->execute_proc = rb_block_proc();
     duckdb_table_function_set_function(ctx->table_function, table_function_execute_callback);
-    duckdb_table_function_set_extra_info(ctx->table_function, (void *)self, NULL);
 
     return self;
 }
