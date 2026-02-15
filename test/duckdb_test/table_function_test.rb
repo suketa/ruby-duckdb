@@ -250,6 +250,7 @@ module DuckDBTest
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
     def test_gc_compaction_safety
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       db = DuckDB::Database.open
       conn = db.connect

@@ -494,6 +494,7 @@ module DuckDBTest
 
     def test_gc_compaction_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       @con.execute('SET threads=1')
 
@@ -525,6 +526,7 @@ module DuckDBTest
 
     def test_gc_compaction_with_table_scan # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       @con.execute('SET threads=1')
       @con.execute('CREATE TABLE test_table (value INTEGER)')
