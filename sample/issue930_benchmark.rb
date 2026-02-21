@@ -1,4 +1,4 @@
-# frozen_sring_literal: true
+# frozen_string_literal: true
 
 require 'duckdb'
 require 'csv'
@@ -7,7 +7,7 @@ require 'stringio'
 
 module DuckDB
   class Connection
-    def register_as_table_with_table_function(name, io, csv_options: {})
+    def register_as_table_with_table_function(name, io, csv_options: {}) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       csv = CSV.new(io, **csv_options)
       headers = csv.first.headers
       csv.rewind

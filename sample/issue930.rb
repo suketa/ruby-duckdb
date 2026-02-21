@@ -1,4 +1,4 @@
-# frozen_sring_literal: true
+# frozen_string_literal: true
 
 require 'duckdb'
 require 'csv'
@@ -7,7 +7,7 @@ require 'stringio'
 
 module DuckDB
   class Connection
-    def register_as_table(name, io, csv_options: {})
+    def register_as_table(name, io, csv_options: {}) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       csv = CSV.new(io, **csv_options)
       headers = csv.first.headers
       csv.rewind
@@ -23,6 +23,7 @@ module DuckDB
           end
           1
         else
+          csv.rewind
           0
         end
       end
@@ -34,13 +35,13 @@ end
 db = DuckDB::Database.open
 
 csv_data = "id,name,age\n1,Alice,30\n2,Bob,25\n3,Charlie,35"
-csv_data += 30000.times.map { |i| "\n#{i + 4},Name#{i + 4},#{rand(0..100)}" }.join
+csv_data += 30_000.times.map { |i| "\n#{i + 4},Name#{i + 4},#{rand(0..100)}" }.join
 csv_io = StringIO.new(csv_data)
 
 con = db.connect
 con.query('SET threads=1')
 con.register_as_table('csv_io', csv_io, csv_options: { headers: true })
-result = con.query("SELECT * FROM csv_io()").to_a
+result = con.query('SELECT * FROM csv_io()').to_a
 
 p result
 puts result.first.first == '1'
