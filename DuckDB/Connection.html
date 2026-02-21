@@ -90,6 +90,9 @@
       <li ><a href="#method-i-query">query</a></li>
       <li ><a href="#method-i-query_multi_sql">query_multi_sql</a></li>
       <li ><a href="#method-i-query_progress">query_progress</a></li>
+      <li ><a href="#method-i-register_as_table">register_as_table</a></li>
+      <li ><a href="#method-i-register_as_table_with_create_table">register_as_table_with_create_table</a></li>
+      <li ><a href="#method-i-register_as_table_with_table_function">register_as_table_with_table_function</a></li>
       <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
       <li ><a href="#method-i-register_table_function">register_table_function</a></li>
     </ul>
@@ -614,6 +617,138 @@
 <span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">execute_task</span>
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query_progress</span> <span class="ruby-comment"># =&gt; Float</span>
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-register_as_table" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_as_table" title="Link to this method">
+                <span class="method-name">register_as_table</span>
+                <span class="method-args">(name, io, csv_options: {})</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_as_table-source">
+            <pre><span class="ruby-comment"># File sample/issue930.rb, line 10</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_as_table</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">io</span>, <span class="ruby-value">csv_options:</span> {}) <span class="ruby-comment"># rubocop:disable Metrics/MethodLength, Metrics/AbcSize</span>
+  <span class="ruby-identifier">csv</span> = <span class="ruby-constant">CSV</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">io</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">csv_options</span>)
+  <span class="ruby-identifier">headers</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">headers</span>
+  <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+  <span class="ruby-identifier">columns</span> = <span class="ruby-identifier">headers</span>.<span class="ruby-identifier">each_with_object</span>({}) { <span class="ruby-operator">|</span><span class="ruby-identifier">header</span>, <span class="ruby-identifier">hash</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">header</span>] = <span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span> }
+  <span class="ruby-identifier">tf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(
+    <span class="ruby-value">name:</span>,
+    <span class="ruby-value">columns:</span>
+  ) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">line</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">readline</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">line</span>
+      <span class="ruby-identifier">line</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">cell</span>, <span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-identifier">index</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">cell</span>[<span class="ruby-value">1</span>])
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-value">1</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+      <span class="ruby-value">0</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">register_table_function</span>(<span class="ruby-identifier">tf</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-i-register_as_table_with_create_table" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_as_table_with_create_table" title="Link to this method">
+                <span class="method-name">register_as_table_with_create_table</span>
+                <span class="method-args">(name, io, csv_options: {})</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_as_table_with_create_table-source">
+            <pre><span class="ruby-comment"># File sample/issue930_benchmark.rb, line 33</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_as_table_with_create_table</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">io</span>, <span class="ruby-value">csv_options:</span> {})
+  <span class="ruby-identifier">csv</span> = <span class="ruby-constant">CSV</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">io</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">csv_options</span>)
+  <span class="ruby-identifier">headers</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">headers</span>
+  <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+  <span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;CREATE OR REPLACE TABLE #{name} (#{headers.map { |h| &quot;#{h} VARCHAR&quot; }.join(&#39;, &#39;)})&quot;</span>)
+  <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">values</span> = <span class="ruby-identifier">row</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">cell</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;&#39;#{cell[1]}&#39;&quot;</span> }.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;, &#39;</span>)
+    <span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;INSERT INTO #{name} VALUES (#{values})&quot;</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-i-register_as_table_with_table_function" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_as_table_with_table_function" title="Link to this method">
+                <span class="method-name">register_as_table_with_table_function</span>
+                <span class="method-args">(name, io, csv_options: {})</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_as_table_with_table_function-source">
+            <pre><span class="ruby-comment"># File sample/issue930_benchmark.rb, line 10</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_as_table_with_table_function</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">io</span>, <span class="ruby-value">csv_options:</span> {}) <span class="ruby-comment"># rubocop:disable Metrics/AbcSize, Metrics/MethodLength</span>
+  <span class="ruby-identifier">csv</span> = <span class="ruby-constant">CSV</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">io</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">csv_options</span>)
+  <span class="ruby-identifier">headers</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">headers</span>
+  <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+  <span class="ruby-identifier">columns</span> = <span class="ruby-identifier">headers</span>.<span class="ruby-identifier">each_with_object</span>({}) { <span class="ruby-operator">|</span><span class="ruby-identifier">header</span>, <span class="ruby-identifier">hash</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">header</span>] = <span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span> }
+  <span class="ruby-identifier">tf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(
+    <span class="ruby-value">name:</span>,
+    <span class="ruby-value">columns:</span>
+  ) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">line</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">readline</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">line</span>
+      <span class="ruby-identifier">line</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">cell</span>, <span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-identifier">index</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">cell</span>[<span class="ruby-value">1</span>])
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-value">1</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+      <span class="ruby-value">0</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">register_table_function</span>(<span class="ruby-identifier">tf</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
         </div>
 
 
