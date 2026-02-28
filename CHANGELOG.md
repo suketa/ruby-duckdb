@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB::Connection#expose_as_table` to expose a Ruby object as a queryable DuckDB table function via a registered adapter.
+- add `DuckDB::TableFunction.add_table_adapter` to register a table adapter for a Ruby class.
+- add `DuckDB::TableFunction.table_adapter_for` to look up a registered table adapter by class.
 - add DuckDB::TableFunction.create class method for declarative table function creation
   - Automatically sets output.size from return value
   - Supports positional and named parameters

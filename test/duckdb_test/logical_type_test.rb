@@ -192,7 +192,7 @@ module DuckDBTest
         list_column.logical_type.child_type
       end
 
-      assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
+      assert(child_types.all?(DuckDB::LogicalType))
       assert_equal(%i[integer varchar], child_types.map(&:type))
     end
 
@@ -210,7 +210,7 @@ module DuckDBTest
         array_column.logical_type.child_type
       end
 
-      assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
+      assert(child_types.all?(DuckDB::LogicalType))
       assert_equal(%i[integer varchar], child_types.map(&:type))
     end
 
@@ -258,7 +258,7 @@ module DuckDBTest
       union_logical_type = union_column.logical_type
       member_types = union_logical_type.each_member_type.to_a
 
-      assert(member_types.all? { |member_type| member_type.is_a?(DuckDB::LogicalType) })
+      assert(member_types.all?(DuckDB::LogicalType))
       assert_equal(%i[integer varchar], member_types.map(&:type))
     end
 
@@ -281,7 +281,7 @@ module DuckDBTest
       struct_logical_type = struct_column.logical_type
       child_types = struct_logical_type.each_child_type.to_a
 
-      assert(child_types.all? { |child_type| child_type.is_a?(DuckDB::LogicalType) })
+      assert(child_types.all?(DuckDB::LogicalType))
       assert_equal(%i[varchar integer], child_types.map(&:type))
     end
 

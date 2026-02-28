@@ -7,11 +7,11 @@ require 'stringio'
 
 module DuckDB
   class Connection
-    def register_as_table(name, io, csv_options: {}) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def register_as_table(name, io, csv_options: {}) # rubocop:disable Metrics/MethodLength
       csv = CSV.new(io, **csv_options)
       headers = csv.first.headers
       csv.rewind
-      columns = headers.each_with_object({}) { |header, hash| hash[header] = LogicalType::VARCHAR }
+      columns = headers.to_h { |header| [header, LogicalType::VARCHAR] }
       tf = DuckDB::TableFunction.create(
         name:,
         columns:
