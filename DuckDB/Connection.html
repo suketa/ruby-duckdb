@@ -84,6 +84,7 @@
       <li ><a href="#method-i-async_query">async_query</a></li>
       <li ><a href="#method-i-async_query_stream">async_query_stream</a></li>
       <li ><a href="#method-i-connect">connect</a></li>
+      <li ><a href="#method-i-create_table_function">create_table_function</a></li>
       <li ><a href="#method-i-disconnect">disconnect</a></li>
       <li ><a href="#method-i-interrupt">interrupt</a></li>
       <li ><a href="#method-i-prepared_statement">prepared_statement</a></li>
@@ -352,6 +353,39 @@
         <div class="aliases">
           Also aliased as: <a href="Connection.html#method-i-open">open</a>
         </div>
+
+      </div>
+
+      <div id="method-i-create_table_function" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-create_table_function" title="Link to this method">
+                <span class="method-name">create_table_function</span>
+                <span class="method-args">(object, name)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_table_function-source">
+            <pre><span class="ruby-comment"># File sample/issue922.rb, line 28</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_table_function</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">tf</span> = <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">register_table_function</span>(<span class="ruby-identifier">tf</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
 
       </div>
 

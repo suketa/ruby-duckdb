@@ -77,8 +77,10 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-add_table_adapter">add_table_adapter</a></li>
       <li ><a href="#method-c-create">create</a></li>
       <li ><a href="#method-c-new">new</a></li>
+      <li ><a href="#method-c-table_adapter_for">table_adapter_for</a></li>
     </ul>
   </div>
 
@@ -181,6 +183,35 @@
        <header>
          <h3>Public Class Methods</h3>
        </header>
+
+      <div id="method-c-add_table_adapter" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-add_table_adapter" title="Link to this method">
+                <span class="method-name">add_table_adapter</span>
+                <span class="method-args">(klass, adapter)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="add_table_adapter-source">
+            <pre><span class="ruby-comment"># File sample/issue922.rb, line 17</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_table_adapter</span>(<span class="ruby-identifier">klass</span>, <span class="ruby-identifier">adapter</span>)
+  <span class="ruby-ivar">@table_adapters</span>[<span class="ruby-identifier">klass</span>] = <span class="ruby-identifier">adapter</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
 
       <div id="method-c-create" class="method-detail anchor-link ">
         <div class="method-header">
@@ -322,6 +353,35 @@
 <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&quot;my_function&quot;</span>
 <span class="ruby-comment"># ... configure tf ...</span>
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-table_adapter_for" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-table_adapter_for" title="Link to this method">
+                <span class="method-name">table_adapter_for</span>
+                <span class="method-args">(klass)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="table_adapter_for-source">
+            <pre><span class="ruby-comment"># File sample/issue922.rb, line 21</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">table_adapter_for</span>(<span class="ruby-identifier">klass</span>)
+  <span class="ruby-ivar">@table_adapters</span>[<span class="ruby-identifier">klass</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
         </div>
 
 
