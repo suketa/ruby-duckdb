@@ -79,6 +79,7 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-query_via_parquet">query_via_parquet</a></li>
       <li ><a href="#method-i-register_as_table_with_create_table">register_as_table_with_create_table</a></li>
     </ul>
   </div>
@@ -115,6 +116,37 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-query_via_parquet" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-query_via_parquet" title="Link to this method">
+                <span class="method-name">query_via_parquet</span>
+                <span class="method-args">(con, data_frame, name, parquet_path)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="query_via_parquet-source">
+            <pre><span class="ruby-comment"># File sample/issue922_benchmark.rb, line 120</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">query_via_parquet</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">data_frame</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">parquet_path</span>)
+  <span class="ruby-identifier">data_frame</span>.<span class="ruby-identifier">write_parquet</span>(<span class="ruby-identifier">parquet_path</span>)
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-node">&quot;CREATE OR REPLACE TABLE #{name} AS SELECT * FROM read_parquet(&#39;#{parquet_path}&#39;)&quot;</span>)
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-node">&quot;SELECT * FROM #{name}&quot;</span>).<span class="ruby-identifier">to_a</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
 
       <div id="method-i-register_as_table_with_create_table" class="method-detail anchor-link ">
         <div class="method-header">
