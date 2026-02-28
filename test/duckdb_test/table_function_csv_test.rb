@@ -29,7 +29,7 @@ module DuckDBTest
       def columns(csv)
         headers = csv.first.headers
         csv.rewind
-        headers.each_with_object({}) { |header, hash| hash[header] = DuckDB::LogicalType::VARCHAR }
+        headers.to_h { |header| [header, DuckDB::LogicalType::VARCHAR] }
       end
 
       # read a line from the csv and write to output, return number of rows written
