@@ -229,6 +229,14 @@ module DuckDB
       _register_table_function(table_function)
     end
 
+    def create_table_function(object, name, columns: nil)
+      adapter = TableFunction.table_adapter_for(object.class)
+      raise ArgumentError, "No table adapter registered for #{object.class}" if adapter.nil?
+
+      tf = adapter.call(object, name, columns:)
+      register_table_function(tf)
+    end
+
     private
 
     def check_threads

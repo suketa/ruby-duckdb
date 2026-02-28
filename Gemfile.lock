@@ -10,6 +10,7 @@ GEM
     ast (2.4.3)
     benchmark-ips (2.14.0)
     bigdecimal (4.0.1)
+    csv (3.3.5)
     json (2.18.0)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
@@ -80,6 +81,7 @@ PLATFORMS
 DEPENDENCIES
   benchmark-ips
   bundler (~> 4.0)
+  csv
   duckdb!
   minitest (~> 6.0)
   rake (~> 13.0)
