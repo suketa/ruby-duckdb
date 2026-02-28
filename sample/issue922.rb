@@ -38,7 +38,7 @@ module DuckDB
     module DataFrame
       class TableAdapter
         def call(df, name) # rubocop:disable Metrics/MethodLength, Naming/MethodParameterName
-          columns = df.columns.each_with_object({}) { |header, hash| hash[header] = LogicalType::VARCHAR }
+          columns = df.columns.to_h { |header| [header, LogicalType::VARCHAR] }
           counter = 0
           height = df.height
           width = df.columns.length
