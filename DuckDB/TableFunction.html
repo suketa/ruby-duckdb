@@ -202,12 +202,63 @@
 
         <div class="method-description">
           <div class="method-source-code" id="add_table_adapter-source">
-            <pre><span class="ruby-comment"># File sample/issue922.rb, line 17</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 174</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_table_adapter</span>(<span class="ruby-identifier">klass</span>, <span class="ruby-identifier">adapter</span>)
   <span class="ruby-ivar">@table_adapters</span>[<span class="ruby-identifier">klass</span>] = <span class="ruby-identifier">adapter</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
-          
+          <p>Registers a table adapter for a Ruby class.</p>
+
+<p>The adapter is used by +DuckDB::Connection#expose_as_table+ to convert instances of <code>klass</code> into a <a href="../DuckDB.html"><code>DuckDB</code></a> table function. The adapter must respond to +call(object, name, columns: nil)+ and return a <a href="TableFunction.html"><code>DuckDB::TableFunction</code></a>.</p>
+
+<h2 id="method-c-add_table_adapter-label-Implementing+a+Table+Adapter">Implementing a Table Adapter<span><a href="#method-c-add_table_adapter-label-Implementing+a+Table+Adapter">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>An adapter is any object that responds to +call(object, name, columns: nil)+. The <code>columns:</code> keyword argument allows callers to override the column schema; the adapter should fall back to its own schema detection when it is <code>nil</code>.</p>
+
+<p>The execute block passed to <a href="TableFunction.html#method-c-create"><code>DuckDB::TableFunction.create</code></a> must:</p>
+<ul><li>
+<p>Write one batch of rows into <code>output</code> per call</p>
+</li><li>
+<p>Return the number of rows written as an <code>Integer</code></p>
+</li><li>
+<p>Return <code>0</code> to signal that all data has been exhausted</p>
+</li></ul>
+
+<p>@example Minimal adapter for CSV objects</p>
+
+<pre class="ruby"><span class="ruby-keyword">class</span> <span class="ruby-constant">CSVTableAdapter</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">call</span>(<span class="ruby-identifier">csv</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
+    <span class="ruby-identifier">columns</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">infer_columns</span>(<span class="ruby-identifier">csv</span>)
+
+    <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">columns:</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_func_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">row</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">readline</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">row</span>
+        <span class="ruby-identifier">row</span>.<span class="ruby-identifier">each_with_index</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">cell</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-identifier">i</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">cell</span>[<span class="ruby-value">1</span>]) }
+        <span class="ruby-value">1</span>  <span class="ruby-comment"># wrote one row</span>
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+        <span class="ruby-value">0</span>  <span class="ruby-comment"># signal end of data</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">private</span>
+
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">infer_columns</span>(<span class="ruby-identifier">csv</span>)
+    <span class="ruby-identifier">headers</span> = <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">headers</span>
+    <span class="ruby-identifier">csv</span>.<span class="ruby-identifier">rewind</span>
+    <span class="ruby-identifier">headers</span>.<span class="ruby-identifier">each_with_object</span>({}) { <span class="ruby-operator">|</span><span class="ruby-identifier">h</span>, <span class="ruby-identifier">hsh</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hsh</span>[<span class="ruby-identifier">h</span>] = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span> }
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-comment"># Register and use:</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">add_table_adapter</span>(<span class="ruby-constant">CSV</span>, <span class="ruby-constant">CSVTableAdapter</span>.<span class="ruby-identifier">new</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">expose_as_table</span>(<span class="ruby-identifier">csv</span>, <span class="ruby-string">&#39;csv_table&#39;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM csv_table()&#39;</span>).<span class="ruby-identifier">to_a</span>
+</pre>
+
+<p>@param klass [Class] the Ruby class to register an adapter for (e.g. <code>CSV</code>) @param adapter [#call] the adapter object @return [void]</p>
         </div>
 
 
@@ -231,8 +282,8 @@
 
         <div class="method-description">
           <div class="method-source-code" id="create-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 76</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">columns:</span>, <span class="ruby-value">parameters:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>)
+            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 79</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">columns:</span>, <span class="ruby-value">parameters:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;name is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">name</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;columns are required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">columns</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;block is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
@@ -376,12 +427,19 @@
 
         <div class="method-description">
           <div class="method-source-code" id="table_adapter_for-source">
-            <pre><span class="ruby-comment"># File sample/issue922.rb, line 21</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 186</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">table_adapter_for</span>(<span class="ruby-identifier">klass</span>)
   <span class="ruby-ivar">@table_adapters</span>[<span class="ruby-identifier">klass</span>]
 <span class="ruby-keyword">end</span></pre>
           </div>
-          
+          <p>Returns the table adapter registered for the given class, or <code>nil</code> if none.</p>
+
+<p>@param klass [Class] the Ruby class to look up @return [#call, nil] the registered adapter, or <code>nil</code> if not found</p>
+
+<p>@example</p>
+
+<pre class="ruby"><span class="ruby-identifier">adapter</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-constant">CSV</span>)
+</pre>
         </div>
 
 

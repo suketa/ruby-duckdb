@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. TableFunction.">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Connection#expose_as_table` to expose a Ruby object as a queryable Duc">
 
 
 <script type="text/javascript">
@@ -314,6 +314,12 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>add <a href="DuckDB/Connection.html#method-i-expose_as_table"><code>DuckDB::Connection#expose_as_table</code></a> to expose a Ruby object as a queryable <a href="DuckDB.html"><code>DuckDB</code></a> table function via a registered adapter.</p>
+</li><li>
+<p>add <a href="DuckDB/TableFunction.html#method-c-add_table_adapter"><code>DuckDB::TableFunction.add_table_adapter</code></a> to register a table adapter for a Ruby class.</p>
+</li><li>
+<p>add <a href="DuckDB/TableFunction.html#method-c-table_adapter_for"><code>DuckDB::TableFunction.table_adapter_for</code></a> to look up a registered table adapter by class.</p>
+</li><li>
 <p>add <a href="DuckDB/TableFunction.html#method-c-create"><code>DuckDB::TableFunction.create</code></a> class method for declarative table function creation</p>
 </li><li>
 <p>Automatically sets output.size from return value</p>
