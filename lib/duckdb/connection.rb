@@ -229,7 +229,35 @@ module DuckDB
       _register_table_function(table_function)
     end
 
-    def create_table_function(object, name, columns: nil)
+    # Exposes a Ruby object as a queryable DuckDB table function via a registered adapter.
+    #
+    # Looks up a table adapter registered for the object's class via
+    # +DuckDB::TableFunction.add_table_adapter+, then uses it to create and register
+    # a table function under the given name.
+    #
+    # @param object [Object] the Ruby object to expose as a table (e.g. a CSV instance)
+    # @param name [String] the SQL name of the table function
+    # @param columns [Hash{String => DuckDB::LogicalType}, nil] optional column schema override;
+    #   if omitted, the adapter determines the columns (e.g. from headers or inference)
+    # @raise [ArgumentError] if no adapter is registered for the object's class
+    # @raise [DuckDB::Error] if threads setting is not 1
+    # @return [void]
+    #
+    # @example Expose a CSV as a table
+    #   require 'csv'
+    #   con.execute('SET threads=1')
+    #   DuckDB::TableFunction.add_table_adapter(CSV, CSVTableAdapter.new)
+    #   csv = CSV.new(File.read('data.csv'), headers: true)
+    #   con.expose_as_table(csv, 'csv_table')
+    #   con.query('SELECT * FROM csv_table()').to_a
+    #
+    # @example With explicit column types
+    #   con.expose_as_table(csv, 'csv_table', columns: {
+    #     'id'   => DuckDB::LogicalType::BIGINT,
+    #     'name' => DuckDB::LogicalType::VARCHAR
+    #   })
+    #
+    def expose_as_table(object, name, columns: nil)
       adapter = TableFunction.table_adapter_for(object.class)
       raise ArgumentError, "No table adapter registered for #{object.class}" if adapter.nil?
 

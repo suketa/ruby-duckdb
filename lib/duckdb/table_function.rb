@@ -118,10 +118,71 @@ module DuckDB
       end
       # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
 
+      # Registers a table adapter for a Ruby class.
+      #
+      # The adapter is used by +DuckDB::Connection#expose_as_table+ to convert
+      # instances of +klass+ into a DuckDB table function. The adapter must respond
+      # to +call(object, name, columns: nil)+ and return a +DuckDB::TableFunction+.
+      #
+      # == Implementing a Table Adapter
+      #
+      # An adapter is any object that responds to +call(object, name, columns: nil)+.
+      # The +columns:+ keyword argument allows callers to override the column schema;
+      # the adapter should fall back to its own schema detection when it is +nil+.
+      #
+      # The execute block passed to +DuckDB::TableFunction.create+ must:
+      # - Write one batch of rows into +output+ per call
+      # - Return the number of rows written as an +Integer+
+      # - Return +0+ to signal that all data has been exhausted
+      #
+      # @example Minimal adapter for CSV objects
+      #   class CSVTableAdapter
+      #     def call(csv, name, columns: nil)
+      #       columns ||= infer_columns(csv)
+      #
+      #       DuckDB::TableFunction.create(name:, columns:) do |_func_info, output|
+      #         row = csv.readline
+      #         if row
+      #           row.each_with_index { |cell, i| output.set_value(i, 0, cell[1]) }
+      #           1  # wrote one row
+      #         else
+      #           csv.rewind
+      #           0  # signal end of data
+      #         end
+      #       end
+      #     end
+      #
+      #     private
+      #
+      #     def infer_columns(csv)
+      #       headers = csv.first.headers
+      #       csv.rewind
+      #       headers.each_with_object({}) { |h, hsh| hsh[h] = DuckDB::LogicalType::VARCHAR }
+      #     end
+      #   end
+      #
+      #   # Register and use:
+      #   DuckDB::TableFunction.add_table_adapter(CSV, CSVTableAdapter.new)
+      #   con.execute('SET threads=1')
+      #   con.expose_as_table(csv, 'csv_table')
+      #   con.query('SELECT * FROM csv_table()').to_a
+      #
+      # @param klass [Class] the Ruby class to register an adapter for (e.g. +CSV+)
+      # @param adapter [#call] the adapter object
+      # @return [void]
+      #
       def add_table_adapter(klass, adapter)
         @table_adapters[klass] = adapter
       end
 
+      # Returns the table adapter registered for the given class, or +nil+ if none.
+      #
+      # @param klass [Class] the Ruby class to look up
+      # @return [#call, nil] the registered adapter, or +nil+ if not found
+      #
+      # @example
+      #   adapter = DuckDB::TableFunction.table_adapter_for(CSV)
+      #
       def table_adapter_for(klass)
         @table_adapters[klass]
       end

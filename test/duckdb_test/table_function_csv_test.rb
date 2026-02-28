@@ -65,7 +65,7 @@ module DuckDBTest
       adapter = CSVTableAdapter.new
       DuckDB::TableFunction.add_table_adapter(CSV, adapter)
 
-      @con.create_table_function(csv, 'csv_table')
+      @con.expose_as_table(csv, 'csv_table')
       result = @con.query('SELECT * FROM csv_table()').to_a
 
       assert_equal %w[1 Alice 30], result[0]
