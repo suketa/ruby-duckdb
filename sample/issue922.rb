@@ -35,7 +35,7 @@ end
 
 DuckDB::TableFunction.add_table_adapter(Polars::DataFrame, PolarsDataFrameTableAdapter.new)
 
-df = Polars::DataFrame.new(
+df = polars::dataframe.new(
   {
     a: [1, 2, 3],
     b: %w[one two three]
