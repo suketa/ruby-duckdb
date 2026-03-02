@@ -395,5 +395,42 @@ module DuckDBTest
       assert_equal time1.utc, rows[0].first.utc
       assert_equal time2.utc, rows[1].first.utc
     end
+
+    # Test 13: DataChunk#set_value with TIMESTAMP_TZ
+    def test_data_chunk_set_value_timestamp_tz # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @conn.execute('SET threads=1')
+
+      done = false
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_set_value_timestamp_tz'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('ts', DuckDB::LogicalType::TIMESTAMP_TZ)
+      end
+
+      table_function.init { |_init_info| done = false }
+
+      time1 = Time.new(2024, 3, 15, 10, 30, 45, '+00:00')
+      time2 = Time.new(2000, 1, 1, 0, 0, 0, '+00:00')
+
+      table_function.execute do |_func_info, output|
+        if done
+          output.size = 0
+        else
+          output.set_value(0, 0, time1)
+          output.set_value(0, 1, time2)
+          output.size = 2
+          done = true
+        end
+      end
+
+      @conn.register_table_function(table_function)
+      result = @conn.query('SELECT * FROM test_set_value_timestamp_tz()')
+      rows = result.each.to_a
+
+      assert_equal 2, rows.length
+      assert_equal time1.utc, rows[0].first.utc
+      assert_equal time2.utc, rows[1].first.utc
+    end
   end
 end

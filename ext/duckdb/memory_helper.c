@@ -271,6 +271,38 @@ static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE
     return Qnil;
 }
 
+/*
+ * call-seq:
+ *   DuckDB::MemoryHelper.write_timestamp_tz(ptr, index, value) -> nil
+ *
+ * Writes a DuckDB TIMESTAMP_TZ to raw memory as microseconds since Unix epoch (UTC).
+ * +value+ must be a Ruby Time object.
+ *
+ *   ptr = vector.get_data
+ *   DuckDB::MemoryHelper.write_timestamp_tz(ptr, 0, Time.new(2024, 3, 15, 10, 30, 45, '+00:00'))
+ */
+static VALUE rbduckdb_memory_helper_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    duckdb_time_tz *data;
+    idx_t idx;
+    int64_t secs;
+    int32_t usecs;
+
+    (void)self;
+
+    if (!rb_obj_is_kind_of(value, rb_cTime)) {
+        rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP_TZ");
+    }
+
+    data = (duckdb_time_tz *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+
+    secs = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0));
+    usecs = NUM2INT(rb_funcall(value, rb_intern("usec"), 0));
+    data[idx].bits = (uint64_t)(secs * 1000000LL + usecs);
+
+    return Qnil;
+}
+
 void rbduckdb_init_memory_helper(void) {
     mDuckDBMemoryHelper = rb_define_module_under(mDuckDB, "MemoryHelper");
 
@@ -286,4 +318,5 @@ void rbduckdb_init_memory_helper(void) {
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_ubigint", rbduckdb_memory_helper_write_ubigint, 3);
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_float", rbduckdb_memory_helper_write_float, 3);
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp", rbduckdb_memory_helper_write_timestamp, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp_tz", rbduckdb_memory_helper_write_timestamp_tz, 3);
 }
