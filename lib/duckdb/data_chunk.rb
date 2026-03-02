@@ -97,6 +97,9 @@ module DuckDB
       when :timestamp
         data = vector.get_data
         MemoryHelper.write_timestamp(data, row_idx, value)
+      when :timestamp_tz
+        data = vector.get_data
+        MemoryHelper.write_timestamp_tz(data, row_idx, value)
       else
         raise ArgumentError, "Unsupported type for DataChunk#set_value: #{type_id}"
       end
