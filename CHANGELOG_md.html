@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Connection#expose_as_table` to expose a Ruby object as a queryable Duc">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. DataChunk#set_value`.">
 
 
 <script type="text/javascript">
@@ -314,6 +314,10 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>support TIMESTAMP column writing Ruby Time object in <a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a>.</p>
+</li><li>
+<p>add <a href="DuckDB/MemoryHelper.html#method-c-write_timestamp"><code>DuckDB::MemoryHelper.write_timestamp</code></a> method to write a Ruby Time object as a <a href="DuckDB.html"><code>DuckDB</code></a> timestamp to raw memory.</p>
+</li><li>
 <p>add <a href="DuckDB/Connection.html#method-i-expose_as_table"><code>DuckDB::Connection#expose_as_table</code></a> to expose a Ruby object as a queryable <a href="DuckDB.html"><code>DuckDB</code></a> table function via a registered adapter.</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction.html#method-c-add_table_adapter"><code>DuckDB::TableFunction.add_table_adapter</code></a> to register a table adapter for a Ruby class.</p>

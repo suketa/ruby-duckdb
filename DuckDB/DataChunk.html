@@ -313,6 +313,9 @@
     <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:blob</span>
     <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element_len</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unsupported type for DataChunk#set_value: #{type_id}&quot;</span>
   <span class="ruby-keyword">end</span>

@@ -79,6 +79,7 @@
       <li ><a href="#method-c-write_float">write_float</a></li>
       <li ><a href="#method-c-write_integer">write_integer</a></li>
       <li ><a href="#method-c-write_smallint">write_smallint</a></li>
+      <li ><a href="#method-c-write_timestamp">write_timestamp</a></li>
       <li ><a href="#method-c-write_tinyint">write_tinyint</a></li>
       <li ><a href="#method-c-write_ubigint">write_ubigint</a></li>
       <li ><a href="#method-c-write_uinteger">write_uinteger</a></li>
@@ -385,6 +386,62 @@
 }</pre>
           </div>
           <p>Writes a 16-bit signed integer (SMALLINT) to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_timestamp" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-write_timestamp" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::MemoryHelper.write_timestamp(ptr, index, value) &rarr; nil
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_timestamp-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    duckdb_timestamp *data;
+    idx_t idx;
+
+    (void)self;
+
+    if (!rb_obj_is_kind_of(value, rb_cTime)) {
+        rb_raise(rb_eTypeError, &quot;Expected Time object for TIMESTAMP&quot;);
+    }
+
+    data = (duckdb_timestamp *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+
+    VALUE local_time = rb_funcall(value, rb_intern(&quot;getlocal&quot;), 0);
+    data[idx] = rbduckdb_to_duckdb_timestamp_from_value(
+        rb_funcall(local_time, rb_intern(&quot;year&quot;), 0),
+        rb_funcall(local_time, rb_intern(&quot;month&quot;), 0),
+        rb_funcall(local_time, rb_intern(&quot;day&quot;), 0),
+        rb_funcall(local_time, rb_intern(&quot;hour&quot;), 0),
+        rb_funcall(local_time, rb_intern(&quot;min&quot;), 0),
+        rb_funcall(local_time, rb_intern(&quot;sec&quot;), 0),
+        rb_funcall(local_time, rb_intern(&quot;usec&quot;), 0)
+    );
+
+    return Qnil;
+}</pre>
+          </div>
+          <p>Writes a <a href="../DuckDB.html"><code>DuckDB</code></a> timestamp to raw memory. <code>value</code> must be a Ruby Time object.</p>
+
+<pre class="ruby"><span class="ruby-identifier">ptr</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp</span>(<span class="ruby-identifier">ptr</span>, <span class="ruby-value">0</span>, <span class="ruby-constant">Time</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">2024</span>, <span class="ruby-value">3</span>, <span class="ruby-value">15</span>, <span class="ruby-value">10</span>, <span class="ruby-value">30</span>, <span class="ruby-value">45</span>))
+</pre>
         </div>
 
 
