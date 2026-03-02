@@ -234,6 +234,43 @@ static VALUE rbduckdb_memory_helper_write_float(VALUE self, VALUE ptr, VALUE ind
     return Qnil;
 }
 
+/*
+ * call-seq:
+ *   DuckDB::MemoryHelper.write_timestamp(ptr, index, value) -> nil
+ *
+ * Writes a DuckDB timestamp to raw memory.
+ * +value+ must be a Ruby Time object.
+ *
+ *   ptr = vector.get_data
+ *   DuckDB::MemoryHelper.write_timestamp(ptr, 0, Time.new(2024, 3, 15, 10, 30, 45))
+ */
+static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    duckdb_timestamp *data;
+    idx_t idx;
+
+    (void)self;
+
+    if (!rb_obj_is_kind_of(value, rb_cTime)) {
+        rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP");
+    }
+
+    data = (duckdb_timestamp *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+
+    VALUE local_time = rb_funcall(value, rb_intern("getlocal"), 0);
+    data[idx] = rbduckdb_to_duckdb_timestamp_from_value(
+        rb_funcall(local_time, rb_intern("year"), 0),
+        rb_funcall(local_time, rb_intern("month"), 0),
+        rb_funcall(local_time, rb_intern("day"), 0),
+        rb_funcall(local_time, rb_intern("hour"), 0),
+        rb_funcall(local_time, rb_intern("min"), 0),
+        rb_funcall(local_time, rb_intern("sec"), 0),
+        rb_funcall(local_time, rb_intern("usec"), 0)
+    );
+
+    return Qnil;
+}
+
 void rbduckdb_init_memory_helper(void) {
     mDuckDBMemoryHelper = rb_define_module_under(mDuckDB, "MemoryHelper");
 
@@ -248,4 +285,5 @@ void rbduckdb_init_memory_helper(void) {
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_uinteger", rbduckdb_memory_helper_write_uinteger, 3);
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_ubigint", rbduckdb_memory_helper_write_ubigint, 3);
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_float", rbduckdb_memory_helper_write_float, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp", rbduckdb_memory_helper_write_timestamp, 3);
 }
