@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB.cast` method.
 - support TIMESTAMP_TZ column writing Ruby Time object in `DuckDB::DataChunk#set_value`.
 - add `DuckDB::MemoryHelper.write_timestamp_tz` method to write a Ruby Time object as a DuckDB TIMESTAMP_TZ (microseconds since Unix epoch UTC) to raw memory.
 - support TIMESTAMP column writing Ruby Time object in `DuckDB::DataChunk#set_value`.
