@@ -107,25 +107,23 @@ module DuckDB
       when Date, Time
         value
       else
-        begin
-          Date.parse(value)
-        rescue StandardError => e
-          raise(ArgumentError, "Cannot parse `#{value.inspect}` to Date object. #{e.message}")
-        end
+        Date.parse(value)
       end
+    rescue StandardError => e
+      raise(ArgumentError, "Cannot parse `#{value.inspect}` to Date object. #{e.message}")
     end
 
     def _parse_time(value)
       case value
       when Time
         value
+      when DateTime
+        value.to_time
       else
-        begin
-          Time.parse(value)
-        rescue StandardError => e
-          raise(ArgumentError, "Cannot parse `#{value.inspect}` to Time object. #{e.message}")
-        end
+        Time.parse(value)
       end
+    rescue StandardError => e
+      raise(ArgumentError, "Cannot parse `#{value.inspect}` to Time object. #{e.message}")
     end
 
     def _parse_deciaml(value)
