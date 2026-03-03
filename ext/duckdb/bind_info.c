@@ -9,7 +9,7 @@ static VALUE convert_duckdb_value_to_ruby(duckdb_value param_value);
 static VALUE rbduckdb_bind_info_parameter_count(VALUE self);
 static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index);
 static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name);
-static VALUE rbduckdb_bind_info_add_result_column(VALUE self, VALUE column_name, VALUE logical_type);
+static VALUE rbduckdb_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type);
 static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, VALUE is_exact);
 static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error);
 
@@ -168,7 +168,7 @@ static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name) {
  *   bind_info.add_result_column('id', DuckDB::LogicalType::BIGINT)
  *   bind_info.add_result_column('name', DuckDB::LogicalType::VARCHAR)
  */
-static VALUE rbduckdb_bind_info_add_result_column(VALUE self, VALUE column_name, VALUE logical_type) {
+static VALUE rbduckdb_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type) {
     rubyDuckDBBindInfo *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *col_name;
@@ -236,7 +236,8 @@ void rbduckdb_init_duckdb_bind_info(void) {
     rb_define_method(cDuckDBBindInfo, "parameter_count", rbduckdb_bind_info_parameter_count, 0);
     rb_define_method(cDuckDBBindInfo, "get_parameter", rbduckdb_bind_info_get_parameter, 1);
     rb_define_method(cDuckDBBindInfo, "get_named_parameter", rbduckdb_bind_info_get_named_parameter, 1);
-    rb_define_method(cDuckDBBindInfo, "add_result_column", rbduckdb_bind_info_add_result_column, 2);
     rb_define_method(cDuckDBBindInfo, "set_cardinality", rbduckdb_bind_info_set_cardinality, 2);
     rb_define_method(cDuckDBBindInfo, "set_error", rbduckdb_bind_info_set_error, 1);
+
+    rb_define_private_method(cDuckDBBindInfo, "_add_result_column", rbduckdb_bind_info__add_result_column, 2);
 }
