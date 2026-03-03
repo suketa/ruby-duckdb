@@ -154,6 +154,21 @@ module DuckDBTest
       end
     end
 
+    def test_s_resolve
+      SINGLETON_METHOD_NAMES.each do |method_name|
+        logical_type = DuckDB::LogicalType.resolve(method_name)
+
+        assert_instance_of(DuckDB::LogicalType, logical_type)
+        assert_equal(method_name, logical_type.type)
+      end
+    end
+
+    def test_s_resolve_with_invalid_symbol
+      assert_raises(ArgumentError) do
+        DuckDB::LogicalType.resolve(:invalid_type)
+      end
+    end
+
     def test_type
       logical_types = @columns.map(&:logical_type)
 

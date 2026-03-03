@@ -54,6 +54,14 @@ module DuckDB
       const_set(method_name.upcase, send(method_name))
     end
 
+    class << self
+      def resolve(symbol)
+        DuckDB::LogicalType.const_get(symbol.upcase)
+      rescue NameError
+        raise ArgumentError, "Unknown logical type symbol: #{symbol}"
+      end
+    end
+
     # returns logical type's type symbol
     # `:unknown` means that the logical type's type is unknown/unsupported by ruby-duckdb.
     # `:invalid` means that the logical type's type is invalid in duckdb.
