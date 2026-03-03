@@ -14,7 +14,6 @@ module DuckDBTest
       @db.close
     end
 
-    # Test 1: Bind method accepts block and returns self
     def test_set_bind_callback
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_bind'
@@ -27,7 +26,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 2: Add result column method works
     def test_bind_add_result_column
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_columns'
@@ -40,7 +38,19 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 3: Parameter count method exists
+    def test_bind_add_result_column_with_symbol
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_bind'
+      table_function.add_parameter(DuckDB::LogicalType::BIGINT)
+
+      result = table_function.bind do |bind_info|
+        bind_info.add_result_column(:id, :bigint)
+        bind_info.add_result_column(:name, :varchar)
+      end
+
+      assert_equal table_function, result
+    end
+
     def test_bind_parameter_count
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_params'
@@ -55,7 +65,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 4: Get parameter method accepts index
     def test_bind_get_parameter
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_get_param'
@@ -69,7 +78,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 5: Get named parameter method accepts name
     def test_bind_get_named_parameter
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_named_param'
@@ -84,7 +92,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 6: Set cardinality method works
     def test_bind_set_cardinality
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_cardinality'
@@ -97,7 +104,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 7: Set error method works
     def test_bind_set_error
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_error'
@@ -109,7 +115,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 8: Bind without block raises ArgumentError
     def test_bind_without_block_raises_error
       table_function = DuckDB::TableFunction.new
 
@@ -118,7 +123,6 @@ module DuckDBTest
       end
     end
 
-    # Test 9: Exception in bind block is caught safely
     def test_bind_exception_handling
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_exception'

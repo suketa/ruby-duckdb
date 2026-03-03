@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- DuckDB::BindInfo#add_result_column accepts symbols as column, column type argument.
 - add `DuckDB::LogicalType.resolve`.
 - add `DuckDB.cast`.
 - support TIMESTAMP_TZ column writing Ruby Time object in `DuckDB::DataChunk#set_value`.

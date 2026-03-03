@@ -56,6 +56,8 @@ module DuckDB
 
     class << self
       def resolve(symbol)
+        return symbol if symbol.is_a?(DuckDB::LogicalType)
+
         DuckDB::LogicalType.const_get(symbol.upcase)
       rescue NameError
         raise ArgumentError, "Unknown logical type symbol: #{symbol}"

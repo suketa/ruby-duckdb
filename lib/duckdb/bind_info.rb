@@ -24,9 +24,9 @@ module DuckDB
   #     bind_info.set_cardinality(limit, true)
   #   end
   #
-  # rubocop:disable Lint/EmptyClass
   class BindInfo
-    # All methods are defined in C extension (ext/duckdb/bind_info.c)
+    def add_result_column(name, type)
+      _add_result_column(name.to_s, DuckDB::LogicalType.resolve(type))
+    end
   end
-  # rubocop:enable Lint/EmptyClass
 end
