@@ -10,6 +10,10 @@ module DuckDBTest
       assert_equal(2_147_483_647, DuckDB.cast(2_147_483_647, :integer))
     end
 
+    def test_cast_logical_type_integer
+      assert_equal(2_147_483_647, DuckDB.cast('2147483647', DuckDB::LogicalType::INTEGER))
+    end
+
     def test_cast_integer_invalid
       assert_raises(ArgumentError) { DuckDB.cast('abc', :integer) }
     end
