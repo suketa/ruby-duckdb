@@ -148,6 +148,7 @@
           <div class="method-source-code" id="cast-source">
             <pre><span class="ruby-comment"># File lib/duckdb/casting.rb, line 5</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">cast</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">type</span>) <span class="ruby-comment"># rubocop:disable Metrics/MethodLength</span>
+  <span class="ruby-identifier">type</span> = <span class="ruby-identifier">type</span>.<span class="ruby-identifier">type</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">type</span>
   <span class="ruby-keyword">when</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">:bigint</span>, <span class="ruby-value">:hugeint</span>
     <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">value</span>)
