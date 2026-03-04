@@ -352,6 +352,33 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.new(24) }
     end
 
+    def test_s_create_list_with_logical_type
+      list_type = DuckDB::LogicalType.create_list(DuckDB::LogicalType::INTEGER)
+
+      assert_equal(:list, list_type.type)
+      assert_equal(:integer, list_type.child_type.type)
+    end
+
+    def test_s_create_list_with_symbol
+      list_type = DuckDB::LogicalType.create_list(:varchar)
+
+      assert_equal(:list, list_type.type)
+      assert_equal(:varchar, list_type.child_type.type)
+    end
+
+    def test_s_create_list_with_nested_list
+      child_list_type = DuckDB::LogicalType.create_list(:integer)
+      parent_list_type = DuckDB::LogicalType.create_list(child_list_type)
+
+      assert_equal(:list, parent_list_type.type)
+      assert_equal(:list, parent_list_type.child_type.type)
+      assert_equal(:integer, parent_list_type.child_type.child_type.type)
+    end
+
+    def test_s_create_list_with_invalid_arg
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_list(:nonexistent) }
+    end
+
     def test_new_with_primitive_like_complex_type
       # DUCKDB_TYPE_BIT = 29
       bit_type = DuckDB::LogicalType.new(29)

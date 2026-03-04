@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB::LogicalType.create_list` to create a list logical type.
 - DuckDB::BindInfo#add_result_column accepts symbols as column, column type argument.
 - add `DuckDB::LogicalType.resolve`.
 - add `DuckDB.cast`.

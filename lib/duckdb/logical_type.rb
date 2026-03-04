@@ -62,6 +62,22 @@ module DuckDB
       rescue NameError
         raise ArgumentError, "Unknown logical type symbol: #{symbol}"
       end
+
+      # Creates a list logical type with the given child type.
+      #
+      # The +type+ argument can be a symbol or a DuckDB::LogicalType instance.
+      #
+      #   require 'duckdb'
+      #
+      #   list_type = DuckDB::LogicalType.create_list(:integer)
+      #   list_type.type #=> :list
+      #   list_type.child_type.type #=> :integer
+      #
+      #   nested_list = DuckDB::LogicalType.create_list(list_type)
+      #   nested_list.child_type.type #=> :list
+      def create_list(type)
+        _create_list_type(LogicalType.resolve(type))
+      end
     end
 
     # returns logical type's type symbol

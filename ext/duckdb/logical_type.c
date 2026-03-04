@@ -23,6 +23,7 @@ static VALUE duckdb_logical_type_dictionary_size(VALUE self);
 static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx);
 static VALUE duckdb_logical_type__get_alias(VALUE self);
 static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
+static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child);
 static VALUE initialize(VALUE self, VALUE type_id_arg);
 
 static const rb_data_type_t logical_type_data_type = {
@@ -434,6 +435,23 @@ static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
     return alias;
 }
 
+/*
+ *  call-seq:
+ *    DuckDB::LogicalType._create_list_type(logical_type) -> DuckDB::LogicalType
+ *
+ *  Return a list logical type from the given child logical type.
+ */
+static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child) {
+    rubyDuckDBLogicalType *child_ctx = get_struct_logical_type(child);
+    duckdb_logical_type new_type = duckdb_create_list_type(child_ctx->logical_type);
+
+    if (!new_type) {
+        rb_raise(eDuckDBError, "Failed to create list type");
+    }
+
+    return rbduckdb_create_logical_type(new_type);
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -471,6 +489,9 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "dictionary_value_at", duckdb_logical_type_dictionary_value_at, 1);
     rb_define_method(cDuckDBLogicalType, "get_alias", duckdb_logical_type__get_alias, 0);
     rb_define_method(cDuckDBLogicalType, "set_alias", duckdb_logical_type__set_alias, 1);
+
+    rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_list_type",
+                             duckdb_logical_type_s_create_list_type, 1);
 
     rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
 }
