@@ -101,7 +101,7 @@ module DuckDB
         data = vector.get_data
         MemoryHelper.write_timestamp_tz(data, row_idx, value)
       else
-        raise ArgumentError, "Unsupported type for DataChunk#set_value: #{type_id}"
+        raise ArgumentError, "Unsupported type for DataChunk#set_value: #{type_id} for value `#{value.inspect}`"
       end
 
       value

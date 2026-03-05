@@ -3,6 +3,7 @@
 module DuckDB
   module Casting
     def cast(value, type) # rubocop:disable Metrics/MethodLength
+      type = type.type if type.is_a?(DuckDB::LogicalType)
       case type
       when :integer, :bigint, :hugeint
         Integer(value)
