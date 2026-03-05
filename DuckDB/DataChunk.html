@@ -319,6 +319,9 @@
   <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp_tz</span>
     <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
     <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp_tz</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:date</span>
+    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_date</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unsupported type for DataChunk#set_value: #{type_id} for value `#{value.inspect}`&quot;</span>
   <span class="ruby-keyword">end</span>

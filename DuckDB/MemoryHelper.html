@@ -75,6 +75,7 @@
     <ul class="link-list" role="directory">
       <li ><a href="#method-c-write_bigint">write_bigint</a></li>
       <li ><a href="#method-c-write_boolean">write_boolean</a></li>
+      <li ><a href="#method-c-write_date">write_date</a></li>
       <li ><a href="#method-c-write_double">write_double</a></li>
       <li ><a href="#method-c-write_float">write_float</a></li>
       <li ><a href="#method-c-write_integer">write_integer</a></li>
@@ -221,6 +222,46 @@
 }</pre>
           </div>
           <p>Writes a boolean to raw memory.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-write_date" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-write_date" title="Link to this method">
+                <span class="method-name">write_date</span>
+                <span class="method-args">(p1, p2, p3)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="write_date-source">
+            <pre>static VALUE rbduckdb_memory_helper_write_date(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    duckdb_date *data;
+    idx_t idx;
+
+    data = (duckdb_date *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+
+    data[idx] = rbduckdb_to_duckdb_date_from_value(
+        rb_funcall(value, rb_intern(&quot;year&quot;), 0),
+        rb_funcall(value, rb_intern(&quot;month&quot;), 0),
+        rb_funcall(value, rb_intern(&quot;day&quot;), 0)
+    );
+
+    return Qnil;
+}</pre>
+          </div>
+          
         </div>
 
 

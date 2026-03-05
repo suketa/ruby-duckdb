@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. LogicalType.">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. DataChunk#set_value` accepts date.">
 
 
 <script type="text/javascript">
@@ -314,9 +314,11 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p><a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> accepts date.</p>
+</li><li>
 <p>add <a href="DuckDB/LogicalType.html#method-c-create_list"><code>DuckDB::LogicalType.create_list</code></a> to create a list logical type.</p>
 </li><li>
-<p>DuckDB::BindInfo#add_result_column accepts symbols as column, column type argument.</p>
+<p><code>DuckDB::BindInfo#add_result_column</code> accepts symbols as column, column type argument.</p>
 </li><li>
 <p>add <a href="DuckDB/LogicalType.html#method-c-resolve"><code>DuckDB::LogicalType.resolve</code></a>.</p>
 </li><li>
@@ -358,7 +360,7 @@
 </li><li>
 <p>add <a href="DuckDB/TableFunction.html"><code>DuckDB::TableFunction</code></a> class (Phase 1: Core container).</p>
 </li><li>
-<p>add DuckDB::TableFunction#initialize for standard Ruby allocation pattern.</p>
+<p>add <code>DuckDB::TableFunction#initialize</code> for standard Ruby allocation pattern.</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction.html#method-i-name-3D"><code>DuckDB::TableFunction#name=</code></a> for setting function name.</p>
 </li><li>
@@ -368,19 +370,19 @@
 </li><li>
 <p>add <a href="DuckDB/TableFunction.html#method-i-bind"><code>DuckDB::TableFunction#bind</code></a> for setting bind callback (Phase 2).</p>
 </li><li>
-<p>add DuckDB::BindInfo class for table function bind phase (Phase 2).</p>
+<p>add <code>DuckDB::BindInfo</code> class for table function bind phase (Phase 2).</p>
 </li><li>
-<p>add DuckDB::BindInfo#parameter_count for getting parameter count.</p>
+<p>add <code>DuckDB::BindInfo#parameter_count</code> for getting parameter count.</p>
 </li><li>
-<p>add DuckDB::BindInfo#get_parameter for accessing positional parameters.</p>
+<p>add <code>DuckDB::BindInfo#get_parameter</code> for accessing positional parameters.</p>
 </li><li>
-<p>add DuckDB::BindInfo#get_named_parameter for accessing named parameters.</p>
+<p>add <code>DuckDB::BindInfo#get_named_parameter</code> for accessing named parameters.</p>
 </li><li>
-<p>add DuckDB::BindInfo#add_result_column for defining output schema.</p>
+<p>add <code>DuckDB::BindInfo#add_result_column</code> for defining output schema.</p>
 </li><li>
-<p>add DuckDB::BindInfo#set_cardinality for performance hints.</p>
+<p>add <code>DuckDB::BindInfo#set_cardinality</code> for performance hints.</p>
 </li><li>
-<p>add DuckDB::BindInfo#set_error for reporting bind errors.</p>
+<p>add <code>DuckDB::BindInfo#set_error</code> for reporting bind errors.</p>
 </li><li>
 <p>add <a href="DuckDB/DataChunk.html"><code>DuckDB::DataChunk</code></a> class for table function output data (Phase 3).</p>
 </li><li>
@@ -444,7 +446,7 @@
 </li><li>
 <p>add <a href="DuckDB/ScalarFunction.html#method-i-add_parameter"><code>DuckDB::ScalarFunction#add_parameter</code></a>.</p>
 </li><li>
-<p>add DuckDB::ScalarFunction#set_return_type.</p>
+<p>add <code>DuckDB::ScalarFunction#set_return_type</code>.</p>
 </li><li>
 <p>bump bundler 4.0 in duckdb.gemspec.</p>
 </li></ul>
