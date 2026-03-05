@@ -303,6 +303,22 @@ static VALUE rbduckdb_memory_helper_write_timestamp_tz(VALUE self, VALUE ptr, VA
     return Qnil;
 }
 
+static VALUE rbduckdb_memory_helper_write_date(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+    duckdb_date *data;
+    idx_t idx;
+
+    data = (duckdb_date *)NUM2ULL(ptr);
+    idx = (idx_t)NUM2ULL(index);
+
+    data[idx] = rbduckdb_to_duckdb_date_from_value(
+        rb_funcall(value, rb_intern("year"), 0),
+        rb_funcall(value, rb_intern("month"), 0),
+        rb_funcall(value, rb_intern("day"), 0)
+    );
+
+    return Qnil;
+}
+
 void rbduckdb_init_memory_helper(void) {
     mDuckDBMemoryHelper = rb_define_module_under(mDuckDB, "MemoryHelper");
 
@@ -319,4 +335,5 @@ void rbduckdb_init_memory_helper(void) {
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_float", rbduckdb_memory_helper_write_float, 3);
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp", rbduckdb_memory_helper_write_timestamp, 3);
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp_tz", rbduckdb_memory_helper_write_timestamp_tz, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_date", rbduckdb_memory_helper_write_date, 3);
 }
