@@ -3,8 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- `DuckDB::DataChunk#set_value` accepts date.
 - add `DuckDB::LogicalType.create_list` to create a list logical type.
-- DuckDB::BindInfo#add_result_column accepts symbols as column, column type argument.
+- `DuckDB::BindInfo#add_result_column` accepts symbols as column, column type argument.
 - add `DuckDB::LogicalType.resolve`.
 - add `DuckDB.cast`.
 - support TIMESTAMP_TZ column writing Ruby Time object in `DuckDB::DataChunk#set_value`.
@@ -14,61 +15,61 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Connection#expose_as_table` to expose a Ruby object as a queryable DuckDB table function via a registered adapter.
 - add `DuckDB::TableFunction.add_table_adapter` to register a table adapter for a Ruby class.
 - add `DuckDB::TableFunction.table_adapter_for` to look up a registered table adapter by class.
-- add DuckDB::TableFunction.create class method for declarative table function creation
+- add `DuckDB::TableFunction.create` class method for declarative table function creation
   - Automatically sets output.size from return value
   - Supports positional and named parameters
   - Execute block returns row count (0 when done)
   - Simplifies table function development with cleaner API
-- add DuckDB::DataChunk#set_value method for high-level value writing with automatic type conversion.
-- add DuckDB::MemoryHelper write methods for all numeric types (boolean, tinyint, smallint, utinyint, usmallint, uinteger, ubigint, float).
-- add DuckDB::Vector#set_validity method to mark rows as NULL or valid.
-- add DuckDB::Vector#assign_string_element_len method for BLOB data with null bytes.
-- add DuckDB::Vector#logical_type method to get the column type of a vector.
-- add DuckDB::TableFunction class (Phase 1: Core container).
-- add DuckDB::TableFunction#initialize for standard Ruby allocation pattern.
-- add DuckDB::TableFunction#name= for setting function name.
-- add DuckDB::TableFunction#add_parameter for positional parameters.
-- add DuckDB::TableFunction#add_named_parameter for named parameters.
-- add DuckDB::TableFunction#bind for setting bind callback (Phase 2).
-- add DuckDB::BindInfo class for table function bind phase (Phase 2).
-- add DuckDB::BindInfo#parameter_count for getting parameter count.
-- add DuckDB::BindInfo#get_parameter for accessing positional parameters.
-- add DuckDB::BindInfo#get_named_parameter for accessing named parameters.
-- add DuckDB::BindInfo#add_result_column for defining output schema.
-- add DuckDB::BindInfo#set_cardinality for performance hints.
-- add DuckDB::BindInfo#set_error for reporting bind errors.
-- add DuckDB::DataChunk class for table function output data (Phase 3).
-- add DuckDB::DataChunk#column_count for getting number of columns.
-- add DuckDB::DataChunk#size for getting number of rows.
-- add DuckDB::DataChunk#size= for setting number of rows.
-- add DuckDB::DataChunk#get_vector for accessing column vectors.
-- add DuckDB::Vector class for column data access (Phase 3).
-- add DuckDB::Vector#get_data for raw data pointer access.
-- add DuckDB::Vector#get_validity for validity mask access.
-- add DuckDB::Vector#assign_string_element for writing string values.
-- add DuckDB::MemoryHelper module for writing primitive values to vectors.
-- add DuckDB::MemoryHelper.write_bigint for writing BIGINT values.
-- add DuckDB::MemoryHelper.write_integer for writing INTEGER values.
-- add DuckDB::MemoryHelper.write_double for writing DOUBLE values.
-- add DuckDB::TableFunction#execute for setting execute callback (Phase 4).
-- add DuckDB::FunctionInfo class for table function execution context (Phase 4).
-- add DuckDB::FunctionInfo#set_error for reporting execution errors.
-- add DuckDB::TableFunction#init for setting init callback (Phase 5).
-- add DuckDB::InitInfo class for table function initialization context (Phase 5).
-- add DuckDB::InitInfo#set_error for reporting initialization errors.
-- add DuckDB::Connection#register_table_function for registering table functions (Phase 6).
+- add `DuckDB::DataChunk#set_value` method for high-level value writing with automatic type conversion.
+- add `DuckDB::MemoryHelper` write methods for all numeric types (boolean, tinyint, smallint, utinyint, usmallint, uinteger, ubigint, float).
+- add `DuckDB::Vector#set_validity` method to mark rows as NULL or valid.
+- add `DuckDB::Vector#assign_string_element_len` method for BLOB data with null bytes.
+- add `DuckDB::Vector#logical_type` method to get the column type of a vector.
+- add `DuckDB::TableFunction` class (Phase 1: Core container).
+- add `DuckDB::TableFunction#initialize` for standard Ruby allocation pattern.
+- add `DuckDB::TableFunction#name=` for setting function name.
+- add `DuckDB::TableFunction#add_parameter` for positional parameters.
+- add `DuckDB::TableFunction#add_named_parameter` for named parameters.
+- add `DuckDB::TableFunction#bind` for setting bind callback (Phase 2).
+- add `DuckDB::BindInfo` class for table function bind phase (Phase 2).
+- add `DuckDB::BindInfo#parameter_count` for getting parameter count.
+- add `DuckDB::BindInfo#get_parameter` for accessing positional parameters.
+- add `DuckDB::BindInfo#get_named_parameter` for accessing named parameters.
+- add `DuckDB::BindInfo#add_result_column` for defining output schema.
+- add `DuckDB::BindInfo#set_cardinality` for performance hints.
+- add `DuckDB::BindInfo#set_error` for reporting bind errors.
+- add `DuckDB::DataChunk` class for table function output data (Phase 3).
+- add `DuckDB::DataChunk#column_count` for getting number of columns.
+- add `DuckDB::DataChunk#size` for getting number of rows.
+- add `DuckDB::DataChunk#size=` for setting number of rows.
+- add `DuckDB::DataChunk#get_vector` for accessing column vectors.
+- add `DuckDB::Vector` class for column data access (Phase 3).
+- add `DuckDB::Vector#get_data` for raw data pointer access.
+- add `DuckDB::Vector#get_validity` for validity mask access.
+- add `DuckDB::Vector#assign_string_element` for writing string values.
+- add `DuckDB::MemoryHelper` module for writing primitive values to vectors.
+- add `DuckDB::MemoryHelper.write_bigint` for writing BIGINT values.
+- add `DuckDB::MemoryHelper.write_integer` for writing INTEGER values.
+- add `DuckDB::MemoryHelper.write_double` for writing DOUBLE values.
+- add `DuckDB::TableFunction#execute` for setting execute callback (Phase 4).
+- add `DuckDB::FunctionInfo` class for table function execution context (Phase 4).
+- add `DuckDB::FunctionInfo#set_error` for reporting execution errors.
+- add `DuckDB::TableFunction#init` for setting init callback (Phase 5).
+- add `DuckDB::InitInfo` class for table function initialization context (Phase 5).
+- add `DuckDB::InitInfo#set_error` for reporting initialization errors.
+- add `DuckDB::Connection#register_table_function` for registering table functions (Phase 6).
 - bump duckdb to 1.4.4 on CI.
-- add inline style to DuckDB::Connection#register_scalar_function (accepts keyword arguments + block).
-- add DuckDB::ScalarFunction.create class method for declarative API.
-- add FLOAT support to DuckDB::ScalarFunction return type.
-- add BOOLEAN support to DuckDB::ScalarFunction return type.
-- add DOUBLE support to DuckDB::ScalarFunction return type.
-- add BIGINT support to DuckDB::ScalarFunction return type.
-- refactor DuckDB::ScalarFunction to use vector_set_value_at helper.
-- fix DuckDB::ScalarFunction NULL input handling.
-- fix DuckDB::ScalarFunction INTEGER output type (int32 vs int64).
-- add DuckDB::ScalarFunction#add_parameter.
-- add DuckDB::ScalarFunction#set_return_type.
+- add inline style to `DuckDB::Connection#register_scalar_function` (accepts keyword arguments + block).
+- add `DuckDB::ScalarFunction.create` class method for declarative API.
+- add FLOAT support to `DuckDB::ScalarFunction` return type.
+- add BOOLEAN support to `DuckDB::ScalarFunction` return type.
+- add DOUBLE support to `DuckDB::ScalarFunction` return type.
+- add BIGINT support to `DuckDB::ScalarFunction` return type.
+- refactor `DuckDB::ScalarFunction` to use vector_set_value_at helper.
+- fix `DuckDB::ScalarFunction` NULL input handling.
+- fix `DuckDB::ScalarFunction` INTEGER output type (int32 vs int64).
+- add `DuckDB::ScalarFunction#add_parameter`.
+- add `DuckDB::ScalarFunction#set_return_type`.
 - bump bundler 4.0 in duckdb.gemspec.
 
 # 1.4.3.0 - 2026-01-10

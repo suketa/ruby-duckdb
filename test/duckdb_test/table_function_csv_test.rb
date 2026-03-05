@@ -72,5 +72,20 @@ module DuckDBTest
       assert_equal %w[2 Bob 25], result[1]
       assert_equal %w[3 Charlie 35], result[2]
     end
+
+    def test_csv_table_function_returns_date
+      csv_io = StringIO.new("value\n2023-01-02\n2024-03-04\n2025-05-06")
+      csv = CSV.new(csv_io, headers: true, converters: :date)
+
+      adapter = CSVTableAdapter.new(columns: { 'value' => :date })
+      DuckDB::TableFunction.add_table_adapter(CSV, adapter)
+
+      @con.expose_as_table(csv, 'csv_table')
+      result = @con.query('SELECT * FROM csv_table()').to_a
+
+      assert_equal [Date.new(2023, 1, 2)], result[0]
+      assert_equal [Date.new(2024, 3, 4)], result[1]
+      assert_equal [Date.new(2025, 5, 6)], result[2]
+    end
   end
 end
