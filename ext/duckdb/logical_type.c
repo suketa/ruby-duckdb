@@ -23,6 +23,7 @@ static VALUE duckdb_logical_type_dictionary_size(VALUE self);
 static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx);
 static VALUE duckdb_logical_type__get_alias(VALUE self);
 static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
+static VALUE duckdb_logical_type_s_create_array_type(VALUE klass, VALUE child, VALUE array_size);
 static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child);
 static VALUE initialize(VALUE self, VALUE type_id_arg);
 
@@ -437,6 +438,24 @@ static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
 
 /*
  *  call-seq:
+ *    DuckDB::LogicalType._create_array_type(logical_type, size) -> DuckDB::LogicalType
+ *
+ *  Return an array logical type from the given child logical type and size.
+ */
+ static VALUE duckdb_logical_type_s_create_array_type(VALUE klass, VALUE child, VALUE array_size) {
+    rubyDuckDBLogicalType *child_ctx = get_struct_logical_type(child);
+    idx_t size = NUM2ULL(array_size);
+    duckdb_logical_type new_type = duckdb_create_array_type(child_ctx->logical_type, size);
+
+    if (!new_type) {
+        rb_raise(eDuckDBError, "Failed to create array type");
+    }
+
+    return rbduckdb_create_logical_type(new_type);
+}
+
+/*
+ *  call-seq:
  *    DuckDB::LogicalType._create_list_type(logical_type) -> DuckDB::LogicalType
  *
  *  Return a list logical type from the given child logical type.
@@ -490,6 +509,8 @@ void rbduckdb_init_duckdb_logical_type(void) {
     rb_define_method(cDuckDBLogicalType, "get_alias", duckdb_logical_type__get_alias, 0);
     rb_define_method(cDuckDBLogicalType, "set_alias", duckdb_logical_type__set_alias, 1);
 
+    rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_array_type",
+                             duckdb_logical_type_s_create_array_type, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_list_type",
                              duckdb_logical_type_s_create_list_type, 1);
 

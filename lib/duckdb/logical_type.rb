@@ -63,6 +63,21 @@ module DuckDB
         raise ArgumentError, "Unknown logical type symbol: #{symbol}"
       end
 
+      # Creates an array logical type with the given child type and size.
+      #
+      # The +type+ argument can be a symbol or a DuckDB::LogicalType instance.
+      # The +size+ argument specifies the fixed size of the array.
+      #
+      #   require 'duckdb'
+      #
+      #   array_type = DuckDB::LogicalType.create_array(:integer, 3)
+      #   array_type.type #=> :array
+      #   array_type.child_type.type #=> :integer
+      #   array_type.size #=> 3
+      def create_array(type, size)
+        _create_array_type(LogicalType.resolve(type), size)
+      end
+
       # Creates a list logical type with the given child type.
       #
       # The +type+ argument can be a symbol or a DuckDB::LogicalType instance.

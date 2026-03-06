@@ -352,6 +352,43 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.new(24) }
     end
 
+    def test_s_create_array_with_logical_type
+      array_type = DuckDB::LogicalType.create_array(DuckDB::LogicalType::INTEGER, 3)
+
+      assert_equal(:array, array_type.type)
+      assert_equal(:integer, array_type.child_type.type)
+      assert_equal(3, array_type.size)
+    end
+
+    def test_s_create_array_with_symbol
+      array_type = DuckDB::LogicalType.create_array(:varchar, 5)
+
+      assert_equal(:array, array_type.type)
+      assert_equal(:varchar, array_type.child_type.type)
+      assert_equal(5, array_type.size)
+    end
+
+    def test_s_create_array_with_nested_array
+      child_array_type = DuckDB::LogicalType.create_array(:integer, 3)
+      parent_array_type = DuckDB::LogicalType.create_array(child_array_type, 2)
+
+      assert_equal(:array, parent_array_type.type)
+      assert_equal(:array, parent_array_type.child_type.type)
+      assert_equal(:integer, parent_array_type.child_type.child_type.type)
+    end
+
+    def test_s_create_array_with_nested_array_size
+      child_array_type = DuckDB::LogicalType.create_array(:integer, 3)
+      parent_array_type = DuckDB::LogicalType.create_array(child_array_type, 2)
+
+      assert_equal(2, parent_array_type.size)
+      assert_equal(3, parent_array_type.child_type.size)
+    end
+
+    def test_s_create_array_with_invalid_arg
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_array(:nonexistent, 1) }
+    end
+
     def test_s_create_list_with_logical_type
       list_type = DuckDB::LogicalType.create_list(DuckDB::LogicalType::INTEGER)
 
