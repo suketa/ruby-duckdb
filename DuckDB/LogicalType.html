@@ -77,6 +77,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-create_array">create_array</a></li>
       <li ><a href="#method-c-create_list">create_list</a></li>
       <li ><a href="#method-c-new">new</a></li>
       <li ><a href="#method-c-resolve">resolve</a></li>
@@ -166,6 +167,45 @@
          <h3>Public Class Methods</h3>
        </header>
 
+      <div id="method-c-create_array" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_array" title="Link to this method">
+                <span class="method-name">create_array</span>
+                <span class="method-args">(type, size)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_array-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 77</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">size</span>)
+  <span class="ruby-identifier">_create_array_type</span>(<span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">type</span>), <span class="ruby-identifier">size</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates an array logical type with the given child type and size.</p>
+
+<p>The <code>type</code> argument can be a symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance. The <code>size</code> argument specifies the fixed size of the array.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+
+<span class="ruby-identifier">array_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_array</span>(<span class="ruby-value">:integer</span>, <span class="ruby-value">3</span>)
+<span class="ruby-identifier">array_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :array</span>
+<span class="ruby-identifier">array_type</span>.<span class="ruby-identifier">child_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :integer</span>
+<span class="ruby-identifier">array_type</span>.<span class="ruby-identifier">size</span> <span class="ruby-comment">#=&gt; 3</span>
+</pre>
+        </div>
+
+
+      </div>
+
       <div id="method-c-create_list" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -184,7 +224,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="create_list-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 78</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 93</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">type</span>)
   <span class="ruby-identifier">_create_list_type</span>(<span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">type</span>))
 <span class="ruby-keyword">end</span></pre>
@@ -643,7 +683,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_child_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 176</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 191</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">child_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -689,7 +729,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_child_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 198</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 213</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">child_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -735,7 +775,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_dictionary_value-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 220</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 235</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_dictionary_value</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">dictionary_size</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -781,7 +821,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_member_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 132</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 147</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">member_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -827,7 +867,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="each_member_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 154</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 169</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">member_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -916,7 +956,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="internal_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 113</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 128</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">internal_type</span>
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_internal_type</span>
   <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
@@ -1212,7 +1252,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 95</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 110</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">type</span>
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_type</span>
   <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
