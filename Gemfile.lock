@@ -10,7 +10,6 @@ GEM
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
-    benchmark-ips (2.14.0)
     bigdecimal (4.0.1)
     csv (3.3.5)
     drb (2.2.3)
@@ -22,23 +21,9 @@ GEM
     lint_roller (1.1.0)
     mcp (0.8.0)
       json-schema (>= 4.1)
-    mini_portile2 (2.8.9)
     minitest (6.0.2)
       drb (~> 2.0)
       prism (~> 1.5)
-    nokogiri (1.19.1)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
-    nokogiri (1.19.1-aarch64-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.1-arm-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.1-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.19.1-x86_64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.19.1-x86_64-linux-gnu)
-      racc (~> 1.4)
     parallel (1.27.0)
     parser (3.3.10.2)
       ast (~> 2.4.1)
@@ -74,9 +59,6 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
     ruby-progressbar (1.13.0)
-    ruby_memcheck (3.0.1)
-      nokogiri
-    stackprof (0.2.28)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
@@ -90,7 +72,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  benchmark-ips
   bundler (~> 4.0)
   csv
   duckdb!
@@ -100,8 +81,6 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
-  ruby_memcheck
-  stackprof
 
 BUNDLED WITH
   4.0.4

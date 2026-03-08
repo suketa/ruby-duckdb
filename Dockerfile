@@ -16,17 +16,6 @@ RUN unzip duckdb.zip -d libduckdb && \
     mv libduckdb/libduckdb.so /usr/local/lib && \
     ldconfig /usr/local/lib
 
-RUN mkdir valgrind-tmp && \
-    cd valgrind-tmp && \
-    wget https://sourceware.org/pub/valgrind/valgrind-${VALGRIND_VERSION}.tar.bz2 && \
-    tar xf valgrind-${VALGRIND_VERSION}.tar.bz2 && \
-    cd valgrind-${VALGRIND_VERSION} && \
-    ./configure && \
-    make -s && \
-    make -s install && \
-    cd .. && \
-    rm -rf /valgrind-tmp
-
 COPY . /root/ruby-duckdb
 WORKDIR /root/ruby-duckdb
 RUN git config --global --add safe.directory /root/ruby-duckdb
