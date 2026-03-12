@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- bump duckdb to 1.5.0 on CI.
 
 # 1.4.4.0 - 2026-03-07
 - `DuckDB::DataChunk#set_value` accepts date.
