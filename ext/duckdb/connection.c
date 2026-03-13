@@ -147,6 +147,24 @@ static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase) {
     return self;
 }
 
+struct query_nogvl_args {
+    duckdb_connection con;
+    const char *sql;
+    duckdb_result *out_result;
+    duckdb_state retval;
+};
+
+/*
+ * Execute duckdb_query without the GVL.
+ * This allows other Ruby threads (including the scalar function executor thread)
+ * to acquire the GVL while the query runs.
+ */
+static void *duckdb_query_nogvl(void *arg) {
+    struct query_nogvl_args *a = (struct query_nogvl_args *)arg;
+    a->retval = duckdb_query(a->con, a->sql, a->out_result);
+    return NULL;
+}
+
 /* :nodoc: */
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     rubyDuckDBConnection *ctx;
@@ -161,7 +179,21 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
         rb_raise(eDuckDBError, "Database connection closed");
     }
 
-    if (duckdb_query(ctx->con, StringValueCStr(str), &(ctxr->result)) == DuckDBError) {
+    /* Extract C string before releasing GVL (StringValueCStr is a Ruby operation) */
+    const char *sql = StringValueCStr(str);
+
+    struct query_nogvl_args args = {
+        .con = ctx->con,
+        .sql = sql,
+        .out_result = &(ctxr->result),
+        .retval = DuckDBError,
+    };
+
+    rb_thread_call_without_gvl(duckdb_query_nogvl, &args, RUBY_UBF_IO, 0);
+
+    RB_GC_GUARD(str);
+
+    if (args.retval == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
     }
     return result;
