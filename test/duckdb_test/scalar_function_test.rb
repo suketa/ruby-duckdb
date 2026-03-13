@@ -103,7 +103,6 @@ module DuckDBTest
     def test_scalar_function_with_one_parameter # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (5), (10), (15)')
 
@@ -119,9 +118,8 @@ module DuckDBTest
       assert_equal [[10], [20], [30]], result.to_a
     end
 
-    def test_scalar_function_with_two_parameters # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def test_scalar_function_with_two_parameters # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (a INTEGER, b INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (5, 3), (10, 2), (15, 4)')
@@ -142,7 +140,6 @@ module DuckDBTest
     def test_scalar_function_with_null_input # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (5), (NULL), (15)')
 
@@ -160,7 +157,6 @@ module DuckDBTest
 
     def test_scalar_function_bigint_return_type # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (value BIGINT)')
       @con.execute('INSERT INTO test_table VALUES (9223372036854775807)') # Max int64
@@ -180,7 +176,6 @@ module DuckDBTest
     def test_scalar_function_double_return_type # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value DOUBLE)')
       @con.execute('INSERT INTO test_table VALUES (3.14159)')
 
@@ -198,7 +193,6 @@ module DuckDBTest
 
     def test_scalar_function_boolean_return_type # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (value INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (5), (10), (15)')
@@ -218,7 +212,6 @@ module DuckDBTest
     def test_scalar_function_float_return_type # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value FLOAT)')
       @con.execute('INSERT INTO test_table VALUES (2.5)')
 
@@ -237,7 +230,6 @@ module DuckDBTest
     def test_scalar_function_varchar_return_type # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (name VARCHAR)')
       @con.execute("INSERT INTO test_table VALUES ('Alice'), ('Bob')")
 
@@ -255,7 +247,6 @@ module DuckDBTest
 
     def test_scalar_function_blob_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (data BLOB)')
       @con.execute("INSERT INTO test_table VALUES ('\\x00\\x01\\x02\\x03'::BLOB), ('\\x00\\xAA\\xBB\\xCC'::BLOB)")
@@ -278,7 +269,6 @@ module DuckDBTest
     def test_scalar_function_timestamp_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00'), ('2024-12-25 23:59:59')")
 
@@ -300,7 +290,6 @@ module DuckDBTest
     def test_scalar_function_date_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (d DATE)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15'), ('2024-12-25')")
 
@@ -321,7 +310,6 @@ module DuckDBTest
 
     def test_scalar_function_time_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (t TIME)')
       @con.execute("INSERT INTO test_table VALUES ('10:30:00'), ('23:59:59')")
@@ -348,7 +336,6 @@ module DuckDBTest
     def test_scalar_function_smallint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value SMALLINT)')
       @con.execute('INSERT INTO test_table VALUES (32767), (-32768), (1000)')
 
@@ -371,7 +358,6 @@ module DuckDBTest
     def test_scalar_function_tinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value TINYINT)')
       @con.execute('INSERT INTO test_table VALUES (100), (-50), (0)')
 
@@ -393,7 +379,6 @@ module DuckDBTest
 
     def test_scalar_function_utinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (value UTINYINT)')
       @con.execute('INSERT INTO test_table VALUES (255), (0), (100)')
@@ -418,7 +403,6 @@ module DuckDBTest
     def test_scalar_function_usmallint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value USMALLINT)')
       @con.execute('INSERT INTO test_table VALUES (65535), (0), (1000)')
 
@@ -440,7 +424,6 @@ module DuckDBTest
 
     def test_scalar_function_uinteger_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
 
       @con.execute('CREATE TABLE test_table (value UINTEGER)')
       @con.execute('INSERT INTO test_table VALUES (4294967200), (0), (1000000)')
@@ -464,7 +447,6 @@ module DuckDBTest
     def test_scalar_function_ubigint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value UBIGINT)')
       @con.execute('INSERT INTO test_table VALUES (9223372036854775807), (0), (1000000000)')
 
@@ -486,8 +468,6 @@ module DuckDBTest
 
     def test_scalar_function_gc_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
-
 
       # Register function and immediately lose reference
       @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
@@ -517,8 +497,6 @@ module DuckDBTest
     def test_gc_compaction_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
       skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
-
-
 
       # Register scalar function with callback that captures local variable
       multiplier = 10
@@ -550,7 +528,6 @@ module DuckDBTest
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
       skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
-
       @con.execute('CREATE TABLE test_table (value INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (1), (2), (3), (4), (5)')
 
@@ -580,8 +557,6 @@ module DuckDBTest
     def test_create_with_single_parameter # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
-
       sf = DuckDB::ScalarFunction.create(
         name: :triple,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -601,8 +576,6 @@ module DuckDBTest
     def test_create_with_multiple_parameters # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
-
       sf = DuckDB::ScalarFunction.create(
         name: :add_numbers,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -621,8 +594,6 @@ module DuckDBTest
 
     def test_create_with_no_parameters # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
-
 
       sf = DuckDB::ScalarFunction.create(
         name: :constant_value,
@@ -666,8 +637,6 @@ module DuckDBTest
     def test_create_accepts_symbol_for_name
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
-
       sf = DuckDB::ScalarFunction.create(
         name: :symbol_name,
         return_type: DuckDB::LogicalType::INTEGER
@@ -683,8 +652,6 @@ module DuckDBTest
     def test_create_accepts_string_for_name
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-
-
       sf = DuckDB::ScalarFunction.create(
         name: 'string_name',
         return_type: DuckDB::LogicalType::INTEGER
@@ -699,8 +666,6 @@ module DuckDBTest
 
     def test_create_with_different_types # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
-
-
 
       sf = DuckDB::ScalarFunction.create(
         name: :concat_with_separator,
