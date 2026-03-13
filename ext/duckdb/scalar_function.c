@@ -1,5 +1,18 @@
 #include "ruby-duckdb.h"
+
+/*
+ * Cross-platform threading primitives.
+ * MSVC (mswin) does not provide <pthread.h>.
+ * MinGW-w64 (mingw, ucrt) provides <pthread.h> via winpthreads.
+ *
+ * See also: FFI gem's approach in ext/ffi_c/Function.c
+ *   https://github.com/ffi/ffi/blob/master/ext/ffi_c/Function.c
+ */
+#ifdef _MSC_VER
+#include <windows.h>
+#else
 #include <pthread.h>
+#endif
 
 /*
  * Thread detection functions (available since Ruby 2.3).
@@ -63,14 +76,25 @@ static VALUE cleanup_callback(VALUE arg);
 struct callback_request {
     struct callback_arg *cb_arg;
     int done;
+#ifdef _MSC_VER
+    CRITICAL_SECTION done_lock;
+    CONDITION_VARIABLE done_cond;
+#else
     pthread_mutex_t done_mutex;
     pthread_cond_t done_cond;
+#endif
     struct callback_request *next;
 };
 
 /* Global executor state */
+#ifdef _MSC_VER
+static CRITICAL_SECTION g_executor_lock;
+static CONDITION_VARIABLE g_executor_cond;
+static int g_sync_initialized = 0;
+#else
 static pthread_mutex_t g_executor_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t g_executor_cond = PTHREAD_COND_INITIALIZER;
+#endif
 static struct callback_request *g_request_list = NULL;
 static VALUE g_executor_thread = Qnil;
 static int g_executor_started = 0;
@@ -87,6 +111,17 @@ static void *executor_wait_func(void *data) {
 
     w->request = NULL;
 
+#ifdef _MSC_VER
+    EnterCriticalSection(&g_executor_lock);
+    while (!w->stop && g_request_list == NULL) {
+        SleepConditionVariableCS(&g_executor_cond, &g_executor_lock, INFINITE);
+    }
+    if (g_request_list != NULL) {
+        w->request = g_request_list;
+        g_request_list = g_request_list->next;
+    }
+    LeaveCriticalSection(&g_executor_lock);
+#else
     pthread_mutex_lock(&g_executor_mutex);
     while (!w->stop && g_request_list == NULL) {
         pthread_cond_wait(&g_executor_cond, &g_executor_mutex);
@@ -96,6 +131,7 @@ static void *executor_wait_func(void *data) {
         g_request_list = g_request_list->next;
     }
     pthread_mutex_unlock(&g_executor_mutex);
+#endif
 
     return NULL;
 }
@@ -104,10 +140,17 @@ static void *executor_wait_func(void *data) {
 static void executor_stop_func(void *data) {
     struct executor_wait_data *w = (struct executor_wait_data *)data;
 
+#ifdef _MSC_VER
+    EnterCriticalSection(&g_executor_lock);
+    w->stop = 1;
+    WakeConditionVariable(&g_executor_cond);
+    LeaveCriticalSection(&g_executor_lock);
+#else
     pthread_mutex_lock(&g_executor_mutex);
     w->stop = 1;
     pthread_cond_signal(&g_executor_cond);
     pthread_mutex_unlock(&g_executor_mutex);
+#endif
 }
 
 /* Execute a callback with exception protection (called with GVL held) */
@@ -150,10 +193,17 @@ static VALUE executor_thread_func(void *data) {
             }
 
             /* Signal the DuckDB worker thread that the callback is done */
+#ifdef _MSC_VER
+            EnterCriticalSection(&req->done_lock);
+            req->done = 1;
+            WakeConditionVariable(&req->done_cond);
+            LeaveCriticalSection(&req->done_lock);
+#else
             pthread_mutex_lock(&req->done_mutex);
             req->done = 1;
             pthread_cond_signal(&req->done_cond);
             pthread_mutex_unlock(&req->done_mutex);
+#endif
         }
     }
 
@@ -163,6 +213,14 @@ static VALUE executor_thread_func(void *data) {
 /* Start the global executor thread (must be called from a Ruby thread) */
 static void ensure_executor_started(void) {
     if (g_executor_started) return;
+
+#ifdef _MSC_VER
+    if (!g_sync_initialized) {
+        InitializeCriticalSection(&g_executor_lock);
+        InitializeConditionVariable(&g_executor_cond);
+        g_sync_initialized = 1;
+    }
+#endif
 
     g_executor_thread = rb_thread_create(executor_thread_func, NULL);
     rb_global_variable(&g_executor_thread);
@@ -180,6 +238,27 @@ static void dispatch_callback_to_executor(struct callback_arg *arg) {
     req.cb_arg = arg;
     req.done = 0;
     req.next = NULL;
+
+#ifdef _MSC_VER
+    InitializeCriticalSection(&req.done_lock);
+    InitializeConditionVariable(&req.done_cond);
+
+    /* Enqueue the request */
+    EnterCriticalSection(&g_executor_lock);
+    req.next = g_request_list;
+    g_request_list = &req;
+    WakeConditionVariable(&g_executor_cond);
+    LeaveCriticalSection(&g_executor_lock);
+
+    /* Wait for the executor to process our callback */
+    EnterCriticalSection(&req.done_lock);
+    while (!req.done) {
+        SleepConditionVariableCS(&req.done_cond, &req.done_lock, INFINITE);
+    }
+    LeaveCriticalSection(&req.done_lock);
+
+    DeleteCriticalSection(&req.done_lock);
+#else
     pthread_mutex_init(&req.done_mutex, NULL);
     pthread_cond_init(&req.done_cond, NULL);
 
@@ -199,6 +278,7 @@ static void dispatch_callback_to_executor(struct callback_arg *arg) {
 
     pthread_cond_destroy(&req.done_cond);
     pthread_mutex_destroy(&req.done_mutex);
+#endif
 }
 
 /*
