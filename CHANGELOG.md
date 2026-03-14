@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## Breaking changes
 - remove `DuckDB::PrepareadStatement#pending_prepared_stream` method. Use `DuckDB::PreparedStatement#pending_prepared` instead.
+- remove `DuckDB::Connection#async_query_stream` method. Use `DuckDB::Connection#async_query` instead.
 
 # 1.4.4.0 - 2026-03-07
 - `DuckDB::DataChunk#set_value` accepts date.
