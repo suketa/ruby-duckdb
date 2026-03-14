@@ -71,7 +71,16 @@
 
   <ul class="link-list" role="directory">
               <li>      <a href="#label-Changelog">Changelog</a>
-          <li>      <a href="#label-Unreleased">Unreleased</a>
+          <li>
+            <details open>
+              <summary>      <a href="#label-Unreleased">Unreleased</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
+
+              </ul>
+            </details>
+          </li>
           <li>      <a href="#label-1.4.4.0+-+2026-03-07">1.4.4.0 - 2026-03-07</a>
           <li>      <a href="#label-1.4.3.0+-+2026-01-10">1.4.3.0 - 2026-01-10</a>
           <li>      <a href="#label-1.4.2.0+-+2025-12-27">1.4.2.0 - 2025-12-27</a>
@@ -318,6 +327,11 @@
 <p>bump duckdb to 1.5.0 on CI.</p>
 </li></ul>
 
+<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>remove <code>DuckDB::PrepareadStatement#pending_prepared_stream</code> method. Use <a href="DuckDB/PreparedStatement.html#method-i-pending_prepared"><code>DuckDB::PreparedStatement#pending_prepared</code></a> instead.</p>
+</li></ul>
+
 <h1 id="label-1.4.4.0+-+2026-03-07">1.4.4.0 - 2026-03-07<span><a href="#label-1.4.4.0+-+2026-03-07">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
 <p><a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> accepts date.</p>
@@ -522,9 +536,9 @@
 </li><li>
 <p>The second argument of <a href="DuckDB/PendingResult.html#method-c-new"><code>DuckDB::PendingResult.new</code></a> is now meaningless. The result is the same when it is set to true.</p>
 </li><li>
-<p><a href="DuckDB/PreparedStatement.html#method-i-pending_prepared"><code>DuckDB::PreparedStatement#pending_prepared</code></a> behaves the same as <a href="DuckDB/PreparedStatement.html#method-i-pending_prepared_stream"><code>DuckDB::PreparedStatement#pending_prepared_stream</code></a>.</p>
+<p><a href="DuckDB/PreparedStatement.html#method-i-pending_prepared"><code>DuckDB::PreparedStatement#pending_prepared</code></a> behaves the same as <code>DuckDB::PreparedStatement#pending_prepared_stream</code>.</p>
 </li><li>
-<p><a href="DuckDB/PreparedStatement.html#method-i-pending_prepared_stream"><code>DuckDB::PreparedStatement#pending_prepared_stream</code></a> will be depreacted. Use <code>pending_prepared</code> instead.</p>
+<p><code>DuckDB::PreparedStatement#pending_prepared_stream</code> will be depreacted. Use <code>pending_prepared</code> instead.</p>
 </li><li>
 <p><a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> behaves the same as <a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a>.</p>
 </li><li>
@@ -904,7 +918,7 @@
 </li><li>
 <p><a href="DuckDB/PendingResult.html"><code>DuckDB::PendingResult</code></a> accepts second argument. If the second argument is true, <code>PendingResult#execute_pending</code> returns streaming <a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> object.</p>
 </li><li>
-<p>add <a href="DuckDB/PreparedStatement.html#method-i-pending_prepared_stream"><code>DuckDB::PreparedStatement#pending_prepared_stream</code></a></p>
+<p>add <code>DuckDB::PreparedStatement#pending_prepared_stream</code></p>
 </li><li>
 <p>add <code>DuckDB::Result#streaming?</code>.</p>
 </li></ul>
