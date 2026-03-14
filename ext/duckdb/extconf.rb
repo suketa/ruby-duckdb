@@ -2,7 +2,7 @@
 
 require 'mkmf'
 
-DUCKDB_REQUIRED_VERSION = '1.3.0'
+DUCKDB_REQUIRED_VERSION = '1.4.0'
 
 def check_duckdb_header(header, version)
   found = find_header(
@@ -56,13 +56,12 @@ end
 dir_config('duckdb')
 
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
-check_duckdb_library('duckdb', 'duckdb_get_table_names', DUCKDB_REQUIRED_VERSION)
-
-# check duckdb >= 1.3.0
-have_func('duckdb_get_table_names', 'duckdb.h')
+check_duckdb_library('duckdb', 'duckdb_appender_create_query', DUCKDB_REQUIRED_VERSION)
 
 # check duckdb >= 1.4.0
 have_func('duckdb_appender_create_query', 'duckdb.h')
+
+have_func('duckdb_unsafe_vector_assign_string_element_len', 'duckdb.h')
 
 $CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
 
