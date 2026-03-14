@@ -6,9 +6,7 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 
-#ifdef HAVE_DUCKDB_H_GE_V1_4_0
 static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns);
-#endif
 
 static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
 static VALUE appender_error_message(VALUE self);
@@ -61,7 +59,6 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBAppender);
 }
 
-#ifdef HAVE_DUCKDB_H_GE_V1_4_0
 /* call-seq:
  *   DuckDB::Appender.create_query -> DuckDB::Appender
  *
@@ -122,7 +119,6 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
 
     return appender;
 }
-#endif
 
 static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
 
@@ -161,26 +157,17 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
  */
 static VALUE appender_error_message(VALUE self) {
     rubyDuckDBAppender *ctx;
-#ifdef HAVE_DUCKDB_H_GE_V1_4_0
     duckdb_error_data error_data;
-#endif
     const char *msg = NULL;
     VALUE rb_msg = Qnil;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-#ifdef HAVE_DUCKDB_H_GE_V1_4_0
     error_data = duckdb_appender_error_data(ctx->appender);
     if (duckdb_error_data_has_error(error_data)) {
         msg = duckdb_error_data_message(error_data);
         rb_msg = rb_str_new2(msg);
     }
     duckdb_destroy_error_data(&error_data);
-#else
-    msg = duckdb_appender_error(ctx->appender);
-    if (msg != NULL) {
-        rb_msg = rb_str_new2(msg);
-    }
-#endif
     return rb_msg;
 }
 
@@ -457,9 +444,7 @@ void rbduckdb_init_duckdb_appender(void) {
 #endif
     cDuckDBAppender = rb_define_class_under(mDuckDB, "Appender", rb_cObject);
     rb_define_alloc_func(cDuckDBAppender, allocate);
-#ifdef HAVE_DUCKDB_H_GE_V1_4_0
     rb_define_singleton_method(cDuckDBAppender, "create_query", appender_s_create_query, 5);
-#endif
     rb_define_method(cDuckDBAppender, "initialize", appender_initialize, 3);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
     rb_define_private_method(cDuckDBAppender, "_end_row", appender__end_row, 0);
