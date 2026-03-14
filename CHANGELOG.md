@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - bump duckdb to 1.5.0 on CI.
 
+## Breaking changes
+- remove `DuckDB::PrepareadStatement#pending_prepared_stream` method. Use `DuckDB::PreparedStatement#pending_prepared` instead.
+
 # 1.4.4.0 - 2026-03-07
 - `DuckDB::DataChunk#set_value` accepts date.
 - add `DuckDB::LogicalType.create_array` to create an array logical type
