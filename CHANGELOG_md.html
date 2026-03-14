@@ -330,6 +330,8 @@
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
 <p>remove <code>DuckDB::PrepareadStatement#pending_prepared_stream</code> method. Use <a href="DuckDB/PreparedStatement.html#method-i-pending_prepared"><code>DuckDB::PreparedStatement#pending_prepared</code></a> instead.</p>
+</li><li>
+<p>remove <code>DuckDB::Connection#async_query_stream</code> method. Use <a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> instead.</p>
 </li></ul>
 
 <h1 id="label-1.4.4.0+-+2026-03-07">1.4.4.0 - 2026-03-07<span><a href="#label-1.4.4.0+-+2026-03-07">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -540,9 +542,9 @@
 </li><li>
 <p><code>DuckDB::PreparedStatement#pending_prepared_stream</code> will be depreacted. Use <code>pending_prepared</code> instead.</p>
 </li><li>
-<p><a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> behaves the same as <a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a>.</p>
+<p><a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> behaves the same as <code>DuckDB::Connection#async_query_stream</code>.</p>
 </li><li>
-<p><a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a> will be deprecated. Use <code>async_query</code> instead.</p>
+<p><code>DuckDB::Connection#async_query_stream</code> will be deprecated. Use <code>async_query</code> instead.</p>
 </li><li>
 <p><code>DuckDB::Result#chunk_each</code>, <code>DuckDB::Result.use_chunk_each</code>, <code>DuckDB::Result.use_chunk_each?</code> are deprecated.</p>
 </li></ul>
@@ -651,7 +653,7 @@
 </li><li>
 <p>add <code>DuckDB::PreparedStatement#destroy</code>.</p>
 </li><li>
-<p><a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a>, <a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a>, <a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a> call <code>DuckDB::PreparedStatement#destroy</code> to free the prepared statement immediately (#775, #781).</p>
+<p><a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a>, <a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a>, <code>DuckDB::Connection#async_query_stream</code> call <code>DuckDB::PreparedStatement#destroy</code> to free the prepared statement immediately (#775, #781).</p>
 </li></ul>
 
 <h1 id="label-1.1.1.0+-+2024-10-06">1.1.1.0 - 2024-10-06<span><a href="#label-1.1.1.0+-+2024-10-06">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -914,7 +916,7 @@
 
 <h1 id="label-0.9.2+-+2023-11-26">0.9.2 - 2023-11-26<span><a href="#label-0.9.2+-+2023-11-26">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
-<p>add <a href="DuckDB/Connection.html#method-i-async_query_stream"><code>DuckDB::Connection#async_query_stream</code></a>.</p>
+<p>add <code>DuckDB::Connection#async_query_stream</code>.</p>
 </li><li>
 <p><a href="DuckDB/PendingResult.html"><code>DuckDB::PendingResult</code></a> accepts second argument. If the second argument is true, <code>PendingResult#execute_pending</code> returns streaming <a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> object.</p>
 </li><li>
