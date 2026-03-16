@@ -90,48 +90,6 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { @con.async_query(invalid_sql) }
     end
 
-    def test_async_query_stream
-      pending_result = @con.async_query_stream('CREATE TABLE table1 (id INTEGER)')
-
-      assert_instance_of(DuckDB::PendingResult, pending_result)
-    end
-
-    def test_async_query_stream_with_valid_params
-      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
-      @con.query('INSERT INTO t VALUES(?, ?)', 1, 'a')
-      pending_result = @con.async_query_stream('SELECT col1, col2 FROM t WHERE col1 = ? and col2 = ?', 1, 'a')
-      pending_result.execute_task
-      sleep 0.1
-      result = pending_result.execute_pending
-
-      assert_equal([1, 'a'], result.each.first)
-    end
-
-    def test_async_query_stream_with_invalid_params
-      assert_raises(DuckDB::Error) { @con.async_query_stream('foo', 'bar') }
-      assert_raises(ArgumentError) { @con.async_query_stream }
-      assert_raises(TypeError) { @con.async_query_stream(1) }
-    end
-
-    def test_async_query_stream_with_invalid_sql
-      invalid_sql = 'CREATE TABLE table1 ('
-      assert_raises(DuckDB::Error) { @con.async_query_stream(invalid_sql) }
-    end
-
-    def test_async_query_stream_with_valid_hash_params
-      @con.query('CREATE TABLE t (col1 INTEGER, col2 STRING)')
-      @con.query('INSERT INTO t VALUES($col1, $col2)', col2: 'a', col1: 1)
-
-      pending_result = @con.async_query_stream(
-        'SELECT col1, col2 FROM t WHERE col1 = $col1 and col2 = $col2', col2: 'a', col1: 1
-      )
-      pending_result.execute_task
-      sleep 0.1
-      result = pending_result.execute_pending
-
-      assert_equal([1, 'a'], result.each.first)
-    end
-
     def test_execute
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
 

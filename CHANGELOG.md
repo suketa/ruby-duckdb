@@ -3,7 +3,14 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+
+# 1.5.5.0 - 2026-03-15
 - bump duckdb to 1.5.0 on CI.
+
+## Breaking changes
+- remove `DuckDB::PrepareadStatement#pending_prepared_stream` method. Use `DuckDB::PreparedStatement#pending_prepared` instead.
+- remove `DuckDB::Connection#async_query_stream` method. Use `DuckDB::Connection#async_query` instead.
+- drop duckdb v1.3.x.
 
 # 1.4.4.0 - 2026-03-07
 - `DuckDB::DataChunk#set_value` accepts date.

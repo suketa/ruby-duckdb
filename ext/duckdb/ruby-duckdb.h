@@ -8,8 +8,8 @@
 #include "ruby/thread.h"
 #include <duckdb.h>
 
-#ifdef HAVE_DUCKDB_APPENDER_CREATE_QUERY
-#define HAVE_DUCKDB_H_GE_V1_4_0 1
+#ifdef HAVE_DUCKDB_UNSAFE_VECTOR_ASSIGN_STRING_ELEMENT_LEN
+#define HAVE_DUCKDB_H_GE_V1_5_0 1
 #endif
 
 #include "./error.h"

@@ -65,27 +65,6 @@ module DuckDB
       end
     end
 
-    # executes sql with args asynchronously and provides streaming result.
-    # The first argument sql must be SQL string.
-    # The rest arguments are parameters of SQL string.
-    # This method returns DuckDB::PendingResult object.
-    #
-    #   require 'duckdb'
-    #   db = DuckDB::Database.open('duckdb_file')
-    #   con = db.connect
-    #
-    #   sql = 'SELECT * FROM users WHERE name = $name AND email = $email'
-    #   pending_result = con.async_query_stream(sql, name: 'Dave', email: 'dave@example.com')
-    #
-    #   pending_result.execute_task while pending_result.state == :not_ready
-    #   result = pending_result.execute_pending
-    #   result.each.first
-    def async_query_stream(sql, *, **)
-      warn("`#{self.class}#{__method__}` will be deprecated. Use `#{self.class}#async_query` instead.")
-
-      async_query(sql, *, **)
-    end
-
     # connects DuckDB database
     # The first argument is DuckDB::Database object
     def connect(db)
