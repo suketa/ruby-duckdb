@@ -210,7 +210,14 @@ static VALUE executor_thread_func(void *data) {
     return Qnil;
 }
 
-/* Start the global executor thread (must be called from a Ruby thread) */
+/*
+ * Start the global executor thread (must be called from a Ruby thread).
+ *
+ * Thread safety: This function is only called from
+ * rbduckdb_scalar_function_set_function(), which is a Ruby method and
+ * always runs with the GVL held.  The GVL serializes all calls, so the
+ * g_executor_started check-then-set is safe without an extra mutex.
+ */
 static void ensure_executor_started(void) {
     if (g_executor_started) return;
 
