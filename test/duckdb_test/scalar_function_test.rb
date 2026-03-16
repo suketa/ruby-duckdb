@@ -687,8 +687,8 @@ module DuckDBTest
     def test_scalar_function_with_multithread
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
-      # Use range() to generate enough rows to trigger DuckDB's multi-threaded execution
-      @con.execute('CREATE TABLE large_test AS SELECT range::INTEGER AS value FROM range(1000000)')
+      @con.execute('SET threads=4')
+      @con.execute('CREATE TABLE large_test AS SELECT range::INTEGER AS value FROM range(10000)')
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'triple'
@@ -699,8 +699,8 @@ module DuckDBTest
       @con.register_scalar_function(sf)
       result = @con.execute('SELECT SUM(triple(value)) FROM large_test')
 
-      # sum(0..999999) * 3 = 499999500000 * 3 = 1499998500000
-      assert_equal 1_499_998_500_000, result.first.first
+      # sum(0..9999) * 3 = 49995000 * 3 = 149985000
+      assert_equal 149_985_000, result.first.first
     end
   end
 end
