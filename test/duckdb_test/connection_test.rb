@@ -322,8 +322,6 @@ module DuckDBTest
     # Tests for register_scalar_function
 
     def test_register_scalar_function_inline_with_single_parameter
-      @con.execute('SET threads=1')
-
       @con.register_scalar_function(
         name: :inline_triple,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -338,8 +336,6 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_inline_with_multiple_parameters
-      @con.execute('SET threads=1')
-
       @con.register_scalar_function(
         name: :inline_add,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -354,8 +350,6 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_inline_with_no_parameters
-      @con.execute('SET threads=1')
-
       @con.register_scalar_function(
         name: :inline_constant,
         return_type: DuckDB::LogicalType::INTEGER
@@ -369,8 +363,6 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_inline_with_varchar
-      @con.execute('SET threads=1')
-
       @con.register_scalar_function(
         name: :inline_reverse,
         return_type: DuckDB::LogicalType::VARCHAR,
@@ -385,8 +377,6 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_rejects_object_with_keywords # rubocop:disable Metrics/MethodLength
-      @con.execute('SET threads=1')
-
       sf = DuckDB::ScalarFunction.create(
         name: :test,
         return_type: DuckDB::LogicalType::INTEGER
@@ -403,8 +393,6 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_rejects_object_with_block
-      @con.execute('SET threads=1')
-
       sf = DuckDB::ScalarFunction.create(
         name: :test,
         return_type: DuckDB::LogicalType::INTEGER
@@ -418,8 +406,6 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_object_style_still_works
-      @con.execute('SET threads=1')
-
       sf = DuckDB::ScalarFunction.create(
         name: :object_style,
         return_type: DuckDB::LogicalType::INTEGER

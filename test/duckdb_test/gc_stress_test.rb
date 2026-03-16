@@ -9,7 +9,6 @@ module DuckDBTest
     def setup
       @db = DuckDB::Database.open
       @con = @db.connect
-      @con.execute('SET threads=1')
     end
 
     def teardown
@@ -84,6 +83,8 @@ module DuckDBTest
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
       skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
+      @con.execute('SET threads=1') # Table functions still require single-threaded execution
+
       # Capture local variables
       multiplier = 3
       done = false
@@ -134,6 +135,8 @@ module DuckDBTest
     def test_mixed_functions_gc_stress
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
       skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      @con.execute('SET threads=1') # Table functions still require single-threaded execution
 
       # Register both scalar and table functions
       @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|

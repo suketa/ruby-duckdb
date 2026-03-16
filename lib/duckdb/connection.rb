@@ -137,8 +137,6 @@ module DuckDB
 
     # Registers a scalar function with the connection.
     #
-    # Scalar functions with Ruby callbacks require single-threaded execution.
-    #
     # @overload register_scalar_function(scalar_function)
     #   Register a pre-created ScalarFunction object.
     #   @param scalar_function [DuckDB::ScalarFunction] the scalar function to register
@@ -151,12 +149,10 @@ module DuckDB
     #   @param parameter_types [Array<DuckDB::LogicalType>, nil] multiple parameter types
     #   @yield [*args] the function implementation
     #
-    # @raise [DuckDB::Error] if threads setting is not 1
     # @raise [ArgumentError] if both object and keywords/block are provided
     # @return [void]
     #
     # @example Register pre-created function
-    #   con.execute('SET threads=1')
     #   sf = DuckDB::ScalarFunction.create(
     #     name: :triple,
     #     return_type: DuckDB::LogicalType::INTEGER,
@@ -165,7 +161,6 @@ module DuckDB
     #   con.register_scalar_function(sf)
     #
     # @example Register inline (single parameter)
-    #   con.execute('SET threads=1')
     #   con.register_scalar_function(
     #     name: :triple,
     #     return_type: DuckDB::LogicalType::INTEGER,
@@ -173,7 +168,6 @@ module DuckDB
     #   ) { |v| v * 3 }
     #
     # @example Register inline (multiple parameters)
-    #   con.execute('SET threads=1')
     #   con.register_scalar_function(
     #     name: :add,
     #     return_type: DuckDB::LogicalType::INTEGER,
@@ -187,7 +181,6 @@ module DuckDB
         raise ArgumentError, 'Cannot pass both ScalarFunction object and block' if block_given?
       end
 
-      check_threads
       sf = scalar_function || ScalarFunction.create(**kwargs, &)
       _register_scalar_function(sf)
     end
