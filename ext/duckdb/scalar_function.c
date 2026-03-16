@@ -153,8 +153,8 @@ static void executor_stop_func(void *data) {
 #endif
 }
 
-/* Execute a callback with exception protection (called with GVL held) */
-static VALUE execute_callback_protected(VALUE varg) {
+/* Execute a callback (called with GVL held) */
+static VALUE execute_callback(VALUE varg) {
     struct callback_arg *arg = (struct callback_arg *)varg;
 
     if (arg->col_count == 0) {
@@ -164,6 +164,24 @@ static VALUE execute_callback_protected(VALUE varg) {
     }
 
     return Qnil;
+}
+
+/*
+ * Execute a callback with rb_protect and report any Ruby exception
+ * to DuckDB via duckdb_scalar_function_set_error.
+ */
+static void execute_callback_protected(struct callback_arg *arg) {
+    int exception_state;
+
+    rb_protect(execute_callback, (VALUE)arg, &exception_state);
+    if (exception_state) {
+        VALUE errinfo = rb_errinfo();
+        if (errinfo != Qnil) {
+            VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
+            duckdb_scalar_function_set_error(arg->info, StringValueCStr(msg));
+        }
+        rb_set_errinfo(Qnil);
+    }
 }
 
 /* The executor thread main loop (Ruby thread) */
@@ -177,20 +195,9 @@ static VALUE executor_thread_func(void *data) {
 
         if (w.request != NULL) {
             struct callback_request *req = w.request;
-            struct callback_arg *arg = req->cb_arg;
-            int exception_state;
 
             /* Execute the Ruby callback with the GVL */
-            rb_protect(execute_callback_protected, (VALUE)arg, &exception_state);
-            if (exception_state) {
-                /* Report error to DuckDB and clear the Ruby exception */
-                VALUE errinfo = rb_errinfo();
-                if (errinfo != Qnil) {
-                    VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
-                    duckdb_scalar_function_set_error(arg->info, StringValueCStr(msg));
-                }
-                rb_set_errinfo(Qnil);
-            }
+            execute_callback_protected(req->cb_arg);
 
             /* Signal the DuckDB worker thread that the callback is done */
 #ifdef _MSC_VER
@@ -293,19 +300,7 @@ static void dispatch_callback_to_executor(struct callback_arg *arg) {
  * re-acquiring the GVL. Used when a Ruby thread (without GVL) is the caller.
  */
 static void *callback_with_gvl(void *data) {
-    struct callback_arg *arg = (struct callback_arg *)data;
-    int exception_state;
-
-    rb_protect(execute_callback_protected, (VALUE)arg, &exception_state);
-    if (exception_state) {
-        VALUE errinfo = rb_errinfo();
-        if (errinfo != Qnil) {
-            VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
-            duckdb_scalar_function_set_error(arg->info, StringValueCStr(msg));
-        }
-        rb_set_errinfo(Qnil);
-    }
-
+    execute_callback_protected((struct callback_arg *)data);
     return NULL;
 }
 
@@ -436,7 +431,7 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     if (ruby_native_thread_p()) {
         if (ruby_thread_has_gvl_p()) {
             /* Case 1: Ruby thread with GVL - call directly */
-            execute_callback_protected((VALUE)&arg);
+            execute_callback_protected(&arg);
         } else {
             /* Case 2: Ruby thread without GVL - reacquire GVL */
             rb_thread_call_with_gvl(callback_with_gvl, &arg);
