@@ -684,7 +684,7 @@ module DuckDBTest
       assert_equal 'Hello - World', rows[0][0]
     end
 
-    def test_scalar_function_with_multithread
+    def test_scalar_function_with_multithread # rubocop:disable Metrics/MethodLength
       skip 'Scalar functions with Ruby test' if Gem.win_platform?
 
       @con.execute('SET threads=4')
