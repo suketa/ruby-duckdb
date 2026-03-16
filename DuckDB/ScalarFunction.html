@@ -9,7 +9,7 @@
 
   <meta name="keywords" content="ruby,class,DuckDB::ScalarFunction">
 
-    <meta name="description" content="class DuckDB::ScalarFunction: ScalarFunction is experimental. ScalarFunction must be used with threads=1 in DuckDB.">
+    <meta name="description" content="class DuckDB::ScalarFunction: ScalarFunction is experimental.">
 
 
 <script type="text/javascript">
@@ -132,10 +132,7 @@
     
 <p><a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> encapsulates DuckDB’s scalar function</p>
 
-<p>@note <a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> is experimental. @note <a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> must be used with threads=1 in <a href="../DuckDB.html"><code>DuckDB</code></a>.</p>
-
-<pre class="ruby"><span class="ruby-constant">Set</span> <span class="ruby-identifier">this</span> <span class="ruby-value">with:</span> <span class="ruby-identifier">connection</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
-</pre>
+<p>@note <a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> is experimental.</p>
 
   </section>
 
@@ -168,7 +165,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="create-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 39</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 37</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">return_type:</span>, <span class="ruby-value">parameter_type:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">parameter_types:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>) <span class="ruby-comment"># rubocop:disable Metrics/MethodLength</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Block required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Cannot specify both parameter_type and parameter_types&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">parameter_type</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">parameter_types</span>
@@ -280,7 +277,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 88</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 86</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
@@ -340,7 +337,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 107</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 105</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;logical_type must be a DuckDB::LogicalType&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
