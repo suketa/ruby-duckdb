@@ -23,6 +23,18 @@ jobs:
         ruby: ['3.2.9', '3.3.10', '3.4.9', '4.0.1', 'head']
         duckdb: ['1.4.4', '1.5.0']
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
     - uses: actions/checkout@v4
 
@@ -72,6 +84,7 @@ jobs:
     - name: test with Ruby ${{ matrix.ruby }}
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
+        MYSQL_TEST: 1
       run: |
         env RUBYOPT=-W:deprecated rake test
 
