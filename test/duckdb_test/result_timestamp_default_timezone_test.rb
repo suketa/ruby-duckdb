@@ -68,7 +68,7 @@ module DuckDBTest
       assert_predicate(time, :utc?)
     end
 
-    def test_time_without_tz_respects_default_timezone_utc
+    def test_time_without_tz_components_respect_default_timezone_utc
       DuckDB.default_timezone = :utc
 
       @conn.execute('CREATE TABLE test (value TIME);')
@@ -76,10 +76,17 @@ module DuckDBTest
       result = @conn.execute('SELECT value FROM test;')
       time = result.each.to_a.first.first
 
-      assert_equal(12, time.hour)
-      assert_equal(34, time.min)
-      assert_equal(56, time.sec)
-      assert_equal(123_456, time.usec)
+      assert_equal([12, 34, 56, 123_456], [time.hour, time.min, time.sec, time.usec])
+    end
+
+    def test_time_without_tz_is_utc_when_default_timezone_utc
+      DuckDB.default_timezone = :utc
+
+      @conn.execute('CREATE TABLE test (value TIME);')
+      @conn.execute("INSERT INTO test VALUES ('12:34:56.123456');")
+      result = @conn.execute('SELECT value FROM test;')
+      time = result.each.to_a.first.first
+
       assert_predicate(time, :utc?)
     end
   end

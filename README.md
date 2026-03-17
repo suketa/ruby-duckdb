@@ -263,3 +263,7 @@ con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
 res = con.query('SELECT number FROM numbers ORDER BY number')
 res.first.first # => 4
 ```
+
+#### Global configuration
+
+Set `DuckDB.default_timezone` to control how TIMESTAMP and TIME values without time zone are converted to Ruby `Time` objects. The default is `:local`, but you can use `:utc` for UTC conversion.

@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `DuckDB.default_timezone` configuration (defaults to `:local`) to control how TIMESTAMP and TIME values without time zone are converted to Ruby `Time` (`:utc` or `:local`).
+
 # 1.5.0.1 - 2026-03-17
 
 - enable `DuckDB::ScalarFunction` work with duckdb multi threads.

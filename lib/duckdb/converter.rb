@@ -42,19 +42,17 @@ module DuckDB
     # rubocop:enable Metrics/ParameterLists
 
     def _to_time_from_duckdb_time(hour, minute, second, microsecond)
-      if default_timezone_utc?
-        Time.utc(1970, 1, 1, hour, minute, second, microsecond)
-      else
-        Time.parse(
-          format(
-            '%<hour>02d:%<minute>02d:%<second>02d.%<microsecond>06d',
-            hour: hour,
-            minute: minute,
-            second: second,
-            microsecond: microsecond
-          )
+      return Time.utc(1970, 1, 1, hour, minute, second, microsecond) if default_timezone_utc?
+
+      Time.parse(
+        format(
+          '%<hour>02d:%<minute>02d:%<second>02d.%<microsecond>06d',
+          hour: hour,
+          minute: minute,
+          second: second,
+          microsecond: microsecond
         )
-      end
+      )
     end
 
     def _to_time_from_duckdb_timestamp_s(time)
