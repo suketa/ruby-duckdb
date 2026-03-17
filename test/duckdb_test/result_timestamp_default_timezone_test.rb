@@ -13,9 +13,9 @@ module DuckDBTest
     end
 
     def teardown
-      @conn.execute('DROP TABLE test;')
-      @conn.close
-      @db.close
+      @conn&.execute('DROP TABLE IF EXISTS test;')
+      @conn&.close
+      @db&.close
       DuckDB.default_timezone = @original_default_timezone
       ENV['TZ'] = @original_tz
     end
@@ -88,6 +88,12 @@ module DuckDBTest
       time = result.each.to_a.first.first
 
       assert_predicate(time, :utc?)
+    end
+
+    def test_default_timezone_raises_on_invalid_value
+      assert_raises(ArgumentError) { DuckDB.default_timezone = :UTC }
+      assert_raises(ArgumentError) { DuckDB.default_timezone = 'utc' }
+      assert_raises(ArgumentError) { DuckDB.default_timezone = :foo }
     end
   end
 end

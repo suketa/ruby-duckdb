@@ -39,7 +39,13 @@ module DuckDB
     #
     # This setting only affects conversion of values without time zone. Values
     # with explicit time zone are always interpreted according to their offset.
-    attr_accessor :default_timezone
+    attr_reader :default_timezone
+
+    def default_timezone=(value)
+      raise ArgumentError, 'DuckDB.default_timezone must be either :utc or :local.' unless %i[local utc].include?(value)
+
+      @default_timezone = value
+    end
   end
 
   # Default to local time to preserve existing behavior unless explicitly
