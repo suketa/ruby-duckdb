@@ -27,4 +27,22 @@ require 'duckdb/casting'
 
 # DuckDB provides Ruby interface of DuckDB.
 module DuckDB
+  class << self
+    # Controls how DuckDB converts timestamp and time values without explicit
+    # time zone information.
+    #
+    # - `:utc`   - interpret values as UTC
+    # - `:local` - (default) interpret values as local time, preserving existing behavior
+    #
+    # Example:
+    #   DuckDB.default_timezone = :utc
+    #
+    # This setting only affects conversion of values without time zone. Values
+    # with explicit time zone are always interpreted according to their offset.
+    attr_accessor :default_timezone
+  end
+
+  # Default to local time to preserve existing behavior unless explicitly
+  # configured otherwise.
+  self.default_timezone = :local
 end
