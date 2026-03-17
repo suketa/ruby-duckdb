@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
-# 1.5.5.0 - 2026-03-15
+# 1.5.0.1 - 2026-03-17
+
+- enable `DuckDB::ScalarFunction` work with duckdb multi threads.
+- fix mysql_query fails
+
+# 1.5.0.0 - 2026-03-15
 - bump duckdb to 1.5.0 on CI.
 
 ## Breaking changes
