@@ -12,9 +12,13 @@ module DuckDB
     HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
     FLIP_HUGEINT = 1 << 63
     EPOCH = Time.local(1970, 1, 1)
-    EPOCH_UTC = Time.new(1970, 1, 1, 0, 0, 0, 0)
+    EPOCH_UTC = Time.utc(1970, 1, 1)
 
     module_function
+
+    def default_timezone_utc?
+      defined?(DuckDB.default_timezone) && DuckDB.default_timezone == :utc
+    end
 
     def _to_infinity(value)
       if value.positive?
@@ -30,11 +34,16 @@ module DuckDB
 
     # rubocop:disable Metrics/ParameterLists
     def _to_time(year, month, day, hour, minute, second, microsecond)
-      Time.local(year, month, day, hour, minute, second, microsecond)
+      Time.public_send(
+        default_timezone_utc? ? :utc : :local,
+        year, month, day, hour, minute, second, microsecond
+      )
     end
     # rubocop:enable Metrics/ParameterLists
 
     def _to_time_from_duckdb_time(hour, minute, second, microsecond)
+      return Time.utc(1970, 1, 1, hour, minute, second, microsecond) if default_timezone_utc?
+
       Time.parse(
         format(
           '%<hour>02d:%<minute>02d:%<second>02d.%<microsecond>06d',
@@ -47,17 +56,23 @@ module DuckDB
     end
 
     def _to_time_from_duckdb_timestamp_s(time)
-      EPOCH + time
+      if default_timezone_utc?
+        EPOCH_UTC + time
+      else
+        EPOCH + time
+      end
     end
 
     def _to_time_from_duckdb_timestamp_ms(time)
-      tm = EPOCH + (time / 1000)
-      Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1000 * 1000)
+      _to_time_from_duckdb_timestamp_s(time / 1000).then do |tm|
+        _to_time(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1000 * 1000)
+      end
     end
 
     def _to_time_from_duckdb_timestamp_ns(time)
-      tm = EPOCH + (time / 1_000_000_000)
-      Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1_000_000_000 / 1000)
+      _to_time_from_duckdb_timestamp_s(time / 1_000_000_000).then do |tm|
+        _to_time(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1_000_000_000 / 1000)
+      end
     end
 
     def _to_time_from_duckdb_time_tz(hour, min, sec, micro, timezone)
