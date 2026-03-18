@@ -91,7 +91,16 @@
           <li>      <a href="#label-Using+async+query">Using async query</a>
           <li>      <a href="#label-Using+BLOB+column">Using BLOB column</a>
           <li>      <a href="#label-Appender">Appender</a>
-          <li>      <a href="#label-Configuration">Configuration</a>
+          <li>
+            <details open>
+              <summary>      <a href="#label-Configuration">Configuration</a>
+</summary>
+              <ul class="link-list" role="directory">
+                          <li>      <a href="#label-Global+configuration">Global configuration</a>
+
+              </ul>
+            </details>
+          </li>
 
               </ul>
             </details>
@@ -380,6 +389,10 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <span class="ruby-identifier">res</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT number FROM numbers ORDER BY number&#39;</span>)
 <span class="ruby-identifier">res</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span> <span class="ruby-comment"># =&gt; 4</span>
 </pre>
+
+<h4 id="label-Global+configuration">Global configuration<span><a href="#label-Global+configuration">&para;</a> <a href="#top">&uarr;</a></span></h4>
+
+<p>Set <a href="DuckDB.html#attribute-c-default_timezone"><code>DuckDB.default_timezone</code></a> to control how TIMESTAMP and TIME values without time zone are converted to Ruby <code>Time</code> objects. The default is <code>:local</code>, but you can use <code>:utc</code> for UTC conversion.</p>
 
 </main>
 

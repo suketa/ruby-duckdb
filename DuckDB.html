@@ -81,6 +81,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-default_timezone-3D">default_timezone=</a></li>
       <li ><a href="#method-c-library_version">library_version</a></li>
     </ul>
   </div>
@@ -131,12 +132,73 @@
       </dl>
     </section>
 
+    <section class="attribute-method-details" class="method-section">
+      <header>
+        <h3>Attributes</h3>
+      </header>
+
+      <div id="attribute-c-default_timezone" class="method-detail anchor-link">
+        <div class="method-heading attribute-method-heading">
+          <a href="#attribute-c-default_timezone" title="Link to this attribute">
+            <span class="method-name">default_timezone</span>
+            <span class="attribute-access-type">[R]</span>
+          </a>
+        </div>
+
+        <div class="method-description">
+        <p>Controls how <a href="DuckDB.html"><code>DuckDB</code></a> converts timestamp and time values without explicit time zone information.</p>
+<ul><li>
+<p>‘:utc`   - interpret values as UTC</p>
+</li><li>
+<p>‘:local` - (default) interpret values as local time, preserving existing behavior</p>
+</li></ul>
+
+<p>Example:</p>
+
+<pre class="ruby"><span class="ruby-constant">DuckDB</span>.<span class="ruby-identifier">default_timezone</span> = <span class="ruby-value">:utc</span>
+</pre>
+
+<p>This setting only affects conversion of values without time zone. Values with explicit time zone are always interpreted according to their offset.</p>
+        </div>
+      </div>
+    </section>
 
 
      <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
          <h3>Public Class Methods</h3>
        </header>
+
+      <div id="method-c-default_timezone-3D" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-default_timezone-3D" title="Link to this method">
+                <span class="method-name">default_timezone=</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="default_timezone-3D-source">
+            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 44</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">default_timezone=</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;DuckDB.default_timezone must be either :utc or :local.&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-node">%i[local utc]</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">value</span>)
+
+  <span class="ruby-ivar">@default_timezone</span> = <span class="ruby-identifier">value</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
 
       <div id="method-c-library_version" class="method-detail anchor-link ">
         <div class="method-header">
