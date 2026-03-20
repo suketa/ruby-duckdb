@@ -83,6 +83,7 @@
     <ul class="link-list" role="directory">
       <li ><a href="#method-c-default_timezone-3D">default_timezone=</a></li>
       <li ><a href="#method-c-library_version">library_version</a></li>
+      <li ><a href="#method-c-vector_size">vector_size</a></li>
     </ul>
   </div>
 
@@ -226,6 +227,38 @@
           <p>Returns the version of the <a href="DuckDB.html"><code>DuckDB</code></a> library.</p>
 
 <pre class="ruby"><span class="ruby-constant">DuckDB</span>.<span class="ruby-identifier">library_version</span> <span class="ruby-comment"># =&gt; &quot;0.2.0&quot;</span>
+</pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-vector_size" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-vector_size" title="Link to this method">
+                  <span class="method-callseq">
+                    vector_size &rarr; Integer
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="vector_size-source">
+            <pre>static VALUE duckdb_s_vector_size(VALUE self) {
+    return ULONG2NUM(duckdb_vector_size());
+}</pre>
+          </div>
+          <p>Returns the vector size of <a href="DuckDB.html"><code>DuckDB</code></a>. The vector size is the number of rows that are processed in a single vectorized operation.</p>
+
+<pre class="ruby"><span class="ruby-constant">DuckDB</span>.<span class="ruby-identifier">vector_size</span> <span class="ruby-comment"># =&gt; 2048</span>
 </pre>
         </div>
 
