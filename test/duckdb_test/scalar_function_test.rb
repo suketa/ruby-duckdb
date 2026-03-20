@@ -93,7 +93,7 @@ module DuckDBTest
     def test_add_parameter_raises_error_for_invalid_argument
       sf = DuckDB::ScalarFunction.new
 
-      error = assert_raises(ArgumentError) do
+      error = assert_raises(DuckDB::Error) do
         sf.add_parameter('not a logical type')
       end
 

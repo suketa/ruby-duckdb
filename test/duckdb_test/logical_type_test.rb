@@ -164,7 +164,7 @@ module DuckDBTest
     end
 
     def test_s_resolve_with_invalid_symbol
-      assert_raises(ArgumentError) do
+      assert_raises(DuckDB::Error) do
         DuckDB::LogicalType.resolve(:invalid_type)
       end
     end
@@ -386,7 +386,7 @@ module DuckDBTest
     end
 
     def test_s_create_array_with_invalid_arg
-      assert_raises(ArgumentError) { DuckDB::LogicalType.create_array(:nonexistent, 1) }
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_array(:nonexistent, 1) }
     end
 
     def test_s_create_list_with_logical_type
@@ -413,7 +413,7 @@ module DuckDBTest
     end
 
     def test_s_create_list_with_invalid_arg
-      assert_raises(ArgumentError) { DuckDB::LogicalType.create_list(:nonexistent) }
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_list(:nonexistent) }
     end
 
     def test_new_with_primitive_like_complex_type
