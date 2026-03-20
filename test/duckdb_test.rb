@@ -14,7 +14,7 @@ module DuckDBTest
 
     def test_vector_size
       assert_kind_of Integer, ::DuckDB.vector_size
-      assert ::DuckDB.vector_size > 0
+      assert_operator ::DuckDB.vector_size, :>, 0
     end
   end
 end
