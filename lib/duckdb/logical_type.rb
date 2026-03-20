@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DuckDB
-  class LogicalType
+  class LogicalType # rubocop:disable Metrics/ClassLength
     alias :alias get_alias
     alias :alias= set_alias
 
