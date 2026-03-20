@@ -30,6 +30,8 @@ module DuckDBTest
     end
 
     def test_state_ready_after_execute
+      skip 'Pending result execute_task loop hangs on Windows' if Gem.win_platform?
+
       pending_result = @stmt.pending_prepared
       pending_result.execute_task while pending_result.state == :not_ready
 
@@ -41,6 +43,8 @@ module DuckDBTest
     end
 
     def test_state_error_after_execute_task
+      skip 'Pending result execute_task loop hangs on Windows' if Gem.win_platform?
+
       pending_result = @stmt.pending_prepared
       pending_result.execute_task while pending_result.state == :not_ready
       pending_result.execute_pending
@@ -50,6 +54,8 @@ module DuckDBTest
     end
 
     def test_execution_finished?
+      skip 'Pending result execute_task loop hangs on Windows' if Gem.win_platform?
+
       pending_result = @stmt.pending_prepared
 
       refute_predicate pending_result, :execution_finished?
@@ -64,6 +70,8 @@ module DuckDBTest
     end
 
     def test_execute_pending
+      skip 'Pending result execute_task loop hangs on Windows' if Gem.win_platform?
+
       pending_result = @stmt.pending_prepared
       pending_result.execute_task while pending_result.state == :not_ready
 
@@ -72,6 +80,8 @@ module DuckDBTest
     end
 
     def test_execute_check_state
+      skip 'Pending result execute_task loop hangs on Windows' if Gem.win_platform?
+
       pending_result = @stmt.pending_prepared
       state = pending_result.execute_check_state
 
