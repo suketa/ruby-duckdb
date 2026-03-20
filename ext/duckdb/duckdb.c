@@ -5,6 +5,7 @@ VALUE PositiveInfinity;
 VALUE NegativeInfinity;
 
 static VALUE duckdb_s_library_version(VALUE self);
+static VALUE duckdb_s_vector_size(VALUE self);
 
 /*
  * call-seq:
@@ -18,6 +19,19 @@ static VALUE duckdb_s_library_version(VALUE self) {
     return rb_str_new2(duckdb_library_version());
 }
 
+/*
+ * call-seq:
+ *   DuckDB.vector_size -> Integer
+ *
+ * Returns the vector size of DuckDB. The vector size is the number of rows
+ * that are processed in a single vectorized operation.
+ *
+ *   DuckDB.vector_size # => 2048
+ */
+static VALUE duckdb_s_vector_size(VALUE self) {
+    return ULONG2NUM(duckdb_vector_size());
+}
+
 void
 Init_duckdb_native(void) {
     mDuckDB = rb_define_module("DuckDB");
@@ -25,6 +39,7 @@ Init_duckdb_native(void) {
     NegativeInfinity = rb_str_new_literal("-infinity");
 
     rb_define_singleton_method(mDuckDB, "library_version", duckdb_s_library_version, 0);
+    rb_define_singleton_method(mDuckDB, "vector_size", duckdb_s_vector_size, 0);
 
     rbduckdb_init_duckdb_error();
     rbduckdb_init_duckdb_database();
