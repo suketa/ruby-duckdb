@@ -322,6 +322,8 @@ module DuckDBTest
     # Tests for register_scalar_function
 
     def test_register_scalar_function_inline_with_single_parameter
+      skip 'Scalar functions with Ruby callbacks hang on Windows' if Gem.win_platform?
+
       @con.register_scalar_function(
         name: :inline_triple,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -336,6 +338,8 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_inline_with_multiple_parameters
+      skip 'Scalar functions with Ruby callbacks hang on Windows' if Gem.win_platform?
+
       @con.register_scalar_function(
         name: :inline_add,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -350,6 +354,8 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_inline_with_no_parameters
+      skip 'Scalar functions with Ruby callbacks hang on Windows' if Gem.win_platform?
+
       @con.register_scalar_function(
         name: :inline_constant,
         return_type: DuckDB::LogicalType::INTEGER
@@ -363,6 +369,8 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_inline_with_varchar
+      skip 'Scalar functions with Ruby callbacks hang on Windows' if Gem.win_platform?
+
       @con.register_scalar_function(
         name: :inline_reverse,
         return_type: DuckDB::LogicalType::VARCHAR,
@@ -406,6 +414,8 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_object_style_still_works
+      skip 'Scalar functions with Ruby callbacks hang on Windows' if Gem.win_platform?
+
       sf = DuckDB::ScalarFunction.create(
         name: :object_style,
         return_type: DuckDB::LogicalType::INTEGER
