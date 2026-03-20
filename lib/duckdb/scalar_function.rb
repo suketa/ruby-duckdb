@@ -18,7 +18,7 @@ module DuckDB
     # @example Single parameter function
     #   sf = DuckDB::ScalarFunction.create(
     #     name: :triple,
-    #     return_type: :integer
+    #     return_type: :integer,
     #     parameter_type: :integer
     #   ) { |v| v * 3 }
     #
