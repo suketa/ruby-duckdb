@@ -43,7 +43,7 @@ module DuckDBTest
         sf.return_type = interval_type
       end
 
-      assert_match(/only.*supported/i, error.message)
+      assert_match(/not supported/i, error.message)
     end
 
     def test_set_function
@@ -87,7 +87,7 @@ module DuckDBTest
         sf.add_parameter(interval_type)
       end
 
-      assert_match(/only.*parameter types.*supported/i, error.message)
+      assert_match(/not supported/i, error.message)
     end
 
     def test_add_parameter_raises_error_for_invalid_argument
@@ -97,7 +97,7 @@ module DuckDBTest
         sf.add_parameter('not a logical type')
       end
 
-      assert_match(/must be a DuckDB::LogicalType/i, error.message)
+      assert_match(/Unknown logical type/i, error.message)
     end
 
     def test_scalar_function_with_one_parameter # rubocop:disable Metrics/MethodLength
@@ -694,6 +694,24 @@ module DuckDBTest
       sf.name = 'triple'
       sf.add_parameter(DuckDB::LogicalType::INTEGER)
       sf.return_type = DuckDB::LogicalType::BIGINT
+      sf.set_function { |v| v * 3 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT SUM(triple(value)) FROM large_test')
+
+      # sum(0..9999) * 3 = 49995000 * 3 = 149985000
+      assert_equal 149_985_000, result.first.first
+    end
+
+    def test_scalar_function_with_symbol_return_type_and_params
+      skip 'Scalar functions with Ruby test' if Gem.win_platform?
+
+      @con.execute('CREATE TABLE large_test AS SELECT range::INTEGER AS value FROM range(10000)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'triple'
+      sf.add_parameter(:integer)
+      sf.return_type = :bigint
       sf.set_function { |v| v * 3 }
 
       @con.register_scalar_function(sf)
