@@ -8,9 +8,9 @@ module DuckDB
     # Create and configure a scalar function in one call
     #
     # @param name [String, Symbol] the function name
-    # @param return_type [DuckDB::LogicalType] the return type
-    # @param parameter_type [DuckDB::LogicalType, nil] single parameter type (use this OR parameter_types)
-    # @param parameter_types [Array<DuckDB::LogicalType>, nil] multiple parameter types
+    # @param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type
+    # @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single parameter type
+    # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple parameter types
     # @yield [*args] the function implementation
     # @return [DuckDB::ScalarFunction] configured scalar function ready to register
     # @raise [ArgumentError] if block is not provided or both parameter_type and parameter_types are specified
@@ -18,21 +18,21 @@ module DuckDB
     # @example Single parameter function
     #   sf = DuckDB::ScalarFunction.create(
     #     name: :triple,
-    #     return_type: DuckDB::LogicalType::INTEGER,
-    #     parameter_type: DuckDB::LogicalType::INTEGER
+    #     return_type: :integer
+    #     parameter_type: :integer
     #   ) { |v| v * 3 }
     #
     # @example Multiple parameters
     #   sf = DuckDB::ScalarFunction.create(
     #     name: :add,
-    #     return_type: DuckDB::LogicalType::INTEGER,
-    #     parameter_types: [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::INTEGER]
+    #     return_type: :integer,
+    #     parameter_types: [:integer, :integer]
     #   ) { |a, b| a + b }
     #
     # @example No parameters (constant function)
     #   sf = DuckDB::ScalarFunction.create(
     #     name: :random_num,
-    #     return_type: DuckDB::LogicalType::INTEGER
+    #     return_type: :integer
     #   ) { rand(100) }
     def self.create(name:, return_type:, parameter_type: nil, parameter_types: nil, &) # rubocop:disable Metrics/MethodLength
       raise ArgumentError, 'Block required' unless block_given?
@@ -80,7 +80,7 @@ module DuckDB
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP, TINYINT,
     # UBIGINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.
     #
-    # @param logical_type [DuckDB::LogicalType] the parameter type
+    # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the parameter type
     # @return [DuckDB::ScalarFunction] self
     # @raise [DuckDB::Error] if the type is not supported
     def add_parameter(logical_type)
@@ -93,7 +93,7 @@ module DuckDB
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP, TINYINT,
     # UBIGINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.
     #
-    # @param logical_type [DuckDB::LogicalType] the return type
+    # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type
     # @return [DuckDB::ScalarFunction] self
     # @raise [DuckDB::Error] if the type is not supported
     def return_type=(logical_type)

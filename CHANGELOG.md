@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- `DuckDB::ScalarFunction.create`, `DuckDB::ScalarFunction#add_parameter`, `DuckDB::ScalarFunction#return_type` accept logical type symbol as argument.
 - add `DuckDB.default_timezone` configuration (defaults to `:local`) to control how TIMESTAMP and TIME values without time zone are converted to Ruby `Time` (`:utc` or `:local`).
 
 # 1.5.0.1 - 2026-03-17
