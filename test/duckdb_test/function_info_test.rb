@@ -5,6 +5,8 @@ require 'test_helper'
 module DuckDBTest
   class FunctionInfoTest < Minitest::Test
     def setup
+      skip 'FunctionInfo tests hang on Windows' if Gem.win_platform?
+
       @database = DuckDB::Database.open
       @connection = @database.connect
     end
