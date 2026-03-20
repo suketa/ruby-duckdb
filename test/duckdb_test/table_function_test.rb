@@ -18,7 +18,6 @@ module DuckDBTest
     # Test: Create function with set_value (high-level API)
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
     def test_create_with_set_value
-
       db = DuckDB::Database.open
       conn = db.connect
       conn.query('SET threads=1')
@@ -161,7 +160,6 @@ module DuckDBTest
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_symbol_columns
-
       db = DuckDB::Database.open
       conn = db.connect
       conn.query('SET threads=1')
