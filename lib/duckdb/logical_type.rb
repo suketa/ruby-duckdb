@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DuckDB
-  class LogicalType
+  class LogicalType # rubocop:disable Metrics/ClassLength
     alias :alias get_alias
     alias :alias= set_alias
 
@@ -58,9 +58,11 @@ module DuckDB
       def resolve(symbol)
         return symbol if symbol.is_a?(DuckDB::LogicalType)
 
+        raise_resolve_error(symbol) unless symbol.respond_to?(:upcase)
+
         DuckDB::LogicalType.const_get(symbol.upcase)
       rescue NameError
-        raise ArgumentError, "Unknown logical type symbol: #{symbol}"
+        raise_resolve_error(symbol)
       end
 
       # Creates an array logical type with the given child type and size.
@@ -92,6 +94,12 @@ module DuckDB
       #   nested_list.child_type.type #=> :list
       def create_list(type)
         _create_list_type(LogicalType.resolve(type))
+      end
+
+      private
+
+      def raise_resolve_error(symbol)
+        raise DuckDB::Error, "Unknown logical type: `#{symbol.inspect}`"
       end
     end
 
@@ -238,6 +246,16 @@ module DuckDB
       dictionary_size.times do |i|
         yield dictionary_value_at(i)
       end
+    end
+
+    # :nodoc:
+    def inspect
+      "<#{self.class}::#{type.upcase}>"
+    end
+
+    # :nodoc:
+    def to_s
+      inspect
     end
   end
 end
