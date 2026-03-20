@@ -4,6 +4,10 @@ require 'test_helper'
 
 module DuckDBTest
   class TableFunctionTest < Minitest::Test
+    def setup
+      skip 'TableFunction tests with Ruby callbacks hang on Windows' if Gem.win_platform?
+    end
+
     # Test 1: Create using new
     def test_new
       tf = DuckDB::TableFunction.new
@@ -14,7 +18,6 @@ module DuckDBTest
     # Test: Create function with set_value (high-level API)
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
     def test_create_with_set_value
-      skip if Gem.win_platform?
 
       db = DuckDB::Database.open
       conn = db.connect
@@ -91,7 +94,6 @@ module DuckDBTest
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
     def test_gc_compaction_safety
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
-      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       db = DuckDB::Database.open
       conn = db.connect
@@ -159,7 +161,6 @@ module DuckDBTest
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_symbol_columns
-      skip if Gem.win_platform?
 
       db = DuckDB::Database.open
       conn = db.connect

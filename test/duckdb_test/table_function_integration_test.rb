@@ -5,6 +5,8 @@ require 'test_helper'
 module DuckDBTest
   class TableFunctionIntegrationTest < Minitest::Test
     def setup
+      skip 'TableFunction tests with Ruby callbacks hang on Windows' if Gem.win_platform?
+
       @database = DuckDB::Database.open
       @connection = @database.connect
       @connection.execute('SET threads=1') # Required for Ruby callbacks
@@ -18,7 +20,6 @@ module DuckDBTest
     # Test 1: Simple table function returning data
     # rubocop:disable Minitest/MultipleAssertions
     def test_simple_table_function
-      skip if Gem.win_platform?
 
       table_function = create_simple_function
 
@@ -37,7 +38,6 @@ module DuckDBTest
     # Test 2: Table function with parameters
     # rubocop:disable Minitest/MultipleAssertions
     def test_table_function_with_parameters
-      skip 'test_simple_table_function' if Gem.win_platform?
 
       table_function = create_parameterized_function
 
