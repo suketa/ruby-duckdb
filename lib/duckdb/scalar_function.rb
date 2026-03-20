@@ -84,13 +84,7 @@ module DuckDB
     # @return [DuckDB::ScalarFunction] self
     # @raise [DuckDB::Error] if the type is not supported
     def add_parameter(logical_type)
-      raise DuckDB::Error, 'logical_type must be a DuckDB::LogicalType' unless logical_type.is_a?(DuckDB::LogicalType)
-
-      unless SUPPORTED_TYPES.include?(logical_type.type)
-        type_list = SUPPORTED_TYPES.map(&:upcase).join(', ')
-        raise DuckDB::Error,
-              "Only #{type_list} parameter types are currently supported"
-      end
+      logical_type = check_supported_type!(logical_type)
 
       _add_parameter(logical_type)
     end
@@ -103,15 +97,21 @@ module DuckDB
     # @return [DuckDB::ScalarFunction] self
     # @raise [DuckDB::Error] if the type is not supported
     def return_type=(logical_type)
-      raise DuckDB::Error, 'logical_type must be a DuckDB::LogicalType' unless logical_type.is_a?(DuckDB::LogicalType)
-
-      unless SUPPORTED_TYPES.include?(logical_type.type)
-        type_list = SUPPORTED_TYPES.map(&:upcase).join(', ')
-        raise DuckDB::Error,
-              "Only #{type_list} return types are currently supported"
-      end
+      logical_type = check_supported_type!(logical_type)
 
       _set_return_type(logical_type)
+    end
+
+    private
+
+    def check_supported_type!(type)
+      logical_type = DuckDB::LogicalType.resolve(type)
+
+      unless SUPPORTED_TYPES.include?(logical_type.type)
+        raise DuckDB::Error, "Type `#{type}` is not supported. Only #{SUPPORTED_TYPES.inspect} are available."
+      end
+
+      logical_type
     end
   end
 end
