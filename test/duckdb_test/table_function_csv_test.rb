@@ -59,8 +59,6 @@ module DuckDBTest
     end
 
     def test_csv_table_function
-      skip if Gem.win_platform?
-
       csv_io = StringIO.new("id,name,age\n1,Alice,30\n2,Bob,25\n3,Charlie,35")
       csv = CSV.new(csv_io, headers: true)
 
@@ -75,9 +73,7 @@ module DuckDBTest
       assert_equal %w[3 Charlie 35], result[2]
     end
 
-    def test_csv_table_function_returns_date # rubocop:disable Metrics/AbcSize
-      skip if Gem.win_platform?
-
+    def test_csv_table_function_returns_date
       csv_io = StringIO.new("value\n2023-01-02\n2024-03-04\n2025-05-06")
       csv = CSV.new(csv_io, headers: true, converters: :date)
 
