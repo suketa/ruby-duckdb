@@ -35,39 +35,36 @@ jobs:
       id: duckdb-cache
       uses: actions/cache@v4
       with:
-        path: duckdb-v${{ matrix.duckdb }}
+        path: libduckdb-osx-universal
         key: ${{ runner.os }}-duckdb-v${{ matrix.duckdb }}
 
-    - name: Build duckdb ${{ matrix.duckdb }}
+    - name: Download duckdb ${{ matrix.duckdb }}
+      if: steps.duckdb-cache.outputs.cache-hit != 'true'
       env:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
-      if: steps.duckdb-cache.outputs.cache-hit != 'true'
       run: |
-        git clone -b v$DUCKDB_VERSION https://github.com/cwida/duckdb.git duckdb-tmp-v$DUCKDB_VERSION
-        cd duckdb-tmp-v$DUCKDB_VERSION && make && cd ..
-        rm -rf duckdb-v$DUCKDB_VERSION
-        mkdir -p duckdb-v$DUCKDB_VERSION/build/release/src duckdb-v$DUCKDB_VERSION/src
-        cp -rip duckdb-tmp-v$DUCKDB_VERSION/build/release/src/*.dylib duckdb-v$DUCKDB_VERSION/build/release/src
-        cp -rip duckdb-tmp-v$DUCKDB_VERSION/src/include duckdb-v$DUCKDB_VERSION/src/
+        curl -OL https://github.com/duckdb/duckdb/releases/download/v${DUCKDB_VERSION}/libduckdb-osx-universal.zip
+        case "${DUCKDB_VERSION}" in
+          "1.5.0") EXPECTED_SHA256="071ef2f775c5bef805fcb9e58504cc2024aee82e5227f2b6322d0bdef832130e" ;;
+          "1.4.4") EXPECTED_SHA256="5e6d79f5fb86bbd4f24d59cee3bc38f113d1433761df35337e3c01c62eeafe26" ;;
+          *) echo "No known SHA256 for DuckDB v${DUCKDB_VERSION}"; exit 1 ;;
+        esac
+        echo "${EXPECTED_SHA256}  libduckdb-osx-universal.zip" | shasum -a 256 -c
+        mkdir libduckdb-osx-universal
+        unzip libduckdb-osx-universal.zip -d libduckdb-osx-universal
 
     - name: bundle install with Ruby ${{ matrix.ruby }}
-      env:
-        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
         bundle install --jobs 4 --retry 3
 
     - name: Build test with DUCKDB_API_NO_DEPRECATED and Ruby ${{ matrix.ruby }}
-      env:
-        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        env DUCKDB_API_NO_DEPRECATED=1 bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
+        env DUCKDB_API_NO_DEPRECATED=1 bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/libduckdb-osx-universal --with-duckdb-lib=${GITHUB_WORKSPACE}/libduckdb-osx-universal
         bundle exec rake clean
 
     - name: Build with Ruby ${{ matrix.ruby }}
-      env:
-        DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
-        bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/src/include --with-duckdb-lib=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src/
+        bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/libduckdb-osx-universal --with-duckdb-lib=${GITHUB_WORKSPACE}/libduckdb-osx-universal
 
     - name: Setup MySQL
       run: |
@@ -79,12 +76,23 @@ jobs:
         mysql -u root -e "GRANT ALL PRIVILEGES ON test_db.* TO 'test_user'@'127.0.0.1';"
         mysql -u root -e "FLUSH PRIVILEGES;"
 
+    - name: confirm duckdb library version
+      env:
+        EXPECTED_DUCKDB_VERSION: ${{ matrix.duckdb }}
+        DYLD_LIBRARY_PATH: ${{ github.workspace }}/libduckdb-osx-universal
+      run: |
+        ruby -Ilib -rduckdb -e '
+          actual = DuckDB::LIBRARY_VERSION
+          expected = ENV.fetch("EXPECTED_DUCKDB_VERSION")
+          abort("Expected DuckDB #{expected}, got #{actual}") if actual != expected
+          puts "duckdb library #{actual}"
+        '
+
     - name: test with Ruby ${{ matrix.ruby }}
       env:
-        DUCKDB_VERSION: ${{ matrix.duckdb }}
         MYSQL_TEST: 1
+        DYLD_LIBRARY_PATH: ${{ github.workspace }}/libduckdb-osx-universal
       run: |
-        export DYLD_LIBRARY_PATH=${GITHUB_WORKSPACE}/duckdb-v${DUCKDB_VERSION}/build/release/src:${DYLD_LIBRARY_PATH}
         env RUBYOPT=-W:deprecated rake test
 
   post-test:
