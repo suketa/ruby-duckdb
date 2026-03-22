@@ -55,6 +55,7 @@ jobs:
 
     - name: setup libduckdb.dylib
       run: |
+        sudo mkdir -p /usr/local/lib
         sudo cp libduckdb-osx-universal/libduckdb.dylib /usr/local/lib/
 
     - name: bundle install with Ruby ${{ matrix.ruby }}
