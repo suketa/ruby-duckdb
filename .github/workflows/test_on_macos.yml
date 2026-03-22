@@ -53,11 +53,6 @@ jobs:
         mkdir libduckdb-osx-universal
         unzip libduckdb-osx-universal.zip -d libduckdb-osx-universal
 
-    - name: setup libduckdb.dylib
-      run: |
-        sudo mkdir -p /usr/local/lib
-        sudo cp libduckdb-osx-universal/libduckdb.dylib /usr/local/lib/
-
     - name: bundle install with Ruby ${{ matrix.ruby }}
       run: |
         bundle install --jobs 4 --retry 3
@@ -84,6 +79,7 @@ jobs:
     - name: confirm duckdb library version
       env:
         EXPECTED_DUCKDB_VERSION: ${{ matrix.duckdb }}
+        DYLD_LIBRARY_PATH: ${{ github.workspace }}/libduckdb-osx-universal
       run: |
         ruby -Ilib -rduckdb -e '
           actual = DuckDB::LIBRARY_VERSION
@@ -95,6 +91,7 @@ jobs:
     - name: test with Ruby ${{ matrix.ruby }}
       env:
         MYSQL_TEST: 1
+        DYLD_LIBRARY_PATH: ${{ github.workspace }}/libduckdb-osx-universal
       run: |
         env RUBYOPT=-W:deprecated rake test
 
