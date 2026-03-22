@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
-# 1.5.0.2 - 2026-03-21
+# 1.5.0.2 - 2026-03-22
 
 - add `DuckDB.vector_size` to return the DuckDB vector size (number of rows processed per vectorized operation).
 - `DuckDB::ScalarFunction.create`, `DuckDB::ScalarFunction#add_parameter`, `DuckDB::ScalarFunction#return_type=` accept logical type symbol as argument.
