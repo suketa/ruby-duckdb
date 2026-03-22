@@ -77,6 +77,10 @@ jobs:
       run: |
         bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/libduckdb-linux-amd64 --with-duckdb-lib=${GITHUB_WORKSPACE}/libduckdb-linux-amd64
 
+    - name: confirm duckdb library version
+      run: |
+        ruby -Ilib -rduckdb -e 'puts "duckdb library #{DuckDB.library_version}"'
+
     - name: test with Ruby ${{ matrix.ruby }}
       env:
         MYSQL_TEST: 1
