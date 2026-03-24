@@ -69,6 +69,7 @@ module DuckDB
         29 => :bit,
         30 => :time_tz,
         31 => :timestamp_tz,
+        34 => :any,
         35 => :bignum,
         36 => :sqlnull,
         37 => :string_literal,

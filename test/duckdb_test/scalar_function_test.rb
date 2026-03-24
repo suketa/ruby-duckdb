@@ -854,15 +854,22 @@ module DuckDBTest
       end
     end
 
-    def test_scalar_function_with_varargs_any_type
+    def test_scalar_function_with_varargs_any_type # rubocop:disable Metrics/AbcSize
       # varargs_type= with DuckDB::LogicalType::ANY allows the function to
       # accept arguments of any type — each arg may differ.  The DuckDB C API
       # test uses DUCKDB_TYPE_ANY for this (capi_scalar_functions.cpp,
       # "variadic number of ANY parameters").
-      #
-      # Skipped until DuckDB::LogicalType::ANY is added to ruby-duckdb
-      # (DUCKDB_TYPE_ANY = 34 is in the public C API header).
-      skip 'varargs_type= with ANY type requires DuckDB::LogicalType::ANY to be exposed first'
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'count_args'
+      sf.varargs_type = DuckDB::LogicalType::ANY
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_function { |*args| args.size }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0, @con.execute('SELECT count_args()').first.first
+      assert_equal 2, @con.execute('SELECT count_args(42, 99)').first.first
+      assert_equal 3, @con.execute("SELECT count_args(1, 'hello', true)").first.first
     end
 
     def test_scalar_function_create_with_varargs_type
@@ -937,6 +944,230 @@ module DuckDBTest
       result = @con.execute("SELECT join_with_sep2('-', 'a', 'b', 'c')")
 
       assert_equal 'a-b-c', result.first.first
+    end
+
+    def test_scalar_function_create_null_handling_false_by_default
+      # null_handling: defaults to false — DuckDB short-circuits on NULL input
+      # and returns NULL without calling the block.
+      sf = DuckDB::ScalarFunction.create(
+        name: :default_null,
+        return_type: :integer,
+        parameter_type: :integer
+      ) { |v| v.nil? ? 0 : v }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT default_null(NULL)').first.first
+      assert_equal 42, @con.execute('SELECT default_null(42)').first.first
+    end
+
+    def test_scalar_function_create_with_null_handling_true
+      # null_handling: true calls set_special_handling so the block receives
+      # nil for NULL inputs and can return a non-NULL value.
+      sf = DuckDB::ScalarFunction.create(
+        name: :null_as_zero,
+        return_type: :integer,
+        parameter_type: :integer,
+        null_handling: true
+      ) { |v| v.nil? ? 0 : v }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0,  @con.execute('SELECT null_as_zero(NULL)').first.first
+      assert_equal 42, @con.execute('SELECT null_as_zero(42)').first.first
+    end
+
+    def test_scalar_function_create_null_handling_with_varargs
+      # null_handling: true also works with varargs — NULLs arrive as nil
+      # in the splat and the block can count or replace them.
+      sf = DuckDB::ScalarFunction.create(
+        name: :count_nulls,
+        return_type: :integer,
+        varargs_type: :integer,
+        null_handling: true
+      ) { |*args| args.count(&:nil?) }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0, @con.execute('SELECT count_nulls(1, 2, 3)').first.first
+      assert_equal 1, @con.execute('SELECT count_nulls(1, NULL, 3)').first.first
+      assert_equal 3, @con.execute('SELECT count_nulls(NULL, NULL, NULL)').first.first
+    end
+
+    # Tests for set_special_handling
+    #
+    # `duckdb_scalar_function_set_special_handling` marks a scalar function to
+    # receive NULL inputs directly, bypassing DuckDB's standard SQL NULL
+    # propagation (which normally short-circuits the callback and returns NULL
+    # whenever any argument is NULL).
+    #
+    # With special handling enabled the Ruby block IS called even when one or
+    # more arguments are NULL (nil in Ruby), giving the function the chance to
+    # decide its own NULL semantics — e.g. treating NULL as 0, or returning a
+    # default value.
+    #
+    # Reference: duckdb_scalar_function_set_special_handling (duckdb.h:3719)
+    # Issue: https://github.com/suketa/ruby-duckdb/issues/1122
+    # =========================================================================
+
+    def test_set_special_handling_returns_self
+      # set_special_handling should return the ScalarFunction itself so it can
+      # be chained fluently with other configuration calls.
+
+      sf = DuckDB::ScalarFunction.new
+      result = sf.set_special_handling
+
+      assert_instance_of DuckDB::ScalarFunction, result
+      assert_equal sf.__id__, result.__id__
+    end
+
+    def test_set_special_handling_block_receives_null_arg
+      # By default DuckDB skips the callback and returns NULL when any input is
+      # NULL.  After set_special_handling the block IS called with nil, so the
+      # function can return something other than NULL.
+      #
+      # Here we implement COALESCE-like behaviour: treat a NULL INTEGER as 0.
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'null_as_zero'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      sf.set_function { |val| val.nil? ? 0 : val }
+
+      @con.register_scalar_function(sf)
+
+      # Without special handling, NULL input → NULL output.
+      # With special handling, NULL input → block is called → 0.
+      assert_equal 0,  @con.execute('SELECT null_as_zero(NULL)').first.first
+      assert_equal 42, @con.execute('SELECT null_as_zero(42)').first.first
+    end
+
+    def test_set_special_handling_with_two_parameters_any_null # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
+      # Both parameters arrive as-is (nil or value) when special handling is
+      # set.  The block should handle every combination of nil / non-nil.
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_nullable'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      # Treat NULL as 0 for addition
+      sf.set_function { |a, b| (a || 0) + (b || 0) }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 5, @con.execute('SELECT add_nullable(2, 3)').first.first
+      assert_equal 3, @con.execute('SELECT add_nullable(NULL, 3)').first.first
+      assert_equal 2, @con.execute('SELECT add_nullable(2, NULL)').first.first
+      assert_equal 0, @con.execute('SELECT add_nullable(NULL, NULL)').first.first
+    end
+
+    def test_set_special_handling_with_varargs_null_coalesce # rubocop:disable Metrics/AbcSize
+      # Varargs + special handling: even if individual args are NULL the block
+      # is invoked and may inspect/replace each nil in the splat.
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'sum_coalesce'
+      sf.varargs_type = DuckDB::LogicalType::INTEGER
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      sf.set_function { |*args| args.map { |v| v || 0 }.sum }
+
+      @con.register_scalar_function(sf)
+
+      # Without special_handling this would return NULL; with it we get the sum
+      # of non-NULL values (NULLs coerced to 0).
+      assert_equal 4, @con.execute('SELECT sum_coalesce(1, NULL, 3)').first.first
+      assert_equal 0, @con.execute('SELECT sum_coalesce(NULL, NULL)').first.first
+    end
+
+    def test_set_special_handling_without_null_returns_normally
+      # Enabling special handling must not change behaviour when all inputs are
+      # non-NULL — the block should still be called and return correctly.
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double_special'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      sf.set_function { |val| val * 2 }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 10, @con.execute('SELECT double_special(5)').first.first
+    end
+
+    def test_set_special_handling_can_return_null_explicitly
+      # Even with special handling the block may choose to return nil (NULL) —
+      # the method must not force a non-NULL result.
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'passthrough_null'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      sf.set_function { |val| val } # echo input — nil stays nil
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT passthrough_null(NULL)').first.first
+      assert_equal 7, @con.execute('SELECT passthrough_null(7)').first.first
+    end
+
+    def test_set_special_handling_null_count_varargs_integer # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
+      # Mirrors the canonical DuckDB C API test (capi_scalar_functions.cpp,
+      # "Test Scalar Functions - variadic number of ANY parameters") but uses
+      # INTEGER varargs instead of ANY, because DuckDB::LogicalType::ANY is not
+      # yet exposed (issue #1122).
+      #
+      # The function counts how many of its INTEGER arguments are NULL.
+      # With default NULL propagation the block would never be called when any
+      # arg is NULL; set_special_handling lets us actually count them.
+      #
+      # Expected behaviour (directly from the DuckDB C API test):
+      #   my_null_count(40, 1, 3)        → 0   (no NULLs)
+      #   my_null_count(1, 42, NULL)     → 1   (one NULL)
+      #   my_null_count(NULL, NULL, NULL)→ 3   (three NULLs)
+      #   my_null_count()                → 0   (no args, no NULLs)
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'my_null_count'
+      sf.varargs_type = DuckDB::LogicalType::INTEGER
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      sf.set_function { |*args| args.count(&:nil?) }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0, @con.execute('SELECT my_null_count(40, 1, 3)').first.first
+      assert_equal 1, @con.execute('SELECT my_null_count(1, 42, NULL)').first.first
+      assert_equal 3, @con.execute('SELECT my_null_count(NULL, NULL, NULL)').first.first
+      assert_equal 0, @con.execute('SELECT my_null_count()').first.first
+    end
+
+    def test_set_special_handling_null_count_any_varargs # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
+      # Same null_count function as above but using DuckDB::LogicalType::ANY,
+      # which allows arguments of mixed types (matching the DuckDB C API test
+      # exactly: my_null_count(40, [1], 'hello', 3) → 0).
+      #
+      # Skipped additionally until DuckDB::LogicalType::ANY is added
+      # (DUCKDB_TYPE_ANY = 34, see issue #1122).
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'my_null_count_any'
+      sf.varargs_type = DuckDB::LogicalType::ANY
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_special_handling
+      sf.set_function { |*args| args.count(&:nil?) }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0, @con.execute("SELECT my_null_count_any(40, 'hello', 3)").first.first
+      assert_equal 1, @con.execute('SELECT my_null_count_any(1, 42, NULL)').first.first
+      assert_equal 3, @con.execute('SELECT my_null_count_any(NULL, NULL, NULL)').first.first
+      assert_equal 0, @con.execute('SELECT my_null_count_any()').first.first
     end
   end
 end

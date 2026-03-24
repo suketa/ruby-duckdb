@@ -13,6 +13,9 @@ module DuckDB
     # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple fixed parameter types
     # @param varargs_type [DuckDB::LogicalType|:logical_type_symbol, nil] trailing varargs element type;
     #   can be combined with parameter_type/parameter_types to add fixed leading parameters
+    # @param null_handling [Boolean] when +true+, calls +set_special_handling+ so the block
+    #   receives +nil+ for NULL inputs instead of DuckDB short-circuiting and returning NULL.
+    #   Default is +false+ (standard SQL NULL propagation).
     # @yield [fixed_args..., *varargs] the function implementation
     # @return [DuckDB::ScalarFunction] configured scalar function ready to register
     # @raise [ArgumentError] if block is not provided, or both parameter_type and parameter_types are specified
@@ -51,8 +54,16 @@ module DuckDB
     #     name: :random_num,
     #     return_type: :integer
     #   ) { rand(100) }
-    def self.create( # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-      name:, return_type:, parameter_type: nil, parameter_types: nil, varargs_type: nil, &
+    #
+    # @example NULL-aware function (block receives nil for NULL inputs)
+    #   sf = DuckDB::ScalarFunction.create(
+    #     name: :null_as_zero,
+    #     return_type: :integer,
+    #     parameter_type: :integer,
+    #     null_handling: true
+    #   ) { |v| v.nil? ? 0 : v }
+    def self.create( # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/ParameterLists
+      name:, return_type:, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &
     )
       raise ArgumentError, 'Block required' unless block_given?
       raise ArgumentError, 'Cannot specify both parameter_type and parameter_types' if parameter_type && parameter_types
@@ -70,12 +81,14 @@ module DuckDB
       sf.return_type = return_type
       params.each { |type| sf.add_parameter(type) }
       sf.varargs_type = varargs_type if varargs_type
+      sf.set_special_handling if null_handling
       sf.set_function(&)
       sf
     end
 
     # Supported types for scalar function parameters and return values
     SUPPORTED_TYPES = %i[
+      any
       bigint
       blob
       boolean
@@ -120,6 +133,20 @@ module DuckDB
       logical_type = check_supported_type!(logical_type)
 
       _set_return_type(logical_type)
+    end
+
+    # Sets special NULL handling for the scalar function.
+    # By default DuckDB skips the callback and returns NULL when any input row
+    # contains a NULL argument. Calling this method disables that behaviour so
+    # the block is invoked even when inputs are NULL, receiving +nil+ for each
+    # NULL argument. This lets the function implement its own NULL semantics
+    # (e.g. treating NULL as 0, or counting NULLs).
+    #
+    # Wraps +duckdb_scalar_function_set_special_handling+.
+    #
+    # @return [DuckDB::ScalarFunction] self
+    def set_special_handling
+      _set_special_handling
     end
 
     # Sets the varargs type for the scalar function.
