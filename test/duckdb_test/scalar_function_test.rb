@@ -854,15 +854,22 @@ module DuckDBTest
       end
     end
 
-    def test_scalar_function_with_varargs_any_type
+    def test_scalar_function_with_varargs_any_type # rubocop:disable Metrics/AbcSize
       # varargs_type= with DuckDB::LogicalType::ANY allows the function to
       # accept arguments of any type — each arg may differ.  The DuckDB C API
       # test uses DUCKDB_TYPE_ANY for this (capi_scalar_functions.cpp,
       # "variadic number of ANY parameters").
-      #
-      # Skipped until DuckDB::LogicalType::ANY is added to ruby-duckdb
-      # (DUCKDB_TYPE_ANY = 34 is in the public C API header).
-      skip 'varargs_type= with ANY type requires DuckDB::LogicalType::ANY to be exposed first'
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'count_args'
+      sf.varargs_type = DuckDB::LogicalType::ANY
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_function { |*args| args.size }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0, @con.execute('SELECT count_args()').first.first
+      assert_equal 2, @con.execute('SELECT count_args(42, 99)').first.first
+      assert_equal 3, @con.execute("SELECT count_args(1, 'hello', true)").first.first
     end
 
     def test_scalar_function_create_with_varargs_type
