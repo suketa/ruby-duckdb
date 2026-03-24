@@ -683,7 +683,6 @@ module DuckDBTest
     def test_varargs_type_setter
       # varargs_type= should configure the function to accept any number of
       # arguments of the given type and return self for chaining.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.varargs_type = DuckDB::LogicalType::VARCHAR
@@ -694,7 +693,6 @@ module DuckDBTest
     def test_varargs_type_setter_with_symbol
       # varargs_type= should accept a type symbol (e.g. :varchar) for consistency
       # with add_parameter and return_type=.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.varargs_type = :varchar
@@ -705,7 +703,6 @@ module DuckDBTest
     def test_varargs_type_setter_raises_error_for_unsupported_type
       # varargs_type= should raise DuckDB::Error when given a type not in
       # SUPPORTED_TYPES (e.g. INTERVAL), mirroring the behaviour of add_parameter.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
 
@@ -719,7 +716,6 @@ module DuckDBTest
     def test_varargs_type_setter_raises_error_for_invalid_argument
       # varargs_type= should raise DuckDB::Error when given something that is not
       # a LogicalType or a recognised type symbol, mirroring add_parameter.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
 
@@ -735,7 +731,6 @@ module DuckDBTest
       # Note: the DuckDB C API test (capi_scalar_functions.cpp) returns NULL
       # for zero-arg calls, but that is the callback's own choice.  In Ruby the
       # block decides; here we choose 0 to keep the test deterministic.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'sum_varargs'
@@ -752,7 +747,6 @@ module DuckDBTest
     def test_scalar_function_with_varargs_single_arg
       # A varargs function called with a single INTEGER literal should receive
       # that one value via the splat and return it unchanged.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'sum_varargs'
@@ -769,7 +763,6 @@ module DuckDBTest
     def test_scalar_function_with_varargs_multiple_args
       # A varargs function called with several INTEGER literals should receive
       # all values via the splat and be able to aggregate them.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'sum_varargs'
@@ -787,7 +780,6 @@ module DuckDBTest
       # Varargs function with VARCHAR type: all string arguments are joined.
       # Verifies that the correct type conversion path is used for non-numeric
       # vararg types.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'concat_varargs'
@@ -804,7 +796,6 @@ module DuckDBTest
     def test_scalar_function_with_varargs_on_table
       # Varargs function applied to multiple columns per row from a table.
       # Each row's column values arrive as splat args; the block sums them.
-      skip 'varargs_type= is not yet implemented'
 
       @con.execute('CREATE TABLE test_varargs (a INTEGER, b INTEGER, c INTEGER)')
       @con.execute('INSERT INTO test_varargs VALUES (1, 2, 3), (4, 5, 6)')
@@ -822,20 +813,26 @@ module DuckDBTest
     end
 
     def test_scalar_function_with_varargs_null_handling
-      # NULL SQL values arrive as nil in the splat; the block must handle them.
-      # Here we compact before summing so NULLs are ignored.
-      skip 'varargs_type= is not yet implemented'
+      # DuckDB applies standard SQL NULL propagation by default: if ANY argument
+      # is NULL the function returns NULL without invoking the block.
+      # This matches the DuckDB C API test: my_addition(40, 42, NULL) → NULL.
+      # To receive NULLs inside the block, set_special_handling would be needed
+      # (see issue #1122 — not yet implemented).
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'sum_varargs'
       sf.varargs_type = DuckDB::LogicalType::INTEGER
       sf.return_type = DuckDB::LogicalType::INTEGER
-      sf.set_function { |*args| compact = args.compact; compact.empty? ? nil : compact.sum }
+      sf.set_function { |*args| args.sum }
 
       @con.register_scalar_function(sf)
-      result = @con.execute('SELECT sum_varargs(1, NULL, 3)')
 
-      assert_equal 4, result.first.first
+      # Any NULL arg → NULL result (block not invoked)
+      assert_nil @con.execute('SELECT sum_varargs(1, NULL, 3)').first.first
+      assert_nil @con.execute('SELECT sum_varargs(NULL, 2)').first.first
+
+      # No NULL args → block IS invoked, returns correct sum
+      assert_equal 6, @con.execute('SELECT sum_varargs(1, 2, 3)').first.first
     end
 
     def test_scalar_function_with_varargs_type_mismatch_raises_error
@@ -843,7 +840,6 @@ module DuckDBTest
       # or LIST) should fail. DuckDB C API test confirms:
       #   SELECT my_addition('hello', [1])  →  error
       # The error is raised by DuckDB during query execution, not at registration.
-      skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'sum_varargs'
@@ -873,7 +869,6 @@ module DuckDBTest
       # ScalarFunction.create should accept a varargs_type: keyword as an
       # alternative to parameter_type:/parameter_types:, creating a function
       # that calls varargs_type= internally.
-      skip 'varargs_type= is not yet implemented — ScalarFunction.create needs varargs_type: keyword'
 
       sf = DuckDB::ScalarFunction.create(
         name: :sum_varargs,

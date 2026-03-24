@@ -31,6 +31,7 @@ static void compact(void *);
 static VALUE duckdb_scalar_function_initialize(VALUE self);
 static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name);
 static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical_type);
+static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_scalar_function_set_function(VALUE self);
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output);
@@ -377,6 +378,18 @@ static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical
     return self;
 }
 
+static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_type) {
+    rubyDuckDBScalarFunction *p;
+    rubyDuckDBLogicalType *lt;
+
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
+    lt = get_struct_logical_type(logical_type);
+
+    duckdb_scalar_function_set_varargs(p->scalar_function, lt->logical_type);
+
+    return self;
+}
+
 static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type) {
     rubyDuckDBScalarFunction *p;
     rubyDuckDBLogicalType *lt;
@@ -679,6 +692,7 @@ void rbduckdb_init_duckdb_scalar_function(void) {
     rb_define_method(cDuckDBScalarFunction, "set_name", rbduckdb_scalar_function_set_name, 1);
     rb_define_method(cDuckDBScalarFunction, "name=", rbduckdb_scalar_function_set_name, 1);
     rb_define_private_method(cDuckDBScalarFunction, "_set_return_type", rbduckdb_scalar_function__set_return_type, 1);
+    rb_define_private_method(cDuckDBScalarFunction, "_set_varargs", rbduckdb_scalar_function__set_varargs, 1);
     rb_define_private_method(cDuckDBScalarFunction, "_add_parameter", rbduckdb_scalar_function_add_parameter, 1);
     rb_define_method(cDuckDBScalarFunction, "set_function", rbduckdb_scalar_function_set_function, 0);
 }
