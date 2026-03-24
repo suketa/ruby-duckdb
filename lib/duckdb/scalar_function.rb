@@ -76,6 +76,7 @@ module DuckDB
 
     # Supported types for scalar function parameters and return values
     SUPPORTED_TYPES = %i[
+      any
       bigint
       blob
       boolean
@@ -120,6 +121,20 @@ module DuckDB
       logical_type = check_supported_type!(logical_type)
 
       _set_return_type(logical_type)
+    end
+
+    # Sets special NULL handling for the scalar function.
+    # By default DuckDB skips the callback and returns NULL when any input row
+    # contains a NULL argument. Calling this method disables that behaviour so
+    # the block is invoked even when inputs are NULL, receiving +nil+ for each
+    # NULL argument. This lets the function implement its own NULL semantics
+    # (e.g. treating NULL as 0, or counting NULLs).
+    #
+    # Wraps +duckdb_scalar_function_set_special_handling+.
+    #
+    # @return [DuckDB::ScalarFunction] self
+    def set_special_handling
+      _set_special_handling
     end
 
     # Sets the varargs type for the scalar function.

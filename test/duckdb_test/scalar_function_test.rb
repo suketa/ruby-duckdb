@@ -959,7 +959,6 @@ module DuckDBTest
     def test_set_special_handling_returns_self
       # set_special_handling should return the ScalarFunction itself so it can
       # be chained fluently with other configuration calls.
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       result = sf.set_special_handling
@@ -974,7 +973,6 @@ module DuckDBTest
       # function can return something other than NULL.
       #
       # Here we implement COALESCE-like behaviour: treat a NULL INTEGER as 0.
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'null_as_zero'
@@ -994,7 +992,6 @@ module DuckDBTest
     def test_set_special_handling_with_two_parameters_any_null
       # Both parameters arrive as-is (nil or value) when special handling is
       # set.  The block should handle every combination of nil / non-nil.
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'add_nullable'
@@ -1016,7 +1013,6 @@ module DuckDBTest
     def test_set_special_handling_with_varargs_null_coalesce
       # Varargs + special handling: even if individual args are NULL the block
       # is invoked and may inspect/replace each nil in the splat.
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'sum_coalesce'
@@ -1036,7 +1032,6 @@ module DuckDBTest
     def test_set_special_handling_without_null_returns_normally
       # Enabling special handling must not change behaviour when all inputs are
       # non-NULL — the block should still be called and return correctly.
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'double_special'
@@ -1053,7 +1048,6 @@ module DuckDBTest
     def test_set_special_handling_can_return_null_explicitly
       # Even with special handling the block may choose to return nil (NULL) —
       # the method must not force a non-NULL result.
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'passthrough_null'
@@ -1083,7 +1077,6 @@ module DuckDBTest
       #   my_null_count(1, 42, NULL)     → 1   (one NULL)
       #   my_null_count(NULL, NULL, NULL)→ 3   (three NULLs)
       #   my_null_count()                → 0   (no args, no NULLs)
-      skip 'set_special_handling is not yet implemented (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'my_null_count'
@@ -1107,7 +1100,6 @@ module DuckDBTest
       #
       # Skipped additionally until DuckDB::LogicalType::ANY is added
       # (DUCKDB_TYPE_ANY = 34, see issue #1122).
-      skip 'set_special_handling with ANY varargs requires DuckDB::LogicalType::ANY (issue #1122)'
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'my_null_count_any'
