@@ -987,7 +987,6 @@ module DuckDBTest
       assert_equal 3, @con.execute('SELECT count_nulls(NULL, NULL, NULL)').first.first
     end
 
-
     # Tests for set_special_handling
     #
     # `duckdb_scalar_function_set_special_handling` marks a scalar function to
@@ -1037,7 +1036,7 @@ module DuckDBTest
       assert_equal 42, @con.execute('SELECT null_as_zero(42)').first.first
     end
 
-    def test_set_special_handling_with_two_parameters_any_null
+    def test_set_special_handling_with_two_parameters_any_null # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
       # Both parameters arrive as-is (nil or value) when special handling is
       # set.  The block should handle every combination of nil / non-nil.
 
@@ -1058,7 +1057,7 @@ module DuckDBTest
       assert_equal 0, @con.execute('SELECT add_nullable(NULL, NULL)').first.first
     end
 
-    def test_set_special_handling_with_varargs_null_coalesce
+    def test_set_special_handling_with_varargs_null_coalesce # rubocop:disable Metrics/AbcSize
       # Varargs + special handling: even if individual args are NULL the block
       # is invoked and may inspect/replace each nil in the splat.
 
@@ -1110,7 +1109,7 @@ module DuckDBTest
       assert_equal 7, @con.execute('SELECT passthrough_null(7)').first.first
     end
 
-    def test_set_special_handling_null_count_varargs_integer
+    def test_set_special_handling_null_count_varargs_integer # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
       # Mirrors the canonical DuckDB C API test (capi_scalar_functions.cpp,
       # "Test Scalar Functions - variadic number of ANY parameters") but uses
       # INTEGER varargs instead of ANY, because DuckDB::LogicalType::ANY is not
@@ -1141,7 +1140,7 @@ module DuckDBTest
       assert_equal 0, @con.execute('SELECT my_null_count()').first.first
     end
 
-    def test_set_special_handling_null_count_any_varargs
+    def test_set_special_handling_null_count_any_varargs # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
       # Same null_count function as above but using DuckDB::LogicalType::ANY,
       # which allows arguments of mixed types (matching the DuckDB C API test
       # exactly: my_null_count(40, [1], 'hello', 3) → 0).
@@ -1159,7 +1158,7 @@ module DuckDBTest
       @con.register_scalar_function(sf)
 
       assert_equal 0, @con.execute("SELECT my_null_count_any(40, 'hello', 3)").first.first
-      assert_equal 1, @con.execute("SELECT my_null_count_any(1, 42, NULL)").first.first
+      assert_equal 1, @con.execute('SELECT my_null_count_any(1, 42, NULL)').first.first
       assert_equal 3, @con.execute('SELECT my_null_count_any(NULL, NULL, NULL)').first.first
       assert_equal 0, @con.execute('SELECT my_null_count_any()').first.first
     end
