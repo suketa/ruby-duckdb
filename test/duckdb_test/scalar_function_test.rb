@@ -812,7 +812,7 @@ module DuckDBTest
       assert_equal [[6], [15]], result.to_a
     end
 
-    def test_scalar_function_with_varargs_null_handling
+    def test_scalar_function_with_varargs_null_handling # rubocop:disable Metrics/AbcSize
       # DuckDB applies standard SQL NULL propagation by default: if ANY argument
       # is NULL the function returns NULL without invoking the block.
       # This matches the DuckDB C API test: my_addition(40, 42, NULL) → NULL.
