@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `DuckDB::ScalarFunction#varargs_type=` to register a scalar function that accepts a variable number of arguments of a given type (wraps `duckdb_scalar_function_set_varargs`).
+- `DuckDB::ScalarFunction.create` accepts `varargs_type:` keyword argument (mutually exclusive with `parameter_type:`/`parameter_types:`).
+
 # 1.5.0.2 - 2026-03-22
 
 - add `DuckDB.vector_size` to return the DuckDB vector size (number of rows processed per vectorized operation).
