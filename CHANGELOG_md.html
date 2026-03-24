@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. ScalarFunction#varargs_type=` to register a scalar function that accep">
 
 
 <script type="text/javascript">
@@ -326,6 +326,11 @@
 <p>All notable changes to this project will be documented in this file.</p>
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<ul><li>
+<p>add <a href="DuckDB/ScalarFunction.html#method-i-varargs_type-3D"><code>DuckDB::ScalarFunction#varargs_type=</code></a> to register a scalar function that accepts a variable number of arguments of a given type (wraps <code>duckdb_scalar_function_set_varargs</code>).</p>
+</li><li>
+<p><a href="DuckDB/ScalarFunction.html#method-c-create"><code>DuckDB::ScalarFunction.create</code></a> accepts <code>varargs_type:</code> keyword argument (mutually exclusive with <code>parameter_type:</code>/<code>parameter_types:</code>).</p>
+</li></ul>
 
 <h1 id="label-1.5.0.2+-+2026-03-22">1.5.0.2 - 2026-03-22<span><a href="#label-1.5.0.2+-+2026-03-22">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
