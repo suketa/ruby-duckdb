@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 - add `DuckDB::ScalarFunction#varargs_type=` to register a scalar function that accepts a variable number of arguments of a given type (wraps `duckdb_scalar_function_set_varargs`).
 - `DuckDB::ScalarFunction.create` accepts `varargs_type:` keyword argument (mutually exclusive with `parameter_type:`/`parameter_types:`).
+- add `DuckDB::ScalarFunction#set_special_handling` to make the block receive `nil` for NULL inputs instead of DuckDB short-circuiting (wraps `duckdb_scalar_function_set_special_handling`).
+- `DuckDB::ScalarFunction.create` accepts `null_handling: true` keyword to enable special NULL handling.
+- add `34 => :any` to `Converter::IntToSym::HASH_TYPES` and `:any` to `ScalarFunction::SUPPORTED_TYPES` so `DuckDB::LogicalType::ANY` can be used with `varargs_type=`.
 
 # 1.5.0.2 - 2026-03-22
 

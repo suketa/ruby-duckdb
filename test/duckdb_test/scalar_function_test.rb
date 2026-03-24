@@ -939,7 +939,55 @@ module DuckDBTest
       assert_equal 'a-b-c', result.first.first
     end
 
-    # =========================================================================
+    def test_scalar_function_create_null_handling_false_by_default
+      # null_handling: defaults to false — DuckDB short-circuits on NULL input
+      # and returns NULL without calling the block.
+      sf = DuckDB::ScalarFunction.create(
+        name: :default_null,
+        return_type: :integer,
+        parameter_type: :integer
+      ) { |v| v.nil? ? 0 : v }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT default_null(NULL)').first.first
+      assert_equal 42, @con.execute('SELECT default_null(42)').first.first
+    end
+
+    def test_scalar_function_create_with_null_handling_true
+      # null_handling: true calls set_special_handling so the block receives
+      # nil for NULL inputs and can return a non-NULL value.
+      sf = DuckDB::ScalarFunction.create(
+        name: :null_as_zero,
+        return_type: :integer,
+        parameter_type: :integer,
+        null_handling: true
+      ) { |v| v.nil? ? 0 : v }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0,  @con.execute('SELECT null_as_zero(NULL)').first.first
+      assert_equal 42, @con.execute('SELECT null_as_zero(42)').first.first
+    end
+
+    def test_scalar_function_create_null_handling_with_varargs
+      # null_handling: true also works with varargs — NULLs arrive as nil
+      # in the splat and the block can count or replace them.
+      sf = DuckDB::ScalarFunction.create(
+        name: :count_nulls,
+        return_type: :integer,
+        varargs_type: :integer,
+        null_handling: true
+      ) { |*args| args.count(&:nil?) }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 0, @con.execute('SELECT count_nulls(1, 2, 3)').first.first
+      assert_equal 1, @con.execute('SELECT count_nulls(1, NULL, 3)').first.first
+      assert_equal 3, @con.execute('SELECT count_nulls(NULL, NULL, NULL)').first.first
+    end
+
+
     # Tests for set_special_handling
     #
     # `duckdb_scalar_function_set_special_handling` marks a scalar function to
