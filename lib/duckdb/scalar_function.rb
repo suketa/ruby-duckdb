@@ -43,17 +43,11 @@ module DuckDB
     #     name: :random_num,
     #     return_type: :integer
     #   ) { rand(100) }
-    def self.create( # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    def self.create( # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       name:, return_type:, parameter_type: nil, parameter_types: nil, varargs_type: nil, &
     )
       raise ArgumentError, 'Block required' unless block_given?
-
-      fixed_params = parameter_type || parameter_types
       raise ArgumentError, 'Cannot specify both parameter_type and parameter_types' if parameter_type && parameter_types
-
-      if varargs_type && fixed_params
-        raise ArgumentError, 'Cannot specify both varargs_type and parameter_type/parameter_types'
-      end
 
       params = if parameter_type
                  [parameter_type]

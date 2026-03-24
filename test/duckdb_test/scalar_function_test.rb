@@ -882,12 +882,61 @@ module DuckDBTest
       assert_equal 6, result.first.first
     end
 
-    def test_varargs_type_mutually_exclusive_with_add_parameter
-      # DuckDB may allow mixing fixed parameters with a trailing varargs (e.g.
-      # printf(format VARCHAR, ...args VARCHAR)).  This test captures the
-      # expected behaviour once API semantics are decided during implementation.
-      # Until then it is skipped with a note to revisit.
-      skip 'Semantics of combining varargs_type= with add_parameter are not yet decided'
+    # -------------------------------------------------------------------------
+    # Tests for mixing fixed parameters with varargs
+    #
+    # DuckDB stores fixed params (add_parameter) and the varargs type in
+    # separate fields on the same struct, so they coexist — like C's
+    # printf(const char *fmt, ...).
+    # -------------------------------------------------------------------------
+
+    def test_varargs_type_can_be_combined_with_add_parameter
+      # add_parameter and varargs_type= operate on independent fields in DuckDB,
+      # so both can be set on the same function. The callback receives the fixed
+      # args first, then the varargs as additional splat elements.
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'join_with_sep'
+      sf.add_parameter(DuckDB::LogicalType::VARCHAR) # fixed: separator
+      sf.varargs_type = DuckDB::LogicalType::VARCHAR # trailing: values to join
+      sf.return_type  = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |sep, *parts| parts.join(sep) }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute("SELECT join_with_sep(', ', 'foo', 'bar', 'baz')")
+
+      assert_equal 'foo, bar, baz', result.first.first
+    end
+
+    def test_varargs_type_combined_with_multiple_fixed_parameters
+      # Multiple fixed parameters followed by varargs.
+      # Fixed args arrive positionally; varargs fill the remaining splat.
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'sum_after_offset'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER) # fixed: offset to add
+      sf.varargs_type = DuckDB::LogicalType::INTEGER # trailing: values
+      sf.return_type  = DuckDB::LogicalType::INTEGER
+      sf.set_function { |offset, *nums| nums.sum + offset }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT sum_after_offset(10, 1, 2, 3)')
+
+      assert_equal 16, result.first.first
+    end
+
+    def test_scalar_function_create_with_varargs_type_and_parameter_type
+      # ScalarFunction.create should allow varargs_type: together with
+      # parameter_type: (fixed params + trailing varargs).
+      sf = DuckDB::ScalarFunction.create(
+        name: :join_with_sep2,
+        return_type: :varchar,
+        parameter_type: :varchar,   # fixed: separator
+        varargs_type: :varchar      # trailing: values
+      ) { |sep, *parts| parts.join(sep) }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute("SELECT join_with_sep2('-', 'a', 'b', 'c')")
+
+      assert_equal 'a-b-c', result.first.first
     end
   end
 end
