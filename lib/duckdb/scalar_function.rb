@@ -9,13 +9,13 @@ module DuckDB
     #
     # @param name [String, Symbol] the function name
     # @param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type
-    # @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single parameter type
-    # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple parameter types
-    # @param varargs_type [DuckDB::LogicalType|:logical_type_symbol, nil] varargs element type;
-    #   mutually exclusive with parameter_type/parameter_types
-    # @yield [*args] the function implementation
+    # @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single fixed parameter type
+    # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple fixed parameter types
+    # @param varargs_type [DuckDB::LogicalType|:logical_type_symbol, nil] trailing varargs element type;
+    #   can be combined with parameter_type/parameter_types to add fixed leading parameters
+    # @yield [fixed_args..., *varargs] the function implementation
     # @return [DuckDB::ScalarFunction] configured scalar function ready to register
-    # @raise [ArgumentError] if block is not provided or conflicting parameter options are specified
+    # @raise [ArgumentError] if block is not provided, or both parameter_type and parameter_types are specified
     #
     # @example Single parameter function
     #   sf = DuckDB::ScalarFunction.create(
@@ -31,12 +31,20 @@ module DuckDB
     #     parameter_types: [:integer, :integer]
     #   ) { |a, b| a + b }
     #
-    # @example Varargs function
+    # @example Varargs function (variable number of arguments)
     #   sf = DuckDB::ScalarFunction.create(
     #     name: :sum_all,
     #     return_type: :integer,
     #     varargs_type: :integer
     #   ) { |*args| args.sum }
+    #
+    # @example Fixed parameter(s) followed by varargs
+    #   sf = DuckDB::ScalarFunction.create(
+    #     name: :join_with_sep,
+    #     return_type: :varchar,
+    #     parameter_type: :varchar,  # separator
+    #     varargs_type: :varchar     # values to join
+    #   ) { |sep, *parts| parts.join(sep) }
     #
     # @example No parameters (constant function)
     #   sf = DuckDB::ScalarFunction.create(
@@ -115,8 +123,10 @@ module DuckDB
     end
 
     # Sets the varargs type for the scalar function.
-    # Marks the function to accept a variable number of arguments all of the
-    # given type. The block should accept a splat parameter (|*args|).
+    # Marks the function to accept a variable number of trailing arguments all of the
+    # given type. Can be combined with add_parameter to add fixed leading parameters
+    # (e.g. a separator followed by a variable list of values).
+    # The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|).
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP, TINYINT,
     # UBIGINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.
     #
