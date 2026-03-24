@@ -729,9 +729,12 @@ module DuckDBTest
     end
 
     def test_scalar_function_with_varargs_zero_args
-      # A varargs function called with zero SQL arguments should invoke the
-      # block with an empty splat, i.e. the block receives no arguments and
-      # args.sum returns 0.
+      # When called with zero SQL arguments DuckDB invokes the callback with a
+      # data chunk that has 0 columns. The block receives an empty splat so
+      # [].sum = 0.
+      # Note: the DuckDB C API test (capi_scalar_functions.cpp) returns NULL
+      # for zero-arg calls, but that is the callback's own choice.  In Ruby the
+      # block decides; here we choose 0 to keep the test deterministic.
       skip 'varargs_type= is not yet implemented'
 
       sf = DuckDB::ScalarFunction.new
@@ -833,6 +836,37 @@ module DuckDBTest
       result = @con.execute('SELECT sum_varargs(1, NULL, 3)')
 
       assert_equal 4, result.first.first
+    end
+
+    def test_scalar_function_with_varargs_type_mismatch_raises_error
+      # Calling a BIGINT varargs function with incompatible types (e.g. VARCHAR
+      # or LIST) should fail. DuckDB C API test confirms:
+      #   SELECT my_addition('hello', [1])  →  error
+      # The error is raised by DuckDB during query execution, not at registration.
+      skip 'varargs_type= is not yet implemented'
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'sum_varargs'
+      sf.varargs_type = DuckDB::LogicalType::INTEGER
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_function { |*args| args.sum }
+
+      @con.register_scalar_function(sf)
+
+      assert_raises(DuckDB::Error) do
+        @con.execute("SELECT sum_varargs('hello', [1])")
+      end
+    end
+
+    def test_scalar_function_with_varargs_any_type
+      # varargs_type= with DuckDB::LogicalType::ANY allows the function to
+      # accept arguments of any type — each arg may differ.  The DuckDB C API
+      # test uses DUCKDB_TYPE_ANY for this (capi_scalar_functions.cpp,
+      # "variadic number of ANY parameters").
+      #
+      # Skipped until DuckDB::LogicalType::ANY is added to ruby-duckdb
+      # (DUCKDB_TYPE_ANY = 34 is in the public C API header).
+      skip 'varargs_type= with ANY type requires DuckDB::LogicalType::ANY to be exposed first'
     end
 
     def test_scalar_function_create_with_varargs_type
