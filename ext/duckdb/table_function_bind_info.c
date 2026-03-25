@@ -226,7 +226,7 @@ static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error) {
     return self;
 }
 
-void rbduckdb_init_duckdb_bind_info(void) {
+void rbduckdb_init_duckdb_table_function_bind_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif

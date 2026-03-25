@@ -62,6 +62,6 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_data_chunk();
     rbduckdb_init_memory_helper();
     rbduckdb_init_duckdb_table_function();
-    rbduckdb_init_duckdb_bind_info();
+    rbduckdb_init_duckdb_table_function_bind_info();
     rbduckdb_init_duckdb_table_function_init_info();
 }
