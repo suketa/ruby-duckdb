@@ -54,7 +54,7 @@ static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error) {
     return self;
 }
 
-void rbduckdb_init_duckdb_init_info(void) {
+void rbduckdb_init_duckdb_table_function_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif

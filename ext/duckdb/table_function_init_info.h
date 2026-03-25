@@ -9,6 +9,6 @@ typedef struct _rubyDuckDBInitInfo rubyDuckDBInitInfo;
 
 extern VALUE cDuckDBTableFunctionInitInfo;
 rubyDuckDBInitInfo *get_struct_init_info(VALUE obj);
-void rbduckdb_init_duckdb_init_info(void);
+void rbduckdb_init_duckdb_table_function_init_info(void);
 
 #endif
