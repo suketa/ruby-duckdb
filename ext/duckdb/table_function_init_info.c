@@ -1,6 +1,6 @@
 #include "ruby-duckdb.h"
 
-VALUE cDuckDBInitInfo;
+VALUE cDuckDBTableFunctionInitInfo;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -8,7 +8,7 @@ static size_t memsize(const void *p);
 static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error);
 
 static const rb_data_type_t init_info_data_type = {
-    "DuckDB/InitInfo",
+    "DuckDB/TableFunctionInitInfo",
     {NULL, deallocate, memsize,},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
@@ -58,8 +58,8 @@ void rbduckdb_init_duckdb_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
-    cDuckDBInitInfo = rb_define_class_under(mDuckDB, "InitInfo", rb_cObject);
-    rb_define_alloc_func(cDuckDBInitInfo, allocate);
+    cDuckDBTableFunctionInitInfo = rb_define_class_under(cDuckDBTableFunction, "InitInfo", rb_cObject);
+    rb_define_alloc_func(cDuckDBTableFunctionInitInfo, allocate);
 
-    rb_define_method(cDuckDBInitInfo, "set_error", rbduckdb_init_info_set_error, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "set_error", rbduckdb_init_info_set_error, 1);
 }

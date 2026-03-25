@@ -2,7 +2,7 @@
 
 VALUE cDuckDBTableFunction;
 extern VALUE cDuckDBTableFunctionBindInfo;
-extern VALUE cDuckDBInitInfo;
+extern VALUE cDuckDBTableFunctionInitInfo;
 extern VALUE cDuckDBFunctionInfo;
 extern VALUE cDuckDBDataChunk;
 
@@ -294,7 +294,7 @@ static void table_function_init_callback(duckdb_init_info info) {
     }
 
     // Create InitInfo wrapper
-    init_info_obj = rb_class_new_instance(0, NULL, cDuckDBInitInfo);
+    init_info_obj = rb_class_new_instance(0, NULL, cDuckDBTableFunctionInitInfo);
     init_info_ctx = get_struct_init_info(init_info_obj);
     init_info_ctx->info = info;
 

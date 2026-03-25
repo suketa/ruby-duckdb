@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ## Breaking changes
 - rename `DuckDB::BindInfo` to `DuckDB::TableFunction::BindInfo`. `DuckDB::BindInfo` still works but emits a deprecation warning.
+- rename `DuckDB::InitInfo` to `DuckDB::TableFunction::InitInfo`. `DuckDB::InitInfo` still works but emits a deprecation warning.
 
 # 1.5.0.2 - 2026-03-22
 
