@@ -1,6 +1,6 @@
 #include "ruby-duckdb.h"
 
-VALUE cDuckDBBindInfo;
+VALUE cDuckDBTableFunctionBindInfo;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -14,7 +14,7 @@ static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, V
 static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error);
 
 static const rb_data_type_t bind_info_data_type = {
-    "DuckDB/BindInfo",
+    "DuckDB/TableFunctionBindInfo",
     {NULL, deallocate, memsize,},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
@@ -230,14 +230,14 @@ void rbduckdb_init_duckdb_bind_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
-    cDuckDBBindInfo = rb_define_class_under(mDuckDB, "BindInfo", rb_cObject);
-    rb_define_alloc_func(cDuckDBBindInfo, allocate);
+    cDuckDBTableFunctionBindInfo = rb_define_class_under(cDuckDBTableFunction, "BindInfo", rb_cObject);
+    rb_define_alloc_func(cDuckDBTableFunctionBindInfo, allocate);
 
-    rb_define_method(cDuckDBBindInfo, "parameter_count", rbduckdb_bind_info_parameter_count, 0);
-    rb_define_method(cDuckDBBindInfo, "get_parameter", rbduckdb_bind_info_get_parameter, 1);
-    rb_define_method(cDuckDBBindInfo, "get_named_parameter", rbduckdb_bind_info_get_named_parameter, 1);
-    rb_define_method(cDuckDBBindInfo, "set_cardinality", rbduckdb_bind_info_set_cardinality, 2);
-    rb_define_method(cDuckDBBindInfo, "set_error", rbduckdb_bind_info_set_error, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "parameter_count", rbduckdb_bind_info_parameter_count, 0);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "get_parameter", rbduckdb_bind_info_get_parameter, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "get_named_parameter", rbduckdb_bind_info_get_named_parameter, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "set_cardinality", rbduckdb_bind_info_set_cardinality, 2);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "set_error", rbduckdb_bind_info_set_error, 1);
 
-    rb_define_private_method(cDuckDBBindInfo, "_add_result_column", rbduckdb_bind_info__add_result_column, 2);
+    rb_define_private_method(cDuckDBTableFunctionBindInfo, "_add_result_column", rbduckdb_bind_info__add_result_column, 2);
 }

@@ -1,7 +1,7 @@
 #include "ruby-duckdb.h"
 
-static VALUE cDuckDBTableFunction;
-extern VALUE cDuckDBBindInfo;
+VALUE cDuckDBTableFunction;
+extern VALUE cDuckDBTableFunctionBindInfo;
 extern VALUE cDuckDBInitInfo;
 extern VALUE cDuckDBFunctionInfo;
 extern VALUE cDuckDBDataChunk;
@@ -230,7 +230,7 @@ static void table_function_bind_callback(duckdb_bind_info info) {
     }
 
     // Create BindInfo wrapper
-    bind_info_obj = rb_class_new_instance(0, NULL, cDuckDBBindInfo);
+    bind_info_obj = rb_class_new_instance(0, NULL, cDuckDBTableFunctionBindInfo);
     bind_info_ctx = get_struct_bind_info(bind_info_obj);
     bind_info_ctx->bind_info = info;
 

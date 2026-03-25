@@ -15,12 +15,12 @@ require 'duckdb/config'
 require 'duckdb/column'
 require 'duckdb/logical_type'
 require 'duckdb/scalar_function'
-require 'duckdb/bind_info'
 require 'duckdb/init_info'
 require 'duckdb/function_info'
 require 'duckdb/vector'
 require 'duckdb/data_chunk'
 require 'duckdb/table_function'
+require 'duckdb/table_function_bind_info'
 require 'duckdb/infinity'
 require 'duckdb/instance_cache'
 require 'duckdb/casting'
@@ -45,6 +45,15 @@ module DuckDB
       raise ArgumentError, 'DuckDB.default_timezone must be either :utc or :local.' unless %i[local utc].include?(value)
 
       @default_timezone = value
+    end
+
+    def const_missing(name)
+      if name == :BindInfo
+        warn 'DuckDB::BindInfo is deprecated. Use DuckDB::TableFunction::BindInfo instead.', uplevel: 1
+        const_set(:BindInfo, DuckDB::TableFunction::BindInfo)
+      else
+        super
+      end
     end
   end
 

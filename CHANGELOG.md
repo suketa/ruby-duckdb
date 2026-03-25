@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 - `DuckDB::ScalarFunction.create` accepts `null_handling: true` keyword to enable special NULL handling.
 - add `34 => :any` to `Converter::IntToSym::HASH_TYPES` and `:any` to `ScalarFunction::SUPPORTED_TYPES` so `DuckDB::LogicalType::ANY` can be used with `varargs_type=`.
 
+## Breaking changes
+- rename `DuckDB::BindInfo` to `DuckDB::TableFunction::BindInfo`. `DuckDB::BindInfo` still works but emits a deprecation warning.
+
 # 1.5.0.2 - 2026-03-22
 
 - add `DuckDB.vector_size` to return the DuckDB vector size (number of rows processed per vectorized operation).
