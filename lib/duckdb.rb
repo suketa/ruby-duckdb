@@ -15,12 +15,12 @@ require 'duckdb/config'
 require 'duckdb/column'
 require 'duckdb/logical_type'
 require 'duckdb/scalar_function'
-require 'duckdb/init_info'
 require 'duckdb/function_info'
 require 'duckdb/vector'
 require 'duckdb/data_chunk'
 require 'duckdb/table_function'
 require 'duckdb/table_function/bind_info'
+require 'duckdb/table_function/init_info'
 require 'duckdb/infinity'
 require 'duckdb/instance_cache'
 require 'duckdb/casting'
@@ -48,9 +48,13 @@ module DuckDB
     end
 
     def const_missing(name)
-      if name == :BindInfo
+      case name
+      when :BindInfo
         warn 'DuckDB::BindInfo is deprecated. Use DuckDB::TableFunction::BindInfo instead.', uplevel: 1
         const_set(:BindInfo, DuckDB::TableFunction::BindInfo)
+      when :InitInfo
+        warn 'DuckDB::InitInfo is deprecated. Use DuckDB::TableFunction::InitInfo instead.', uplevel: 1
+        const_set(:InitInfo, DuckDB::TableFunction::InitInfo)
       else
         super
       end
