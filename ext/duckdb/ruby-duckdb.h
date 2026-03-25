@@ -30,7 +30,7 @@
 #include "./instance_cache.h"
 #include "./value_impl.h"
 #include "./scalar_function.h"
-#include "./bind_info.h"
+#include "./table_function_bind_info.h"
 #include "./init_info.h"
 #include "./function_info.h"
 #include "./vector.h"
