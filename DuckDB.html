@@ -191,9 +191,13 @@
           <div class="method-source-code" id="const_missing-source">
             <pre><span class="ruby-comment"># File lib/duckdb.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">const_missing</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-value">:BindInfo</span>
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">name</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:BindInfo</span>
     <span class="ruby-identifier">warn</span> <span class="ruby-string">&#39;DuckDB::BindInfo is deprecated. Use DuckDB::TableFunction::BindInfo instead.&#39;</span>, <span class="ruby-value">uplevel:</span> <span class="ruby-value">1</span>
     <span class="ruby-identifier">const_set</span>(<span class="ruby-value">:BindInfo</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span><span class="ruby-operator">::</span><span class="ruby-constant">BindInfo</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:InitInfo</span>
+    <span class="ruby-identifier">warn</span> <span class="ruby-string">&#39;DuckDB::InitInfo is deprecated. Use DuckDB::TableFunction::InitInfo instead.&#39;</span>, <span class="ruby-value">uplevel:</span> <span class="ruby-value">1</span>
+    <span class="ruby-identifier">const_set</span>(<span class="ruby-value">:InitInfo</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span><span class="ruby-operator">::</span><span class="ruby-constant">InitInfo</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-keyword">super</span>
   <span class="ruby-keyword">end</span>

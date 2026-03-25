@@ -350,6 +350,8 @@
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
 <p>rename <code>DuckDB::BindInfo</code> to <code>DuckDB::TableFunction::BindInfo</code>. <code>DuckDB::BindInfo</code> still works but emits a deprecation warning.</p>
+</li><li>
+<p>rename <code>DuckDB::InitInfo</code> to <a href="DuckDB/TableFunction/InitInfo.html"><code>DuckDB::TableFunction::InitInfo</code></a>. <code>DuckDB::InitInfo</code> still works but emits a deprecation warning.</p>
 </li></ul>
 
 <h1 id="label-1.5.0.2+-+2026-03-22">1.5.0.2 - 2026-03-22<span><a href="#label-1.5.0.2+-+2026-03-22">&para;</a> <a href="#top">&uarr;</a></span></h1>
@@ -490,9 +492,9 @@
 </li><li>
 <p>add <a href="DuckDB/TableFunction.html#method-i-init"><code>DuckDB::TableFunction#init</code></a> for setting init callback (Phase 5).</p>
 </li><li>
-<p>add <a href="DuckDB/InitInfo.html"><code>DuckDB::InitInfo</code></a> class for table function initialization context (Phase 5).</p>
+<p>add <code>DuckDB::InitInfo</code> class for table function initialization context (Phase 5).</p>
 </li><li>
-<p>add <a href="DuckDB/InitInfo.html#method-i-set_error"><code>DuckDB::InitInfo#set_error</code></a> for reporting initialization errors.</p>
+<p>add <code>DuckDB::InitInfo#set_error</code> for reporting initialization errors.</p>
 </li><li>
 <p>add <a href="DuckDB/Connection.html#method-i-register_table_function"><code>DuckDB::Connection#register_table_function</code></a> for registering table functions (Phase 6).</p>
 </li><li>
