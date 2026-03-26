@@ -174,11 +174,37 @@ module DuckDBTest
       assert_match(/at least 2 arguments required/, error.message)
     end
 
-    # --- future: requires duckdb_scalar_function_bind_get_argument ---
+    # --- get_argument: wraps duckdb_scalar_function_bind_get_argument ---
 
-    # get_argument returns the expression at the given index
-    def test_bind_info_get_argument
+    # get_argument returns a DuckDB::Expression object for the argument at the given index
+    def test_get_argument_returns_expression_object # rubocop:disable Metrics/MethodLength
       skip 'get_argument not implemented yet'
+      expr = nil
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_get_arg_class'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| expr = bind_info.get_argument(0) }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_get_arg_class(1)')
+
+      assert_instance_of DuckDB::Expression, expr
+    end
+
+    # get_argument raises for an out-of-range index
+    def test_get_argument_raises_for_out_of_range_index
+      skip 'get_argument not implemented yet'
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_get_arg_oob'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| bind_info.get_argument(1) }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+
+      assert_raises(DuckDB::Error) { @conn.execute('SELECT test_get_arg_oob(1)') }
     end
 
     # --- future: requires duckdb_scalar_function_set_bind_data / get_bind_data ---
