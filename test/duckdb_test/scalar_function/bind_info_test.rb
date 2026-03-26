@@ -31,7 +31,7 @@ module DuckDBTest
       assert_raises(ArgumentError) { sf.set_bind }
     end
 
-    # The bind block is called at least once at query planning time
+    # The bind block is called exactly once at query planning time (not per-row)
     def test_set_bind_block_is_called_at_planning_time
       skip 'set_bind not implemented yet'
       call_count = 0
@@ -45,7 +45,7 @@ module DuckDBTest
       @conn.register_scalar_function(sf)
       @conn.execute('SELECT test_bind_called(1)')
 
-      assert call_count >= 1
+      assert_equal 1, call_count
     end
 
     # The block receives a DuckDB::ScalarFunction::BindInfo instance
