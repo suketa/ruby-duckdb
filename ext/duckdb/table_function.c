@@ -3,7 +3,7 @@
 VALUE cDuckDBTableFunction;
 extern VALUE cDuckDBTableFunctionBindInfo;
 extern VALUE cDuckDBTableFunctionInitInfo;
-extern VALUE cDuckDBFunctionInfo;
+extern VALUE cDuckDBTableFunctionFunctionInfo;
 extern VALUE cDuckDBDataChunk;
 
 static void mark(void *ctx);
@@ -358,7 +358,7 @@ static void table_function_execute_callback(duckdb_function_info info, duckdb_da
     }
 
     // Create FunctionInfo wrapper
-    func_info_obj = rb_class_new_instance(0, NULL, cDuckDBFunctionInfo);
+    func_info_obj = rb_class_new_instance(0, NULL, cDuckDBTableFunctionFunctionInfo);
     func_info_ctx = get_struct_function_info(func_info_obj);
     func_info_ctx->info = info;
 

@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module DuckDBTest
-  class FunctionInfoTest < Minitest::Test
+  class TableFunctionFunctionInfoTest < Minitest::Test
     def setup
       @database = DuckDB::Database.open
       @connection = @database.connect
@@ -14,7 +14,6 @@ module DuckDBTest
       @database.close
     end
 
-    # Test 1: FunctionInfo set_error
     def test_function_info_set_error
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_error'
@@ -28,7 +27,6 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    # Test 2: Execute callback setup
     def test_execute_callback
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_execute'
@@ -45,7 +43,6 @@ module DuckDBTest
       assert_equal table_function, result2
     end
 
-    # Test 3: Execute without block raises error
     def test_execute_without_block
       table_function = DuckDB::TableFunction.new
 
@@ -54,6 +51,19 @@ module DuckDBTest
       end
 
       assert_equal 'block is required for execute', error.message
+    end
+
+    def test_function_info_alias
+      assert_same DuckDB::TableFunction::FunctionInfo, DuckDB::FunctionInfo
+    end
+
+    def test_function_info_alias_deprecation_warning
+      DuckDB.send(:remove_const, :FunctionInfo) if DuckDB.const_defined?(:FunctionInfo, false)
+      warning = capture_io { DuckDB::FunctionInfo }.last
+
+      assert_match(/deprecated/, warning)
+    ensure
+      DuckDB.send(:remove_const, :FunctionInfo) if DuckDB.const_defined?(:FunctionInfo, false)
     end
   end
 end

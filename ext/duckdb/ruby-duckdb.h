@@ -32,7 +32,7 @@
 #include "./scalar_function.h"
 #include "./table_function_bind_info.h"
 #include "./table_function_init_info.h"
-#include "./function_info.h"
+#include "./table_function_function_info.h"
 #include "./vector.h"
 #include "./data_chunk.h"
 #include "./memory_helper.h"
