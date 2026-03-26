@@ -107,6 +107,20 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_set_error(1)') }
     end
 
+    # The error message from set_error is included in the raised DuckDB::Error
+    def test_bind_info_set_error_message_is_propagated
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_error_msg'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| bind_info.set_error('input must be positive') }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+
+      error = assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_error_msg(1)') }
+      assert_match(/input must be positive/, error.message)
+    end
+
     # An exception raised inside the bind block is reported as a DuckDB::Error
     def test_bind_block_exception_is_reported_as_error
       sf = DuckDB::ScalarFunction.new
@@ -118,6 +132,82 @@ module DuckDBTest
       @conn.register_scalar_function(sf)
 
       assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_exception(1)') }
+    end
+
+    # The exception message from the bind block is included in the DuckDB::Error
+    def test_bind_block_exception_message_is_propagated
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_exception_msg'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |_bind_info| raise ArgumentError, 'custom bind failure' }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+
+      error = assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_exception_msg(1)') }
+      assert_match(/custom bind failure/, error.message)
+    end
+
+    # argument_count returns 0 for a zero-parameter function
+    def test_bind_info_argument_count_zero_params
+      arg_count = nil
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_argc_0'
+      sf.return_type = :integer
+      sf.set_bind { |bind_info| arg_count = bind_info.argument_count }
+      sf.set_function { 42 }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_bind_argc_0()')
+
+      assert_equal 0, arg_count
+    end
+
+    # bind callback works correctly in a WHERE clause
+    def test_set_bind_in_where_clause # rubocop:disable Metrics/MethodLength
+      called = false
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_where'
+      sf.return_type = :boolean
+      sf.add_parameter(:integer)
+      sf.set_bind { |_bind_info| called = true }
+      sf.set_function(&:positive?)
+      @conn.register_scalar_function(sf)
+
+      result = @conn.execute('SELECT true WHERE test_bind_where(1)')
+
+      assert called
+      assert result.first.first
+    end
+
+    # function executes correctly (returns expected values) when bind succeeds
+    def test_function_executes_correctly_after_bind
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_exec'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |_bind_info| nil }
+      sf.set_function { |v| v * 3 }
+      @conn.register_scalar_function(sf)
+
+      result = @conn.execute('SELECT test_bind_exec(7)')
+
+      assert_equal 21, result.first.first
+    end
+
+    # --- future: requires duckdb_scalar_function_bind_get_argument ---
+
+    # get_argument returns the expression at the given index
+    def test_bind_info_get_argument
+      skip 'get_argument not implemented yet'
+    end
+
+    # --- future: requires duckdb_scalar_function_set_bind_data / get_bind_data ---
+
+    # set_bind_data stores data that can be retrieved during execute
+    def test_bind_info_set_bind_data
+      skip 'set_bind_data not implemented yet'
     end
   end
 end
