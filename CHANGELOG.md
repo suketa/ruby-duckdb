@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ScalarFunction#set_special_handling` to make the block receive `nil` for NULL inputs instead of DuckDB short-circuiting (wraps `duckdb_scalar_function_set_special_handling`).
 - `DuckDB::ScalarFunction.create` accepts `null_handling: true` keyword to enable special NULL handling.
 - add `34 => :any` to `Converter::IntToSym::HASH_TYPES` and `:any` to `ScalarFunction::SUPPORTED_TYPES` so `DuckDB::LogicalType::ANY` can be used with `varargs_type=`.
+- add `DuckDB::ScalarFunction#set_bind` to register a bind callback (wraps `duckdb_scalar_function_set_bind`). The block receives a `DuckDB::ScalarFunction::BindInfo` object at query planning time (once, before per-row execution).
+- add `DuckDB::ScalarFunction::BindInfo#argument_count` to return the number of arguments passed to the scalar function (wraps `duckdb_scalar_function_bind_get_argument_count`).
+- add `DuckDB::ScalarFunction::BindInfo#set_error(message)` to report an error early at planning time (wraps `duckdb_scalar_function_bind_set_error`).
 
 ## Breaking changes
 - rename `DuckDB::BindInfo` to `DuckDB::TableFunction::BindInfo`. `DuckDB::BindInfo` still works but emits a deprecation warning.

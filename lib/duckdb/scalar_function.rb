@@ -166,6 +166,25 @@ module DuckDB
       _set_varargs(logical_type)
     end
 
+    # Registers a bind callback for the scalar function.
+    # The block is called once at query planning time, before execution.
+    # It receives a DuckDB::ScalarFunction::BindInfo object.
+    #
+    # @yield [bind_info] called at planning time with a BindInfo object
+    # @yieldparam bind_info [DuckDB::ScalarFunction::BindInfo]
+    # @return [DuckDB::ScalarFunction] self
+    # @raise [ArgumentError] if no block is given
+    #
+    # @example Validate argument count at planning time
+    #   sf.set_bind do |bind_info|
+    #     bind_info.set_error('expected 1 argument') if bind_info.argument_count != 1
+    #   end
+    def set_bind(&block)
+      raise ArgumentError, 'block is required' unless block
+
+      _set_bind(&block)
+    end
+
     private
 
     def check_supported_type!(type)
