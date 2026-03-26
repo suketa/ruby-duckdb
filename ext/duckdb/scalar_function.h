@@ -4,6 +4,7 @@
 struct _rubyDuckDBScalarFunction {
     duckdb_scalar_function scalar_function;
     VALUE function_proc;
+    VALUE bind_proc;
 };
 
 typedef struct _rubyDuckDBScalarFunction rubyDuckDBScalarFunction;

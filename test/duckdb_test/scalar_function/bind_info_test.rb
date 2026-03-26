@@ -16,16 +16,14 @@ module DuckDBTest
 
     # set_bind stores a block and returns self (the ScalarFunction)
     def test_set_bind_returns_self
-      skip 'set_bind not implemented yet'
       sf = DuckDB::ScalarFunction.new
-      result = sf.set_bind { |_bind_info| }
+      result = sf.set_bind { |_bind_info| nil }
 
       assert_same sf, result
     end
 
     # set_bind raises ArgumentError when called without a block
     def test_set_bind_without_block_raises_error
-      skip 'set_bind not implemented yet'
       sf = DuckDB::ScalarFunction.new
 
       assert_raises(ArgumentError) { sf.set_bind }
@@ -33,7 +31,6 @@ module DuckDBTest
 
     # The bind block is called exactly once at query planning time (not per-row)
     def test_set_bind_block_is_called_at_planning_time
-      skip 'set_bind not implemented yet'
       call_count = 0
 
       sf = DuckDB::ScalarFunction.new
@@ -50,7 +47,6 @@ module DuckDBTest
 
     # The block receives a DuckDB::ScalarFunction::BindInfo instance
     def test_set_bind_block_receives_bind_info_object
-      skip 'set_bind not implemented yet'
       received = nil
 
       sf = DuckDB::ScalarFunction.new
@@ -67,7 +63,6 @@ module DuckDBTest
 
     # argument_count returns 1 when one parameter was added
     def test_bind_info_argument_count_single_param
-      skip 'set_bind not implemented yet'
       arg_count = nil
 
       sf = DuckDB::ScalarFunction.new
@@ -83,8 +78,7 @@ module DuckDBTest
     end
 
     # argument_count returns 2 when two parameters were added
-    def test_bind_info_argument_count_multiple_params
-      skip 'set_bind not implemented yet'
+    def test_bind_info_argument_count_multiple_params # rubocop:disable Metrics/MethodLength
       arg_count = nil
 
       sf = DuckDB::ScalarFunction.new
@@ -102,7 +96,6 @@ module DuckDBTest
 
     # set_error causes query execution to raise DuckDB::Error
     def test_bind_info_set_error_raises_on_execute
-      skip 'set_bind not implemented yet'
       sf = DuckDB::ScalarFunction.new
       sf.name = 'test_bind_set_error'
       sf.return_type = :integer
@@ -116,7 +109,6 @@ module DuckDBTest
 
     # An exception raised inside the bind block is reported as a DuckDB::Error
     def test_bind_block_exception_is_reported_as_error
-      skip 'set_bind not implemented yet'
       sf = DuckDB::ScalarFunction.new
       sf.name = 'test_bind_exception'
       sf.return_type = :integer

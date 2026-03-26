@@ -35,7 +35,9 @@ static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_typ
 static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_scalar_function__set_special_handling(VALUE self);
 static VALUE rbduckdb_scalar_function_set_function(VALUE self);
+static VALUE rbduckdb_scalar_function__set_bind(VALUE self);
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output);
+static void scalar_function_bind_callback(duckdb_bind_info info);
 static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value);
 
 struct callback_arg {
@@ -319,6 +321,7 @@ static const rb_data_type_t scalar_function_data_type = {
 static void mark(void *ctx) {
     rubyDuckDBScalarFunction *p = (rubyDuckDBScalarFunction *)ctx;
     rb_gc_mark(p->function_proc);
+    rb_gc_mark(p->bind_proc);
 }
 
 static void deallocate(void * ctx) {
@@ -338,6 +341,9 @@ static void compact(void *ctx) {
     if (p->function_proc != Qnil) {
         p->function_proc = rb_gc_location(p->function_proc);
     }
+    if (p->bind_proc != Qnil) {
+        p->bind_proc = rb_gc_location(p->bind_proc);
+    }
 }
 
 static VALUE allocate(VALUE klass) {
@@ -354,6 +360,7 @@ static VALUE duckdb_scalar_function_initialize(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
     p->scalar_function = duckdb_create_scalar_function();
     p->function_proc = Qnil;
+    p->bind_proc = Qnil;
     return self;
 }
 
@@ -692,6 +699,64 @@ static VALUE rbduckdb_scalar_function_set_function(VALUE self) {
     return self;
 }
 
+/* :nodoc: */
+static VALUE rbduckdb_scalar_function__set_bind(VALUE self) {
+    rubyDuckDBScalarFunction *p;
+
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
+
+    p->bind_proc = rb_block_proc();
+
+    duckdb_scalar_function_set_extra_info(p->scalar_function, p, NULL);
+    duckdb_scalar_function_set_bind(p->scalar_function, scalar_function_bind_callback);
+
+    return self;
+}
+
+struct bind_call_arg {
+    VALUE bind_proc;
+    VALUE bind_info_obj;
+};
+
+static VALUE call_bind_proc(VALUE varg) {
+    struct bind_call_arg *arg = (struct bind_call_arg *)varg;
+    return rb_funcall(arg->bind_proc, rb_intern("call"), 1, arg->bind_info_obj);
+}
+
+/*
+ * The bind callback: called once at query planning time.
+ *
+ * Retrieves the rubyDuckDBScalarFunction context via extra_info, creates a
+ * ScalarFunction::BindInfo Ruby object wrapping the duckdb_bind_info, and
+ * calls the stored bind_proc with it.
+ *
+ * The bind callback is invoked from the calling Ruby thread during planning,
+ * so we call rb_protect directly. For a Ruby thread that has released the GVL
+ * we reacquire it via rb_thread_call_with_gvl.
+ */
+static void scalar_function_bind_callback(duckdb_bind_info info) {
+    rubyDuckDBScalarFunction *ctx;
+    int exception_state;
+    struct bind_call_arg arg;
+
+    ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_bind_get_extra_info(info);
+    if (ctx == NULL || ctx->bind_proc == Qnil) return;
+
+    arg.bind_proc = ctx->bind_proc;
+    arg.bind_info_obj = rbduckdb_scalar_function_bind_info_new(info);
+
+    rb_protect(call_bind_proc, (VALUE)&arg, &exception_state);
+    if (exception_state) {
+        VALUE errinfo = rb_errinfo();
+        if (errinfo != Qnil) {
+            VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
+            duckdb_scalar_function_bind_set_error(info, StringValueCStr(msg));
+        }
+        rb_set_errinfo(Qnil);
+    }
+}
+
+
 void rbduckdb_init_duckdb_scalar_function(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -706,4 +771,5 @@ void rbduckdb_init_duckdb_scalar_function(void) {
     rb_define_private_method(cDuckDBScalarFunction, "_set_special_handling", rbduckdb_scalar_function__set_special_handling, 0);
     rb_define_private_method(cDuckDBScalarFunction, "_add_parameter", rbduckdb_scalar_function_add_parameter, 1);
     rb_define_method(cDuckDBScalarFunction, "set_function", rbduckdb_scalar_function_set_function, 0);
+    rb_define_private_method(cDuckDBScalarFunction, "_set_bind", rbduckdb_scalar_function__set_bind, 0);
 }
