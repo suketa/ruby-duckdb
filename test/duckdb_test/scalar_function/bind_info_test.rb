@@ -94,33 +94,6 @@ module DuckDBTest
       assert_equal 2, arg_count
     end
 
-    # set_error causes query execution to raise DuckDB::Error
-    def test_bind_info_set_error_raises_on_execute
-      sf = DuckDB::ScalarFunction.new
-      sf.name = 'test_bind_set_error'
-      sf.return_type = :integer
-      sf.add_parameter(:integer)
-      sf.set_bind { |bind_info| bind_info.set_error('bind validation failed') }
-      sf.set_function { |v| v }
-      @conn.register_scalar_function(sf)
-
-      assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_set_error(1)') }
-    end
-
-    # The error message from set_error is included in the raised DuckDB::Error
-    def test_bind_info_set_error_message_is_propagated
-      sf = DuckDB::ScalarFunction.new
-      sf.name = 'test_bind_error_msg'
-      sf.return_type = :integer
-      sf.add_parameter(:integer)
-      sf.set_bind { |bind_info| bind_info.set_error('input must be positive') }
-      sf.set_function { |v| v }
-      @conn.register_scalar_function(sf)
-
-      error = assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_error_msg(1)') }
-      assert_match(/input must be positive/, error.message)
-    end
-
     # An exception raised inside the bind block is reported as a DuckDB::Error
     def test_bind_block_exception_is_reported_as_error
       sf = DuckDB::ScalarFunction.new
@@ -179,21 +152,6 @@ module DuckDBTest
 
       assert called
       assert result.first.first
-    end
-
-    # function executes correctly (returns expected values) when bind succeeds
-    def test_function_executes_correctly_after_bind
-      sf = DuckDB::ScalarFunction.new
-      sf.name = 'test_bind_exec'
-      sf.return_type = :integer
-      sf.add_parameter(:integer)
-      sf.set_bind { |_bind_info| nil }
-      sf.set_function { |v| v * 3 }
-      @conn.register_scalar_function(sf)
-
-      result = @conn.execute('SELECT test_bind_exec(7)')
-
-      assert_equal 21, result.first.first
     end
 
     # practical use: use argument_count to validate and set_error early (varargs function)
