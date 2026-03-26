@@ -14,11 +14,9 @@ This gem `duckdb` is Ruby client for the [DuckDB](https://www.duckdb.org) databa
 You must have [DuckDB](https://www.duckdb.org) engine installed in order to use this gem.
 
 ## Pre-requisite setup (Linux):
-1. Head over to the [DuckDB](https://duckdb.org/) webpage.
+1 Download the latest [C++ package release for DuckDB](https://duckdb.org/install/?platform=linux&environment=c).
 
-2. Download the latest C++ package release for DuckDB.
-
-3. Move the files to their respective location:
+2. Move the files to their respective location:
     - Extract the `duckdb.h` and `duckdb.hpp` file to `/usr/local/include`.
     - Extract the `libduckdb.so` file to `/usr/local/lib`.
 
@@ -28,7 +26,7 @@ You must have [DuckDB](https://www.duckdb.org) engine installed in order to use 
     sudo mv libduckdb/libduckdb.so /usr/local/lib
     ```
 
-4. To create the necessary link, run `ldconfig` as root:
+3. To create the necessary link, run `ldconfig` as root:
 
     ```sh
     sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked
