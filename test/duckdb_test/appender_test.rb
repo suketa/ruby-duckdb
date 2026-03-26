@@ -57,10 +57,6 @@ module DuckDBTest
     end
 
     def test_s_create_query
-      unless DuckDB::Appender.respond_to?(:create_query)
-        skip 'DuckDB::Appender.create_query is not supported in this DuckDB version'
-      end
-
       query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
       types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
       appender = DuckDB::Appender.create_query(@con, query, types, 'my_appended_data', %w[i val])
@@ -70,10 +66,6 @@ module DuckDBTest
 
     # test for alias of create_query
     def test_s_from_query
-      unless DuckDB::Appender.respond_to?(:create_from_query)
-        skip 'DuckDB::Appender.create_query is not supported in this DuckDB version'
-      end
-
       query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
       types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
       appender = DuckDB::Appender.from_query(@con, query, types, 'my_appended_data', %w[i val])
@@ -82,10 +74,6 @@ module DuckDBTest
     end
 
     def test_s_create_query_append_test
-      unless DuckDB::Appender.respond_to?(:create_query)
-        skip 'DuckDB::Appender.create_query is not supported in this DuckDB version'
-      end
-
       setup_table_with_initial_data
       appender = create_query_appender
 
