@@ -122,6 +122,9 @@
         <h3>Constants</h3>
       </header>
       <dl>
+        <dt id="DEPRECATED_CONSTANTS">DEPRECATED_CONSTANTS
+        <dd>
+          
         <dt id="LIBRARY_VERSION">LIBRARY_VERSION
         <dd>
           <p>represents the version of the <a href="DuckDB.html"><code>DuckDB</code></a> library. If <a href="DuckDB.html#method-c-library_version"><code>DuckDB.library_version</code></a> is v0.2.0, then <a href="DuckDB.html#LIBRARY_VERSION"><code>DuckDB::LIBRARY_VERSION</code></a> is 0.2.0.</p>
@@ -191,16 +194,11 @@
           <div class="method-source-code" id="const_missing-source">
             <pre><span class="ruby-comment"># File lib/duckdb.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">const_missing</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-keyword">case</span> <span class="ruby-identifier">name</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:BindInfo</span>
-    <span class="ruby-identifier">warn</span> <span class="ruby-string">&#39;DuckDB::BindInfo is deprecated. Use DuckDB::TableFunction::BindInfo instead.&#39;</span>, <span class="ruby-value">uplevel:</span> <span class="ruby-value">1</span>
-    <span class="ruby-identifier">const_set</span>(<span class="ruby-value">:BindInfo</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span><span class="ruby-operator">::</span><span class="ruby-constant">BindInfo</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:InitInfo</span>
-    <span class="ruby-identifier">warn</span> <span class="ruby-string">&#39;DuckDB::InitInfo is deprecated. Use DuckDB::TableFunction::InitInfo instead.&#39;</span>, <span class="ruby-value">uplevel:</span> <span class="ruby-value">1</span>
-    <span class="ruby-identifier">const_set</span>(<span class="ruby-value">:InitInfo</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span><span class="ruby-operator">::</span><span class="ruby-constant">InitInfo</span>)
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-keyword">super</span>
-  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">deprecated</span> = <span class="ruby-constant">DEPRECATED_CONSTANTS</span>[<span class="ruby-identifier">name</span>]
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">super</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">deprecated</span>
+
+  <span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;DuckDB::#{name} is deprecated. Use #{deprecated} instead.&quot;</span>, <span class="ruby-value">uplevel:</span> <span class="ruby-value">1</span>
+  <span class="ruby-identifier">const_set</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">deprecated</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;::&#39;</span>).<span class="ruby-identifier">reduce</span>(<span class="ruby-constant">Object</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">mod</span>, <span class="ruby-identifier">part</span><span class="ruby-operator">|</span> <span class="ruby-identifier">mod</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">part</span>) })
 <span class="ruby-keyword">end</span></pre>
           </div>
           
