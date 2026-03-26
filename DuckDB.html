@@ -192,7 +192,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="const_missing-source">
-            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 50</span>
+            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 51</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">const_missing</span>(<span class="ruby-identifier">name</span>)
   <span class="ruby-identifier">deprecated</span> = <span class="ruby-constant">DEPRECATED_CONSTANTS</span>[<span class="ruby-identifier">name</span>]
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">super</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">deprecated</span>
@@ -229,7 +229,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="default_timezone-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 44</span>
+            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 45</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">default_timezone=</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;DuckDB.default_timezone must be either :utc or :local.&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-node">%i[local utc]</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">value</span>)
 

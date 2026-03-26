@@ -345,6 +345,12 @@
 <p><a href="DuckDB/ScalarFunction.html#method-c-create"><code>DuckDB::ScalarFunction.create</code></a> accepts <code>null_handling: true</code> keyword to enable special NULL handling.</p>
 </li><li>
 <p>add <code>34 =&gt; :any</code> to <code>Converter::IntToSym::HASH_TYPES</code> and <code>:any</code> to <code>ScalarFunction::SUPPORTED_TYPES</code> so <code>DuckDB::LogicalType::ANY</code> can be used with <code>varargs_type=</code>.</p>
+</li><li>
+<p>add <a href="DuckDB/ScalarFunction.html#method-i-set_bind"><code>DuckDB::ScalarFunction#set_bind</code></a> to register a bind callback (wraps <code>duckdb_scalar_function_set_bind</code>). The block receives a <code>DuckDB::ScalarFunction::BindInfo</code> object at query planning time (once, before per-row execution).</p>
+</li><li>
+<p>add <code>DuckDB::ScalarFunction::BindInfo#argument_count</code> to return the number of arguments passed to the scalar function (wraps <code>duckdb_scalar_function_bind_get_argument_count</code>).</p>
+</li><li>
+<p>add <code>DuckDB::ScalarFunction::BindInfo#set_error(message)</code> to report an error early at planning time (wraps <code>duckdb_scalar_function_bind_set_error</code>).</p>
 </li></ul>
 
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
