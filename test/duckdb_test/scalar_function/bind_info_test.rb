@@ -196,6 +196,26 @@ module DuckDBTest
       assert_equal 21, result.first.first
     end
 
+    # practical use: use argument_count to validate and set_error early (varargs function)
+    def test_set_bind_validates_argument_count_with_set_error # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_validate_argc'
+      sf.return_type = :integer
+      sf.varargs_type = :integer
+      sf.set_bind do |bind_info|
+        bind_info.set_error('at least 2 arguments required') if bind_info.argument_count < 2
+      end
+      sf.set_function { |*args| args.sum }
+      @conn.register_scalar_function(sf)
+
+      result = @conn.execute('SELECT test_bind_validate_argc(1, 2, 3)')
+
+      assert_equal 6, result.first.first
+
+      error = assert_raises(DuckDB::Error) { @conn.execute('SELECT test_bind_validate_argc(1)') }
+      assert_match(/at least 2 arguments required/, error.message)
+    end
+
     # --- future: requires duckdb_scalar_function_bind_get_argument ---
 
     # get_argument returns the expression at the given index
