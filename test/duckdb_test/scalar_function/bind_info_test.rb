@@ -177,8 +177,7 @@ module DuckDBTest
     # --- get_argument: wraps duckdb_scalar_function_bind_get_argument ---
 
     # get_argument returns a DuckDB::Expression object for the argument at the given index
-    def test_get_argument_returns_expression_object # rubocop:disable Metrics/MethodLength
-      skip 'get_argument not implemented yet'
+    def test_get_argument_returns_expression_object
       expr = nil
 
       sf = DuckDB::ScalarFunction.new
@@ -195,7 +194,6 @@ module DuckDBTest
 
     # get_argument raises for an out-of-range index
     def test_get_argument_raises_for_out_of_range_index
-      skip 'get_argument not implemented yet'
       sf = DuckDB::ScalarFunction.new
       sf.name = 'test_get_arg_oob'
       sf.return_type = :integer

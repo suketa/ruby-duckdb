@@ -15,7 +15,21 @@ module DuckDB
     #     end
     #   end
     #
-    class BindInfo # rubocop:disable Lint/EmptyClass
+    class BindInfo
+      # Returns the DuckDB::Expression for the argument at +index+.
+      # Raises ArgumentError if +index+ is out of range.
+      #
+      #   sf.set_bind do |bind_info|
+      #     expr = bind_info.get_argument(0)
+      #   end
+      def get_argument(index)
+        if index.negative? || index >= argument_count
+          raise ArgumentError,
+                "index #{index} is out of range (argument_count: #{argument_count})"
+        end
+
+        _get_argument(index)
+      end
     end
   end
 end
