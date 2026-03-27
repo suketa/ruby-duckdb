@@ -25,6 +25,7 @@ static VALUE duckdb_logical_type__get_alias(VALUE self);
 static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
 static VALUE duckdb_logical_type_s_create_array_type(VALUE klass, VALUE child, VALUE array_size);
 static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child);
+static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE value);
 static VALUE initialize(VALUE self, VALUE type_id_arg);
 
 static const rb_data_type_t logical_type_data_type = {
@@ -471,6 +472,24 @@ static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child) {
     return rbduckdb_create_logical_type(new_type);
 }
 
+/*
+ *  call-seq:
+ *    DuckDB::LogicalType._create_map_type(key_type, value_type) -> DuckDB::LogicalType
+ *
+ *  Return a map logical type from the given key and value logical types.
+ */
+static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE value) {
+    rubyDuckDBLogicalType *key_ctx = get_struct_logical_type(key);
+    rubyDuckDBLogicalType *value_ctx = get_struct_logical_type(value);
+    duckdb_logical_type new_type = duckdb_create_map_type(key_ctx->logical_type, value_ctx->logical_type);
+
+    if (!new_type) {
+        rb_raise(eDuckDBError, "Failed to create map type");
+    }
+
+    return rbduckdb_create_logical_type(new_type);
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -513,6 +532,8 @@ void rbduckdb_init_duckdb_logical_type(void) {
                              duckdb_logical_type_s_create_array_type, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_list_type",
                              duckdb_logical_type_s_create_list_type, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_map_type",
+                             duckdb_logical_type_s_create_map_type, 2);
 
     rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
 }

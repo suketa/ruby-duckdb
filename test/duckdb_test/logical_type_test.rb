@@ -416,6 +416,30 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_list(:nonexistent) }
     end
 
+    def test_s_create_map_with_logical_type
+      map_type = DuckDB::LogicalType.create_map(DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR)
+
+      assert_equal(:map, map_type.type)
+      assert_equal(:integer, map_type.key_type.type)
+      assert_equal(:varchar, map_type.value_type.type)
+    end
+
+    def test_s_create_map_with_symbol
+      map_type = DuckDB::LogicalType.create_map(:integer, :varchar)
+
+      assert_equal(:map, map_type.type)
+      assert_equal(:integer, map_type.key_type.type)
+      assert_equal(:varchar, map_type.value_type.type)
+    end
+
+    def test_s_create_map_with_invalid_key_type
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_map(:nonexistent, :varchar) }
+    end
+
+    def test_s_create_map_with_invalid_value_type
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_map(:integer, :nonexistent) }
+    end
+
     def test_new_with_primitive_like_complex_type
       # DUCKDB_TYPE_BIT = 29
       bit_type = DuckDB::LogicalType.new(29)
