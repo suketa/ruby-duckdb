@@ -76,6 +76,13 @@
   
 
 
+  <div class="nav-section">
+    <h3>Instance Methods</h3>
+    <ul class="link-list" role="directory">
+      <li ><a href="#method-i-foldable-3F">foldable?</a></li>
+    </ul>
+  </div>
+
 
 
   <footer id="validator-badges" role="contentinfo">
@@ -123,6 +130,44 @@
 
 
 
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-foldable-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-foldable-3F" title="Link to this method">
+                  <span class="method-callseq">
+                    foldable? &rarr; true or false
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="foldable-3F-source">
+            <pre>static VALUE rbduckdb_expression_foldable_p(VALUE self) {
+    rubyDuckDBExpression *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBExpression, &amp;expression_data_type, ctx);
+    return duckdb_expression_is_foldable(ctx-&gt;expression) ? Qtrue : Qfalse;
+}</pre>
+          </div>
+          <p>Returns <code>true</code> if the expression can be folded to a constant at query planning time (e.g. literals, constant arithmetic), <code>false</code> otherwise (e.g. column references, non-deterministic functions).</p>
+        </div>
+
+
+      </div>
+
+    </section>
 
   </section>
 </main>

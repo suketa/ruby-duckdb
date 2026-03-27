@@ -353,6 +353,8 @@
 <p>add <code>DuckDB::ScalarFunction::BindInfo#set_error(message)</code> to report an error early at planning time (wraps <code>duckdb_scalar_function_bind_set_error</code>).</p>
 </li><li>
 <p>add <code>DuckDB::ScalarFunction::BindInfo#get_argument(index)</code> to return the expression at the given argument index as a <a href="DuckDB/Expression.html"><code>DuckDB::Expression</code></a> object (wraps <code>duckdb_scalar_function_bind_get_argument</code>). Raises <code>ArgumentError</code> for out-of-range index.</p>
+</li><li>
+<p>add <a href="DuckDB/Expression.html#method-i-foldable-3F"><code>DuckDB::Expression#foldable?</code></a> to check whether an expression can be folded to a constant at query planning time (wraps <code>duckdb_expression_is_foldable</code>). Returns <code>true</code> for literals and constant arithmetic, <code>false</code> for column references and non-deterministic functions.</p>
 </li></ul>
 
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
