@@ -30,7 +30,6 @@ module DuckDBTest
 
     # foldable? returns true for a literal constant argument
     def test_foldable_returns_true_for_literal_integer
-      skip 'foldable? not implemented yet'
       expr = capture_expression('test_foldable_int', :integer) do
         @conn.execute('SELECT test_foldable_int(42)')
       end
@@ -40,7 +39,6 @@ module DuckDBTest
 
     # foldable? returns true for a literal varchar constant
     def test_foldable_returns_true_for_literal_varchar
-      skip 'foldable? not implemented yet'
       expr = capture_expression('test_foldable_str', :varchar) do
         @conn.execute("SELECT test_foldable_str('hello')")
       end
@@ -50,7 +48,6 @@ module DuckDBTest
 
     # foldable? returns false for a column reference (non-constant)
     def test_foldable_returns_false_for_column_reference
-      skip 'foldable? not implemented yet'
       @conn.execute('CREATE TABLE test_foldable_col_t (x INTEGER)')
       @conn.execute('INSERT INTO test_foldable_col_t VALUES (1)')
 
@@ -63,7 +60,6 @@ module DuckDBTest
 
     # foldable? returns true for a constant arithmetic expression (e.g. 40 + 2)
     def test_foldable_returns_true_for_constant_arithmetic
-      skip 'foldable? not implemented yet'
       expr = capture_expression('test_foldable_arith', :bigint) do
         @conn.execute('SELECT test_foldable_arith((40 + 2)::BIGINT)')
       end
@@ -73,7 +69,6 @@ module DuckDBTest
 
     # foldable? returns false for a non-deterministic function like random()
     def test_foldable_returns_false_for_random
-      skip 'foldable? not implemented yet'
       expr = capture_expression('test_foldable_random', :double) do
         @conn.execute('SELECT test_foldable_random(random())')
       end
