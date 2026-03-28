@@ -49,31 +49,6 @@ module DuckDBTest
     end
     # rubocop:enable Minitest/MultipleAssertions
 
-    # Test 3: Named TIMESTAMP_S parameter is converted to Ruby Time via rbduckdb_duckdb_value_to_ruby
-    def test_get_named_parameter_returns_time_for_timestamp_s # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
-      captured = nil
-      tf = DuckDB::TableFunction.new
-      tf.name = 'test_ts_s_named'
-      tf.add_named_parameter('ts', DuckDB::LogicalType.resolve(:timestamp_s))
-      tf.bind do |bind_info|
-        captured = bind_info.get_named_parameter('ts')
-        bind_info.add_result_column('v', DuckDB::LogicalType::BIGINT)
-      end
-      tf.init { |_i| nil }
-      tf.execute { |_f, output| output.size = 0 }
-
-      @connection.register_table_function(tf)
-      @connection.execute("SELECT * FROM test_ts_s_named(ts = '2025-03-15 08:30:45'::TIMESTAMP_S)")
-
-      assert_instance_of Time, captured
-      assert_equal 2025, captured.year
-      assert_equal 3,    captured.month
-      assert_equal 15,   captured.day
-      assert_equal 8,    captured.hour
-      assert_equal 30,   captured.min
-      assert_equal 45,   captured.sec
-    end
-
     private
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize

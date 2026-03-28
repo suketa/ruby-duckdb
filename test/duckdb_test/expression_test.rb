@@ -145,6 +145,31 @@ module DuckDBTest
       assert_equal 123_456, value.usec
     end
 
+    def test_fold_returns_time_for_timestamp_s_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
+      expr = ctx = nil
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_fold_ts_s'
+      sf.return_type = :bigint
+      sf.add_parameter(:timestamp_s)
+      sf.set_bind do |b|
+        expr = b.get_argument(0)
+        ctx  = b.client_context
+      end
+      sf.set_function { |_v| 0 }
+      @conn.register_scalar_function(sf)
+      @conn.execute("SELECT test_fold_ts_s('2025-03-15 08:30:45'::TIMESTAMP_S)")
+
+      value = expr.fold(ctx)
+
+      assert_instance_of Time, value
+      assert_equal 2025, value.year
+      assert_equal 3,    value.month
+      assert_equal 15,   value.day
+      assert_equal 8,    value.hour
+      assert_equal 30,   value.min
+      assert_equal 45,   value.sec
+    end
+
     private
 
     # Registers a pass-through scalar function, executes sql, and returns
