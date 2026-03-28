@@ -282,13 +282,7 @@ static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_time(void* vector_data, idx_t row_idx) {
-    duckdb_time_struct data = duckdb_from_time(((duckdb_time *)vector_data)[row_idx]);
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time, 4,
-                      INT2FIX(data.hour),
-                      INT2FIX(data.min),
-                      INT2FIX(data.sec),
-                      INT2NUM(data.micros)
-                      );
+    return rbduckdb_time_to_ruby(((duckdb_time *)vector_data)[row_idx]);
 }
 
 
