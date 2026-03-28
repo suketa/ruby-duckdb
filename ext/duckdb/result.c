@@ -6,19 +6,6 @@ struct chunk_arg {
 };
 
 static VALUE cDuckDBResult;
-static ID id__to_date;
-static ID id__to_time;
-static ID id__to_time_from_duckdb_time;
-static ID id__to_interval_from_vector;
-static ID id__to_hugeint_from_vector;
-static ID id__to_decimal_from_hugeint;
-static ID id__to_uuid_from_vector;
-static ID id__to_time_from_duckdb_timestamp_s;
-static ID id__to_time_from_duckdb_timestamp_ms;
-static ID id__to_time_from_duckdb_timestamp_ns;
-static ID id__to_time_from_duckdb_time_tz;
-static ID id__to_time_from_duckdb_timestamp_tz;
-static ID id__to_infinity;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -37,7 +24,6 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
 static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
 
-static VALUE infinite_date_value(duckdb_date date);
 static VALUE vector_date(void *vector_data, idx_t row_idx);
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
 static VALUE vector_time(void* vector_data, idx_t row_idx);
@@ -47,10 +33,6 @@ static VALUE vector_varchar(void* vector_data, idx_t row_idx);
 static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
-static VALUE infinite_timestamp_value(duckdb_timestamp timestamp);
-static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s);
-static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms);
-static VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns);
 
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
@@ -290,14 +272,6 @@ VALUE rbduckdb_create_result(void) {
     return allocate(cDuckDBResult);
 }
 
-static VALUE infinite_date_value(duckdb_date date) {
-    if (duckdb_is_finite_date(date) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          INT2NUM(date.days)
-                         );
-    }
-    return Qnil;
-}
 
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
     duckdb_date date = ((duckdb_date *) vector_data)[row_idx];
@@ -425,23 +399,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
                       );
 }
 
-static VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
-    if (duckdb_is_finite_timestamp(timestamp) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp.micros)
-                         );
-    }
-    return Qnil;
-}
 
-static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
-    if (duckdb_is_finite_timestamp_s(timestamp_s) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp_s.seconds)
-                         );
-    }
-    return Qnil;
-}
 
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
     duckdb_timestamp_s data = ((duckdb_timestamp_s *)vector_data)[row_idx];
@@ -454,14 +412,6 @@ static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
                       );
 }
 
-static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
-    if (duckdb_is_finite_timestamp_ms(timestamp_ms) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp_ms.millis)
-                         );
-    }
-    return Qnil;
-}
 
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
     duckdb_timestamp_ms data = ((duckdb_timestamp_ms *)vector_data)[row_idx];
@@ -474,14 +424,6 @@ static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
                       );
 }
 
-static VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
-    if (duckdb_is_finite_timestamp_ns(timestamp_ns) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp_ns.nanos)
-                         );
-    }
-    return Qnil;
-}
 
 static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx) {
     duckdb_timestamp_ns data = ((duckdb_timestamp_ns *)vector_data)[row_idx];
@@ -840,19 +782,6 @@ void rbduckdb_init_duckdb_result(void) {
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBResult = rb_define_class_under(mDuckDB, "Result", rb_cObject);
-    id__to_date = rb_intern("_to_date");
-    id__to_time = rb_intern("_to_time");
-    id__to_time_from_duckdb_time = rb_intern("_to_time_from_duckdb_time");
-    id__to_interval_from_vector = rb_intern("_to_interval_from_vector");
-    id__to_hugeint_from_vector = rb_intern("_to_hugeint_from_vector");
-    id__to_decimal_from_hugeint = rb_intern("_to_decimal_from_hugeint");
-    id__to_uuid_from_vector = rb_intern("_to_uuid_from_vector");
-    id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
-    id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
-    id__to_time_from_duckdb_timestamp_ns = rb_intern("_to_time_from_duckdb_timestamp_ns");
-    id__to_time_from_duckdb_time_tz = rb_intern("_to_time_from_duckdb_time_tz");
-    id__to_time_from_duckdb_timestamp_tz = rb_intern("_to_time_from_duckdb_timestamp_tz");
-    id__to_infinity = rb_intern("_to_infinity");
 
     rb_define_alloc_func(cDuckDBResult, allocate);
 
