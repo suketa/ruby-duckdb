@@ -363,6 +363,8 @@
 <p>add <code>DuckDB::ScalarFunction::BindInfo#client_context</code> to return the client context of the bind phase as a <a href="DuckDB/ClientContext.html"><code>DuckDB::ClientContext</code></a> object (wraps <code>duckdb_scalar_function_get_client_context</code>).</p>
 </li><li>
 <p>add <a href="DuckDB/ClientContext.html#method-i-connection_id"><code>DuckDB::ClientContext#connection_id</code></a> to return the connection id of the client context (wraps <code>duckdb_client_context_get_connection_id</code>).</p>
+</li><li>
+<p>add <a href="DuckDB/Expression.html#method-i-fold"><code>DuckDB::Expression#fold(client_context)</code></a> to fold a constant expression to a native Ruby value at query planning time (wraps <code>duckdb_expression_fold</code>). Returns Integer, Float, String, true/false, or nil. Raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a> if the expression is not foldable.</p>
 </li></ul>
 
 <h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>

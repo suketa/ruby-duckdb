@@ -79,6 +79,7 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-fold">fold</a></li>
       <li ><a href="#method-i-foldable-3F">foldable?</a></li>
     </ul>
   </div>
@@ -135,6 +136,44 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-fold" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-fold" title="Link to this method">
+                <span class="method-name">fold</span>
+                <span class="method-args">(client_context)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="fold-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/expression.rb, line 18</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">fold</span>(<span class="ruby-identifier">client_context</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;expression is not foldable&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">foldable?</span>
+
+  <span class="ruby-identifier">_fold</span>(<span class="ruby-identifier">client_context</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Evaluates the expression at planning time and returns a DuckDB::Value holding the constant result. Raises <a href="Error.html"><code>DuckDB::Error</code></a> if the expression is not foldable.</p>
+
+<pre class="ruby"><span class="ruby-identifier">sf</span>.<span class="ruby-identifier">set_bind</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">expr</span>           = <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">get_argument</span>(<span class="ruby-value">0</span>)
+  <span class="ruby-identifier">client_context</span> = <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">client_context</span>
+  <span class="ruby-identifier">value</span>          = <span class="ruby-identifier">expr</span>.<span class="ruby-identifier">fold</span>(<span class="ruby-identifier">client_context</span>)   <span class="ruby-comment"># =&gt; DuckDB::Value</span>
+<span class="ruby-keyword">end</span>
+</pre>
+        </div>
+
+
+      </div>
 
       <div id="method-i-foldable-3F" class="method-detail anchor-link ">
         <div class="method-header">
