@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ScalarFunction::BindInfo#set_error(message)` to report an error early at planning time (wraps `duckdb_scalar_function_bind_set_error`).
 - add `DuckDB::ScalarFunction::BindInfo#get_argument(index)` to return the expression at the given argument index as a `DuckDB::Expression` object (wraps `duckdb_scalar_function_bind_get_argument`). Raises `ArgumentError` for out-of-range index.
 - add `DuckDB::Expression#foldable?` to check whether an expression can be folded to a constant at query planning time (wraps `duckdb_expression_is_foldable`). Returns `true` for literals and constant arithmetic, `false` for column references and non-deterministic functions.
+- add `DuckDB::LogicalType.create_map` to create a map logical type.
 
 ## Breaking changes
 - rename `DuckDB::BindInfo` to `DuckDB::TableFunction::BindInfo`. `DuckDB::BindInfo` still works but emits a deprecation warning.
