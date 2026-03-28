@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Expression#foldable?` to check whether an expression can be folded to a constant at query planning time (wraps `duckdb_expression_is_foldable`). Returns `true` for literals and constant arithmetic, `false` for column references and non-deterministic functions.
 - add `DuckDB::LogicalType.create_map` to create a map logical type.
 - bump duckdb to 1.5.1 on CI
+- add `DuckDB::ScalarFunction::BindInfo#client_context` to return the client context of the bind phase as a `DuckDB::ClientContext` object (wraps `duckdb_scalar_function_get_client_context`).
 
 ## Breaking changes
 - rename `DuckDB::BindInfo` to `DuckDB::TableFunction::BindInfo`. `DuckDB::BindInfo` still works but emits a deprecation warning.
