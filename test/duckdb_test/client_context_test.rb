@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'securerandom'
 
 module DuckDBTest
   class ClientContextTest < Minitest::Test
@@ -52,13 +53,14 @@ module DuckDBTest
 
     def get_client_context(conn)
       result = nil
+      name = "test_get_ctx_#{conn.object_id}_#{SecureRandom.hex(4)}"
       sf = DuckDB::ScalarFunction.new
-      sf.name = "test_get_ctx_#{conn.object_id}"
+      sf.name = name
       sf.return_type = :integer
       sf.set_bind { |bind_info| result = bind_info.client_context }
       sf.set_function { 1 }
       conn.register_scalar_function(sf)
-      conn.execute("SELECT test_get_ctx_#{conn.object_id}()")
+      conn.execute("SELECT #{name}()")
       result
     end
   end
