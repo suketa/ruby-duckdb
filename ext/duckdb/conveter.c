@@ -61,6 +61,16 @@ VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
     return Qnil;
 }
 
+VALUE rbduckdb_time_to_ruby(duckdb_time t) {
+    duckdb_time_struct data = duckdb_from_time(t);
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time, 4,
+                      INT2FIX(data.hour),
+                      INT2FIX(data.min),
+                      INT2FIX(data.sec),
+                      INT2NUM(data.micros)
+                      );
+}
+
 VALUE rbduckdb_date_to_ruby(duckdb_date date) {
     VALUE obj = infinite_date_value(date);
 

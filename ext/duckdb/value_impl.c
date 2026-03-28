@@ -85,6 +85,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
         case DUCKDB_TYPE_DATE:
             result = rbduckdb_date_to_ruby(duckdb_get_date(val));
             break;
+        case DUCKDB_TYPE_TIME:
+            result = rbduckdb_time_to_ruby(duckdb_get_time(val));
+            break;
         case DUCKDB_TYPE_VARCHAR:
             str = duckdb_get_varchar(val);
             result = rb_str_new_cstr(str);
