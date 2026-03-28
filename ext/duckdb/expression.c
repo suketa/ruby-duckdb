@@ -59,11 +59,12 @@ static VALUE rbduckdb_expression_foldable_p(VALUE self) {
 
 /*
  * call-seq:
- *   expression.fold(client_context) -> DuckDB::Value
+ *   expression._fold(client_context) -> DuckDB::Value
  *
- * Evaluates the expression at planning time and returns a DuckDB::Value
- * holding the constant result. Raises DuckDB::Error if folding fails or
- * the expression is not foldable.
+ * Thin wrapper over +duckdb_expression_fold+. Calls the C API and returns a
+ * DuckDB::Value. Raises DuckDB::Error if the C API reports an error.
+ * Use the public Expression#fold instead, which guards against non-foldable
+ * expressions before calling this method.
  */
 static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     rubyDuckDBExpression *expr_ctx;
@@ -72,11 +73,6 @@ static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     duckdb_error_data error_data;
 
     TypedData_Get_Struct(self, rubyDuckDBExpression, &expression_data_type, expr_ctx);
-
-    if (!duckdb_expression_is_foldable(expr_ctx->expression)) {
-        rb_raise(eDuckDBError, "expression is not foldable");
-    }
-
     cc_ctx = get_struct_client_context(client_context);
 
     error_data = duckdb_expression_fold(cc_ctx->client_context, expr_ctx->expression, &out_value);
@@ -101,5 +97,5 @@ void rbduckdb_init_duckdb_expression(void) {
     cDuckDBExpression = rb_define_class_under(mDuckDB, "Expression", rb_cObject);
     rb_define_alloc_func(cDuckDBExpression, allocate);
     rb_define_method(cDuckDBExpression, "foldable?", rbduckdb_expression_foldable_p, 0);
-    rb_define_method(cDuckDBExpression, "fold", rbduckdb_expression_fold, 1);
+    rb_define_private_method(cDuckDBExpression, "_fold", rbduckdb_expression_fold, 1);
 }
