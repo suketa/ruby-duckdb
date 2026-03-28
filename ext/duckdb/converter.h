@@ -15,6 +15,8 @@ extern ID id__to_time_from_duckdb_time_tz;
 extern ID id__to_time_from_duckdb_timestamp_tz;
 extern ID id__to_infinity;
 
+VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts);
+
 VALUE infinite_date_value(duckdb_date date);
 VALUE infinite_timestamp_value(duckdb_timestamp timestamp);
 VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s);
