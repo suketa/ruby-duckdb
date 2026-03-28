@@ -42,6 +42,12 @@ VALUE rbduckdb_client_context_new(duckdb_client_context client_context) {
     return obj;
 }
 
+rubyDuckDBClientContext *get_struct_client_context(VALUE obj) {
+    rubyDuckDBClientContext *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBClientContext, &client_context_data_type, ctx);
+    return ctx;
+}
+
 /*
  * call-seq:
  *   client_context.connection_id -> Integer

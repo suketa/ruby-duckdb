@@ -9,5 +9,6 @@ typedef struct _rubyDuckDBClientContext rubyDuckDBClientContext;
 
 void rbduckdb_init_duckdb_client_context(void);
 VALUE rbduckdb_client_context_new(duckdb_client_context client_context);
+rubyDuckDBClientContext *get_struct_client_context(VALUE obj);
 
 #endif
