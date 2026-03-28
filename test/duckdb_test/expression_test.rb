@@ -83,7 +83,6 @@ module DuckDBTest
     end
 
     def test_fold_returns_value_for_constant_arithmetic
-      skip 'not implemented yet'
       expr, client_context = bind_argument_of('test_fold_arith', :bigint, 'SELECT test_fold_arith((40 + 2)::BIGINT)')
 
       value = expr.fold(client_context)
