@@ -375,14 +375,7 @@ static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
 
 
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
-    duckdb_timestamp_ms data = ((duckdb_timestamp_ms *)vector_data)[row_idx];
-    VALUE obj = infinite_timestamp_ms_value(data);
-    if (obj != Qnil) {
-        return obj;
-    }
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ms, 1,
-                      LL2NUM(data.millis)
-                      );
+    return rbduckdb_timestamp_ms_to_ruby(((duckdb_timestamp_ms *)vector_data)[row_idx]);
 }
 
 
