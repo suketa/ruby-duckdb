@@ -211,5 +211,23 @@ module DuckDBTest
     def test_bind_info_set_bind_data
       skip 'set_bind_data not implemented yet'
     end
+
+    # --- client_context: wraps duckdb_scalar_function_get_client_context ---
+
+    # client_context returns a DuckDB::ClientContext object from the bind callback
+    def test_client_context_returns_client_context_object
+      received = nil
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_client_context_class'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| received = bind_info.client_context }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_bind_client_context_class(1)')
+
+      assert_instance_of DuckDB::ClientContext, received
+    end
   end
 end
