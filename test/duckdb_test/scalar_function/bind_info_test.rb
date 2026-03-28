@@ -211,5 +211,78 @@ module DuckDBTest
     def test_bind_info_set_bind_data
       skip 'set_bind_data not implemented yet'
     end
+
+    # --- client_context: wraps duckdb_scalar_function_get_client_context ---
+
+    # client_context returns a DuckDB::ClientContext object from the bind callback
+    def test_client_context_returns_client_context_object
+      skip 'client_context not implemented yet'
+      received = nil
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_client_context_class'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| received = bind_info.client_context }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_bind_client_context_class(1)')
+
+      assert_instance_of DuckDB::ClientContext, received
+    end
+
+    # connection_id on the client context returns an Integer
+    def test_client_context_connection_id_returns_integer
+      skip 'client_context not implemented yet'
+      connection_id = nil
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_client_context_conn_id'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| connection_id = bind_info.client_context.connection_id }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_bind_client_context_conn_id(1)')
+
+      assert_kind_of Integer, connection_id
+    end
+
+    # connection_id is consistent across multiple bind calls on the same connection
+    def test_client_context_connection_id_is_consistent
+      skip 'client_context not implemented yet'
+      ids = []
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_client_context_conn_id_consistent'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| ids << bind_info.client_context.connection_id }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_bind_client_context_conn_id_consistent(1)')
+      @conn.execute('SELECT test_bind_client_context_conn_id_consistent(2)')
+
+      assert_equal 1, ids.uniq.size
+    end
+
+    # connection_id differs between two distinct connections
+    def test_client_context_connection_id_differs_across_connections # rubocop:disable Metrics/MethodLength
+      skip 'client_context not implemented yet'
+      ids = []
+
+      [@conn, @db.connect].each_with_index do |conn, i|
+        sf = DuckDB::ScalarFunction.new
+        sf.name = "test_bind_ctx_multi_conn_#{i}"
+        sf.return_type = :integer
+        sf.add_parameter(:integer)
+        sf.set_bind { |bind_info| ids << bind_info.client_context.connection_id }
+        sf.set_function { |v| v }
+        conn.register_scalar_function(sf)
+        conn.execute("SELECT test_bind_ctx_multi_conn_#{i}(1)")
+      end
+
+      assert_equal 2, ids.uniq.size
+    end
   end
 end
