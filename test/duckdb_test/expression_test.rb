@@ -54,7 +54,7 @@ module DuckDBTest
 
     # --- fold ---
     # Expression#fold(client_context) evaluates a foldable expression at
-    # planning time and returns a DuckDB::Value holding the constant result.
+    # planning time and returns a native Ruby object holding the constant result.
     # The client_context is obtained from bind_info.client_context inside the
     # scalar function bind callback.
     # Calling fold on a non-foldable expression raises DuckDB::Error.
@@ -63,31 +63,31 @@ module DuckDBTest
     #   sf.set_bind do |bind_info|
     #     expr           = bind_info.get_argument(0)
     #     client_context = bind_info.client_context
-    #     value          = expr.fold(client_context)   # => DuckDB::Value
+    #     value          = expr.fold(client_context)   # => Integer, String, Float, ...
     #   end
 
-    def test_fold_returns_value_for_integer_literal
+    def test_fold_returns_integer_for_integer_literal
       expr, client_context = bind_argument_of('test_fold_int', :integer, 'SELECT test_fold_int(42)')
 
       value = expr.fold(client_context)
 
-      assert_kind_of DuckDB::Value, value
+      assert_equal 42, value
     end
 
-    def test_fold_returns_value_for_varchar_literal
+    def test_fold_returns_string_for_varchar_literal
       expr, client_context = bind_argument_of('test_fold_str', :varchar, "SELECT test_fold_str('hello')")
 
       value = expr.fold(client_context)
 
-      assert_kind_of DuckDB::Value, value
+      assert_equal 'hello', value
     end
 
-    def test_fold_returns_value_for_constant_arithmetic
+    def test_fold_returns_integer_for_constant_arithmetic
       expr, client_context = bind_argument_of('test_fold_arith', :bigint, 'SELECT test_fold_arith((40 + 2)::BIGINT)')
 
       value = expr.fold(client_context)
 
-      assert_kind_of DuckDB::Value, value
+      assert_equal 42, value
     end
 
     def test_fold_raises_for_non_foldable_expression
