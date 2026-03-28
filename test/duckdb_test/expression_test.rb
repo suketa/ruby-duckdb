@@ -145,21 +145,15 @@ module DuckDBTest
       assert_equal 123_456, value.usec
     end
 
-    def test_fold_returns_time_for_timestamp_s_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
-      expr = ctx = nil
-      sf = DuckDB::ScalarFunction.new
-      sf.name = 'test_fold_ts_s'
-      sf.return_type = :bigint
-      sf.add_parameter(:timestamp_s)
-      sf.set_bind do |b|
-        expr = b.get_argument(0)
-        ctx  = b.client_context
-      end
-      sf.set_function { |_v| 0 }
-      @conn.register_scalar_function(sf)
-      @conn.execute("SELECT test_fold_ts_s('2025-03-15 08:30:45'::TIMESTAMP_S)")
+    def test_fold_returns_time_for_timestamp_s_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+      expr, client_context = bind_argument_of(
+        'test_fold_ts_s', :timestamp_s,
+        "SELECT test_fold_ts_s('2025-03-15 08:30:45'::TIMESTAMP_S)",
+        return_type: :bigint,
+        function: ->(_v) { 0 }
+      )
 
-      value = expr.fold(ctx)
+      value = expr.fold(client_context)
 
       assert_instance_of Time, value
       assert_equal 2025, value.year
@@ -172,11 +166,14 @@ module DuckDBTest
 
     private
 
-    # Registers a pass-through scalar function, executes sql, and returns
+    # Registers a scalar function, executes sql, and returns
     # [expression, client_context] captured from the first argument during bind.
-    def bind_argument_of(func_name, type, sql)
+    # +return_type+ defaults to +type+ but can be overridden when the parameter
+    # type is not valid as a scalar function return type (e.g. :timestamp_s).
+    # +function+ is the body passed to set_function; defaults to a pass-through.
+    def bind_argument_of(func_name, type, sql, return_type: type, function: ->(v) { v })
       expr = ctx = nil
-      sf = build_scalar_function(func_name, type)
+      sf = build_scalar_function(func_name, type, return_type: return_type, function: function)
       sf.set_bind do |b|
         expr = b.get_argument(0)
         ctx = b.client_context
@@ -186,12 +183,12 @@ module DuckDBTest
       [expr, ctx]
     end
 
-    def build_scalar_function(func_name, type)
+    def build_scalar_function(func_name, type, return_type: type, function: ->(v) { v })
       sf = DuckDB::ScalarFunction.new
       sf.name = func_name
-      sf.return_type = type
+      sf.return_type = return_type
       sf.add_parameter(type)
-      sf.set_function { |v| v }
+      sf.set_function(&function)
       sf
     end
   end
