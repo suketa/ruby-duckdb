@@ -96,6 +96,21 @@ module DuckDB
         _create_list_type(LogicalType.resolve(type))
       end
 
+      # Creates a map logical type with the given key and value types.
+      #
+      # The +key_type+ and +value_type+ arguments can be symbols or
+      # DuckDB::LogicalType instances.
+      #
+      #   require 'duckdb'
+      #
+      #   map_type = DuckDB::LogicalType.create_map(:integer, :varchar)
+      #   map_type.type #=> :map
+      #   map_type.key_type.type #=> :integer
+      #   map_type.value_type.type #=> :varchar
+      def create_map(key_type, value_type)
+        _create_map_type(LogicalType.resolve(key_type), LogicalType.resolve(value_type))
+      end
+
       private
 
       def raise_resolve_error(symbol)
