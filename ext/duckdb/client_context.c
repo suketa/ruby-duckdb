@@ -5,6 +5,7 @@ VALUE cDuckDBClientContext;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static VALUE rbduckdb_client_context_connection_id(VALUE self);
 
 static const rb_data_type_t client_context_data_type = {
     "DuckDB/ClientContext",
@@ -41,10 +42,23 @@ VALUE rbduckdb_client_context_new(duckdb_client_context client_context) {
     return obj;
 }
 
+/*
+ * call-seq:
+ *   client_context.connection_id -> Integer
+ *
+ * Returns the connection id of the client context.
+ */
+static VALUE rbduckdb_client_context_connection_id(VALUE self) {
+    rubyDuckDBClientContext *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBClientContext, &client_context_data_type, ctx);
+    return ULL2NUM(duckdb_client_context_get_connection_id(ctx->client_context));
+}
+
 void rbduckdb_init_duckdb_client_context(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBClientContext = rb_define_class_under(mDuckDB, "ClientContext", rb_cObject);
     rb_define_alloc_func(cDuckDBClientContext, allocate);
+    rb_define_method(cDuckDBClientContext, "connection_id", rbduckdb_client_context_connection_id, 0);
 }
