@@ -72,6 +72,11 @@ static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     duckdb_error_data error_data;
 
     TypedData_Get_Struct(self, rubyDuckDBExpression, &expression_data_type, expr_ctx);
+
+    if (!duckdb_expression_is_foldable(expr_ctx->expression)) {
+        rb_raise(eDuckDBError, "expression is not foldable");
+    }
+
     cc_ctx = get_struct_client_context(client_context);
 
     error_data = duckdb_expression_fold(cc_ctx->client_context, expr_ctx->expression, &out_value);

@@ -91,7 +91,6 @@ module DuckDBTest
     end
 
     def test_fold_raises_for_non_foldable_expression
-      skip 'not implemented yet'
       @conn.execute('CREATE TABLE t_fold_col (x INTEGER)')
       @conn.execute('INSERT INTO t_fold_col VALUES (1)')
       expr, client_context = bind_argument_of('test_fold_col', :integer, 'SELECT test_fold_col(x) FROM t_fold_col')
