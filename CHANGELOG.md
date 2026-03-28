@@ -21,6 +21,10 @@ All notable changes to this project will be documented in this file.
 - rename `DuckDB::InitInfo` to `DuckDB::TableFunction::InitInfo`. `DuckDB::InitInfo` still works but emits a deprecation warning.
 - rename `DuckDB::FunctionInfo` to `DuckDB::TableFunction::FunctionInfo`. `DuckDB::FunctionInfo` still works but emits a deprecation warning.
 
+# 1.5.0.3 - 2026-03-28
+
+- bump duckdb to 1.5.1 on CI.
+
 # 1.5.0.2 - 2026-03-22
 
 - add `DuckDB.vector_size` to return the DuckDB vector size (number of rows processed per vectorized operation).
