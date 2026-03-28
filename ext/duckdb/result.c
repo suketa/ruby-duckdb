@@ -274,18 +274,7 @@ VALUE rbduckdb_create_result(void) {
 
 
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
-    duckdb_date date = ((duckdb_date *) vector_data)[row_idx];
-    VALUE obj = infinite_date_value(date);
-
-    if (obj == Qnil) {
-        duckdb_date_struct date_st = duckdb_from_date(date);
-        obj = rb_funcall(mDuckDBConverter, id__to_date, 3,
-                         INT2FIX(date_st.year),
-                         INT2FIX(date_st.month),
-                         INT2FIX(date_st.day)
-                         );
-    }
-    return obj;
+    return rbduckdb_date_to_ruby(((duckdb_date *)vector_data)[row_idx]);
 }
 
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {

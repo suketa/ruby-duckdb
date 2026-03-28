@@ -116,6 +116,20 @@ module DuckDBTest
       assert_equal 123_456, value.usec
     end
 
+    def test_fold_returns_date_for_date_literal # rubocop:disable Minitest/MultipleAssertions
+      expr, client_context = bind_argument_of(
+        'test_fold_date', :date,
+        "SELECT test_fold_date('2025-06-30'::DATE)"
+      )
+
+      value = expr.fold(client_context)
+
+      assert_instance_of Date, value
+      assert_equal 2025, value.year
+      assert_equal 6,    value.month
+      assert_equal 30,   value.day
+    end
+
     private
 
     # Registers a pass-through scalar function, executes sql, and returns
