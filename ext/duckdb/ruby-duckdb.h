@@ -31,6 +31,7 @@
 #include "./value_impl.h"
 #include "./scalar_function.h"
 #include "./expression.h"
+#include "./client_context.h"
 #include "./scalar_function_bind_info.h"
 #include "./table_function_bind_info.h"
 #include "./table_function_init_info.h"

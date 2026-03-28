@@ -215,8 +215,7 @@ module DuckDBTest
     # --- client_context: wraps duckdb_scalar_function_get_client_context ---
 
     # client_context returns a DuckDB::ClientContext object from the bind callback
-    def test_client_context_returns_client_context_object # rubocop:disable Metrics/MethodLength
-      skip 'client_context not implemented yet'
+    def test_client_context_returns_client_context_object
       received = nil
 
       sf = DuckDB::ScalarFunction.new

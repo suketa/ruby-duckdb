@@ -8,6 +8,7 @@ static size_t memsize(const void *p);
 static VALUE rbduckdb_scalar_function_bind_info_argument_count(VALUE self);
 static VALUE rbduckdb_scalar_function_bind_info_set_error(VALUE self, VALUE error);
 static VALUE rbduckdb_scalar_function_bind_info_get_argument(VALUE self, VALUE index);
+static VALUE rbduckdb_scalar_function_bind_info_client_context(VALUE self);
 
 static const rb_data_type_t scalar_function_bind_info_data_type = {
     "DuckDB/ScalarFunction/BindInfo",
@@ -81,6 +82,20 @@ static VALUE rbduckdb_scalar_function_bind_info_get_argument(VALUE self, VALUE i
     return rbduckdb_expression_new(expr);
 }
 
+/*
+ * call-seq:
+ *   bind_info.client_context -> DuckDB::ClientContext
+ *
+ * Returns the client context associated with the bind phase of the scalar function.
+ */
+static VALUE rbduckdb_scalar_function_bind_info_client_context(VALUE self) {
+    rubyDuckDBScalarFunctionBindInfo *ctx;
+    duckdb_client_context client_context;
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
+    duckdb_scalar_function_get_client_context(ctx->bind_info, &client_context);
+    return rbduckdb_client_context_new(client_context);
+}
+
 void rbduckdb_init_duckdb_scalar_function_bind_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -90,4 +105,5 @@ void rbduckdb_init_duckdb_scalar_function_bind_info(void) {
     rb_define_method(cDuckDBScalarFunctionBindInfo, "argument_count", rbduckdb_scalar_function_bind_info_argument_count, 0);
     rb_define_method(cDuckDBScalarFunctionBindInfo, "set_error", rbduckdb_scalar_function_bind_info_set_error, 1);
     rb_define_private_method(cDuckDBScalarFunctionBindInfo, "_get_argument", rbduckdb_scalar_function_bind_info_get_argument, 1);
+    rb_define_method(cDuckDBScalarFunctionBindInfo, "client_context", rbduckdb_scalar_function_bind_info_client_context, 0);
 }
