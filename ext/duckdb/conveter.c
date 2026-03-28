@@ -61,6 +61,24 @@ VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
     return Qnil;
 }
 
+VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts) {
+    VALUE obj = infinite_timestamp_value(ts);
+
+    if (obj == Qnil) {
+        duckdb_timestamp_struct data_st = duckdb_from_timestamp(ts);
+        obj = rb_funcall(mDuckDBConverter, id__to_time, 7,
+                         INT2FIX(data_st.date.year),
+                         INT2FIX(data_st.date.month),
+                         INT2FIX(data_st.date.day),
+                         INT2FIX(data_st.time.hour),
+                         INT2FIX(data_st.time.min),
+                         INT2FIX(data_st.time.sec),
+                         INT2NUM(data_st.time.micros)
+                         );
+    }
+    return obj;
+}
+
 void rbduckdb_init_duckdb_converter(void) {
     mDuckDBConverter = rb_define_module_under(mDuckDB, "Converter");
 

@@ -98,6 +98,24 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { expr.fold(client_context) }
     end
 
+    def test_fold_returns_time_for_timestamp_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
+      expr, client_context = bind_argument_of(
+        'test_fold_ts', :timestamp,
+        "SELECT test_fold_ts('2025-01-15 12:34:56.123456'::TIMESTAMP)"
+      )
+
+      value = expr.fold(client_context)
+
+      assert_instance_of Time, value
+      assert_equal 2025,    value.year
+      assert_equal 1,       value.month
+      assert_equal 15,      value.day
+      assert_equal 12,      value.hour
+      assert_equal 34,      value.min
+      assert_equal 56,      value.sec
+      assert_equal 123_456, value.usec
+    end
+
     private
 
     # Registers a pass-through scalar function, executes sql, and returns
