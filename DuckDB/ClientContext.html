@@ -76,6 +76,13 @@
   
 
 
+  <div class="nav-section">
+    <h3>Instance Methods</h3>
+    <ul class="link-list" role="directory">
+      <li ><a href="#method-i-connection_id">connection_id</a></li>
+    </ul>
+  </div>
+
 
 
   <footer id="validator-badges" role="contentinfo">
@@ -123,6 +130,44 @@
 
 
 
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-connection_id" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-connection_id" title="Link to this method">
+                  <span class="method-callseq">
+                    connection_id &rarr; Integer
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="connection_id-source">
+            <pre>static VALUE rbduckdb_client_context_connection_id(VALUE self) {
+    rubyDuckDBClientContext *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBClientContext, &amp;client_context_data_type, ctx);
+    return ULL2NUM(duckdb_client_context_get_connection_id(ctx-&gt;client_context));
+}</pre>
+          </div>
+          <p>Returns the connection id of the client context.</p>
+        </div>
+
+
+      </div>
+
+    </section>
 
   </section>
 </main>
