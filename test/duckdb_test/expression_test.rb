@@ -75,7 +75,6 @@ module DuckDBTest
     end
 
     def test_fold_returns_value_for_varchar_literal
-      skip 'not implemented yet'
       expr, client_context = bind_argument_of('test_fold_str', :varchar, "SELECT test_fold_str('hello')")
 
       value = expr.fold(client_context)
