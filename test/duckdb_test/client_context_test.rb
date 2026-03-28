@@ -18,7 +18,6 @@ module DuckDBTest
 
     # connection_id returns an Integer
     def test_connection_id_returns_integer
-      skip 'connection_id not implemented yet'
       client_context = get_client_context(@conn)
 
       assert_kind_of Integer, client_context.connection_id
@@ -26,7 +25,6 @@ module DuckDBTest
 
     # connection_id is positive
     def test_connection_id_is_positive
-      skip 'connection_id not implemented yet'
       client_context = get_client_context(@conn)
 
       assert_operator client_context.connection_id, :>, 0
@@ -34,7 +32,6 @@ module DuckDBTest
 
     # connection_id is consistent for the same connection
     def test_connection_id_is_consistent
-      skip 'connection_id not implemented yet'
       ctx1 = get_client_context(@conn)
       ctx2 = get_client_context(@conn)
 
@@ -43,7 +40,6 @@ module DuckDBTest
 
     # connection_id differs between two distinct connections
     def test_connection_id_differs_across_connections
-      skip 'connection_id not implemented yet'
       conn2 = @db.connect
       ctx1 = get_client_context(@conn)
       ctx2 = get_client_context(conn2)
