@@ -5,7 +5,6 @@ VALUE cDuckDBTableFunctionBindInfo;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE convert_duckdb_value_to_ruby(duckdb_value param_value);
 static VALUE rbduckdb_bind_info_parameter_count(VALUE self);
 static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index);
 static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name);
@@ -45,44 +44,6 @@ rubyDuckDBBindInfo *get_struct_bind_info(VALUE obj) {
  * Returns Qnil for unsupported types.
  * Note: Caller must destroy duckdb_value and duckdb_logical_type.
  */
-static VALUE convert_duckdb_value_to_ruby(duckdb_value param_value) {
-    duckdb_logical_type logical_type;
-    duckdb_type type_id;
-    VALUE result;
-
-    logical_type = duckdb_get_value_type(param_value);
-    type_id = duckdb_get_type_id(logical_type);
-
-    switch (type_id) {
-        case DUCKDB_TYPE_BIGINT:
-            result = LL2NUM(duckdb_get_int64(param_value));
-            break;
-        case DUCKDB_TYPE_INTEGER:
-            result = INT2NUM(duckdb_get_int32(param_value));
-            break;
-        case DUCKDB_TYPE_VARCHAR: {
-            char *str = duckdb_get_varchar(param_value);
-            result = rb_str_new_cstr(str);
-            duckdb_free(str);
-            break;
-        }
-        case DUCKDB_TYPE_DOUBLE:
-            result = DBL2NUM(duckdb_get_double(param_value));
-            break;
-        case DUCKDB_TYPE_BOOLEAN:
-            result = duckdb_get_bool(param_value) ? Qtrue : Qfalse;
-            break;
-        default:
-            // For unsupported types, return nil
-            result = Qnil;
-            break;
-    }
-
-    duckdb_destroy_logical_type(&logical_type);
-
-    return result;
-}
-
 /*
  * call-seq:
  *   bind_info.parameter_count -> Integer
@@ -121,7 +82,7 @@ static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index) {
     idx = NUM2ULL(index);
     param_value = duckdb_bind_get_parameter(ctx->bind_info, idx);
 
-    result = convert_duckdb_value_to_ruby(param_value);
+    result = rbduckdb_duckdb_value_to_ruby(param_value);
 
     duckdb_destroy_value(&param_value);
 
@@ -152,7 +113,7 @@ static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name) {
         return Qnil;
     }
 
-    result = convert_duckdb_value_to_ruby(param_value);
+    result = rbduckdb_duckdb_value_to_ruby(param_value);
 
     duckdb_destroy_value(&param_value);
 
