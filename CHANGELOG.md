@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - bump duckdb to 1.5.1 on CI
 - add `DuckDB::ScalarFunction::BindInfo#client_context` to return the client context of the bind phase as a `DuckDB::ClientContext` object (wraps `duckdb_scalar_function_get_client_context`).
 - add `DuckDB::ClientContext#connection_id` to return the connection id of the client context (wraps `duckdb_client_context_get_connection_id`).
+- add `DuckDB::Expression#fold(client_context)` to fold a constant expression to a native Ruby value at query planning time (wraps `duckdb_expression_fold`). Returns Integer, Float, String, true/false, or nil. Raises `DuckDB::Error` if the expression is not foldable.
 
 ## Breaking changes
 - rename `DuckDB::BindInfo` to `DuckDB::TableFunction::BindInfo`. `DuckDB::BindInfo` still works but emits a deprecation warning.
