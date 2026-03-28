@@ -28,6 +28,14 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBValueImpl);
 }
 
+VALUE rbduckdb_value_impl_new(duckdb_value value) {
+    rubyDuckDBValueImpl *ctx;
+    VALUE obj = allocate(cDuckDBValueImpl);
+    TypedData_Get_Struct(obj, rubyDuckDBValueImpl, &value_impl_data_type, ctx);
+    ctx->value = value;
+    return obj;
+}
+
 void rbduckdb_init_duckdb_value_impl(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");

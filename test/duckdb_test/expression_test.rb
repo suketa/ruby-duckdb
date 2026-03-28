@@ -67,7 +67,6 @@ module DuckDBTest
     #   end
 
     def test_fold_returns_value_for_integer_literal
-      skip 'not implemented yet'
       expr, client_context = bind_argument_of('test_fold_int', :integer, 'SELECT test_fold_int(42)')
 
       value = expr.fold(client_context)

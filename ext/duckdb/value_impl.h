@@ -8,6 +8,7 @@ struct _rubyDuckDBValueImpl {
 typedef struct _rubyDuckDBValueImpl rubyDuckDBValueImpl;
 
 void rbduckdb_init_duckdb_value_impl(void);
+VALUE rbduckdb_value_impl_new(duckdb_value value);
 
 #endif
 

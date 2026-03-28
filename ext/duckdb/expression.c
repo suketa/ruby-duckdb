@@ -6,6 +6,7 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE rbduckdb_expression_foldable_p(VALUE self);
+static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context);
 
 static const rb_data_type_t expression_data_type = {
     "DuckDB/Expression",
@@ -56,6 +57,38 @@ static VALUE rbduckdb_expression_foldable_p(VALUE self) {
     return duckdb_expression_is_foldable(ctx->expression) ? Qtrue : Qfalse;
 }
 
+/*
+ * call-seq:
+ *   expression.fold(client_context) -> DuckDB::Value
+ *
+ * Evaluates the expression at planning time and returns a DuckDB::Value
+ * holding the constant result. Raises DuckDB::Error if folding fails or
+ * the expression is not foldable.
+ */
+static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
+    rubyDuckDBExpression *expr_ctx;
+    rubyDuckDBClientContext *cc_ctx;
+    duckdb_value out_value = NULL;
+    duckdb_error_data error_data;
+
+    TypedData_Get_Struct(self, rubyDuckDBExpression, &expression_data_type, expr_ctx);
+    cc_ctx = get_struct_client_context(client_context);
+
+    error_data = duckdb_expression_fold(cc_ctx->client_context, expr_ctx->expression, &out_value);
+
+    if (duckdb_error_data_has_error(error_data)) {
+        VALUE msg = rb_str_new_cstr(duckdb_error_data_message(error_data));
+        duckdb_destroy_error_data(&error_data);
+        if (out_value) {
+            duckdb_destroy_value(&out_value);
+        }
+        rb_raise(eDuckDBError, "%s", StringValueCStr(msg));
+    }
+    duckdb_destroy_error_data(&error_data);
+
+    return rbduckdb_value_impl_new(out_value);
+}
+
 void rbduckdb_init_duckdb_expression(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -63,4 +96,5 @@ void rbduckdb_init_duckdb_expression(void) {
     cDuckDBExpression = rb_define_class_under(mDuckDB, "Expression", rb_cObject);
     rb_define_alloc_func(cDuckDBExpression, allocate);
     rb_define_method(cDuckDBExpression, "foldable?", rbduckdb_expression_foldable_p, 0);
+    rb_define_method(cDuckDBExpression, "fold", rbduckdb_expression_fold, 1);
 }
