@@ -36,6 +36,62 @@ VALUE rbduckdb_value_impl_new(duckdb_value value) {
     return obj;
 }
 
+VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
+    duckdb_logical_type logical_type;
+    duckdb_type type_id;
+    VALUE result;
+    char *str;
+
+    logical_type = duckdb_get_value_type(val);
+    type_id = duckdb_get_type_id(logical_type);
+
+    switch (type_id) {
+        case DUCKDB_TYPE_BOOLEAN:
+            result = duckdb_get_bool(val) ? Qtrue : Qfalse;
+            break;
+        case DUCKDB_TYPE_TINYINT:
+            result = INT2FIX(duckdb_get_int8(val));
+            break;
+        case DUCKDB_TYPE_SMALLINT:
+            result = INT2FIX(duckdb_get_int16(val));
+            break;
+        case DUCKDB_TYPE_INTEGER:
+            result = INT2NUM(duckdb_get_int32(val));
+            break;
+        case DUCKDB_TYPE_BIGINT:
+            result = LL2NUM(duckdb_get_int64(val));
+            break;
+        case DUCKDB_TYPE_UTINYINT:
+            result = INT2FIX(duckdb_get_uint8(val));
+            break;
+        case DUCKDB_TYPE_USMALLINT:
+            result = INT2FIX(duckdb_get_uint16(val));
+            break;
+        case DUCKDB_TYPE_UINTEGER:
+            result = UINT2NUM(duckdb_get_uint32(val));
+            break;
+        case DUCKDB_TYPE_UBIGINT:
+            result = ULL2NUM(duckdb_get_uint64(val));
+            break;
+        case DUCKDB_TYPE_FLOAT:
+            result = DBL2NUM(duckdb_get_float(val));
+            break;
+        case DUCKDB_TYPE_DOUBLE:
+            result = DBL2NUM(duckdb_get_double(val));
+            break;
+        case DUCKDB_TYPE_VARCHAR:
+            str = duckdb_get_varchar(val);
+            result = rb_str_new_cstr(str);
+            duckdb_free(str);
+            break;
+        default:
+            result = Qnil;
+            break;
+    }
+
+    return result;
+}
+
 void rbduckdb_init_duckdb_value_impl(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");

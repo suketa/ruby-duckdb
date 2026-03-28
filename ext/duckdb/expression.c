@@ -71,6 +71,7 @@ static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     rubyDuckDBClientContext *cc_ctx;
     duckdb_value out_value = NULL;
     duckdb_error_data error_data;
+    VALUE result;
 
     TypedData_Get_Struct(self, rubyDuckDBExpression, &expression_data_type, expr_ctx);
     cc_ctx = get_struct_client_context(client_context);
@@ -87,7 +88,9 @@ static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     }
     duckdb_destroy_error_data(&error_data);
 
-    return rbduckdb_value_impl_new(out_value);
+    result = rbduckdb_duckdb_value_to_ruby(out_value);
+    duckdb_destroy_value(&out_value);
+    return result;
 }
 
 void rbduckdb_init_duckdb_expression(void) {
