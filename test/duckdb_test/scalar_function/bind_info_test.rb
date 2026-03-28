@@ -215,7 +215,7 @@ module DuckDBTest
     # --- client_context: wraps duckdb_scalar_function_get_client_context ---
 
     # client_context returns a DuckDB::ClientContext object from the bind callback
-    def test_client_context_returns_client_context_object
+    def test_client_context_returns_client_context_object # rubocop:disable Metrics/MethodLength
       skip 'client_context not implemented yet'
       received = nil
 
@@ -232,7 +232,7 @@ module DuckDBTest
     end
 
     # connection_id on the client context returns an Integer
-    def test_client_context_connection_id_returns_integer
+    def test_client_context_connection_id_returns_integer # rubocop:disable Metrics/MethodLength
       skip 'client_context not implemented yet'
       connection_id = nil
 
@@ -249,7 +249,7 @@ module DuckDBTest
     end
 
     # connection_id is consistent across multiple bind calls on the same connection
-    def test_client_context_connection_id_is_consistent
+    def test_client_context_connection_id_is_consistent # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       skip 'client_context not implemented yet'
       ids = []
 
@@ -267,7 +267,7 @@ module DuckDBTest
     end
 
     # connection_id differs between two distinct connections
-    def test_client_context_connection_id_differs_across_connections # rubocop:disable Metrics/MethodLength
+    def test_client_context_connection_id_differs_across_connections # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       skip 'client_context not implemented yet'
       ids = []
 
