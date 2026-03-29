@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ScalarFunction::BindInfo#get_argument(index)` to return the expression at the given argument index as a `DuckDB::Expression` object (wraps `duckdb_scalar_function_bind_get_argument`). Raises `ArgumentError` for out-of-range index.
 - add `DuckDB::Expression#foldable?` to check whether an expression can be folded to a constant at query planning time (wraps `duckdb_expression_is_foldable`). Returns `true` for literals and constant arithmetic, `false` for column references and non-deterministic functions.
 - add `DuckDB::LogicalType.create_map` to create a map logical type.
+- add `DuckDB::LogicalType.create_union` to create a union logical type.
 - bump duckdb to 1.5.1 on CI
 - add `DuckDB::ScalarFunction::BindInfo#client_context` to return the client context of the bind phase as a `DuckDB::ClientContext` object (wraps `duckdb_scalar_function_get_client_context`).
 - add `DuckDB::ClientContext#connection_id` to return the connection id of the client context (wraps `duckdb_client_context_get_connection_id`).
