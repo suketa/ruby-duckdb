@@ -9,6 +9,7 @@ ID id__to_interval_from_vector;
 ID id__to_hugeint_from_vector;
 ID id__to_decimal_from_hugeint;
 ID id__to_uuid_from_vector;
+ID id__to_uuid_from_uhugeint;
 ID id__to_time_from_duckdb_timestamp_s;
 ID id__to_time_from_duckdb_timestamp_ms;
 ID id__to_time_from_duckdb_timestamp_ns;
@@ -59,6 +60,20 @@ VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
                          );
     }
     return Qnil;
+}
+
+VALUE rbduckdb_uuid_to_ruby(duckdb_hugeint h) {
+    return rb_funcall(mDuckDBConverter, id__to_uuid_from_vector, 2,
+                      ULL2NUM(h.lower),
+                      LL2NUM(h.upper)
+                      );
+}
+
+VALUE rbduckdb_uuid_uhugeint_to_ruby(duckdb_uhugeint h) {
+    return rb_funcall(mDuckDBConverter, id__to_uuid_from_uhugeint, 2,
+                      ULL2NUM(h.lower),
+                      ULL2NUM(h.upper)
+                      );
 }
 
 VALUE rbduckdb_interval_to_ruby(duckdb_interval i) {
@@ -182,6 +197,7 @@ void rbduckdb_init_duckdb_converter(void) {
     id__to_hugeint_from_vector = rb_intern("_to_hugeint_from_vector");
     id__to_decimal_from_hugeint = rb_intern("_to_decimal_from_hugeint");
     id__to_uuid_from_vector = rb_intern("_to_uuid_from_vector");
+    id__to_uuid_from_uhugeint = rb_intern("_to_uuid_from_uhugeint");
     id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
     id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
     id__to_time_from_duckdb_timestamp_ns = rb_intern("_to_time_from_duckdb_timestamp_ns");

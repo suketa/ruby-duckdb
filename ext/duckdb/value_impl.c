@@ -117,6 +117,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             result = rb_str_new_cstr(str);
             duckdb_free(str);
             break;
+        case DUCKDB_TYPE_UUID:
+            result = rbduckdb_uuid_uhugeint_to_ruby(duckdb_get_uuid(val));
+            break;
         default:
             result = Qnil;
             break;

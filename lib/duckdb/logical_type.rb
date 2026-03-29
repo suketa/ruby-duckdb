@@ -38,6 +38,7 @@ module DuckDB
       # array: 33,
       # uuid: 27,
       # union: 28,
+      uuid: 27,
       bit: 29,
       time_tz: 30,
       timestamp_tz: 31,

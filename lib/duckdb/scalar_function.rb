@@ -112,6 +112,7 @@ module DuckDB
       uinteger
       usmallint
       utinyint
+      uuid
       varchar
     ].freeze
 
@@ -120,7 +121,7 @@ module DuckDB
     # Adds a parameter to the scalar function.
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME,
     # TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT,
-    # UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.
+    # UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types.
     #
     # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the parameter type
     # @return [DuckDB::ScalarFunction] self
@@ -134,7 +135,7 @@ module DuckDB
     # Sets the return type for the scalar function.
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME,
     # TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT,
-    # UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.
+    # UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types.
     #
     # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type
     # @return [DuckDB::ScalarFunction] self
@@ -166,7 +167,7 @@ module DuckDB
     # The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|).
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME,
     # TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT,
-    # UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.
+    # UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types.
     #
     # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the varargs element type
     # @return [DuckDB::ScalarFunction] self

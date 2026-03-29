@@ -8,6 +8,7 @@ extern ID id__to_interval_from_vector;
 extern ID id__to_hugeint_from_vector;
 extern ID id__to_decimal_from_hugeint;
 extern ID id__to_uuid_from_vector;
+extern ID id__to_uuid_from_uhugeint;
 extern ID id__to_time_from_duckdb_timestamp_s;
 extern ID id__to_time_from_duckdb_timestamp_ms;
 extern ID id__to_time_from_duckdb_timestamp_ns;
@@ -15,6 +16,8 @@ extern ID id__to_time_from_duckdb_time_tz;
 extern ID id__to_time_from_duckdb_timestamp_tz;
 extern ID id__to_infinity;
 
+VALUE rbduckdb_uuid_to_ruby(duckdb_hugeint h);
+VALUE rbduckdb_uuid_uhugeint_to_ruby(duckdb_uhugeint h);
 VALUE rbduckdb_interval_to_ruby(duckdb_interval i);
 VALUE rbduckdb_hugeint_to_ruby(duckdb_hugeint h);
 VALUE rbduckdb_uhugeint_to_ruby(duckdb_uhugeint h);

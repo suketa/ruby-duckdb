@@ -683,11 +683,7 @@ static VALUE vector_timestamp_tz(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
-    duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_uuid_from_vector, 2,
-                      ULL2NUM(hugeint.lower),
-                      LL2NUM(hugeint.upper)
-                      );
+    return rbduckdb_uuid_to_ruby(((duckdb_hugeint *)vector_data)[row_idx]);
 }
 
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
