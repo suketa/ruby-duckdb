@@ -91,6 +91,17 @@ VALUE rbduckdb_timestamp_ns_to_ruby(duckdb_timestamp_ns ts) {
                       );
 }
 
+VALUE rbduckdb_time_tz_to_ruby(duckdb_time_tz tz) {
+    duckdb_time_tz_struct data = duckdb_from_time_tz(tz);
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time_tz, 5,
+                      INT2FIX(data.time.hour),
+                      INT2FIX(data.time.min),
+                      INT2FIX(data.time.sec),
+                      INT2NUM(data.time.micros),
+                      INT2NUM(data.offset)
+                      );
+}
+
 VALUE rbduckdb_time_to_ruby(duckdb_time t) {
     duckdb_time_struct data = duckdb_from_time(t);
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time, 4,
