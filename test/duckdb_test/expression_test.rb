@@ -283,6 +283,19 @@ module DuckDBTest
       assert_equal 14_706_000_000, value.interval_micros
     end
 
+    def test_fold_returns_string_for_uuid_literal
+      expr, client_context = bind_argument_of(
+        'test_fold_uuid', :uuid,
+        "SELECT test_fold_uuid('550e8400-e29b-41d4-a716-446655440000'::UUID)",
+        return_type: :varchar,
+        function: ->(_v) { '' }
+      )
+
+      value = expr.fold(client_context)
+
+      assert_equal '550e8400-e29b-41d4-a716-446655440000', value
+    end
+
     private
 
     # Registers a scalar function, executes sql, and returns

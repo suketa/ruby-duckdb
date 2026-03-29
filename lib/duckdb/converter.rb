@@ -117,6 +117,11 @@ module DuckDB
       "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
     end
 
+    def _to_uuid_from_uhugeint(lower, upper)
+      str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
+      "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
+    end
+
     def _parse_date(value)
       case value
       when Date, Time
