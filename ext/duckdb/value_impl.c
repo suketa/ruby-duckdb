@@ -100,6 +100,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
         case DUCKDB_TYPE_TIME_TZ:
             result = rbduckdb_time_tz_to_ruby(duckdb_get_time_tz(val));
             break;
+        case DUCKDB_TYPE_TIMESTAMP_TZ:
+            result = rbduckdb_timestamp_tz_to_ruby(duckdb_get_timestamp_tz(val));
+            break;
         case DUCKDB_TYPE_VARCHAR:
             str = duckdb_get_varchar(val);
             result = rb_str_new_cstr(str);

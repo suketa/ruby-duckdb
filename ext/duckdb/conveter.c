@@ -102,6 +102,12 @@ VALUE rbduckdb_time_tz_to_ruby(duckdb_time_tz tz) {
                       );
 }
 
+VALUE rbduckdb_timestamp_tz_to_ruby(duckdb_timestamp ts) {
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_tz, 1,
+                      LL2NUM(ts.micros)
+                      );
+}
+
 VALUE rbduckdb_time_to_ruby(duckdb_time t) {
     duckdb_time_struct data = duckdb_from_time(t);
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time, 4,
