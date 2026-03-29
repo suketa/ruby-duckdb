@@ -323,14 +323,14 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 128</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
   <span class="ruby-identifier">_add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Adds a parameter to the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.</p>
+          <p>Adds a parameter to the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types.</p>
 
 <p>@param logical_type [DuckDB::LogicalType | :logical_type_symbol] the parameter type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
         </div>
@@ -377,14 +377,14 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 142</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 143</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
   <span class="ruby-identifier">_set_return_type</span>(<span class="ruby-identifier">logical_type</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Sets the return type for the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.</p>
+          <p>Sets the return type for the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types.</p>
 
 <p>@param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
         </div>
@@ -410,7 +410,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="set_bind-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 193</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 194</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;block is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block</span>
 
@@ -487,7 +487,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="set_special_handling-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 158</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 159</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
   <span class="ruby-identifier">_set_special_handling</span>
 <span class="ruby-keyword">end</span></pre>
@@ -520,14 +520,14 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="varargs_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 174</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 175</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">varargs_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
   <span class="ruby-identifier">_set_varargs</span>(<span class="ruby-identifier">logical_type</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Sets the varargs type for the scalar function. Marks the function to accept a variable number of trailing arguments all of the given type. Can be combined with <a href="ScalarFunction.html#method-i-add_parameter"><code>add_parameter</code></a> to add fixed leading parameters (e.g. a separator followed by a variable list of values). The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|). Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, and VARCHAR types.</p>
+          <p>Sets the varargs type for the scalar function. Marks the function to accept a variable number of trailing arguments all of the given type. Can be combined with <a href="ScalarFunction.html#method-i-add_parameter"><code>add_parameter</code></a> to add fixed leading parameters (e.g. a separator followed by a variable list of values). The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|). Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types.</p>
 
 <p>@param logical_type [DuckDB::LogicalType | :logical_type_symbol] the varargs element type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
         </div>
