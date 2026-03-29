@@ -34,13 +34,7 @@ rubyDuckDBScalarFunctionSet *get_struct_scalar_function_set(VALUE obj) {
     return ctx;
 }
 
-/*
- * call-seq:
- *   _initialize(name) -> self
- *
- * Creates the underlying +duckdb_scalar_function_set+ with the given name.
- * Called from the Ruby +initialize+ wrapper after argument validation.
- */
+/* :nodoc: */
 static VALUE rbduckdb_scalar_function_set__initialize(VALUE self, VALUE name) {
     rubyDuckDBScalarFunctionSet *p;
 
