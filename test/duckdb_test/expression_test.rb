@@ -239,6 +239,20 @@ module DuckDBTest
       assert_equal 0,    value.utc_offset
     end
 
+    def test_fold_returns_integer_for_hugeint_literal
+      expr, client_context = bind_argument_of(
+        'test_fold_hugeint', :hugeint,
+        'SELECT test_fold_hugeint(18446744073709551616::HUGEINT)',
+        return_type: :bigint,
+        function: ->(_v) { 0 }
+      )
+
+      value = expr.fold(client_context)
+
+      assert_instance_of Integer, value
+      assert_equal 18_446_744_073_709_551_616, value
+    end
+
     private
 
     # Registers a scalar function, executes sql, and returns

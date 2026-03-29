@@ -314,11 +314,7 @@ static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
-    duckdb_hugeint hugeint = ((duckdb_hugeint *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
-                      ULL2NUM(hugeint.lower),
-                      LL2NUM(hugeint.upper)
-                      );
+    return rbduckdb_hugeint_to_ruby(((duckdb_hugeint *)vector_data)[row_idx]);
 }
 
 static VALUE vector_uhugeint(void* vector_data, idx_t row_idx) {
