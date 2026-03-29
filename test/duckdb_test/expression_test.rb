@@ -267,6 +267,22 @@ module DuckDBTest
       assert_equal 170_141_183_460_469_231_731_687_303_715_884_105_728, value
     end
 
+    def test_fold_returns_interval_for_interval_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+      expr, client_context = bind_argument_of(
+        'test_fold_interval', :interval,
+        "SELECT test_fold_interval('1 year 2 months 3 days 04:05:06'::INTERVAL)",
+        return_type: :bigint,
+        function: ->(_v) { 0 }
+      )
+
+      value = expr.fold(client_context)
+
+      assert_instance_of DuckDB::Interval, value
+      assert_equal 14,             value.interval_months
+      assert_equal 3,              value.interval_days
+      assert_equal 14_706_000_000, value.interval_micros
+    end
+
     private
 
     # Registers a scalar function, executes sql, and returns

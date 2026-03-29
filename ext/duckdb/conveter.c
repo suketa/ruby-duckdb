@@ -61,6 +61,14 @@ VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
     return Qnil;
 }
 
+VALUE rbduckdb_interval_to_ruby(duckdb_interval i) {
+    return rb_funcall(mDuckDBConverter, id__to_interval_from_vector, 3,
+                      INT2NUM(i.months),
+                      INT2NUM(i.days),
+                      LL2NUM(i.micros)
+                      );
+}
+
 VALUE rbduckdb_hugeint_to_ruby(duckdb_hugeint h) {
     return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
                       ULL2NUM(h.lower),

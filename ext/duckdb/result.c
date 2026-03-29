@@ -287,12 +287,7 @@ static VALUE vector_time(void* vector_data, idx_t row_idx) {
 
 
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
-    duckdb_interval data = ((duckdb_interval *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_interval_from_vector, 3,
-                      INT2NUM(data.months),
-                      INT2NUM(data.days),
-                      LL2NUM(data.micros)
-                      );
+    return rbduckdb_interval_to_ruby(((duckdb_interval *)vector_data)[row_idx]);
 }
 
 static VALUE vector_blob(void* vector_data, idx_t row_idx) {
