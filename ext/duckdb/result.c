@@ -687,14 +687,7 @@ static VALUE vector_bit(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_time_tz(void* vector_data, idx_t row_idx) {
-    duckdb_time_tz_struct data = duckdb_from_time_tz(((duckdb_time_tz *)vector_data)[row_idx]);
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time_tz, 5,
-                      INT2FIX(data.time.hour),
-                      INT2FIX(data.time.min),
-                      INT2FIX(data.time.sec),
-                      INT2NUM(data.time.micros),
-                      INT2NUM(data.offset)
-                      );
+    return rbduckdb_time_tz_to_ruby(((duckdb_time_tz *)vector_data)[row_idx]);
 }
 
 static VALUE vector_timestamp_tz(void* vector_data, idx_t row_idx) {
