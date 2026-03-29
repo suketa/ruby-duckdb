@@ -11,7 +11,8 @@ module DuckDB
     def initialize(name)
       raise TypeError, "#{name.class} is not a String or Symbol" unless name.is_a?(String) || name.is_a?(Symbol)
 
-      _initialize(name.to_s)
+      @name = name.to_s
+      _initialize(@name)
     end
 
     # @param scalar_function [DuckDB::ScalarFunction] the overload to add
@@ -23,6 +24,7 @@ module DuckDB
         raise TypeError, "#{scalar_function.class} is not a DuckDB::ScalarFunction"
       end
 
+      scalar_function.name = @name
       _add(scalar_function)
     end
   end
