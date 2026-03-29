@@ -63,7 +63,7 @@ module DuckDB
     #     null_handling: true
     #   ) { |v| v.nil? ? 0 : v }
     def self.create( # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/ParameterLists
-      name:, return_type:, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &
+      return_type:, name: nil, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &
     )
       raise ArgumentError, 'Block required' unless block_given?
       raise ArgumentError, 'Cannot specify both parameter_type and parameter_types' if parameter_type && parameter_types
@@ -77,7 +77,7 @@ module DuckDB
                end
 
       sf = new
-      sf.name = name.to_s
+      sf.name = name.to_s if name
       sf.return_type = return_type
       params.each { |type| sf.add_parameter(type) }
       sf.varargs_type = varargs_type if varargs_type

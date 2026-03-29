@@ -13,5 +13,17 @@ module DuckDB
 
       _initialize(name.to_s)
     end
+
+    # @param scalar_function [DuckDB::ScalarFunction] the overload to add
+    # @return [self]
+    # @raise [TypeError] if scalar_function is not a DuckDB::ScalarFunction
+    # @raise [DuckDB::Error] if the overload already exists in the set
+    def add(scalar_function)
+      unless scalar_function.is_a?(DuckDB::ScalarFunction)
+        raise TypeError, "#{scalar_function.class} is not a DuckDB::ScalarFunction"
+      end
+
+      _add(scalar_function)
+    end
   end
 end
