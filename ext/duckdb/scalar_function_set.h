@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBScalarFunctionSet {
     duckdb_scalar_function_set scalar_function_set;
+    VALUE functions; /* Ruby Array of ScalarFunction objects — prevents GC collection */
 };
 
 typedef struct _rubyDuckDBScalarFunctionSet rubyDuckDBScalarFunctionSet;

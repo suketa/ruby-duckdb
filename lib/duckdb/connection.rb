@@ -187,6 +187,28 @@ module DuckDB
       _register_scalar_function(sf)
     end
 
+    # Registers a scalar function set with the connection.
+    # A scalar function set groups multiple overloads of a function under one name,
+    # allowing DuckDB to dispatch to the correct implementation based on argument types.
+    #
+    # @param scalar_function_set [DuckDB::ScalarFunctionSet] the function set to register
+    # @return [void]
+    # @raise [TypeError] if argument is not a DuckDB::ScalarFunctionSet
+    #
+    # @example Register multiple overloads under one name
+    #   add_int = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+    #   add_dbl = DuckDB::ScalarFunction.create(return_type: :double,  parameter_types: %i[double  double])  { |a, b| a + b }
+    #   set = DuckDB::ScalarFunctionSet.new(:add)
+    #   set.add(add_int).add(add_dbl)
+    #   con.register_scalar_function_set(set)
+    def register_scalar_function_set(scalar_function_set)
+      unless scalar_function_set.is_a?(ScalarFunctionSet)
+        raise TypeError, "#{scalar_function_set.class} is not a DuckDB::ScalarFunctionSet"
+      end
+
+      _register_scalar_function_set(scalar_function_set)
+    end
+
     #
     # Registers a table function with the database connection.
     #

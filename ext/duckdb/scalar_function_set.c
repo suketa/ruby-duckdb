@@ -2,17 +2,24 @@
 
 VALUE cDuckDBScalarFunctionSet;
 
+static void mark(void *);
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static void compact(void *);
 static VALUE rbduckdb_scalar_function_set__initialize(VALUE self, VALUE name);
 static VALUE rbduckdb_scalar_function_set__add(VALUE self, VALUE scalar_function);
 
 static const rb_data_type_t scalar_function_set_data_type = {
     "DuckDB/ScalarFunctionSet",
-    {NULL, deallocate, memsize, NULL},
+    {mark, deallocate, memsize, compact},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
+
+static void mark(void *ctx) {
+    rubyDuckDBScalarFunctionSet *p = (rubyDuckDBScalarFunctionSet *)ctx;
+    rb_gc_mark(p->functions);
+}
 
 static void deallocate(void *ctx) {
     rubyDuckDBScalarFunctionSet *p = (rubyDuckDBScalarFunctionSet *)ctx;
@@ -20,9 +27,17 @@ static void deallocate(void *ctx) {
     xfree(p);
 }
 
+static void compact(void *ctx) {
+    rubyDuckDBScalarFunctionSet *p = (rubyDuckDBScalarFunctionSet *)ctx;
+    p->functions = rb_gc_location(p->functions);
+}
+
 static VALUE allocate(VALUE klass) {
     rubyDuckDBScalarFunctionSet *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBScalarFunctionSet));
-    return TypedData_Wrap_Struct(klass, &scalar_function_set_data_type, ctx);
+    VALUE obj = TypedData_Wrap_Struct(klass, &scalar_function_set_data_type, ctx);
+    ctx->functions = rb_ary_new();
+    RB_GC_GUARD(ctx->functions);
+    return obj;
 }
 
 static size_t memsize(const void *p) {
@@ -55,6 +70,8 @@ static VALUE rbduckdb_scalar_function_set__add(VALUE self, VALUE scalar_function
     if (duckdb_add_scalar_function_to_set(p->scalar_function_set, sf->scalar_function) == DuckDBError) {
         rb_raise(eDuckDBError, "failed to add scalar function to set (duplicate overload?)");
     }
+
+    rb_ary_push(p->functions, scalar_function);
     return self;
 }
 

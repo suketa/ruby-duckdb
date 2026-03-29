@@ -82,5 +82,47 @@ module DuckDBTest
 
       assert_same set, set.add(sf_varargs)
     end
+
+    def test_register_scalar_function_set_raises_with_non_scalar_function_set
+      assert_raises(TypeError) { @con.register_scalar_function_set('not a set') }
+    end
+
+    def test_register_scalar_function_set_with_single_integer_overload
+      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      set = DuckDB::ScalarFunctionSet.new(:add_set)
+      set.add(sf)
+
+      @con.register_scalar_function_set(set)
+      result = @con.query('SELECT add_set(1, 2)').first.first
+
+      assert_equal 3, result
+    end
+
+    def test_register_scalar_function_set_with_multiple_overloads # rubocop:disable Metrics/AbcSize
+      sf_int = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      sf_dbl = DuckDB::ScalarFunction.create(return_type: :double, parameter_types: %i[double double]) { |a, b| a + b }
+      sf_str = DuckDB::ScalarFunction.create(return_type: :varchar, parameter_types: %i[varchar varchar]) { |a, b| "#{a}#{b}" }
+
+      set = DuckDB::ScalarFunctionSet.new(:poly_add)
+      set.add(sf_int).add(sf_dbl).add(sf_str)
+      @con.register_scalar_function_set(set)
+
+      assert_equal 3,        @con.query('SELECT poly_add(1, 2)').first.first
+      assert_in_delta 4.0,   @con.query('SELECT poly_add(1.5, 2.5)').first.first
+      assert_equal 'foobar', @con.query("SELECT poly_add('foo', 'bar')").first.first
+    end
+
+    def test_register_scalar_function_set_gc_safety
+      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer]) { |a| a * 10 }
+      set = DuckDB::ScalarFunctionSet.new(:tenx)
+      set.add(sf)
+      @con.register_scalar_function_set(set)
+
+      # Allow GC to collect locals; the connection should keep refs alive
+      GC.compact
+      GC.start(full_mark: true, immediate_sweep: true)
+
+      assert_equal 100, @con.query('SELECT tenx(10)').first.first
+    end
   end
 end

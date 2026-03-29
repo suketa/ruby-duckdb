@@ -12,6 +12,7 @@ static VALUE duckdb_connection_query_progress(VALUE self);
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase);
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str);
 static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar_function);
+static VALUE duckdb_connection_register_scalar_function_set(VALUE self, VALUE scalar_function_set);
 static VALUE duckdb_connection_register_table_function(VALUE self, VALUE table_function);
 
 static const rb_data_type_t connection_data_type = {
@@ -220,6 +221,27 @@ static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar
     return self;
 }
 
+/* :nodoc: */
+static VALUE duckdb_connection_register_scalar_function_set(VALUE self, VALUE scalar_function_set) {
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBScalarFunctionSet *ctxsfs;
+    duckdb_state state;
+
+    ctxcon = get_struct_connection(self);
+    ctxsfs = get_struct_scalar_function_set(scalar_function_set);
+
+    state = duckdb_register_scalar_function_set(ctxcon->con, ctxsfs->scalar_function_set);
+
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "Failed to register scalar function set");
+    }
+
+    /* Keep reference to prevent GC while connection is alive */
+    rb_ary_push(ctxcon->registered_functions, scalar_function_set);
+
+    return self;
+}
+
 static VALUE duckdb_connection_register_table_function(VALUE self, VALUE table_function) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBTableFunction *ctxtf;
@@ -251,6 +273,7 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_method(cDuckDBConnection, "interrupt", duckdb_connection_interrupt, 0);
     rb_define_method(cDuckDBConnection, "query_progress", duckdb_connection_query_progress, 0);
     rb_define_private_method(cDuckDBConnection, "_register_scalar_function", duckdb_connection_register_scalar_function, 1);
+    rb_define_private_method(cDuckDBConnection, "_register_scalar_function_set", duckdb_connection_register_scalar_function_set, 1);
     rb_define_private_method(cDuckDBConnection, "_register_table_function", duckdb_connection_register_table_function, 1);
     rb_define_private_method(cDuckDBConnection, "_connect", duckdb_connection_connect, 1);
     /* TODO: query_sql => _query_sql */
