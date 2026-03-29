@@ -35,7 +35,7 @@ module DuckDBTest
     end
 
     def test_add_returns_self
-      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer, :integer]) { |a, b| a + b }
+      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
       set = DuckDB::ScalarFunctionSet.new(:add)
 
       assert_same set, set.add(sf)
@@ -48,8 +48,8 @@ module DuckDBTest
     end
 
     def test_add_accepts_duplicate_overload
-      sf1 = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer, :integer]) { |a, b| a + b }
-      sf2 = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer, :integer]) { |a, b| a * b }
+      sf1 = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      sf2 = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a * b }
       set = DuckDB::ScalarFunctionSet.new(:add)
       set.add(sf1)
 
@@ -57,9 +57,9 @@ module DuckDBTest
     end
 
     def test_add_multiple_overloads_with_different_parameter_types
-      sf_int = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer, :integer]) { |a, b| a + b }
-      sf_dbl = DuckDB::ScalarFunction.create(return_type: :double, parameter_types: [:double, :double]) { |a, b| a + b }
-      sf_str = DuckDB::ScalarFunction.create(return_type: :varchar, parameter_types: [:varchar, :varchar]) { |a, b| "#{a}#{b}" }
+      sf_int = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      sf_dbl = DuckDB::ScalarFunction.create(return_type: :double, parameter_types: %i[double double]) { |a, b| a + b }
+      sf_str = DuckDB::ScalarFunction.create(return_type: :varchar, parameter_types: %i[varchar varchar]) { |a, b| "#{a}#{b}" }
       set = DuckDB::ScalarFunctionSet.new(:add)
 
       assert_same set, set.add(sf_int)
@@ -69,7 +69,7 @@ module DuckDBTest
 
     def test_add_overloads_with_different_parameter_counts
       sf_unary = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer]) { |a| a * 2 }
-      sf_binary = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer, :integer]) { |a, b| a + b }
+      sf_binary = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
       set = DuckDB::ScalarFunctionSet.new(:my_func)
 
       assert_same set, set.add(sf_unary)
