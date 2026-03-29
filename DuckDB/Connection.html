@@ -91,6 +91,7 @@
       <li ><a href="#method-i-query_multi_sql">query_multi_sql</a></li>
       <li ><a href="#method-i-query_progress">query_progress</a></li>
       <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
+      <li ><a href="#method-i-register_scalar_function_set">register_scalar_function_set</a></li>
       <li ><a href="#method-i-register_table_function">register_table_function</a></li>
     </ul>
   </div>
@@ -366,7 +367,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="expose_as_table-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 234</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 256</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">expose_as_table</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
@@ -718,6 +719,50 @@
 
       </div>
 
+      <div id="method-i-register_scalar_function_set" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_scalar_function_set" title="Link to this method">
+                <span class="method-name">register_scalar_function_set</span>
+                <span class="method-args">(scalar_function_set)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_scalar_function_set-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 204</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_scalar_function_set</span>(<span class="ruby-identifier">scalar_function_set</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">scalar_function_set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ScalarFunctionSet</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{scalar_function_set.class} is not a DuckDB::ScalarFunctionSet&quot;</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">_register_scalar_function_set</span>(<span class="ruby-identifier">scalar_function_set</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Registers a scalar function set with the connection. A scalar function set groups multiple overloads of a function under one name, allowing <a href="../DuckDB.html"><code>DuckDB</code></a> to dispatch to the correct implementation based on argument types.</p>
+
+<p>@param scalar_function_set [DuckDB::ScalarFunctionSet] the function set to register @return [void] @raise [TypeError] if argument is not a <a href="ScalarFunctionSet.html"><code>DuckDB::ScalarFunctionSet</code></a></p>
+
+<p>@example Register multiple overloads under one name</p>
+
+<pre class="ruby"><span class="ruby-identifier">add_int</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">return_type:</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">parameter_types:</span> <span class="ruby-node">%i[integer integer]</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">b</span> }
+<span class="ruby-identifier">add_dbl</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">return_type:</span> <span class="ruby-value">:double</span>,  <span class="ruby-value">parameter_types:</span> <span class="ruby-node">%i[double  double]</span>)  { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">b</span> }
+<span class="ruby-identifier">set</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunctionSet</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:add</span>)
+<span class="ruby-identifier">set</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">add_int</span>).<span class="ruby-identifier">add</span>(<span class="ruby-identifier">add_dbl</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_scalar_function_set</span>(<span class="ruby-identifier">set</span>)
+</pre>
+        </div>
+
+
+      </div>
+
       <div id="method-i-register_table_function" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -736,7 +781,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="register_table_function-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 199</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 221</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
 
