@@ -61,6 +61,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
         case DUCKDB_TYPE_BIGINT:
             result = LL2NUM(duckdb_get_int64(val));
             break;
+        case DUCKDB_TYPE_HUGEINT:
+            result = rbduckdb_hugeint_to_ruby(duckdb_get_hugeint(val));
+            break;
         case DUCKDB_TYPE_UTINYINT:
             result = INT2FIX(duckdb_get_uint8(val));
             break;

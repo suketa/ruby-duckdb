@@ -95,6 +95,7 @@ module DuckDB
       date
       double
       float
+      hugeint
       integer
       smallint
       time
@@ -115,7 +116,7 @@ module DuckDB
     private_constant :SUPPORTED_TYPES
 
     # Adds a parameter to the scalar function.
-    # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP,
+    # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, SMALLINT, TIME, TIMESTAMP,
     # TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UINTEGER, USMALLINT, UTINYINT,
     # and VARCHAR types.
     #
@@ -129,7 +130,7 @@ module DuckDB
     end
 
     # Sets the return type for the scalar function.
-    # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP,
+    # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, SMALLINT, TIME, TIMESTAMP,
     # TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UINTEGER, USMALLINT, UTINYINT,
     # and VARCHAR types.
     #
@@ -161,7 +162,7 @@ module DuckDB
     # given type. Can be combined with add_parameter to add fixed leading parameters
     # (e.g. a separator followed by a variable list of values).
     # The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|).
-    # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, INTEGER, SMALLINT, TIME, TIMESTAMP,
+    # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DOUBLE, FLOAT, HUGEINT, INTEGER, SMALLINT, TIME, TIMESTAMP,
     # TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UINTEGER, USMALLINT, UTINYINT,
     # and VARCHAR types.
     #

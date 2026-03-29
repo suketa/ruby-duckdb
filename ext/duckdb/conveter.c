@@ -61,6 +61,13 @@ VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
     return Qnil;
 }
 
+VALUE rbduckdb_hugeint_to_ruby(duckdb_hugeint h) {
+    return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
+                      ULL2NUM(h.lower),
+                      LL2NUM(h.upper)
+                      );
+}
+
 VALUE rbduckdb_timestamp_s_to_ruby(duckdb_timestamp_s ts) {
     VALUE obj = infinite_timestamp_s_value(ts);
     if (obj != Qnil) {
