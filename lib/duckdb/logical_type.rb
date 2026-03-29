@@ -111,6 +111,23 @@ module DuckDB
         _create_map_type(LogicalType.resolve(key_type), LogicalType.resolve(value_type))
       end
 
+      # Creates a union logical type with the given member names and types.
+      #
+      # The keyword arguments map member names to types. Each type can be
+      # a symbol or a DuckDB::LogicalType instance.
+      #
+      #   require 'duckdb'
+      #
+      #   union_type = DuckDB::LogicalType.create_union(num: :integer, str: :varchar)
+      #   union_type.type #=> :union
+      #   union_type.member_count #=> 2
+      #   union_type.member_name_at(0) #=> "num"
+      #   union_type.member_type_at(0).type #=> :integer
+      def create_union(**members)
+        resolved = members.transform_values { |v| LogicalType.resolve(v) }
+        _create_union_type(resolved)
+      end
+
       private
 
       def raise_resolve_error(symbol)

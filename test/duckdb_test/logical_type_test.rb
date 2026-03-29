@@ -440,6 +440,38 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_map(:integer, :nonexistent) }
     end
 
+    def test_s_create_union_with_logical_type
+      union_type = DuckDB::LogicalType.create_union(
+        num: DuckDB::LogicalType::INTEGER,
+        str: DuckDB::LogicalType::VARCHAR
+      )
+
+      assert_equal(:union, union_type.type)
+      assert_equal(2, union_type.member_count)
+    end
+
+    def test_s_create_union_member_names
+      union_type = DuckDB::LogicalType.create_union(num: :integer, str: :varchar)
+
+      assert_equal('num', union_type.member_name_at(0))
+      assert_equal('str', union_type.member_name_at(1))
+    end
+
+    def test_s_create_union_member_types
+      union_type = DuckDB::LogicalType.create_union(num: :integer, str: :varchar)
+
+      assert_equal(:integer, union_type.member_type_at(0).type)
+      assert_equal(:varchar, union_type.member_type_at(1).type)
+    end
+
+    def test_s_create_union_with_invalid_arg
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_union(bad: :nonexistent) }
+    end
+
+    def test_s_create_union_with_no_members
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_union }
+    end
+
     def test_new_with_primitive_like_complex_type
       # DUCKDB_TYPE_BIT = 29
       bit_type = DuckDB::LogicalType.new(29)
