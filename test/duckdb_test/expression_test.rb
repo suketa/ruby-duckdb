@@ -213,9 +213,10 @@ module DuckDBTest
       value = expr.fold(client_context)
 
       assert_instance_of Time, value
-      assert_equal 8,  value.hour
-      assert_equal 30, value.min
-      assert_equal 45, value.sec
+      assert_equal 8,     value.hour
+      assert_equal 30,    value.min
+      assert_equal 45,    value.sec
+      assert_equal 19_800, value.utc_offset
     end
 
     private
