@@ -26,6 +26,7 @@ static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
 static VALUE duckdb_logical_type_s_create_array_type(VALUE klass, VALUE child, VALUE array_size);
 static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child);
 static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE value);
+static VALUE duckdb_logical_type_s_create_union_type(VALUE klass, VALUE members);
 static VALUE initialize(VALUE self, VALUE type_id_arg);
 
 static const rb_data_type_t logical_type_data_type = {
@@ -490,6 +491,49 @@ static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE
     return rbduckdb_create_logical_type(new_type);
 }
 
+/*
+ *  call-seq:
+ *    DuckDB::LogicalType._create_union_type(members) -> DuckDB::LogicalType
+ *
+ *  Return a union logical type from the given member hash.
+ */
+static VALUE duckdb_logical_type_s_create_union_type(VALUE klass, VALUE members) {
+    idx_t member_size = RHASH_SIZE(members);
+    duckdb_logical_type *member_types = NULL;
+    const char **member_names = NULL;
+    duckdb_logical_type new_type;
+    VALUE keys;
+
+    if (member_size == 0) {
+        rb_raise(rb_eArgError, "members hash must not be empty");
+    }
+
+    member_types = (duckdb_logical_type *)xcalloc(member_size, sizeof(duckdb_logical_type));
+    member_names = (const char **)xcalloc(member_size, sizeof(const char *));
+
+    keys = rb_funcall(members, rb_intern("keys"), 0);
+
+    for (idx_t i = 0; i < member_size; i++) {
+        VALUE key = rb_ary_entry(keys, (long)i);
+        VALUE val = rb_hash_aref(members, key);
+        rubyDuckDBLogicalType *type_ctx = get_struct_logical_type(val);
+
+        member_names[i] = rb_id2name(SYM2ID(key));
+        member_types[i] = type_ctx->logical_type;
+    }
+
+    new_type = duckdb_create_union_type(member_types, member_names, member_size);
+
+    xfree(member_types);
+    xfree(member_names);
+
+    if (!new_type) {
+        rb_raise(eDuckDBError, "Failed to create union type");
+    }
+
+    return rbduckdb_create_logical_type(new_type);
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -534,6 +578,8 @@ void rbduckdb_init_duckdb_logical_type(void) {
                              duckdb_logical_type_s_create_list_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_map_type",
                              duckdb_logical_type_s_create_map_type, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_union_type",
+                             duckdb_logical_type_s_create_union_type, 1);
 
     rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
 }
