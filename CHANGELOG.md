@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+# 1.5.1.0 - 2026-03-29
+
 - add `DuckDB::ScalarFunction#varargs_type=` to register a scalar function that accepts a variable number of arguments of a given type (wraps `duckdb_scalar_function_set_varargs`).
 - `DuckDB::ScalarFunction.create` accepts `varargs_type:` keyword argument (mutually exclusive with `parameter_type:`/`parameter_types:`).
 - add `DuckDB::ScalarFunction#set_special_handling` to make the block receive `nil` for NULL inputs instead of DuckDB short-circuiting (wraps `duckdb_scalar_function_set_special_handling`).
