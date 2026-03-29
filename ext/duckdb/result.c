@@ -318,11 +318,7 @@ static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_uhugeint(void* vector_data, idx_t row_idx) {
-    duckdb_uhugeint uhugeint = ((duckdb_uhugeint *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_hugeint_from_vector, 2,
-                      ULL2NUM(uhugeint.lower),
-                      ULL2NUM(uhugeint.upper)
-                      );
+    return rbduckdb_uhugeint_to_ruby(((duckdb_uhugeint *)vector_data)[row_idx]);
 }
 
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
