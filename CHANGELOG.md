@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `DuckDB::ScalarFunctionSet` to register multiple overloads of a scalar function under one name (wraps `duckdb_scalar_function_set`).
+
 # 1.5.1.0 - 2026-03-29
 
 - add `DuckDB::ScalarFunction#varargs_type=` to register a scalar function that accepts a variable number of arguments of a given type (wraps `duckdb_scalar_function_set_varargs`).
