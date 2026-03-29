@@ -83,6 +83,13 @@
 
 
 
+  <div class="nav-section">
+    <h3>Instance Methods</h3>
+    <ul class="link-list" role="directory">
+      <li ><a href="#method-i-add">add</a></li>
+    </ul>
+  </div>
+
 
 
   <footer id="validator-badges" role="contentinfo">
@@ -162,6 +169,46 @@
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>@param name [String, Symbol] the function set name shared by all overloads @raise [TypeError] if name is not a String or Symbol</p>
+        </div>
+
+
+      </div>
+
+    </section>
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+      <div id="method-i-add" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-add" title="Link to this method">
+                <span class="method-name">add</span>
+                <span class="method-args">(scalar_function)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="add-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function_set.rb, line 21</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add</span>(<span class="ruby-identifier">scalar_function</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">scalar_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{scalar_function.class} is not a DuckDB::ScalarFunction&quot;</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">_add</span>(<span class="ruby-identifier">scalar_function</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>@param scalar_function [DuckDB::ScalarFunction] the overload to add @return [self] @raise [TypeError] if scalar_function is not a <a href="ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> @raise [DuckDB::Error] if the overload already exists in the set</p>
         </div>
 
 

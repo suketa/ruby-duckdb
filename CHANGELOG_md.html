@@ -338,6 +338,10 @@
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
 <p>add <a href="DuckDB/ScalarFunctionSet.html"><code>DuckDB::ScalarFunctionSet</code></a> to register multiple overloads of a scalar function under one name (wraps <code>duckdb_scalar_function_set</code>).</p>
+</li><li>
+<p>add <a href="DuckDB/ScalarFunctionSet.html#method-i-add"><code>DuckDB::ScalarFunctionSet#add</code></a> to add a <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> overload to the set (wraps <code>duckdb_add_scalar_function_to_set</code>).</p>
+</li><li>
+<p><a href="DuckDB/ScalarFunction.html#method-c-create"><code>DuckDB::ScalarFunction.create</code></a> now accepts <code>name: nil</code> (optional) to allow creating nameless functions for use inside a <code>ScalarFunctionSet</code>.</p>
 </li></ul>
 
 <h1 id="label-1.5.1.0+-+2026-03-29">1.5.1.0 - 2026-03-29<span><a href="#label-1.5.1.0+-+2026-03-29">&para;</a> <a href="#top">&uarr;</a></span></h1>

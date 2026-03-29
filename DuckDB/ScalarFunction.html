@@ -155,7 +155,7 @@
             <div class="method-heading">
               <a href="#method-c-create" title="Link to this method">
                 <span class="method-name">create</span>
-                <span class="method-args">( name:, return_type:, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &amp; )</span>
+                <span class="method-args">( return_type:, name: nil, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &amp; )</span>
               </a>
             </div>
         </div>
@@ -168,9 +168,9 @@
 
         <div class="method-description">
           <div class="method-source-code" id="create-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 65</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 66</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">create</span>( <span class="ruby-comment"># rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/ParameterLists</span>
-  <span class="ruby-value">name:</span>, <span class="ruby-value">return_type:</span>, <span class="ruby-value">parameter_type:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">parameter_types:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">varargs_type:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">null_handling:</span> <span class="ruby-keyword">false</span>, <span class="ruby-operator">&amp;</span>
+  <span class="ruby-value">return_type:</span>, <span class="ruby-value">name:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">parameter_type:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">parameter_types:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">varargs_type:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">null_handling:</span> <span class="ruby-keyword">false</span>, <span class="ruby-operator">&amp;</span>
 )
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Block required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;Cannot specify both parameter_type and parameter_types&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">parameter_type</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">parameter_types</span>
@@ -184,7 +184,7 @@
            <span class="ruby-keyword">end</span>
 
   <span class="ruby-identifier">sf</span> = <span class="ruby-identifier">new</span>
-  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span>
   <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-identifier">return_type</span>
   <span class="ruby-identifier">params</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">type</span><span class="ruby-operator">|</span> <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-identifier">type</span>) }
   <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">varargs_type</span> = <span class="ruby-identifier">varargs_type</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">varargs_type</span>
@@ -195,7 +195,11 @@
           </div>
           <p>Create and configure a scalar function in one call</p>
 
-<p>@param name [String, Symbol] the function name @param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single fixed parameter type @param parameter_types [Array&lt;DuckDB::LogicalType|:logical_type_symbol&gt;, nil] multiple fixed parameter types @param varargs_type [DuckDB::LogicalType|:logical_type_symbol, nil] trailing varargs element type;</p>
+<p>@param name [String, Symbol, nil] the function name; use <code>nil</code> when creating overloads</p>
+
+<pre>intended for use in a +DuckDB::ScalarFunctionSet+ (the set provides the name)</pre>
+
+<p>@param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single fixed parameter type @param parameter_types [Array&lt;DuckDB::LogicalType|:logical_type_symbol&gt;, nil] multiple fixed parameter types @param varargs_type [DuckDB::LogicalType|:logical_type_symbol, nil] trailing varargs element type;</p>
 
 <pre>can be combined with parameter_type/parameter_types to add fixed leading parameters</pre>
 
@@ -323,7 +327,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 129</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 130</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -377,7 +381,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 143</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 144</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -410,7 +414,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="set_bind-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 194</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 195</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;block is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block</span>
 
@@ -487,7 +491,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="set_special_handling-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 159</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 160</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
   <span class="ruby-identifier">_set_special_handling</span>
 <span class="ruby-keyword">end</span></pre>
@@ -520,7 +524,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="varargs_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 175</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 176</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">varargs_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
