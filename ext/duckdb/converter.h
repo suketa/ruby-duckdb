@@ -19,6 +19,7 @@ VALUE rbduckdb_timestamp_s_to_ruby(duckdb_timestamp_s ts);
 VALUE rbduckdb_timestamp_ms_to_ruby(duckdb_timestamp_ms ts);
 VALUE rbduckdb_timestamp_ns_to_ruby(duckdb_timestamp_ns ts);
 VALUE rbduckdb_time_tz_to_ruby(duckdb_time_tz tz);
+VALUE rbduckdb_timestamp_tz_to_ruby(duckdb_timestamp ts);
 VALUE rbduckdb_time_to_ruby(duckdb_time t);
 VALUE rbduckdb_date_to_ruby(duckdb_date date);
 VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts);

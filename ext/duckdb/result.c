@@ -691,10 +691,8 @@ static VALUE vector_time_tz(void* vector_data, idx_t row_idx) {
 }
 
 static VALUE vector_timestamp_tz(void* vector_data, idx_t row_idx) {
-    duckdb_time_tz data = ((duckdb_time_tz *)vector_data)[row_idx];
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_tz, 1,
-                      ULL2NUM(data.bits)
-                      );
+    duckdb_timestamp ts = {(int64_t)((duckdb_time_tz *)vector_data)[row_idx].bits};
+    return rbduckdb_timestamp_tz_to_ruby(ts);
 }
 
 static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
