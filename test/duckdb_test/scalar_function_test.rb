@@ -37,10 +37,10 @@ module DuckDBTest
 
     def test_return_type_setter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      interval_type = DuckDB::LogicalType::INTERVAL # Unsupported type for testing
+      bit_type = DuckDB::LogicalType::BIT # Unsupported type for testing
 
       error = assert_raises(DuckDB::Error) do
-        sf.return_type = interval_type
+        sf.return_type = bit_type
       end
 
       assert_match(/not supported/i, error.message)
@@ -79,10 +79,10 @@ module DuckDBTest
 
     def test_add_parameter_raises_error_for_unsupported_type
       sf = DuckDB::ScalarFunction.new
-      interval_type = DuckDB::LogicalType::INTERVAL # Unsupported type for testing
+      bit_type = DuckDB::LogicalType::BIT # Unsupported type for testing
 
       error = assert_raises(DuckDB::Error) do
-        sf.add_parameter(interval_type)
+        sf.add_parameter(bit_type)
       end
 
       assert_match(/not supported/i, error.message)
@@ -702,12 +702,12 @@ module DuckDBTest
 
     def test_varargs_type_setter_raises_error_for_unsupported_type
       # varargs_type= should raise DuckDB::Error when given a type not in
-      # SUPPORTED_TYPES (e.g. INTERVAL), mirroring the behaviour of add_parameter.
+      # SUPPORTED_TYPES (e.g. BIT), mirroring the behaviour of add_parameter.
 
       sf = DuckDB::ScalarFunction.new
 
       error = assert_raises(DuckDB::Error) do
-        sf.varargs_type = DuckDB::LogicalType::INTERVAL
+        sf.varargs_type = DuckDB::LogicalType::BIT
       end
 
       assert_match(/not supported/i, error.message)
