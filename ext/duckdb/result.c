@@ -380,14 +380,7 @@ static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
 
 
 static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx) {
-    duckdb_timestamp_ns data = ((duckdb_timestamp_ns *)vector_data)[row_idx];
-    VALUE obj = infinite_timestamp_ns_value(data);
-    if (obj != Qnil) {
-        return obj;
-    }
-    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ns, 1,
-                      LL2NUM(data.nanos)
-                      );
+    return rbduckdb_timestamp_ns_to_ruby(((duckdb_timestamp_ns *)vector_data)[row_idx]);
 }
 
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
