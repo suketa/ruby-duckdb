@@ -164,6 +164,25 @@ module DuckDBTest
       assert_equal 45,   value.sec
     end
 
+    def test_fold_returns_time_for_timestamp_ms_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+      expr, client_context = bind_argument_of(
+        'test_fold_ts_ms', :timestamp_ms,
+        "SELECT test_fold_ts_ms('2025-06-20 14:22:33'::TIMESTAMP_MS)",
+        return_type: :bigint,
+        function: ->(_v) { 0 }
+      )
+
+      value = expr.fold(client_context)
+
+      assert_instance_of Time, value
+      assert_equal 2025, value.year
+      assert_equal 6,    value.month
+      assert_equal 20,   value.day
+      assert_equal 14,   value.hour
+      assert_equal 22,   value.min
+      assert_equal 33,   value.sec
+    end
+
     private
 
     # Registers a scalar function, executes sql, and returns

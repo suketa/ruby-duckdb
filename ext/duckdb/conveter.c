@@ -71,6 +71,16 @@ VALUE rbduckdb_timestamp_s_to_ruby(duckdb_timestamp_s ts) {
                       );
 }
 
+VALUE rbduckdb_timestamp_ms_to_ruby(duckdb_timestamp_ms ts) {
+    VALUE obj = infinite_timestamp_ms_value(ts);
+    if (obj != Qnil) {
+        return obj;
+    }
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ms, 1,
+                      LL2NUM(ts.millis)
+                      );
+}
+
 VALUE rbduckdb_time_to_ruby(duckdb_time t) {
     duckdb_time_struct data = duckdb_from_time(t);
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time, 4,
