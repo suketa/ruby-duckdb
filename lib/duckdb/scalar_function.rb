@@ -7,7 +7,8 @@ module DuckDB
   class ScalarFunction
     # Create and configure a scalar function in one call
     #
-    # @param name [String, Symbol] the function name
+    # @param name [String, Symbol, nil] the function name; use +nil+ when creating overloads
+    #   intended for use in a +DuckDB::ScalarFunctionSet+ (the set provides the name)
     # @param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type
     # @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single fixed parameter type
     # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple fixed parameter types
@@ -63,7 +64,7 @@ module DuckDB
     #     null_handling: true
     #   ) { |v| v.nil? ? 0 : v }
     def self.create( # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/ParameterLists
-      name:, return_type:, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &
+      return_type:, name: nil, parameter_type: nil, parameter_types: nil, varargs_type: nil, null_handling: false, &
     )
       raise ArgumentError, 'Block required' unless block_given?
       raise ArgumentError, 'Cannot specify both parameter_type and parameter_types' if parameter_type && parameter_types
@@ -77,7 +78,7 @@ module DuckDB
                end
 
       sf = new
-      sf.name = name.to_s
+      sf.name = name.to_s if name
       sf.return_type = return_type
       params.each { |type| sf.add_parameter(type) }
       sf.varargs_type = varargs_type if varargs_type

@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 
 - add `DuckDB::ScalarFunctionSet` to register multiple overloads of a scalar function under one name (wraps `duckdb_scalar_function_set`).
+- add `DuckDB::ScalarFunctionSet#add` to add a `DuckDB::ScalarFunction` overload to the set (wraps `duckdb_add_scalar_function_to_set`).
+- `DuckDB::ScalarFunction.create` now accepts `name: nil` (optional) to allow creating nameless functions for use inside a `ScalarFunctionSet`.
 
 # 1.5.1.0 - 2026-03-29
 
