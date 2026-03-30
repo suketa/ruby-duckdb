@@ -589,6 +589,24 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
         case DUCKDB_TYPE_UBIGINT:
             ((uint64_t *)vector_data)[index] = NUM2ULL(value);
             break;
+        case DUCKDB_TYPE_HUGEINT: {
+            duckdb_hugeint hugeint;
+            VALUE lower_rb = rb_funcall(value, rb_intern("&"), 1, ULL2NUM(UINT64_MAX));
+            VALUE upper_rb = rb_funcall(value, rb_intern(">>"), 1, INT2NUM(64));
+            hugeint.lower = NUM2ULL(lower_rb);
+            hugeint.upper = NUM2LL(upper_rb);
+            ((duckdb_hugeint *)vector_data)[index] = hugeint;
+            break;
+        }
+        case DUCKDB_TYPE_UHUGEINT: {
+            duckdb_uhugeint uhugeint;
+            VALUE lower_rb = rb_funcall(value, rb_intern("&"), 1, ULL2NUM(UINT64_MAX));
+            VALUE upper_rb = rb_funcall(value, rb_intern(">>"), 1, INT2NUM(64));
+            uhugeint.lower = NUM2ULL(lower_rb);
+            uhugeint.upper = NUM2ULL(upper_rb);
+            ((duckdb_uhugeint *)vector_data)[index] = uhugeint;
+            break;
+        }
         case DUCKDB_TYPE_FLOAT:
             ((float *)vector_data)[index] = (float)NUM2DBL(value);
             break;
