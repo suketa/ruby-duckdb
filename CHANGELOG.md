@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- fix `DuckDB::ScalarFunction` to allow `HUGEINT` and `UHUGEINT` as `return_type` and parameter type (the C extension's vector write path was missing those cases).
 - add `DuckDB::ScalarFunctionSet` to register multiple overloads of a scalar function under one name (wraps `duckdb_scalar_function_set`).
 - add `DuckDB::ScalarFunctionSet#add` to add a `DuckDB::ScalarFunction` overload to the set (wraps `duckdb_add_scalar_function_to_set`).
 - add `DuckDB::Connection#register_scalar_function_set` to register a `DuckDB::ScalarFunctionSet` with the connection (wraps `duckdb_register_scalar_function_set`).
