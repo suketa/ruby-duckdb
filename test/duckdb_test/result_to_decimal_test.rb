@@ -61,5 +61,25 @@ module DuckDBTest
     def test_result_to_decimal_positive6
       do_result_to_decimal_test(0.1)
     end
+
+    def test_result_to_decimal_negative_with_integer_and_fractional_parts
+      do_result_to_decimal_test(-1.23456789)
+    end
+
+    def test_result_to_decimal_negative_with_large_integer_part
+      do_result_to_decimal_test(-123.456789)
+    end
+
+    def test_result_to_decimal_negative_less_than_one
+      do_result_to_decimal_test(-0.01)
+    end
+
+    def test_result_to_decimal_negative_less_than_one_with_many_leading_zeros
+      do_result_to_decimal_test(-0.00000001)
+    end
+
+    def test_result_to_decimal_negative_less_than_one_with_single_fractional_digit
+      do_result_to_decimal_test(-0.1)
+    end
   end
 end
