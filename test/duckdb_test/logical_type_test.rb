@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'securerandom'
 
 module DuckDBTest
   class LogicalTypeTest < Minitest::Test
@@ -470,6 +471,38 @@ module DuckDBTest
 
     def test_s_create_union_with_no_members
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_union }
+    end
+
+    def test_s_create_struct_with_logical_type
+      struct_type = DuckDB::LogicalType.create_struct(
+        name: DuckDB::LogicalType::VARCHAR,
+        age: DuckDB::LogicalType::INTEGER
+      )
+
+      assert_equal(:struct, struct_type.type)
+      assert_equal(2, struct_type.child_count)
+    end
+
+    def test_s_create_struct_child_names
+      struct_type = DuckDB::LogicalType.create_struct(name: :varchar, age: :integer)
+
+      assert_equal('name', struct_type.child_name_at(0))
+      assert_equal('age', struct_type.child_name_at(1))
+    end
+
+    def test_s_create_struct_child_types
+      struct_type = DuckDB::LogicalType.create_struct(name: :varchar, age: :integer)
+
+      assert_equal(:varchar, struct_type.child_type_at(0).type)
+      assert_equal(:integer, struct_type.child_type_at(1).type)
+    end
+
+    def test_s_create_struct_with_invalid_arg
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_struct(bad: :nonexistent) }
+    end
+
+    def test_s_create_struct_with_no_members
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_struct }
     end
 
     def test_new_with_primitive_like_complex_type
