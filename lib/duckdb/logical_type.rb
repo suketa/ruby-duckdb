@@ -129,6 +129,23 @@ module DuckDB
         _create_union_type(resolved)
       end
 
+      # Creates a struct logical type with the given member names and types.
+      #
+      # The keyword arguments map member names to types. Each type can be
+      # a symbol or a DuckDB::LogicalType instance.
+      #
+      #   require 'duckdb'
+      #
+      #   struct_type = DuckDB::LogicalType.create_struct(name: :varchar, age: :integer)
+      #   struct_type.type #=> :struct
+      #   struct_type.child_count #=> 2
+      #   struct_type.child_name_at(0) #=> "name"
+      #   struct_type.child_type_at(0).type #=> :varchar
+      def create_struct(**members)
+        resolved = members.transform_values { |v| LogicalType.resolve(v) }
+        _create_struct_type(resolved)
+      end
+
       private
 
       def raise_resolve_error(symbol)

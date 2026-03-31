@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::ScalarFunctionSet#add` to add a `DuckDB::ScalarFunction` overload to the set (wraps `duckdb_add_scalar_function_to_set`).
 - add `DuckDB::Connection#register_scalar_function_set` to register a `DuckDB::ScalarFunctionSet` with the connection (wraps `duckdb_register_scalar_function_set`).
 - `DuckDB::ScalarFunction.create` now accepts `name: nil` (optional) to allow creating nameless functions for use inside a `ScalarFunctionSet`.
+- add `DuckDB::LogicalType.create_struct` to create a struct logical type.
 
 # 1.5.1.0 - 2026-03-29
 
