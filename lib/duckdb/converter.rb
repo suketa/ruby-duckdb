@@ -99,10 +99,7 @@ module DuckDB
     end
 
     def _to_decimal_from_value(_width, scale, value)
-      v = value.to_s
-      v = v.rjust(scale + 1, '0') if v.length < scale
-      v[-scale, 0] = '.' if scale.positive?
-      BigDecimal(v)
+      BigDecimal("#{value}e-#{scale}")
     end
 
     def _to_interval_from_vector(months, days, micros)
