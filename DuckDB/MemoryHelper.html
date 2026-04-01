@@ -459,22 +459,14 @@
     (void)self;
 
     if (!rb_obj_is_kind_of(value, rb_cTime)) {
-        rb_raise(rb_eTypeError, &quot;Expected Time object for TIMESTAMP&quot;);
+        rb_raise(rb_eTypeError, &quot;Expected Time object&quot;);
     }
 
     data = (duckdb_timestamp *)NUM2ULL(ptr);
     idx = (idx_t)NUM2ULL(index);
 
     VALUE local_time = rb_funcall(value, rb_intern(&quot;getlocal&quot;), 0);
-    data[idx] = rbduckdb_to_duckdb_timestamp_from_value(
-        rb_funcall(local_time, rb_intern(&quot;year&quot;), 0),
-        rb_funcall(local_time, rb_intern(&quot;month&quot;), 0),
-        rb_funcall(local_time, rb_intern(&quot;day&quot;), 0),
-        rb_funcall(local_time, rb_intern(&quot;hour&quot;), 0),
-        rb_funcall(local_time, rb_intern(&quot;min&quot;), 0),
-        rb_funcall(local_time, rb_intern(&quot;sec&quot;), 0),
-        rb_funcall(local_time, rb_intern(&quot;usec&quot;), 0)
-    );
+    data[idx] = rbduckdb_to_duckdb_timestamp_from_time_value(local_time);
 
     return Qnil;
 }</pre>
