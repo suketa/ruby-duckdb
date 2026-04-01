@@ -591,19 +591,15 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             break;
         case DUCKDB_TYPE_HUGEINT: {
             duckdb_hugeint hugeint;
-            VALUE lower_rb = rb_funcall(value, rb_intern("&"), 1, ULL2NUM(UINT64_MAX));
-            VALUE upper_rb = rb_funcall(value, rb_intern(">>"), 1, INT2NUM(64));
-            hugeint.lower = NUM2ULL(lower_rb);
-            hugeint.upper = NUM2LL(upper_rb);
+            hugeint.lower = NUM2ULL(rb_funcall(mDuckDBConverter, rb_intern("_hugeint_lower"), 1, value));
+            hugeint.upper = NUM2LL(rb_funcall(mDuckDBConverter, rb_intern("_hugeint_upper"), 1, value));
             ((duckdb_hugeint *)vector_data)[index] = hugeint;
             break;
         }
         case DUCKDB_TYPE_UHUGEINT: {
             duckdb_uhugeint uhugeint;
-            VALUE lower_rb = rb_funcall(value, rb_intern("&"), 1, ULL2NUM(UINT64_MAX));
-            VALUE upper_rb = rb_funcall(value, rb_intern(">>"), 1, INT2NUM(64));
-            uhugeint.lower = NUM2ULL(lower_rb);
-            uhugeint.upper = NUM2ULL(upper_rb);
+            uhugeint.lower = NUM2ULL(rb_funcall(mDuckDBConverter, rb_intern("_hugeint_lower"), 1, value));
+            uhugeint.upper = NUM2ULL(rb_funcall(mDuckDBConverter, rb_intern("_hugeint_upper"), 1, value));
             ((duckdb_uhugeint *)vector_data)[index] = uhugeint;
             break;
         }

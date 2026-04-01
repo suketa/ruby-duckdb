@@ -430,8 +430,8 @@ module DuckDBTest
 
     def test_scalar_function_hugeint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value HUGEINT)')
-      @con.execute('INSERT INTO test_table VALUES (80000000000000000000000000000000000000), ' \
-                   '(-80000000000000000000000000000000000000), (0)')
+      @con.execute('INSERT INTO test_table VALUES (85070591730234615865843651857942052863), ' \
+                   '(-85070591730234615865843651857942052864), (0)')
 
       sf = DuckDB::ScalarFunction.new
       sf.name = 'double_value'
@@ -444,11 +444,11 @@ module DuckDBTest
       rows = result.to_a
 
       assert_equal 3, rows.size
-      # -80000000000000000000000000000000000000 * 2
-      assert_equal(-160_000_000_000_000_000_000_000_000_000_000_000_000, rows[0][0])
+      # -85070591730234615865843651857942052864 * 2
+      assert_equal(-170_141_183_460_469_231_731_687_303_715_884_105_728, rows[0][0])
       assert_equal 0, rows[1][0] # 0 * 2
-      # 80000000000000000000000000000000000000 * 2
-      assert_equal 160_000_000_000_000_000_000_000_000_000_000_000_000, rows[2][0]
+      # 85070591730234615865843651857942052863 * 2
+      assert_equal 170_141_183_460_469_231_731_687_303_715_884_105_726, rows[2][0]
     end
 
     def test_scalar_function_uhugeint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
