@@ -428,6 +428,50 @@ module DuckDBTest
       assert_equal 18_446_744_073_709_551_614, rows[2][0] # 9223372036854775807 * 2
     end
 
+    def test_scalar_function_hugeint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('CREATE TABLE test_table (value HUGEINT)')
+      @con.execute('INSERT INTO test_table VALUES (85070591730234615865843651857942052863), ' \
+                   '(-85070591730234615865843651857942052864), (0)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double_value'
+      sf.add_parameter(DuckDB::LogicalType::HUGEINT)
+      sf.return_type = DuckDB::LogicalType::HUGEINT
+      sf.set_function { |v| v * 2 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT double_value(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      # -85070591730234615865843651857942052864 * 2
+      assert_equal(-170_141_183_460_469_231_731_687_303_715_884_105_728, rows[0][0])
+      assert_equal 0, rows[1][0] # 0 * 2
+      # 85070591730234615865843651857942052863 * 2
+      assert_equal 170_141_183_460_469_231_731_687_303_715_884_105_726, rows[2][0]
+    end
+
+    def test_scalar_function_uhugeint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('CREATE TABLE test_table (value UHUGEINT)')
+      @con.execute('INSERT INTO test_table VALUES (170141183460469231731687303715884105727), (0), (1000000000)')
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'double_value'
+      sf.add_parameter(DuckDB::LogicalType::UHUGEINT)
+      sf.return_type = DuckDB::LogicalType::UHUGEINT
+      sf.set_function { |v| v * 2 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT double_value(value) FROM test_table ORDER BY value')
+      rows = result.to_a
+
+      assert_equal 3, rows.size
+      assert_equal 0, rows[0][0] # 0 * 2
+      assert_equal 2_000_000_000, rows[1][0] # 1000000000 * 2
+      # 170141183460469231731687303715884105727 * 2
+      assert_equal 340_282_366_920_938_463_463_374_607_431_768_211_454, rows[2][0]
+    end
+
     def test_scalar_function_gc_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       # Register function and immediately lose reference
       @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|

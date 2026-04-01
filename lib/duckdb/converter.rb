@@ -10,6 +10,7 @@ module DuckDB
   module Converter # :nodoc: all
     HALF_HUGEINT_BIT = 64
     HALF_HUGEINT = 1 << HALF_HUGEINT_BIT
+    LOWER_HUGEINT_MASK = HALF_HUGEINT - 1
     FLIP_HUGEINT = 1 << 63
     EPOCH = Time.local(1970, 1, 1)
     EPOCH_UTC = Time.utc(1970, 1, 1)
@@ -91,6 +92,14 @@ module DuckDB
 
     def _to_hugeint_from_vector(lower, upper)
       (upper << HALF_HUGEINT_BIT) + lower
+    end
+
+    def _hugeint_lower(value)
+      value & LOWER_HUGEINT_MASK
+    end
+
+    def _hugeint_upper(value)
+      value >> HALF_HUGEINT_BIT
     end
 
     def _to_decimal_from_hugeint(width, scale, upper, lower = nil)
@@ -179,9 +188,7 @@ module DuckDB
     def integer_to_hugeint(value)
       case value
       when Integer
-        upper = value >> HALF_HUGEINT_BIT
-        lower = value - (upper << HALF_HUGEINT_BIT)
-        [lower, upper]
+        [_hugeint_lower(value), _hugeint_upper(value)]
       else
         raise(ArgumentError, "The argument `#{value.inspect}` must be Integer.")
       end
