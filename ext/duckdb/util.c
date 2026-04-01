@@ -21,6 +21,22 @@ duckdb_time rbduckdb_to_duckdb_time_from_value(VALUE hour, VALUE min, VALUE sec,
     return duckdb_to_time(time_st);
 }
 
+duckdb_timestamp rbduckdb_to_duckdb_timestamp_from_time_value(VALUE time_obj) {
+    if (!rb_obj_is_kind_of(time_obj, rb_cTime)) {
+        rb_raise(rb_eTypeError, "Expected Time object");
+    }
+
+    return rbduckdb_to_duckdb_timestamp_from_value(
+        rb_funcall(time_obj, rb_intern("year"), 0),
+        rb_funcall(time_obj, rb_intern("month"), 0),
+        rb_funcall(time_obj, rb_intern("day"), 0),
+        rb_funcall(time_obj, rb_intern("hour"), 0),
+        rb_funcall(time_obj, rb_intern("min"), 0),
+        rb_funcall(time_obj, rb_intern("sec"), 0),
+        rb_funcall(time_obj, rb_intern("usec"), 0)
+    );
+}
+
 duckdb_timestamp rbduckdb_to_duckdb_timestamp_from_value(VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp_struct timestamp_st;
 

@@ -626,22 +626,15 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             break;
         }
         case DUCKDB_TYPE_TIMESTAMP: {
-            /* Convert Ruby Time to DuckDB timestamp (microseconds since epoch) */
-            if (!rb_obj_is_kind_of(value, rb_cTime)) {
-                rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP");
-            }
-
-            duckdb_timestamp_struct ts_struct;
-            ts_struct.date.year = NUM2INT(rb_funcall(value, rb_intern("year"), 0));
-            ts_struct.date.month = NUM2INT(rb_funcall(value, rb_intern("month"), 0));
-            ts_struct.date.day = NUM2INT(rb_funcall(value, rb_intern("day"), 0));
-            ts_struct.time.hour = NUM2INT(rb_funcall(value, rb_intern("hour"), 0));
-            ts_struct.time.min = NUM2INT(rb_funcall(value, rb_intern("min"), 0));
-            ts_struct.time.sec = NUM2INT(rb_funcall(value, rb_intern("sec"), 0));
-            ts_struct.time.micros = NUM2INT(rb_funcall(value, rb_intern("usec"), 0));
-
-            duckdb_timestamp ts = duckdb_to_timestamp(ts_struct);
+            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
             ((duckdb_timestamp *)vector_data)[index] = ts;
+            break;
+        }
+        case DUCKDB_TYPE_TIMESTAMP_S: {
+            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
+            duckdb_timestamp_s ts_s;
+            ts_s.seconds = ts.micros / 1000000;
+            ((duckdb_timestamp_s *)vector_data)[index] = ts_s;
             break;
         }
         case DUCKDB_TYPE_DATE: {
