@@ -251,22 +251,14 @@ static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE
     (void)self;
 
     if (!rb_obj_is_kind_of(value, rb_cTime)) {
-        rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP");
+        rb_raise(rb_eTypeError, "Expected Time object");
     }
 
     data = (duckdb_timestamp *)NUM2ULL(ptr);
     idx = (idx_t)NUM2ULL(index);
 
     VALUE local_time = rb_funcall(value, rb_intern("getlocal"), 0);
-    data[idx] = rbduckdb_to_duckdb_timestamp_from_value(
-        rb_funcall(local_time, rb_intern("year"), 0),
-        rb_funcall(local_time, rb_intern("month"), 0),
-        rb_funcall(local_time, rb_intern("day"), 0),
-        rb_funcall(local_time, rb_intern("hour"), 0),
-        rb_funcall(local_time, rb_intern("min"), 0),
-        rb_funcall(local_time, rb_intern("sec"), 0),
-        rb_funcall(local_time, rb_intern("usec"), 0)
-    );
+    data[idx] = rbduckdb_to_duckdb_timestamp_from_time_value(local_time);
 
     return Qnil;
 }
