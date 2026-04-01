@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. ScalarFunctionSet` to register multiple overloads of a scalar function">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. ScalarFunction` to allow `HUGEINT` and `UHUGEINT` as `return_type` and">
 
 
 <script type="text/javascript">
@@ -337,6 +337,8 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>fix <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> to allow <code>HUGEINT</code> and <code>UHUGEINT</code> as <code>return_type</code> and parameter type (the C extension’s vector write path was missing those cases).</p>
+</li><li>
 <p>add <a href="DuckDB/ScalarFunctionSet.html"><code>DuckDB::ScalarFunctionSet</code></a> to register multiple overloads of a scalar function under one name (wraps <code>duckdb_scalar_function_set</code>).</p>
 </li><li>
 <p>add <a href="DuckDB/ScalarFunctionSet.html#method-i-add"><code>DuckDB::ScalarFunctionSet#add</code></a> to add a <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> overload to the set (wraps <code>duckdb_add_scalar_function_to_set</code>).</p>
