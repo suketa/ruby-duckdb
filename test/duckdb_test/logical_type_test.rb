@@ -505,6 +505,38 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_struct }
     end
 
+    def test_s_create_enum
+      enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+
+      assert_equal(:enum, enum_type.type)
+      assert_equal(3, enum_type.dictionary_size)
+    end
+
+    def test_s_create_enum_dictionary_values
+      enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+
+      assert_equal('happy', enum_type.dictionary_value_at(0))
+      assert_equal('sad', enum_type.dictionary_value_at(1))
+      assert_equal('neutral', enum_type.dictionary_value_at(2))
+    end
+
+    def test_s_create_enum_each_dictionary_value
+      enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+
+      assert_equal(%w[happy sad neutral], enum_type.each_dictionary_value.to_a)
+    end
+
+    def test_s_create_enum_with_symbol
+      enum_type = DuckDB::LogicalType.create_enum(:happy, :sad, :neutral)
+
+      assert_equal(:enum, enum_type.type)
+      assert_equal(%w[happy sad neutral], enum_type.each_dictionary_value.to_a)
+    end
+
+    def test_s_create_enum_with_no_values
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_enum }
+    end
+
     def test_new_with_primitive_like_complex_type
       # DUCKDB_TYPE_BIT = 29
       bit_type = DuckDB::LogicalType.new(29)

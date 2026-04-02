@@ -578,6 +578,39 @@ static VALUE duckdb_logical_type_s_create_struct_type(VALUE klass, VALUE members
     return rbduckdb_create_logical_type(new_type);
 }
 
+/*
+ *  call-seq:
+ *    DuckDB::LogicalType._create_enum_type(members) -> DuckDB::LogicalType
+ *
+ *  Return an enum logical type from the given array of strings.
+ */
+static VALUE duckdb_logical_type_s_create_enum_type(VALUE klass, VALUE members) {
+    idx_t member_size = RARRAY_LEN(members);
+    const char **member_names = NULL;
+    duckdb_logical_type new_type;
+
+    if (member_size == 0) {
+        rb_raise(rb_eArgError, "members must not be empty");
+    }
+
+    member_names = (const char **)xcalloc(member_size, sizeof(const char *));
+
+    for (idx_t i = 0; i < member_size; i++) {
+        VALUE val = rb_ary_entry(members, (long)i);
+        member_names[i] = StringValueCStr(val);
+    }
+
+    new_type = duckdb_create_enum_type(member_names, member_size);
+
+    xfree(member_names);
+
+    if (!new_type) {
+        rb_raise(eDuckDBError, "Failed to create enum type");
+    }
+
+    return rbduckdb_create_logical_type(new_type);
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -626,6 +659,8 @@ void rbduckdb_init_duckdb_logical_type(void) {
                              duckdb_logical_type_s_create_union_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_struct_type",
                              duckdb_logical_type_s_create_struct_type, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_enum_type",
+                             duckdb_logical_type_s_create_enum_type, 1);
 
     rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
 }
