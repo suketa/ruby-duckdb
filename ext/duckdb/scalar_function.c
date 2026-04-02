@@ -637,6 +637,25 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ((duckdb_timestamp_s *)vector_data)[index] = ts_s;
             break;
         }
+        case DUCKDB_TYPE_TIMESTAMP_MS: {
+            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
+            duckdb_timestamp_ms ts_ms;
+            ts_ms.millis = ts.micros / 1000;
+            ((duckdb_timestamp_ms *)vector_data)[index] = ts_ms;
+            break;
+        }
+        case DUCKDB_TYPE_TIMESTAMP_NS: {
+            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
+            duckdb_timestamp_ns ts_ns;
+            ts_ns.nanos = ts.micros * 1000;
+            ((duckdb_timestamp_ns *)vector_data)[index] = ts_ns;
+            break;
+        }
+        case DUCKDB_TYPE_TIMESTAMP_TZ: {
+            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
+            ((duckdb_timestamp *)vector_data)[index] = ts;
+            break;
+        }
         case DUCKDB_TYPE_DATE: {
             /* Convert Ruby Date to DuckDB date */
             VALUE date_class = rb_const_get(rb_cObject, rb_intern("Date"));

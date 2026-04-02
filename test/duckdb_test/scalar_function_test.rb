@@ -1338,5 +1338,396 @@ module DuckDBTest
       assert_equal 'second', rows[0][0]
       assert_equal 'first', rows[1][0]
     end
+
+    def test_scalar_function_timestamp_ms_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP_MS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123'), ('2024-12-25 23:59:59.999')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_hour_ts_ms'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_MS)
+      sf.return_type = DuckDB::LogicalType::TIMESTAMP_MS
+      sf.set_function { |ts| ts + 3600 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_hour_ts_ms(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal Time.new(2024, 1, 15, 11, 30, 0.123r), rows[0][0]
+      assert_equal Time.new(2024, 12, 26, 0, 59, 59.999r), rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ms_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP_MS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123'), ('2024-12-25 23:59:59.999')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_ms_to_string'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_MS)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts| ts.strftime('%Y-%m-%d %H:%M:%S.%L') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_ms_to_string(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '2024-01-15 10:30:00.123', rows[0][0]
+      assert_equal '2024-12-25 23:59:59.999', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ms_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_MS, ts2 TIMESTAMP_MS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123', '2024-06-15 12:00:00.456')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'latest_ts_ms'
+      sf.varargs_type = DuckDB::LogicalType::TIMESTAMP_MS
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |*args| args.max.strftime('%Y-%m-%d %H:%M:%S.%L') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT latest_ts_ms(ts1, ts2) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal '2024-06-15 12:00:00.456', rows[0][0]
+    end
+
+    def test_scalar_function_timestamp_ms_default_null_handling
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_ms_null_test'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_MS)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts| ts.strftime('%Y-%m-%d %H:%M:%S.%L') }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT ts_ms_null_test(NULL::TIMESTAMP_MS)').first.first
+      assert_equal '2024-01-15 10:30:00.123',
+                   @con.execute("SELECT ts_ms_null_test('2024-01-15 10:30:00.123'::TIMESTAMP_MS)").first.first
+    end
+
+    def test_scalar_function_create_with_timestamp_ms_symbol # rubocop:disable Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP_MS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123'), ('2024-12-25 23:59:59.999')")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :ts_ms_symbol_test,
+        return_type: :varchar,
+        parameter_type: :timestamp_ms
+      ) { |ts| ts.strftime('%Y-%m-%d %H:%M:%S.%L') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_ms_symbol_test(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '2024-01-15 10:30:00.123', rows[0][0]
+      assert_equal '2024-12-25 23:59:59.999', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ms_null_handling_true
+      sf = DuckDB::ScalarFunction.create(
+        name: :ts_ms_null_aware,
+        return_type: :varchar,
+        parameter_type: :timestamp_ms,
+        null_handling: true
+      ) { |ts| ts.nil? ? 'NULL_VALUE' : ts.strftime('%Y-%m-%d %H:%M:%S.%L') }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 'NULL_VALUE', @con.execute('SELECT ts_ms_null_aware(NULL::TIMESTAMP_MS)').first.first
+      assert_equal '2024-01-15 10:30:00.123',
+                   @con.execute("SELECT ts_ms_null_aware('2024-01-15 10:30:00.123'::TIMESTAMP_MS)").first.first
+    end
+
+    def test_scalar_function_timestamp_ms_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_MS, ts2 TIMESTAMP_MS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123', '2024-06-15 12:00:00.456')")
+      @con.execute("INSERT INTO test_table VALUES ('2024-12-25 23:59:59.999', '2024-03-01 00:00:00.001')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_ms_diff'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_MS)
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_MS)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts1, ts2| ts1 > ts2 ? 'first' : 'second' }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_ms_diff(ts1, ts2) FROM test_table ORDER BY ts1')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 'second', rows[0][0]
+      assert_equal 'first', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ns_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456'), ('2024-12-25 23:59:59.999999')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_hour_ts_ns'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_NS)
+      sf.return_type = DuckDB::LogicalType::TIMESTAMP_NS
+      sf.set_function { |ts| ts + 3600 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_hour_ts_ns(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal Time.new(2024, 1, 15, 11, 30, Rational(123_456, 1_000_000)), rows[0][0]
+      assert_equal Time.new(2024, 12, 26, 0, 59, Rational(999_999, 1_000_000) + 59), rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ns_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456'), ('2024-12-25 23:59:59.999999')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_ns_to_string'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_NS)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts| ts.strftime('%Y-%m-%d %H:%M:%S.%N') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_ns_to_string(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '2024-01-15 10:30:00.123456000', rows[0][0]
+      assert_equal '2024-12-25 23:59:59.999999000', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ns_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_NS, ts2 TIMESTAMP_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456', '2024-06-15 12:00:00.654321')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'latest_ts_ns'
+      sf.varargs_type = DuckDB::LogicalType::TIMESTAMP_NS
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |*args| args.max.strftime('%Y-%m-%d %H:%M:%S.%N') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT latest_ts_ns(ts1, ts2) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal '2024-06-15 12:00:00.654321000', rows[0][0]
+    end
+
+    def test_scalar_function_timestamp_ns_default_null_handling
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_ns_null_test'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_NS)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts| ts.strftime('%Y-%m-%d %H:%M:%S.%N') }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT ts_ns_null_test(NULL::TIMESTAMP_NS)').first.first
+      assert_equal '2024-01-15 10:30:00.123456000',
+                   @con.execute("SELECT ts_ns_null_test('2024-01-15 10:30:00.123456'::TIMESTAMP_NS)").first.first
+    end
+
+    def test_scalar_function_create_with_timestamp_ns_symbol # rubocop:disable Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMP_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456'), ('2024-12-25 23:59:59.999999')")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :ts_ns_symbol_test,
+        return_type: :varchar,
+        parameter_type: :timestamp_ns
+      ) { |ts| ts.strftime('%Y-%m-%d %H:%M:%S.%N') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_ns_symbol_test(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '2024-01-15 10:30:00.123456000', rows[0][0]
+      assert_equal '2024-12-25 23:59:59.999999000', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_ns_null_handling_true
+      sf = DuckDB::ScalarFunction.create(
+        name: :ts_ns_null_aware,
+        return_type: :varchar,
+        parameter_type: :timestamp_ns,
+        null_handling: true
+      ) { |ts| ts.nil? ? 'NULL_VALUE' : ts.strftime('%Y-%m-%d %H:%M:%S.%N') }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 'NULL_VALUE', @con.execute('SELECT ts_ns_null_aware(NULL::TIMESTAMP_NS)').first.first
+      assert_equal '2024-01-15 10:30:00.123456000',
+                   @con.execute("SELECT ts_ns_null_aware('2024-01-15 10:30:00.123456'::TIMESTAMP_NS)").first.first
+    end
+
+    def test_scalar_function_timestamp_ns_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_NS, ts2 TIMESTAMP_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456', '2024-06-15 12:00:00.654321')")
+      @con.execute("INSERT INTO test_table VALUES ('2024-12-25 23:59:59.999999', '2024-03-01 00:00:00.000001')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_ns_diff'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_NS)
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_NS)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts1, ts2| ts1 > ts2 ? 'first' : 'second' }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_ns_diff(ts1, ts2) FROM test_table ORDER BY ts1')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 'second', rows[0][0]
+      assert_equal 'first', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_tz_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00'), ('2024-12-25 23:59:59+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_hour_ts_tz'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_TZ)
+      sf.return_type = DuckDB::LogicalType::TIMESTAMP_TZ
+      sf.set_function { |ts| ts + 3600 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_hour_ts_tz(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal Time.new(2024, 1, 15, 11, 30, 0, 'UTC'), rows[0][0]
+      assert_equal Time.new(2024, 12, 26, 0, 59, 59, 'UTC'), rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_tz_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00'), ('2024-12-25 23:59:59+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_tz_to_string'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_TZ)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts| ts.strftime('%Y-%m-%d %H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_tz_to_string(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '2024-01-15 10:30:00', rows[0][0]
+      assert_equal '2024-12-25 23:59:59', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_tz_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+      @con.execute('CREATE TABLE test_table (ts1 TIMESTAMPTZ, ts2 TIMESTAMPTZ)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00', '2024-06-15 12:00:00+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'latest_ts_tz'
+      sf.varargs_type = DuckDB::LogicalType::TIMESTAMP_TZ
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |*args| args.max.strftime('%Y-%m-%d %H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT latest_ts_tz(ts1, ts2) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal '2024-06-15 12:00:00', rows[0][0]
+    end
+
+    def test_scalar_function_timestamp_tz_default_null_handling # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_tz_null_test'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_TZ)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts| ts.strftime('%Y-%m-%d %H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT ts_tz_null_test(NULL::TIMESTAMPTZ)').first.first
+      assert_equal '2024-01-15 10:30:00',
+                   @con.execute("SELECT ts_tz_null_test('2024-01-15 10:30:00+00'::TIMESTAMPTZ)").first.first
+    end
+
+    def test_scalar_function_create_with_timestamp_tz_symbol # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+      @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00'), ('2024-12-25 23:59:59+00')")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :ts_tz_symbol_test,
+        return_type: :varchar,
+        parameter_type: :timestamp_tz
+      ) { |ts| ts.strftime('%Y-%m-%d %H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_tz_symbol_test(ts) FROM test_table ORDER BY ts')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '2024-01-15 10:30:00', rows[0][0]
+      assert_equal '2024-12-25 23:59:59', rows[1][0]
+    end
+
+    def test_scalar_function_timestamp_tz_null_handling_true # rubocop:disable Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :ts_tz_null_aware,
+        return_type: :varchar,
+        parameter_type: :timestamp_tz,
+        null_handling: true
+      ) { |ts| ts.nil? ? 'NULL_VALUE' : ts.strftime('%Y-%m-%d %H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 'NULL_VALUE', @con.execute('SELECT ts_tz_null_aware(NULL::TIMESTAMPTZ)').first.first
+      assert_equal '2024-01-15 10:30:00',
+                   @con.execute("SELECT ts_tz_null_aware('2024-01-15 10:30:00+00'::TIMESTAMPTZ)").first.first
+    end
+
+    def test_scalar_function_timestamp_tz_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute("SET TimeZone='UTC'")
+      @con.execute('CREATE TABLE test_table (ts1 TIMESTAMPTZ, ts2 TIMESTAMPTZ)')
+      @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00', '2024-06-15 12:00:00+00')")
+      @con.execute("INSERT INTO test_table VALUES ('2024-12-25 23:59:59+00', '2024-03-01 00:00:00+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'ts_tz_diff'
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_TZ)
+      sf.add_parameter(DuckDB::LogicalType::TIMESTAMP_TZ)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |ts1, ts2| ts1 > ts2 ? 'first' : 'second' }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT ts_tz_diff(ts1, ts2) FROM test_table ORDER BY ts1')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 'second', rows[0][0]
+      assert_equal 'first', rows[1][0]
+    end
   end
 end
