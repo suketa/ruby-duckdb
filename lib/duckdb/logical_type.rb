@@ -146,6 +146,20 @@ module DuckDB
         _create_struct_type(resolved)
       end
 
+      # Creates an enum logical type with the given members.
+      #
+      # Each member must be a String representing an enum member.
+      #
+      #   require 'duckdb'
+      #
+      #   enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+      #   enum_type.type #=> :enum
+      #   enum_type.dictionary_size #=> 3
+      #   enum_type.dictionary_value_at(0) #=> "happy"
+      def create_enum(*members)
+        _create_enum_type(members.map(&:to_s))
+      end
+
       private
 
       def raise_resolve_error(symbol)
