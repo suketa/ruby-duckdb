@@ -611,6 +611,24 @@ static VALUE duckdb_logical_type_s_create_enum_type(VALUE klass, VALUE members) 
     return rbduckdb_create_logical_type(new_type);
 }
 
+/*
+ *  call-seq:
+ *    DuckDB::LogicalType._create_decimal_type(width, scale) -> DuckDB::LogicalType
+ *
+ *  Return a decimal logical type with the given width and scale.
+ */
+static VALUE duckdb_logical_type_s_create_decimal_type(VALUE klass, VALUE width, VALUE scale) {
+    duckdb_logical_type new_type;
+
+    new_type = duckdb_create_decimal_type((uint8_t)NUM2UINT(width), (uint8_t)NUM2UINT(scale));
+
+    if (!new_type) {
+        rb_raise(eDuckDBError, "Failed to create decimal type");
+    }
+
+    return rbduckdb_create_logical_type(new_type);
+}
+
 VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     VALUE obj;
     rubyDuckDBLogicalType *ctx;
@@ -661,6 +679,8 @@ void rbduckdb_init_duckdb_logical_type(void) {
                              duckdb_logical_type_s_create_struct_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_enum_type",
                              duckdb_logical_type_s_create_enum_type, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_decimal_type",
+                             duckdb_logical_type_s_create_decimal_type, 2);
 
     rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
 }

@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - `DuckDB::ScalarFunction.create` now accepts `name: nil` (optional) to allow creating nameless functions for use inside a `ScalarFunctionSet`.
 - add `DuckDB::LogicalType.create_struct` to create a struct logical type.
 - add `DuckDB::LogicalType.create_enum` to create an enum logical type.
+- add `DuckDB::LogicalType.create_decimal` to create a decimal logical type.
 
 # 1.5.1.0 - 2026-03-29
 

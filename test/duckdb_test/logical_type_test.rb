@@ -537,6 +537,47 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_enum }
     end
 
+    def test_s_create_decimal
+      decimal_type = DuckDB::LogicalType.create_decimal(18, 3)
+
+      assert_equal(:decimal, decimal_type.type)
+      assert_equal(18, decimal_type.width)
+      assert_equal(3, decimal_type.scale)
+    end
+
+    def test_s_create_decimal_internal_type_smallint
+      assert_equal(:smallint, DuckDB::LogicalType.create_decimal(1, 0).internal_type)
+      assert_equal(:smallint, DuckDB::LogicalType.create_decimal(4, 0).internal_type)
+    end
+
+    def test_s_create_decimal_internal_type_integer
+      assert_equal(:integer, DuckDB::LogicalType.create_decimal(5, 0).internal_type)
+      assert_equal(:integer, DuckDB::LogicalType.create_decimal(9, 0).internal_type)
+    end
+
+    def test_s_create_decimal_internal_type_bigint
+      assert_equal(:bigint, DuckDB::LogicalType.create_decimal(10, 0).internal_type)
+      assert_equal(:bigint, DuckDB::LogicalType.create_decimal(18, 0).internal_type)
+    end
+
+    def test_s_create_decimal_internal_type_hugeint
+      assert_equal(:hugeint, DuckDB::LogicalType.create_decimal(19, 0).internal_type)
+      assert_equal(:hugeint, DuckDB::LogicalType.create_decimal(38, 0).internal_type)
+    end
+
+    def test_s_create_decimal_with_invalid_width
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_decimal(0, 0) }
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_decimal(39, 0) }
+    end
+
+    def test_s_create_decimal_with_invalid_scale
+      assert_raises(DuckDB::Error) { DuckDB::LogicalType.create_decimal(18, 19) }
+    end
+
+    def test_s_create_decimal_with_no_args
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_decimal }
+    end
+
     def test_new_with_primitive_like_complex_type
       # DUCKDB_TYPE_BIT = 29
       bit_type = DuckDB::LogicalType.new(29)
