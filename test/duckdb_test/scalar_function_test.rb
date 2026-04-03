@@ -1729,5 +1729,134 @@ module DuckDBTest
       assert_equal 'second', rows[0][0]
       assert_equal 'first', rows[1][0]
     end
+
+    def test_scalar_function_time_tz_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+      @con.execute('CREATE TABLE test_table (t TIMETZ)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30'), ('23:59:59+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'passthrough_time_tz'
+      sf.add_parameter(DuckDB::LogicalType::TIME_TZ)
+      sf.return_type = DuckDB::LogicalType::TIME_TZ
+      sf.set_function { |t| t }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT passthrough_time_tz(t) FROM test_table ORDER BY t')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 10, rows[0][0].hour
+      assert_equal 30, rows[0][0].min
+      assert_equal 0,  rows[0][0].sec
+      assert_equal 23, rows[1][0].hour
+      assert_equal 59, rows[1][0].min
+      assert_equal 59, rows[1][0].sec
+    end
+
+    def test_scalar_function_time_tz_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (t TIMETZ)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30'), ('23:59:59+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'time_tz_to_string'
+      sf.add_parameter(DuckDB::LogicalType::TIME_TZ)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |t| t.strftime('%H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT time_tz_to_string(t) FROM test_table ORDER BY t')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '10:30:00', rows[0][0]
+      assert_equal '23:59:59', rows[1][0]
+    end
+
+    def test_scalar_function_time_tz_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (t1 TIMETZ, t2 TIMETZ)')
+      @con.execute("INSERT INTO test_table VALUES ('08:00:00+00', '17:30:00+00')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'latest_time_tz'
+      sf.varargs_type = DuckDB::LogicalType::TIME_TZ
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |*args| args.max.strftime('%H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT latest_time_tz(t1, t2) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal '17:30:00', rows[0][0]
+    end
+
+    def test_scalar_function_time_tz_default_null_handling
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'time_tz_null_test'
+      sf.add_parameter(DuckDB::LogicalType::TIME_TZ)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |t| t.strftime('%H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT time_tz_null_test(NULL::TIMETZ)').first.first
+      assert_equal '10:30:00',
+                   @con.execute("SELECT time_tz_null_test('10:30:00+05:30'::TIMETZ)").first.first
+    end
+
+    def test_scalar_function_create_with_time_tz_symbol # rubocop:disable Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (t TIMETZ)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30'), ('23:59:59+00')")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :time_tz_symbol_test,
+        return_type: :varchar,
+        parameter_type: :time_tz
+      ) { |t| t.strftime('%H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT time_tz_symbol_test(t) FROM test_table ORDER BY t')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '10:30:00', rows[0][0]
+      assert_equal '23:59:59', rows[1][0]
+    end
+
+    def test_scalar_function_time_tz_null_handling_true
+      sf = DuckDB::ScalarFunction.create(
+        name: :time_tz_null_aware,
+        return_type: :varchar,
+        parameter_type: :time_tz,
+        null_handling: true
+      ) { |t| t.nil? ? 'NULL_VALUE' : t.strftime('%H:%M:%S') }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 'NULL_VALUE', @con.execute('SELECT time_tz_null_aware(NULL::TIMETZ)').first.first
+      assert_equal '10:30:00',
+                   @con.execute("SELECT time_tz_null_aware('10:30:00+05:30'::TIMETZ)").first.first
+    end
+
+    def test_scalar_function_time_tz_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (t1 TIMETZ, t2 TIMETZ)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30', '17:00:00+00')")
+      @con.execute("INSERT INTO test_table VALUES ('23:59:59+00', '08:00:00+09')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'time_tz_diff'
+      sf.add_parameter(DuckDB::LogicalType::TIME_TZ)
+      sf.add_parameter(DuckDB::LogicalType::TIME_TZ)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |t1, t2| t1.hour > t2.hour ? 'first' : 'second' }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT time_tz_diff(t1, t2) FROM test_table ORDER BY t1')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 'second', rows[0][0]
+      assert_equal 'first', rows[1][0]
+    end
   end
 end
