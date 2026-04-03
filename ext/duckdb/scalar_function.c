@@ -686,6 +686,25 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ((duckdb_time *)vector_data)[index] = time;
             break;
         }
+        case DUCKDB_TYPE_TIME_TZ: {
+            if (!rb_obj_is_kind_of(value, rb_cTime)) {
+                rb_raise(rb_eTypeError, "Expected Time object for TIME_TZ");
+            }
+
+            VALUE hour = rb_funcall(value, rb_intern("hour"), 0);
+            VALUE min = rb_funcall(value, rb_intern("min"), 0);
+            VALUE sec = rb_funcall(value, rb_intern("sec"), 0);
+            VALUE usec = rb_funcall(value, rb_intern("usec"), 0);
+            VALUE utc_offset = rb_funcall(value, rb_intern("utc_offset"), 0);
+
+            duckdb_time t = rbduckdb_to_duckdb_time_from_value(hour, min, sec, usec);
+            int64_t micros = t.micros;
+            int32_t offset = NUM2INT(utc_offset);
+
+            duckdb_time_tz time_tz = duckdb_create_time_tz(micros, offset);
+            ((duckdb_time_tz *)vector_data)[index] = time_tz;
+            break;
+        }
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;
