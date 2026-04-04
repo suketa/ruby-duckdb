@@ -37,6 +37,7 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
 static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx);
+static VALUE vector_time_ns(void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
@@ -370,6 +371,10 @@ static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx) {
     return rbduckdb_timestamp_ns_to_ruby(((duckdb_timestamp_ns *)vector_data)[row_idx]);
 }
 
+static VALUE vector_time_ns(void* vector_data, idx_t row_idx) {
+    return rbduckdb_time_ns_to_ruby(((duckdb_time_ns *)vector_data)[row_idx]);
+}
+
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
     duckdb_type type = duckdb_enum_internal_type(ty);
     uint8_t index;
@@ -497,6 +502,9 @@ VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element
             break;
         case DUCKDB_TYPE_TIMESTAMP_NS:
             obj = vector_timestamp_ns(vector_data, index);
+            break;
+        case DUCKDB_TYPE_TIME_NS:
+            obj = vector_time_ns(vector_data, index);
             break;
         case DUCKDB_TYPE_ENUM:
             obj = vector_enum(element_type, vector_data, index);

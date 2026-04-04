@@ -107,6 +107,7 @@ module DuckDBTest
       # set TIMEZONE to Asia/Kabul to test TIMETZ and TIMESTAMPTZ
       [:ok, 'TIMETZ',       'TIMETZ',                       "'2019-11-03 12:34:56.123456789'",         Time,                 timetz_expected                                     ],
       [:ok, 'TIMESTAMPTZ',  'TIMESTAMPTZ',                  "'2019-11-03 12:34:56.123456789'",         Time,                 Time.parse('2019-11-03 08:04:56.123456+0000')       ],
+      [:ok, 'TIME_NS',      'TIME_NS',                      "'12:34:56.789123456'",                    Time,                 Time.parse('12:34:56.789123')                       ],
     ].freeze
     # rubocop:enable Layout/LineLength, Layout/SpaceInsideArrayLiteralBrackets
     # rubocop:enable Style/NumericLiterals, Layout/ExtraSpacing
@@ -141,7 +142,7 @@ module DuckDBTest
     end
 
     def do_query_result_assertions(res, ruby_val, db_type, klass)
-      if %w[TIME TIMETZ].include?(db_type)
+      if %w[TIME TIMETZ TIME_NS].include?(db_type)
         assert_equal(
           [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec, ruby_val.utc_offset],
           [res.hour, res.min, res.sec, res.usec, res.utc_offset]
