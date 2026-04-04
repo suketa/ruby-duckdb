@@ -13,6 +13,7 @@ ID id__to_uuid_from_uhugeint;
 ID id__to_time_from_duckdb_timestamp_s;
 ID id__to_time_from_duckdb_timestamp_ms;
 ID id__to_time_from_duckdb_timestamp_ns;
+ID id__to_time_from_duckdb_time_ns;
 ID id__to_time_from_duckdb_time_tz;
 ID id__to_time_from_duckdb_timestamp_tz;
 ID id__to_infinity;
@@ -128,6 +129,12 @@ VALUE rbduckdb_timestamp_ns_to_ruby(duckdb_timestamp_ns ts) {
                       );
 }
 
+VALUE rbduckdb_time_ns_to_ruby(duckdb_time_ns ts) {
+    return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time_ns, 1,
+                      LL2NUM(ts.nanos)
+                      );
+}
+
 VALUE rbduckdb_time_tz_to_ruby(duckdb_time_tz tz) {
     duckdb_time_tz_struct data = duckdb_from_time_tz(tz);
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_time_tz, 5,
@@ -201,6 +208,7 @@ void rbduckdb_init_duckdb_converter(void) {
     id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
     id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
     id__to_time_from_duckdb_timestamp_ns = rb_intern("_to_time_from_duckdb_timestamp_ns");
+    id__to_time_from_duckdb_time_ns = rb_intern("_to_time_from_duckdb_time_ns");
     id__to_time_from_duckdb_time_tz = rb_intern("_to_time_from_duckdb_time_tz");
     id__to_time_from_duckdb_timestamp_tz = rb_intern("_to_time_from_duckdb_timestamp_tz");
     id__to_infinity = rb_intern("_to_infinity");

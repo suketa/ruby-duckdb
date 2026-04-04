@@ -26,6 +26,11 @@ module DuckDBTest
     # rubocop:disable Style/NumericLiterals, Layout/ExtraSpacing
     # rubocop:disable Layout/SpaceInsideHashLiteralBraces, Layout/SpaceAfterComma
     # rubocop:disable Style/TrailingCommaInArrayLiteral
+    # Minimum DuckDB library version required for each type.
+    MINIMUM_DUCKDB_VERSION = {
+      'TIME_NS' => '1.5.0'
+    }.freeze
+
     TEST_TABLES = [
       #      DB Type  ,     DB declartion                  String Rep                                  Ruby Type             Ruby Value
       [:ok, 'BOOLEAN',      'BOOLEAN',                     'true',                                     TrueClass,            true                                                ],
@@ -107,6 +112,7 @@ module DuckDBTest
       # set TIMEZONE to Asia/Kabul to test TIMETZ and TIMESTAMPTZ
       [:ok, 'TIMETZ',       'TIMETZ',                       "'2019-11-03 12:34:56.123456789'",         Time,                 timetz_expected                                     ],
       [:ok, 'TIMESTAMPTZ',  'TIMESTAMPTZ',                  "'2019-11-03 12:34:56.123456789'",         Time,                 Time.parse('2019-11-03 08:04:56.123456+0000')       ],
+      [:ok, 'TIME_NS',      'TIME_NS',                      "'12:34:56.789123456'",                    Time,                 Time.parse('12:34:56.789123')                       ],
     ].freeze
     # rubocop:enable Layout/LineLength, Layout/SpaceInsideArrayLiteralBrackets
     # rubocop:enable Style/NumericLiterals, Layout/ExtraSpacing
@@ -141,7 +147,7 @@ module DuckDBTest
     end
 
     def do_query_result_assertions(res, ruby_val, db_type, klass)
-      if %w[TIME TIMETZ].include?(db_type)
+      if %w[TIME TIMETZ TIME_NS].include?(db_type)
         assert_equal(
           [ruby_val.hour, ruby_val.min, ruby_val.sec, ruby_val.usec, ruby_val.utc_offset],
           [res.hour, res.min, res.sec, res.usec, res.utc_offset]
@@ -157,6 +163,10 @@ module DuckDBTest
       do_test, db_type, db_declaration, string_rep, klass, ruby_val = *spec
       define_method :"test_#{db_type}_type#{i}" do
         skip spec.to_s if do_test == :ng
+        min_ver = MINIMUM_DUCKDB_VERSION[db_type]
+        if min_ver && ::DuckDBTest.duckdb_library_version < Gem::Version.new(min_ver)
+          skip "#{db_type} requires DuckDB >= #{min_ver}"
+        end
 
         prepare_test_table_and_data(db_declaration, db_type, string_rep)
 
@@ -167,6 +177,10 @@ module DuckDBTest
 
       define_method :"test_stream_#{db_type}_type#{i}" do
         skip spec.to_s if do_test == :ng
+        min_ver = MINIMUM_DUCKDB_VERSION[db_type]
+        if min_ver && ::DuckDBTest.duckdb_library_version < Gem::Version.new(min_ver)
+          skip "#{db_type} requires DuckDB >= #{min_ver}"
+        end
 
         prepare_test_table_and_data(db_declaration, db_type, string_rep)
 

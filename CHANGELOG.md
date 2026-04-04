@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `TIME_NS` column support to `DuckDB::Result`. `TIME_NS` values are returned as `Time` objects with nanoseconds truncated to microseconds.
+
 # 1.5.1.1 - 2026-04-04
 
 - fix `DuckDB::ScalarFunction` to allow `HUGEINT` and `UHUGEINT` as `return_type` and parameter type (the C extension's vector write path was missing those cases).
