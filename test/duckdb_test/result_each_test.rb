@@ -164,7 +164,7 @@ module DuckDBTest
       define_method :"test_#{db_type}_type#{i}" do
         skip spec.to_s if do_test == :ng
         min_ver = MINIMUM_DUCKDB_VERSION[db_type]
-        if min_ver && DuckDBTest.duckdb_library_version < Gem::Version.new(min_ver)
+        if min_ver && ::DuckDBTest.duckdb_library_version < Gem::Version.new(min_ver)
           skip "#{db_type} requires DuckDB >= #{min_ver}"
         end
 
@@ -178,7 +178,7 @@ module DuckDBTest
       define_method :"test_stream_#{db_type}_type#{i}" do
         skip spec.to_s if do_test == :ng
         min_ver = MINIMUM_DUCKDB_VERSION[db_type]
-        if min_ver && DuckDBTest.duckdb_library_version < Gem::Version.new(min_ver)
+        if min_ver && ::DuckDBTest.duckdb_library_version < Gem::Version.new(min_ver)
           skip "#{db_type} requires DuckDB >= #{min_ver}"
         end
 
