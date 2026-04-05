@@ -9,6 +9,7 @@ extern ID id__to_hugeint_from_vector;
 extern ID id__to_decimal_from_hugeint;
 extern ID id__to_uuid_from_vector;
 extern ID id__to_uuid_from_uhugeint;
+extern ID id__uuid_string_to_hugeint;
 extern ID id__to_time_from_duckdb_timestamp_s;
 extern ID id__to_time_from_duckdb_timestamp_ms;
 extern ID id__to_time_from_duckdb_timestamp_ns;

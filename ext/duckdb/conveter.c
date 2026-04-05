@@ -10,6 +10,7 @@ ID id__to_hugeint_from_vector;
 ID id__to_decimal_from_hugeint;
 ID id__to_uuid_from_vector;
 ID id__to_uuid_from_uhugeint;
+ID id__uuid_string_to_hugeint;
 ID id__to_time_from_duckdb_timestamp_s;
 ID id__to_time_from_duckdb_timestamp_ms;
 ID id__to_time_from_duckdb_timestamp_ns;
@@ -205,6 +206,7 @@ void rbduckdb_init_duckdb_converter(void) {
     id__to_decimal_from_hugeint = rb_intern("_to_decimal_from_hugeint");
     id__to_uuid_from_vector = rb_intern("_to_uuid_from_vector");
     id__to_uuid_from_uhugeint = rb_intern("_to_uuid_from_uhugeint");
+    id__uuid_string_to_hugeint = rb_intern("_uuid_string_to_hugeint");
     id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
     id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
     id__to_time_from_duckdb_timestamp_ns = rb_intern("_to_time_from_duckdb_timestamp_ns");
