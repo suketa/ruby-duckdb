@@ -139,7 +139,9 @@ module DuckDB
     end
 
     def _uuid_string_to_hugeint(uuid_str)
-      hex = uuid_str.delete('-')
+      hex = uuid_str.to_s.delete('-')
+      raise ArgumentError, "Invalid UUID format: #{uuid_str.inspect}" unless /\A\h{32}\z/.match?(hex)
+
       value = hex.to_i(16)
       upper = value >> HALF_HUGEINT_BIT
       lower = value & LOWER_HUGEINT_MASK
