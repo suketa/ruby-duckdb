@@ -1878,7 +1878,7 @@ module DuckDBTest
       assert_includes %w[0 14], rows[1][0]
     end
 
-    def test_scalar_function_interval_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_interval_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (i INTERVAL)')
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days')")
 
@@ -1892,9 +1892,16 @@ module DuckDBTest
       result = @con.execute('SELECT passthrough_interval(i) FROM test_table ORDER BY i')
       rows = result.to_a
 
+      # ORDER BY i sorts by duration: '3 days' < '1 year 2 months'
       assert_equal 2, rows.size
       assert_kind_of DuckDB::Interval, rows[0][0]
+      assert_equal 0,  rows[0][0].interval_months
+      assert_equal 3,  rows[0][0].interval_days
+      assert_equal 0,  rows[0][0].interval_micros
       assert_kind_of DuckDB::Interval, rows[1][0]
+      assert_equal 14, rows[1][0].interval_months
+      assert_equal 0,  rows[1][0].interval_days
+      assert_equal 0,  rows[1][0].interval_micros
     end
 
     def test_scalar_function_interval_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
