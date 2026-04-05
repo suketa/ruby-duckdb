@@ -1990,5 +1990,130 @@ module DuckDBTest
       assert_equal 'second', rows[0][0]
       assert_equal 'first', rows[1][0]
     end
+
+    UUID1 = '550e8400-e29b-41d4-a716-446655440000'
+    UUID2 = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
+
+    def test_scalar_function_uuid_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (u UUID)')
+      @con.execute("INSERT INTO test_table VALUES ('#{UUID1}'), ('#{UUID2}')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_passthrough_as_varchar'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |u| u }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT uuid_passthrough_as_varchar(u) FROM test_table ORDER BY u')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_includes [UUID1, UUID2], rows[0][0]
+      assert_includes [UUID1, UUID2], rows[1][0]
+    end
+
+    def test_scalar_function_uuid_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (u UUID)')
+      @con.execute("INSERT INTO test_table VALUES ('#{UUID1}'), ('#{UUID2}')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_passthrough'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::UUID
+      sf.set_function { |u| u }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT uuid_passthrough(u) FROM test_table ORDER BY u')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_includes [UUID1, UUID2], rows[0][0]
+      assert_includes [UUID1, UUID2], rows[1][0]
+    end
+
+    def test_scalar_function_uuid_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (u1 UUID, u2 UUID)')
+      @con.execute("INSERT INTO test_table VALUES ('#{UUID1}', '#{UUID2}')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_varargs_count'
+      sf.varargs_type = DuckDB::LogicalType::UUID
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |*args| args.size.to_s }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT uuid_varargs_count(u1, u2) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal '2', rows[0][0]
+    end
+
+    def test_scalar_function_uuid_default_null_handling
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_null_test'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |u| u }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT uuid_null_test(NULL::UUID)').first.first
+      assert_equal UUID1, @con.execute("SELECT uuid_null_test('#{UUID1}'::UUID)").first.first
+    end
+
+    def test_scalar_function_uuid_null_handling_true
+      sf = DuckDB::ScalarFunction.create(
+        name: :uuid_null_aware,
+        return_type: :varchar,
+        parameter_type: :uuid,
+        null_handling: true
+      ) { |u| u.nil? ? 'NULL_VALUE' : u }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 'NULL_VALUE', @con.execute('SELECT uuid_null_aware(NULL::UUID)').first.first
+      assert_equal UUID1, @con.execute("SELECT uuid_null_aware('#{UUID1}'::UUID)").first.first
+    end
+
+    def test_scalar_function_create_with_uuid_symbol # rubocop:disable Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (u UUID)')
+      @con.execute("INSERT INTO test_table VALUES ('#{UUID1}'), ('#{UUID2}')")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :uuid_symbol_test,
+        return_type: :varchar,
+        parameter_type: :uuid
+      ) { |u| u }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT uuid_symbol_test(u) FROM test_table ORDER BY u')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_includes [UUID1, UUID2], rows[0][0]
+      assert_includes [UUID1, UUID2], rows[1][0]
+    end
+
+    def test_scalar_function_uuid_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (u1 UUID, u2 UUID)')
+      @con.execute("INSERT INTO test_table VALUES ('#{UUID1}', '#{UUID2}')")
+      @con.execute("INSERT INTO test_table VALUES ('#{UUID2}', '#{UUID1}')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_equal'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |u1, u2| u1 == u2 ? 'equal' : 'different' }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT uuid_equal(u1, u2) FROM test_table ORDER BY u1')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      rows.each { |r| assert_equal 'different', r[0] }
+    end
   end
 end
