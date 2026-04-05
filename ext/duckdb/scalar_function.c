@@ -705,6 +705,16 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ((duckdb_time_tz *)vector_data)[index] = time_tz;
             break;
         }
+        case DUCKDB_TYPE_INTERVAL: {
+            VALUE months = rb_funcall(value, rb_intern("interval_months"), 0);
+            VALUE days   = rb_funcall(value, rb_intern("interval_days"), 0);
+            VALUE micros = rb_funcall(value, rb_intern("interval_micros"), 0);
+
+            duckdb_interval interval;
+            rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
+            ((duckdb_interval *)vector_data)[index] = interval;
+            break;
+        }
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;
