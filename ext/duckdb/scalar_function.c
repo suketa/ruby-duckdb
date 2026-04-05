@@ -726,6 +726,36 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ((duckdb_hugeint *)vector_data)[index] = hugeint;
             break;
         }
+        case DUCKDB_TYPE_DECIMAL: {
+            uint8_t scale = duckdb_decimal_scale(element_type);
+            duckdb_type internal_type = duckdb_decimal_internal_type(element_type);
+            VALUE multiplier = rb_funcall(INT2NUM(10), rb_intern("**"), 1, INT2NUM(scale));
+            VALUE unscaled = rb_funcall(value, rb_intern("*"), 1, multiplier);
+            VALUE int_val = rb_funcall(unscaled, rb_intern("to_i"), 0);
+
+            switch (internal_type) {
+                case DUCKDB_TYPE_SMALLINT:
+                    ((int16_t *)vector_data)[index] = (int16_t)NUM2INT(int_val);
+                    break;
+                case DUCKDB_TYPE_INTEGER:
+                    ((int32_t *)vector_data)[index] = NUM2INT(int_val);
+                    break;
+                case DUCKDB_TYPE_BIGINT:
+                    ((int64_t *)vector_data)[index] = NUM2LL(int_val);
+                    break;
+                case DUCKDB_TYPE_HUGEINT: {
+                    duckdb_hugeint hugeint;
+                    hugeint.lower = NUM2ULL(rb_funcall(mDuckDBConverter, rb_intern("_hugeint_lower"), 1, int_val));
+                    hugeint.upper = NUM2LL(rb_funcall(mDuckDBConverter, rb_intern("_hugeint_upper"), 1, int_val));
+                    ((duckdb_hugeint *)vector_data)[index] = hugeint;
+                    break;
+                }
+                default:
+                    rb_raise(rb_eArgError, "Unsupported internal type for DECIMAL");
+                    break;
+            }
+            break;
+        }
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;
