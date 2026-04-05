@@ -1858,5 +1858,130 @@ module DuckDBTest
       assert_equal 'second', rows[0][0]
       assert_equal 'first', rows[1][0]
     end
+
+    def test_scalar_function_interval_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (i INTERVAL)')
+      @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days 4 hours')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'interval_months_to_string'
+      sf.add_parameter(DuckDB::LogicalType::INTERVAL)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |i| i.interval_months.to_s }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT interval_months_to_string(i) FROM test_table ORDER BY i')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_includes %w[0 14], rows[0][0]
+      assert_includes %w[0 14], rows[1][0]
+    end
+
+    def test_scalar_function_interval_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (i INTERVAL)')
+      @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'passthrough_interval'
+      sf.add_parameter(DuckDB::LogicalType::INTERVAL)
+      sf.return_type = DuckDB::LogicalType::INTERVAL
+      sf.set_function { |i| i }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT passthrough_interval(i) FROM test_table ORDER BY i')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_kind_of DuckDB::Interval, rows[0][0]
+      assert_kind_of DuckDB::Interval, rows[1][0]
+    end
+
+    def test_scalar_function_interval_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (i1 INTERVAL, i2 INTERVAL)')
+      @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 month', INTERVAL '2 months')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'interval_varargs_months'
+      sf.varargs_type = DuckDB::LogicalType::INTERVAL
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |*args| args.map(&:interval_months).sum.to_s }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT interval_varargs_months(i1, i2) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal '3', rows[0][0]
+    end
+
+    def test_scalar_function_interval_default_null_handling
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'interval_null_test'
+      sf.add_parameter(DuckDB::LogicalType::INTERVAL)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |i| i.interval_months.to_s }
+
+      @con.register_scalar_function(sf)
+
+      assert_nil @con.execute('SELECT interval_null_test(NULL::INTERVAL)').first.first
+      assert_equal '14',
+                   @con.execute("SELECT interval_null_test(INTERVAL '1 year 2 months'::INTERVAL)").first.first
+    end
+
+    def test_scalar_function_interval_null_handling_true
+      sf = DuckDB::ScalarFunction.create(
+        name: :interval_null_aware,
+        return_type: :varchar,
+        parameter_type: :interval,
+        null_handling: true
+      ) { |i| i.nil? ? 'NULL_VALUE' : i.interval_months.to_s }
+
+      @con.register_scalar_function(sf)
+
+      assert_equal 'NULL_VALUE', @con.execute('SELECT interval_null_aware(NULL::INTERVAL)').first.first
+      assert_equal '14',
+                   @con.execute("SELECT interval_null_aware(INTERVAL '1 year 2 months'::INTERVAL)").first.first
+    end
+
+    def test_scalar_function_create_with_interval_symbol # rubocop:disable Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (i INTERVAL)')
+      @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days')")
+
+      sf = DuckDB::ScalarFunction.create(
+        name: :interval_symbol_test,
+        return_type: :varchar,
+        parameter_type: :interval
+      ) { |i| i.interval_months.to_s }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT interval_symbol_test(i) FROM test_table ORDER BY i')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_includes %w[0 14], rows[0][0]
+      assert_includes %w[0 14], rows[1][0]
+    end
+
+    def test_scalar_function_interval_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      @con.execute('CREATE TABLE test_table (i1 INTERVAL, i2 INTERVAL)')
+      @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 month', INTERVAL '2 months')")
+      @con.execute("INSERT INTO test_table VALUES (INTERVAL '5 months', INTERVAL '3 months')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'interval_compare'
+      sf.add_parameter(DuckDB::LogicalType::INTERVAL)
+      sf.add_parameter(DuckDB::LogicalType::INTERVAL)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |i1, i2| i1.interval_months > i2.interval_months ? 'first' : 'second' }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT interval_compare(i1, i2) FROM test_table ORDER BY i1')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal 'second', rows[0][0]
+      assert_equal 'first', rows[1][0]
+    end
   end
 end
