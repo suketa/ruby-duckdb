@@ -1,33 +1,40 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('lib', __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'duckdb/version'
+require_relative 'lib/duckdb/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'duckdb'
   spec.version       = DuckDB::VERSION
   spec.authors       = ['Masaki Suketa']
   spec.email         = ['masaki.suketa@nifty.ne.jp']
-
-  spec.summary       = 'This module is Ruby binding for DuckDB database engine.'
-  spec.description   = 'This module is Ruby binding for DuckDB database engine. ' \
-                       'You must have the DuckDB engine installed to build/use this module.'
   spec.homepage      = 'https://github.com/suketa/ruby-duckdb'
   spec.license       = 'MIT'
 
+  spec.summary = 'Ruby bindings for the DuckDB database engine.'
+  spec.description = <<~TEXT
+    This gem provides bindings for DuckDB, which is an in-process SQL database optimized for analytical queries on structured data.
+    It's lightweight, embeddable, and works directly with files like Parquet and CSV, making it popular for data analysis tasks.
+  TEXT
+
   spec.metadata['rubygems_mfa_required'] = 'true'
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['source_code_uri'] = 'https://github.com/suketa/ruby-duckdb'
-  spec.metadata['changelog_uri'] = 'https://github.com/suketa/ruby-duckdb/blob/master/CHANGELOG.md'
+  spec.metadata['source_code_uri'] = spec.homepage
+  spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/main/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  end
+  spec.files = Dir[
+    'bin/*',
+    'ext/**/*',
+    'lib/**/*',
+    '.rdoc_options',
+    'CHANGELOG.md',
+    'LICENSE',
+    'Rakefile',
+    'README.md'
+  ]
+
   spec.require_paths = ['lib']
-  spec.extensions    = ['ext/duckdb/extconf.rb']
+  spec.extensions = ['ext/duckdb/extconf.rb']
   spec.required_ruby_version = '>= 3.2.0'
   spec.add_dependency 'bigdecimal', '>= 3.1.4'
 end
