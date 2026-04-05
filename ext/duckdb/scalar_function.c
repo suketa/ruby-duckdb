@@ -729,9 +729,7 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
         case DUCKDB_TYPE_DECIMAL: {
             uint8_t scale = duckdb_decimal_scale(element_type);
             duckdb_type internal_type = duckdb_decimal_internal_type(element_type);
-            VALUE multiplier = rb_funcall(INT2NUM(10), rb_intern("**"), 1, INT2NUM(scale));
-            VALUE unscaled = rb_funcall(value, rb_intern("*"), 1, multiplier);
-            VALUE int_val = rb_funcall(unscaled, rb_intern("to_i"), 0);
+            VALUE int_val = rb_funcall(mDuckDBConverter, rb_intern("_decimal_to_unscaled"), 2, value, INT2NUM(scale));
 
             switch (internal_type) {
                 case DUCKDB_TYPE_SMALLINT:
