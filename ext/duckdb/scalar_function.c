@@ -715,6 +715,17 @@ static void vector_set_value_at(duckdb_vector vector, duckdb_logical_type elemen
             ((duckdb_interval *)vector_data)[index] = interval;
             break;
         }
+        case DUCKDB_TYPE_UUID: {
+            VALUE result = rb_funcall(mDuckDBConverter, id__uuid_string_to_hugeint, 1, value);
+            VALUE rb_lower = rb_ary_entry(result, 0);
+            VALUE rb_upper = rb_ary_entry(result, 1);
+
+            duckdb_hugeint hugeint;
+            hugeint.lower = NUM2ULL(rb_lower);
+            hugeint.upper = NUM2LL(rb_upper);
+            ((duckdb_hugeint *)vector_data)[index] = hugeint;
+            break;
+        }
         default:
             rb_raise(rb_eArgError, "Unsupported return type for scalar function");
             break;
