@@ -121,6 +121,10 @@ module DuckDB
       BigDecimal("#{value}e-#{scale}")
     end
 
+    def _decimal_to_unscaled(value, scale)
+      (value * (10**scale)).to_i
+    end
+
     def _to_interval_from_vector(months, days, micros)
       Interval.new(interval_months: months, interval_days: days, interval_micros: micros)
     end

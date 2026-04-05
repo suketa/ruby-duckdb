@@ -17,6 +17,7 @@ extern ID id__to_time_from_duckdb_time_ns;
 extern ID id__to_time_from_duckdb_time_tz;
 extern ID id__to_time_from_duckdb_timestamp_tz;
 extern ID id__to_infinity;
+extern ID id__decimal_to_unscaled;
 
 VALUE rbduckdb_uuid_to_ruby(duckdb_hugeint h);
 VALUE rbduckdb_uuid_uhugeint_to_ruby(duckdb_uhugeint h);

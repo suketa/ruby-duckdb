@@ -2115,5 +2115,161 @@ module DuckDBTest
       assert_equal 2, rows.size
       rows.each { |r| assert_equal 'different', r[0] }
     end
+
+    # Step 2: DECIMAL as parameter_type
+    def test_scalar_function_decimal_parameter # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      require 'bigdecimal'
+      @con.execute('CREATE TABLE test_table (d DECIMAL(10, 2))')
+      @con.execute('INSERT INTO test_table VALUES (123.45), (678.90)')
+
+      decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'decimal_to_s'
+      sf.add_parameter(decimal_type)
+      sf.return_type = DuckDB::LogicalType::VARCHAR
+      sf.set_function { |d| d.to_s('F') }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT decimal_to_s(d) FROM test_table ORDER BY d')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal '123.45', rows[0][0]
+      assert_equal '678.9', rows[1][0]
+    end
+
+    # Step 3: DECIMAL as return_type
+    def test_scalar_function_decimal_return_type # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      require 'bigdecimal'
+      @con.execute('CREATE TABLE test_table (d DECIMAL(10, 2))')
+      @con.execute('INSERT INTO test_table VALUES (123.45)')
+
+      decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'decimal_identity'
+      sf.add_parameter(decimal_type)
+      sf.return_type = decimal_type
+      sf.set_function { |d| d }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT decimal_identity(d) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal BigDecimal('123.45'), rows[0][0]
+    end
+
+    # Step 4: DECIMAL as varargs_type
+    def test_scalar_function_decimal_varargs # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      require 'bigdecimal'
+      @con.execute('CREATE TABLE test_table (a DECIMAL(10, 2), b DECIMAL(10, 2))')
+      @con.execute('INSERT INTO test_table VALUES (1.00, 2.50)')
+
+      decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'decimal_sum'
+      sf.varargs_type = decimal_type
+      sf.return_type = decimal_type
+      sf.set_function { |*args| args.sum(BigDecimal('0')) }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT decimal_sum(a, b) FROM test_table')
+      rows = result.to_a
+
+      assert_equal 1, rows.size
+      assert_equal BigDecimal('3.5'), rows[0][0]
+    end
+
+    # Step 5: NULL handling for DECIMAL
+    def test_scalar_function_decimal_null_propagation
+      require 'bigdecimal'
+      decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'decimal_null_prop'
+      sf.add_parameter(decimal_type)
+      sf.return_type = decimal_type
+      sf.set_function { |d| d }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT decimal_null_prop(NULL::DECIMAL(10, 2))')
+
+      assert_nil result.first.first
+    end
+
+    def test_scalar_function_decimal_null_handling # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      require 'bigdecimal'
+      decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'decimal_null_aware'
+      sf.add_parameter(decimal_type)
+      sf.return_type = decimal_type
+      sf.set_special_handling
+      sf.set_function { |d| d.nil? ? BigDecimal('0') : d }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT decimal_null_aware(NULL::DECIMAL(10, 2))')
+
+      assert_equal BigDecimal('0'), result.first.first
+    end
+
+    # Step 6: ScalarFunction.create with DECIMAL
+    def test_scalar_function_create_with_decimal # rubocop:disable Metrics/MethodLength
+      require 'bigdecimal'
+      @con.execute('CREATE TABLE test_table (d DECIMAL(10, 2))')
+      @con.execute('INSERT INTO test_table VALUES (99.99)')
+
+      decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
+      sf = DuckDB::ScalarFunction.create(
+        name: :decimal_double,
+        return_type: decimal_type,
+        parameter_type: decimal_type
+      ) { |d| d * 2 }
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT decimal_double(d) FROM test_table')
+
+      assert_equal BigDecimal('199.98'), result.first.first
+    end
+
+    # Step 7: Different DECIMAL precisions
+    def test_scalar_function_decimal_smallint_precision
+      require 'bigdecimal'
+      t = DuckDB::LogicalType.create_decimal(4, 2)
+      sf = DuckDB::ScalarFunction.create(name: :dec_small, return_type: t, parameter_type: t) { |d| d }
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT dec_small(9.99::DECIMAL(4, 2))')
+
+      assert_equal BigDecimal('9.99'), result.first.first
+    end
+
+    def test_scalar_function_decimal_integer_precision
+      require 'bigdecimal'
+      t = DuckDB::LogicalType.create_decimal(9, 4)
+      sf = DuckDB::ScalarFunction.create(name: :dec_int, return_type: t, parameter_type: t) { |d| d }
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT dec_int(12345.6789::DECIMAL(9, 4))')
+
+      assert_equal BigDecimal('12345.6789'), result.first.first
+    end
+
+    def test_scalar_function_decimal_bigint_precision
+      require 'bigdecimal'
+      t = DuckDB::LogicalType.create_decimal(18, 6)
+      sf = DuckDB::ScalarFunction.create(name: :dec_big, return_type: t, parameter_type: t) { |d| d }
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT dec_big(123456789012.123456::DECIMAL(18, 6))')
+
+      assert_equal BigDecimal('123456789012.123456'), result.first.first
+    end
+
+    def test_scalar_function_decimal_hugeint_precision
+      require 'bigdecimal'
+      t = DuckDB::LogicalType.create_decimal(38, 10)
+      sf = DuckDB::ScalarFunction.create(name: :dec_huge, return_type: t, parameter_type: t) { |d| d }
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT dec_huge(1234567890123456789.1234567890::DECIMAL(38, 10))')
+
+      assert_equal BigDecimal('1234567890123456789.1234567890'), result.first.first
+    end
   end
 end

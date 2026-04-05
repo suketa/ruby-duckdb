@@ -18,6 +18,7 @@ ID id__to_time_from_duckdb_time_ns;
 ID id__to_time_from_duckdb_time_tz;
 ID id__to_time_from_duckdb_timestamp_tz;
 ID id__to_infinity;
+ID id__decimal_to_unscaled;
 
 VALUE infinite_date_value(duckdb_date date) {
     if (duckdb_is_finite_date(date) == false) {
@@ -214,4 +215,5 @@ void rbduckdb_init_duckdb_converter(void) {
     id__to_time_from_duckdb_time_tz = rb_intern("_to_time_from_duckdb_time_tz");
     id__to_time_from_duckdb_timestamp_tz = rb_intern("_to_time_from_duckdb_timestamp_tz");
     id__to_infinity = rb_intern("_to_infinity");
+    id__decimal_to_unscaled = rb_intern("_decimal_to_unscaled");
 }
