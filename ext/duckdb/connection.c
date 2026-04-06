@@ -11,6 +11,7 @@ static VALUE duckdb_connection_interrupt(VALUE self);
 static VALUE duckdb_connection_query_progress(VALUE self);
 static VALUE duckdb_connection_connect(VALUE self, VALUE oDuckDBDatabase);
 static VALUE duckdb_connection_query_sql(VALUE self, VALUE str);
+static VALUE duckdb_connection_register_logical_type(VALUE self, VALUE logical_type);
 static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar_function);
 static VALUE duckdb_connection_register_scalar_function_set(VALUE self, VALUE scalar_function_set);
 static VALUE duckdb_connection_register_table_function(VALUE self, VALUE table_function);
@@ -200,6 +201,38 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     return result;
 }
 
+/*
+ * call-seq:
+ *   connection._register_logical_type(logical_type) -> self
+ *
+ * Registers a custom logical type with the connection.
+ * The logical type must have an alias set before registration.
+ *
+ *  mood = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+ *  mood.alias = 'mood'
+ *  con.register_logical_type(mood)
+ *  con.query('CREATE TABLE t (m mood)')
+ */
+ static VALUE duckdb_connection_register_logical_type(VALUE self, VALUE logical_type) {
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBLogicalType *ctxlt;
+    duckdb_state state;
+
+    ctxcon = get_struct_connection(self);
+    ctxlt = get_struct_logical_type(logical_type);
+
+    state = duckdb_register_logical_type(ctxcon->con, ctxlt->logical_type, NULL);
+
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "Failed to register logical type");
+    }
+
+    /* Keep reference to prevent GC while connection is alive */
+    rb_ary_push(ctxcon->registered_functions, logical_type);
+
+    return self;
+}
+
 /* :nodoc: */
 static VALUE duckdb_connection_register_scalar_function(VALUE self, VALUE scalar_function) {
     rubyDuckDBConnection *ctxcon;
@@ -272,6 +305,7 @@ void rbduckdb_init_duckdb_connection(void) {
     rb_define_method(cDuckDBConnection, "disconnect", duckdb_connection_disconnect, 0);
     rb_define_method(cDuckDBConnection, "interrupt", duckdb_connection_interrupt, 0);
     rb_define_method(cDuckDBConnection, "query_progress", duckdb_connection_query_progress, 0);
+    rb_define_private_method(cDuckDBConnection, "_register_logical_type", duckdb_connection_register_logical_type, 1);
     rb_define_private_method(cDuckDBConnection, "_register_scalar_function", duckdb_connection_register_scalar_function, 1);
     rb_define_private_method(cDuckDBConnection, "_register_scalar_function_set", duckdb_connection_register_scalar_function_set, 1);
     rb_define_private_method(cDuckDBConnection, "_register_table_function", duckdb_connection_register_table_function, 1);
