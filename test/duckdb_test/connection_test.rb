@@ -228,6 +228,26 @@ module DuckDBTest
       assert_instance_of(DuckDB::PreparedStatement, @con.prepare('SELECT * FROM t WHERE col1 = $1'))
     end
 
+    def test_extract_separates_multi_statements
+      stmts = @con.extract('SELECT 1; SELECT 2; SELECT 3;')
+
+      assert_equal(3, stmts.size)
+      stmts.each do |stmt|
+        assert_instance_of(DuckDB::PreparedStatement, stmt)
+      end
+    end
+
+    def test_extract_executes_each_statement_independently
+      stmts = @con.extract('SELECT 1; SELECT 2; SELECT 3;')
+      results = stmts.map { |stmt| stmt.execute.to_a }
+
+      assert_equal([[[1]], [[2]], [[3]]], results)
+    end
+
+    def test_extract_raises_error_with_invalid_sql
+      assert_raises(DuckDB::Error) { @con.extract('INVALID SQL STATEMENT') }
+    end
+
     def test_appender
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
 
