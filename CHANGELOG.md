@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Connection#extract` to extract multiple SQL statements as prepared statements without executing them.
 - add `DuckDB::Connection#register_logical_type` to register a custom logical type with a connection.
 
+## Breaking Changes
+- rename DuckDB::ValueImpl to DuckDB::Value
+
 # 1.5.1.1 - 2026-04-04
 
 - fix `DuckDB::ScalarFunction` to allow `HUGEINT` and `UHUGEINT` as `return_type` and parameter type (the C extension's vector write path was missing those cases).
