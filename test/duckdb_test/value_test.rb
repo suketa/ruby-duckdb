@@ -4,6 +4,16 @@ require 'test_helper'
 
 module DuckDBTest
   class ValueTest < Minitest::Test
+    def setup
+      @db = DuckDB::Database.open
+      @con = @db.connect
+    end
+
+    def teardown
+      @con&.close
+      @db&.close
+    end
+
     def test_create_bool_with_true
       value = DuckDB::Value.create_bool(true)
 
@@ -32,6 +42,88 @@ module DuckDBTest
       assert_raises(ArgumentError) do
         DuckDB::Value.create_bool(1)
       end
+    end
+
+    def test_create_int8_with_zero
+      value = DuckDB::Value.create_int8(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int8_with_max
+      value = DuckDB::Value.create_int8(127)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int8_with_min
+      value = DuckDB::Value.create_int8(-128)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int16_with_zero
+      value = DuckDB::Value.create_int16(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int16_with_max
+      value = DuckDB::Value.create_int16(32_767)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int16_with_min
+      value = DuckDB::Value.create_int16(-32_768)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int16_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int16('invalid')
+      end
+    end
+
+    def test_create_int16_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int16(32_768)
+      end
+    end
+
+    def test_create_int16_with_underflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int16(-32_769)
+      end
+    end
+
+    def test_create_int8_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int8('invalid')
+      end
+    end
+
+    def test_create_int8_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int8(128)
+      end
+    end
+
+    def test_create_int8_with_underflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int8(-129)
+      end
+    end
+
+    def test_create_int16_bind_value
+      @con.query('CREATE TABLE e2e_int16 (id INTEGER, val SMALLINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int16 VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_int16(32_767))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_int16 WHERE id = 1')
+
+      assert_equal(32_767, result.first[0])
     end
   end
 end
