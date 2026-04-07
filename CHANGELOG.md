@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Connection#register_logical_type` to register a custom logical type with a connection.
 - add `DuckDB::PreparedStatement#bind_value`.
 - add `DuckDB::Value.create_bool`.
+- add `DuckDB::Value.create_int8`.
+- add `DuckDB::Value.create_int16`.
 
 ## Breaking Changes
 - rename `DuckDB::ValueImpl` to `DuckDB::Value`

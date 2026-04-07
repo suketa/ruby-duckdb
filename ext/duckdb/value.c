@@ -6,6 +6,8 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE duckdb_value_s__create_bool(VALUE klass, VALUE flag);
+static VALUE duckdb_value_s__create_int8(VALUE klass, VALUE val);
+static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val);
 
 static const rb_data_type_t value_data_type = {
     "DuckDB/Value",
@@ -31,6 +33,16 @@ static size_t memsize(const void *p) {
 
 static VALUE duckdb_value_s__create_bool(VALUE klass, VALUE flag) {
     duckdb_value value = duckdb_create_bool(RTEST(flag) ? true : false);
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_int8(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_int8((int8_t)NUM2INT(val));
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_int16((int16_t)NUM2INT(val));
     return rbduckdb_value_new(value);
 }
 
@@ -151,5 +163,7 @@ void rbduckdb_init_duckdb_value(void) {
     rb_define_alloc_func(cDuckDBValue, allocate);
 
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_bool", duckdb_value_s__create_bool, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int8", duckdb_value_s__create_int8, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int16", duckdb_value_s__create_int16, 1);
 }
 

@@ -18,10 +18,6 @@ module DuckDB
   class PreparedStatement
     include DuckDB::Converter
 
-    RANGE_INT16 = -32_768..32_767
-    RANGE_INT32 = -2_147_483_648..2_147_483_647
-    RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
-
     class << self
       # return DuckDB::PreparedStatement object.
       # The first argument is DuckDB::Connection object.

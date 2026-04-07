@@ -16,13 +16,6 @@ module DuckDB
   class Appender
     include DuckDB::Converter
 
-    # :stopdoc:
-    RANGE_INT16 = -32_768..32_767
-    RANGE_INT32 = -2_147_483_648..2_147_483_647
-    RANGE_INT64 = -9_223_372_036_854_775_808..9_223_372_036_854_775_807
-    private_constant :RANGE_INT16, :RANGE_INT32, :RANGE_INT64
-    # :startdoc:
-
     class << self
       alias from_query create_query
     end
