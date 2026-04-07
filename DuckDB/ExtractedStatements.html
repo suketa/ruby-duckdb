@@ -68,7 +68,7 @@
   
   <div id="parent-class-section" class="nav-section">
   <h3>Ancestors</h3>
-  <ul><li><a href="ExtractedStatementsImpl.html">DuckDB::ExtractedStatementsImpl</a><ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul></li></ul>
+  <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
 </div>
 
   
@@ -85,7 +85,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
-      <li class="calls-super" ><a href="#method-c-new">new</a></li>
+      <li ><a href="#method-c-new">new</a></li>
     </ul>
   </div>
 
@@ -94,7 +94,10 @@
   <div class="nav-section">
     <h3>Instance Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-i-destroy">destroy</a></li>
       <li ><a href="#method-i-each">each</a></li>
+      <li ><a href="#method-i-prepared_statement">prepared_statement</a></li>
+      <li ><a href="#method-i-size">size</a></li>
     </ul>
   </div>
 
@@ -168,14 +171,10 @@
             <pre><span class="ruby-comment"># File lib/duckdb/extracted_statements.rb, line 7</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
   <span class="ruby-ivar">@con</span> = <span class="ruby-identifier">con</span>
-  <span class="ruby-keyword">super</span>
+  <span class="ruby-identifier">_initialize</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
-            <div class="method-calls-super">
-              Calls superclass method
-              <a href="ExtractedStatementsImpl.html#method-c-new"><code>DuckDB::ExtractedStatementsImpl::new</code></a>
-            </div>
         </div>
 
 
@@ -187,6 +186,40 @@
        <header>
          <h3>Public Instance Methods</h3>
        </header>
+
+      <div id="method-i-destroy" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-destroy" title="Link to this method">
+                <span class="method-name">destroy</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="destroy-source">
+            <pre>static VALUE duckdb_extracted_statements_destroy(VALUE self) {
+    rubyDuckDBExtractedStatements *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &amp;extract_statements_data_type, ctx);
+
+    duckdb_destroy_extracted(&amp;(ctx-&gt;extracted_statements));
+
+    return Qnil;
+}</pre>
+          </div>
+          
+        </div>
+
+
+      </div>
 
       <div id="method-i-each" class="method-detail anchor-link ">
         <div class="method-header">
@@ -214,6 +247,75 @@
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">prepared_statement</span>(<span class="ruby-ivar">@con</span>, <span class="ruby-identifier">i</span>)
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-i-prepared_statement" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-prepared_statement" title="Link to this method">
+                <span class="method-name">prepared_statement</span>
+                <span class="method-args">(p1, p2)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="prepared_statement-source">
+            <pre>static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index) {
+    rubyDuckDBConnection *pcon;
+    rubyDuckDBExtractedStatements *ctx;
+
+    if (rb_obj_is_kind_of(con, cDuckDBConnection) != Qtrue) {
+        rb_raise(rb_eTypeError, &quot;1st argument must be DuckDB::Connection&quot;);
+    }
+    pcon = get_struct_connection(con);
+    TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &amp;extract_statements_data_type, ctx);
+
+    return rbduckdb_prepared_statement_new(pcon-&gt;con, ctx-&gt;extracted_statements, NUM2ULL(index));
+}</pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-i-size" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-size" title="Link to this method">
+                <span class="method-name">size</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="size-source">
+            <pre>static VALUE duckdb_extracted_statements_size(VALUE self) {
+    rubyDuckDBExtractedStatements *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &amp;extract_statements_data_type, ctx);
+
+    return ULL2NUM(ctx-&gt;num_statements);
+}</pre>
           </div>
           
         </div>
