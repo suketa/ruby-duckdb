@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module DuckDB
-  class ExtractedStatements < ExtractedStatementsImpl
+  class ExtractedStatements
     include Enumerable
 
     def initialize(con, sql)
       @con = con
-      super
+      _initialize(con, sql)
     end
 
     def each

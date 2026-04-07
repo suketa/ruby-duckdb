@@ -16,7 +16,7 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 
-static VALUE duckdb_extracted_statements_initialize(VALUE self, VALUE con, VALUE query);
+static VALUE duckdb_extracted_statements__initialize(VALUE self, VALUE con, VALUE query);
 static VALUE duckdb_extracted_statements_destroy(VALUE self);
 static VALUE duckdb_extracted_statements_size(VALUE self);
 static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index);
@@ -39,7 +39,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBExtractedStatements);
 }
 
-static VALUE duckdb_extracted_statements_initialize(VALUE self, VALUE con, VALUE query) {
+static VALUE duckdb_extracted_statements__initialize(VALUE self, VALUE con, VALUE query) {
     rubyDuckDBConnection *pcon;
     rubyDuckDBExtractedStatements *ctx;
     char *pquery;
@@ -98,10 +98,10 @@ void rbduckdb_init_duckdb_extracted_statements(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
-    cDuckDBExtractedStatements = rb_define_class_under(mDuckDB, "ExtractedStatementsImpl", rb_cObject);
+    cDuckDBExtractedStatements = rb_define_class_under(mDuckDB, "ExtractedStatements", rb_cObject);
 
     rb_define_alloc_func(cDuckDBExtractedStatements, allocate);
-    rb_define_method(cDuckDBExtractedStatements, "initialize", duckdb_extracted_statements_initialize, 2);
+    rb_define_private_method(cDuckDBExtractedStatements, "_initialize", duckdb_extracted_statements__initialize, 2);
     rb_define_method(cDuckDBExtractedStatements, "destroy", duckdb_extracted_statements_destroy, 0);
     rb_define_method(cDuckDBExtractedStatements, "size", duckdb_extracted_statements_size, 0);
     rb_define_method(cDuckDBExtractedStatements, "prepared_statement", duckdb_extracted_statements_prepared_statement, 2);
