@@ -202,7 +202,7 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
 }
 
 /* :nodoc: */
- static VALUE duckdb_connection_register_logical_type(VALUE self, VALUE logical_type) {
+static VALUE duckdb_connection_register_logical_type(VALUE self, VALUE logical_type) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBLogicalType *ctxlt;
     duckdb_state state;
