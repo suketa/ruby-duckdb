@@ -356,11 +356,21 @@
 <p>add <a href="DuckDB/Connection.html#method-i-extract"><code>DuckDB::Connection#extract</code></a> to extract multiple SQL statements as prepared statements without executing them.</p>
 </li><li>
 <p>add <a href="DuckDB/Connection.html#method-i-register_logical_type"><code>DuckDB::Connection#register_logical_type</code></a> to register a custom logical type with a connection.</p>
+</li><li>
+<p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_value"><code>DuckDB::PreparedStatement#bind_value</code></a>.</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_bool"><code>DuckDB::Value.create_bool</code></a>.</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_int8"><code>DuckDB::Value.create_int8</code></a>.</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_int16"><code>DuckDB::Value.create_int16</code></a>.</p>
 </li></ul>
 
 <h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
 <ul><li>
-<p>rename DuckDB::ValueImpl to <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a></p>
+<p>rename <code>DuckDB::ValueImpl</code> to <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a></p>
+</li><li>
+<p>remove <code>DuckDB::ExtractedStatementsImpl</code>. use <a href="DuckDB/ExtractedStatements.html"><code>DuckDB::ExtractedStatements</code></a></p>
 </li></ul>
 
 <h1 id="label-1.5.1.1+-+2026-04-04">1.5.1.1 - 2026-04-04<span><a href="#label-1.5.1.1+-+2026-04-04">&para;</a> <a href="#top">&uarr;</a></span></h1>

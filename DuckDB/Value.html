@@ -78,6 +78,8 @@
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-c-create_bool">create_bool</a></li>
+      <li ><a href="#method-c-create_int16">create_int16</a></li>
+      <li ><a href="#method-c-create_int8">create_int8</a></li>
     </ul>
   </div>
 
@@ -150,11 +152,75 @@
 
         <div class="method-description">
           <div class="method-source-code" id="create_bool-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 6</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 8</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_bool</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;expected true or false&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TrueClass</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">FalseClass</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, [<span class="ruby-constant">TrueClass</span>, <span class="ruby-constant">FalseClass</span>])
 
   <span class="ruby-identifier">_create_bool</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_int16" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_int16" title="Link to this method">
+                <span class="method-name">create_int16</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_int16-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 21</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_int16</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_INT16</span>, <span class="ruby-string">&#39;INT16&#39;</span>)
+
+  <span class="ruby-identifier">_create_int16</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_int8" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_int8" title="Link to this method">
+                <span class="method-name">create_int8</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_int8-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 14</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_int8</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_INT8</span>, <span class="ruby-string">&#39;INT8&#39;</span>)
+
+  <span class="ruby-identifier">_create_int8</span>(<span class="ruby-identifier">value</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           
