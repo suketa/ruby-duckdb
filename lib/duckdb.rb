@@ -28,6 +28,7 @@ require 'duckdb/table_function/function_info'
 require 'duckdb/infinity'
 require 'duckdb/instance_cache'
 require 'duckdb/casting'
+require 'duckdb/value'
 
 # DuckDB provides Ruby interface of DuckDB.
 module DuckDB

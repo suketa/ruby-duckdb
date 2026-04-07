@@ -38,6 +38,7 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
 static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
 static VALUE duckdb_prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
 static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale);
+static VALUE duckdb_prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val);
 
 static const rb_data_type_t prepared_statement_data_type = {
     "DuckDB/PreparedStatement",
@@ -541,6 +542,21 @@ static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VAL
     return self;
 }
 
+/* :nodoc: */
+static VALUE duckdb_prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
+    rubyDuckDBPreparedStatement *ctx;
+    rubyDuckDBValue *val_ctx;
+    idx_t idx = check_index(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    val_ctx = get_struct_value(val);
+
+    if (duckdb_bind_value(ctx->prepared_statement, idx, val_ctx->value) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+
 rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
@@ -585,4 +601,5 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_hugeint", duckdb_prepared_statement__bind_hugeint, 3);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_uhugeint", duckdb_prepared_statement__bind_uhugeint, 3);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_decimal", duckdb_prepared_statement__bind_decimal, 5);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_value", duckdb_prepared_statement__bind_value, 2);
 }

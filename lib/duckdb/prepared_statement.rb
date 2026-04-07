@@ -292,6 +292,24 @@ module DuckDB
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
+    # The second argument value must be a DuckDB::Value instance.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT col_boolean FROM booleans WHERE col_boolean = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_value(1, DuckDB::Value.create_bool(true))
+    def bind_value(index, value)
+      raise ArgumentError, '2nd argument must be DuckDB::Value' unless value.is_a?(DuckDB::Value)
+
+      _bind_value(index, value)
+      self
+    end
+
+    # binds i-th parameter with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
     # The second argument value is the value of prepared statement parameter.
     #
     #   require 'duckdb'
