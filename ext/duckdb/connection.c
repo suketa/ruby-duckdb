@@ -201,18 +201,7 @@ static VALUE duckdb_connection_query_sql(VALUE self, VALUE str) {
     return result;
 }
 
-/*
- * call-seq:
- *   connection._register_logical_type(logical_type) -> self
- *
- * Registers a custom logical type with the connection.
- * The logical type must have an alias set before registration.
- *
- *  mood = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
- *  mood.alias = 'mood'
- *  con.register_logical_type(mood)
- *  con.query('CREATE TABLE t (m mood)')
- */
+/* :nodoc: */
  static VALUE duckdb_connection_register_logical_type(VALUE self, VALUE logical_type) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBLogicalType *ctxlt;
