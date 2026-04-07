@@ -1,37 +1,37 @@
 #include "ruby-duckdb.h"
 
-VALUE cDuckDBValueImpl;
+VALUE cDuckDBValue;
 
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 
-static const rb_data_type_t value_impl_data_type = {
-    "DuckDB/ValueImpl",
+static const rb_data_type_t value_data_type = {
+    "DuckDB/Value",
     {NULL, deallocate, memsize,},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
 static void deallocate(void * ctx) {
-    rubyDuckDBValueImpl *p = (rubyDuckDBValueImpl *)ctx;
+    rubyDuckDBValue *p = (rubyDuckDBValue *)ctx;
 
     duckdb_destroy_value(&(p->value));
     xfree(p);
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBValueImpl *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBValueImpl));
-    return TypedData_Wrap_Struct(klass, &value_impl_data_type, ctx);
+    rubyDuckDBValue *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBValue));
+    return TypedData_Wrap_Struct(klass, &value_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {
-    return sizeof(rubyDuckDBValueImpl);
+    return sizeof(rubyDuckDBValue);
 }
 
-VALUE rbduckdb_value_impl_new(duckdb_value value) {
-    rubyDuckDBValueImpl *ctx;
-    VALUE obj = allocate(cDuckDBValueImpl);
-    TypedData_Get_Struct(obj, rubyDuckDBValueImpl, &value_impl_data_type, ctx);
+VALUE rbduckdb_value_new(duckdb_value value) {
+    rubyDuckDBValue *ctx;
+    VALUE obj = allocate(cDuckDBValue);
+    TypedData_Get_Struct(obj, rubyDuckDBValue, &value_data_type, ctx);
     ctx->value = value;
     return obj;
 }
@@ -131,11 +131,11 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
     return result;
 }
 
-void rbduckdb_init_duckdb_value_impl(void) {
+void rbduckdb_init_duckdb_value(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
-    cDuckDBValueImpl = rb_define_class_under(mDuckDB, "ValueImpl", rb_cObject);
-    rb_define_alloc_func(cDuckDBValueImpl, allocate);
+    cDuckDBValue = rb_define_class_under(mDuckDB, "Value", rb_cObject);
+    rb_define_alloc_func(cDuckDBValue, allocate);
 }
 

@@ -28,7 +28,7 @@
 #include "./appender.h"
 #include "./config.h"
 #include "./instance_cache.h"
-#include "./value_impl.h"
+#include "./value.h"
 #include "./scalar_function.h"
 #include "./scalar_function_set.h"
 #include "./expression.h"
@@ -53,7 +53,7 @@ extern VALUE cDuckDBPreparedStatement;
 extern VALUE PositiveInfinity;
 extern VALUE NegativeInfinity;
 extern VALUE cDuckDBInstanceCache;
-extern VALUE cDuckDBValueImpl;
+extern VALUE cDuckDBValue;
 extern VALUE cDuckDBScalarFunction;
 
 #endif
