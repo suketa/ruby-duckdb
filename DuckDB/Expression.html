@@ -162,7 +162,7 @@
   <span class="ruby-identifier">_fold</span>(<span class="ruby-identifier">client_context</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Evaluates the expression at planning time and returns a DuckDB::Value holding the constant result. Raises <a href="Error.html"><code>DuckDB::Error</code></a> if the expression is not foldable.</p>
+          <p>Evaluates the expression at planning time and returns a <a href="Value.html"><code>DuckDB::Value</code></a> holding the constant result. Raises <a href="Error.html"><code>DuckDB::Error</code></a> if the expression is not foldable.</p>
 
 <pre class="ruby"><span class="ruby-identifier">sf</span>.<span class="ruby-identifier">set_bind</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
   <span class="ruby-identifier">expr</span>           = <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">get_argument</span>(<span class="ruby-value">0</span>)
