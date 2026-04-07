@@ -9,9 +9,12 @@ All notable changes to this project will be documented in this file.
 - add `UUID` as a supported `return_type` for `DuckDB::ScalarFunction`. The scalar function block can now return a UUID string and it will be written back to the result vector correctly.
 - add `DuckDB::Connection#extract` to extract multiple SQL statements as prepared statements without executing them.
 - add `DuckDB::Connection#register_logical_type` to register a custom logical type with a connection.
+- add `DuckDB::PreparedStatement#bind_value`.
+- add `DuckDB::Value.create_bool`.
 
 ## Breaking Changes
-- rename DuckDB::ValueImpl to DuckDB::Value
+- rename `DuckDB::ValueImpl` to `DuckDB::Value`
+- remove `DuckDB::ExtractedStatementsImpl`. use `DuckDB::ExtractedStatements`
 
 # 1.5.1.1 - 2026-04-04
 
