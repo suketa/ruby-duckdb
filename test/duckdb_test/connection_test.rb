@@ -339,6 +339,46 @@ module DuckDBTest
       assert_equal([[1, 'hello world'], [2, 'bye bye']], @con.query('SELECT * FROM t ORDER BY i').to_a)
     end
 
+    # Tests for register_logical_type
+
+    def test_register_logical_type_enum
+      mood = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+      mood.alias = 'mood'
+      @con.register_logical_type(mood)
+
+      @con.query('CREATE TABLE moods (m mood)')
+      @con.query("INSERT INTO moods VALUES ('happy')")
+      result = @con.query('SELECT * FROM moods')
+
+      assert_equal 'happy', result.first.first
+    end
+
+    def test_register_logical_type_struct
+      point = DuckDB::LogicalType.create_struct(x: :double, y: :double)
+      point.alias = 'point'
+      @con.register_logical_type(point)
+
+      @con.query('CREATE TABLE shapes (origin point)')
+      @con.query('INSERT INTO shapes VALUES (ROW(1.0, 2.0))')
+      result = @con.query('SELECT * FROM shapes')
+
+      assert_equal({ x: 1.0, y: 2.0 }, result.first.first)
+    end
+
+    def test_register_logical_type_without_alias
+      enum_type = DuckDB::LogicalType.create_enum('a', 'b')
+
+      assert_raises(DuckDB::Error) do
+        @con.register_logical_type(enum_type)
+      end
+    end
+
+    def test_register_logical_type_with_wrong_type
+      assert_raises(TypeError) do
+        @con.register_logical_type('not a logical type')
+      end
+    end
+
     # Tests for register_scalar_function
 
     def test_register_scalar_function_inline_with_single_parameter

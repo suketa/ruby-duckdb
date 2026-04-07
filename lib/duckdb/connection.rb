@@ -159,6 +159,26 @@ module DuckDB
       end
     end
 
+    # Registers a custom logical type with the connection.
+    # The logical type must have an alias set via {LogicalType#alias=} before registration.
+    # The alias becomes the SQL type name.
+    #
+    # @param logical_type [DuckDB::LogicalType] the logical type to register
+    # @raise [TypeError] if argument is not a DuckDB::LogicalType
+    # @raise [DuckDB::Error] if the type has no alias set or registration fails
+    # @return [self]
+    #
+    # @example Register an enum type
+    #   mood = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+    #   mood.alias = 'mood'
+    #   con.register_logical_type(mood)
+    #   con.query('CREATE TABLE t (m mood)')
+    def register_logical_type(logical_type)
+      raise TypeError, "#{logical_type.class} is not a DuckDB::LogicalType" unless logical_type.is_a?(LogicalType)
+
+      _register_logical_type(logical_type)
+    end
+
     # Registers a scalar function with the connection.
     #
     # @overload register_scalar_function(scalar_function)
