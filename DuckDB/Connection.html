@@ -91,6 +91,7 @@
       <li ><a href="#method-i-query">query</a></li>
       <li ><a href="#method-i-query_multi_sql">query_multi_sql</a></li>
       <li ><a href="#method-i-query_progress">query_progress</a></li>
+      <li ><a href="#method-i-register_logical_type">register_logical_type</a></li>
       <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
       <li ><a href="#method-i-register_scalar_function_set">register_scalar_function_set</a></li>
       <li ><a href="#method-i-register_table_function">register_table_function</a></li>
@@ -368,7 +369,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="expose_as_table-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 278</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 298</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">expose_as_table</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
@@ -683,6 +684,47 @@
 
       </div>
 
+      <div id="method-i-register_logical_type" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_logical_type" title="Link to this method">
+                <span class="method-name">register_logical_type</span>
+                <span class="method-args">(logical_type)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_logical_type-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 176</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_logical_type</span>(<span class="ruby-identifier">logical_type</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{logical_type.class} is not a DuckDB::LogicalType&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">LogicalType</span>)
+
+  <span class="ruby-identifier">_register_logical_type</span>(<span class="ruby-identifier">logical_type</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Registers a custom logical type with the connection. The logical type must have an alias set via {LogicalType#alias=} before registration. The alias becomes the SQL type name.</p>
+
+<p>@param logical_type [DuckDB::LogicalType] the logical type to register @raise [TypeError] if argument is not a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> @raise [DuckDB::Error] if the type has no alias set or registration fails @return [self]</p>
+
+<p>@example Register an enum type</p>
+
+<pre class="ruby"><span class="ruby-identifier">mood</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_enum</span>(<span class="ruby-string">&#39;happy&#39;</span>, <span class="ruby-string">&#39;sad&#39;</span>, <span class="ruby-string">&#39;neutral&#39;</span>)
+<span class="ruby-identifier">mood</span>.<span class="ruby-identifier">alias</span> = <span class="ruby-string">&#39;mood&#39;</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_logical_type</span>(<span class="ruby-identifier">mood</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE t (m mood)&#39;</span>)
+</pre>
+        </div>
+
+
+      </div>
+
       <div id="method-i-register_scalar_function" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -701,7 +743,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="register_scalar_function-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 200</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 220</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_scalar_function</span>(<span class="ruby-identifier">scalar_function</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>, <span class="ruby-operator">&amp;</span>)
   <span class="ruby-comment"># Validate: can&#39;t pass both object and inline arguments</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">scalar_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ScalarFunction</span>)
@@ -782,7 +824,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="register_scalar_function_set-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 226</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 246</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_scalar_function_set</span>(<span class="ruby-identifier">scalar_function_set</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">scalar_function_set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ScalarFunctionSet</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{scalar_function_set.class} is not a DuckDB::ScalarFunctionSet&quot;</span>
@@ -826,7 +868,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="register_table_function-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 243</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 263</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
 
