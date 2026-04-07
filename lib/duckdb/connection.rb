@@ -46,6 +46,28 @@ module DuckDB
       stmts&.destroy
     end
 
+    # Extracts multiple SQL statements and returns them as prepared statements
+    # without executing them. The caller controls when to execute and destroy
+    # each statement.
+    #
+    # @param sql [String] a string containing one or more SQL statements separated by semicolons
+    # @return [Array<DuckDB::PreparedStatement>] the extracted prepared statements
+    # @raise [DuckDB::Error] if the SQL is invalid
+    #
+    # @example Execute each statement and destroy
+    #   stmts = con.extract('SELECT 1; SELECT 2; SELECT 3;')
+    #   stmts.each do |stmt|
+    #     result = stmt.execute
+    #     # process result...
+    #     stmt.destroy
+    #   end
+    def extract(sql)
+      stmts = ExtractedStatements.new(self, sql)
+      stmts.to_a
+    ensure
+      stmts&.destroy
+    end
+
     # executes sql with args asynchronously.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
