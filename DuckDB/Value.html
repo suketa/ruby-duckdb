@@ -82,6 +82,7 @@
       <li ><a href="#method-c-create_int32">create_int32</a></li>
       <li ><a href="#method-c-create_int64">create_int64</a></li>
       <li ><a href="#method-c-create_int8">create_int8</a></li>
+      <li ><a href="#method-c-create_null">create_null</a></li>
       <li ><a href="#method-c-create_uint16">create_uint16</a></li>
       <li ><a href="#method-c-create_uint32">create_uint32</a></li>
       <li ><a href="#method-c-create_uint64">create_uint64</a></li>
@@ -324,6 +325,40 @@
 </pre>
 
 <p>@param value [Integer] the integer value (-128..127) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_null" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-c-create_null" title="Link to this method">
+                  <span class="method-callseq">
+                    DuckDB::Value.create_null &rarr; DuckDB::Value
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_null-source">
+            <pre>static VALUE duckdb_value_s_create_null(VALUE klass) {
+    duckdb_value value = duckdb_create_null_value();
+    return rbduckdb_value_new(value);
+}</pre>
+          </div>
+          <p>Creates a new <a href="Value.html"><code>DuckDB::Value</code></a> representing SQL NULL.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_null</span>
+</pre>
         </div>
 
 
