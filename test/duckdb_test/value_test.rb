@@ -162,6 +162,42 @@ module DuckDBTest
       end
     end
 
+    def test_create_int64_with_zero
+      value = DuckDB::Value.create_int64(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int64_with_max
+      value = DuckDB::Value.create_int64(9_223_372_036_854_775_807)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int64_with_min
+      value = DuckDB::Value.create_int64(-9_223_372_036_854_775_808)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_int64_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int64('invalid')
+      end
+    end
+
+    def test_create_int64_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int64(9_223_372_036_854_775_808)
+      end
+    end
+
+    def test_create_int64_with_underflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_int64(-9_223_372_036_854_775_809)
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -170,6 +206,16 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_int32 WHERE id = 1')
 
       assert_equal(2_147_483_647, result.first[0])
+    end
+
+    def test_create_int64_bind_value
+      @con.query('CREATE TABLE e2e_int64 (id INTEGER, val BIGINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int64 VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_int64(9_223_372_036_854_775_807))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_int64 WHERE id = 1')
+
+      assert_equal(9_223_372_036_854_775_807, result.first[0])
     end
   end
 end

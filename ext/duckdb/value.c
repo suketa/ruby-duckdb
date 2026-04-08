@@ -9,6 +9,7 @@ static VALUE duckdb_value_s__create_bool(VALUE klass, VALUE flag);
 static VALUE duckdb_value_s__create_int8(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_int32(VALUE klass, VALUE val);
+static VALUE duckdb_value_s__create_int64(VALUE klass, VALUE val);
 
 static const rb_data_type_t value_data_type = {
     "DuckDB/Value",
@@ -49,6 +50,11 @@ static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val) {
 
 static VALUE duckdb_value_s__create_int32(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_int32(NUM2INT(val));
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_int64(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_int64((int64_t)NUM2LL(val));
     return rbduckdb_value_new(value);
 }
 
@@ -172,5 +178,6 @@ void rbduckdb_init_duckdb_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int8", duckdb_value_s__create_int8, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int16", duckdb_value_s__create_int16, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int32", duckdb_value_s__create_int32, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int64", duckdb_value_s__create_int64, 1);
 }
 
