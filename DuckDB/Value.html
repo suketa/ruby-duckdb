@@ -82,6 +82,10 @@
       <li ><a href="#method-c-create_int32">create_int32</a></li>
       <li ><a href="#method-c-create_int64">create_int64</a></li>
       <li ><a href="#method-c-create_int8">create_int8</a></li>
+      <li ><a href="#method-c-create_uint16">create_uint16</a></li>
+      <li ><a href="#method-c-create_uint32">create_uint32</a></li>
+      <li ><a href="#method-c-create_uint64">create_uint64</a></li>
+      <li ><a href="#method-c-create_uint8">create_uint8</a></li>
     </ul>
   </div>
 
@@ -320,6 +324,158 @@
 </pre>
 
 <p>@param value [Integer] the integer value (-128..127) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_uint16" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_uint16" title="Link to this method">
+                <span class="method-name">create_uint16</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_uint16-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 105</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint16</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT16</span>, <span class="ruby-string">&#39;UINT16&#39;</span>)
+
+  <span class="ruby-identifier">_create_uint16</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a new <a href="Value.html"><code>DuckDB::Value</code></a> with a UINT16 (USMALLINT) value.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_uint16</span>(<span class="ruby-value">65_535</span>)
+</pre>
+
+<p>@param value [Integer] the integer value (0..65535) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_uint32" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_uint32" title="Link to this method">
+                <span class="method-name">create_uint32</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_uint32-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 120</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint32</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT32</span>, <span class="ruby-string">&#39;UINT32&#39;</span>)
+
+  <span class="ruby-identifier">_create_uint32</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a new <a href="Value.html"><code>DuckDB::Value</code></a> with a UINT32 (UINTEGER) value.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_uint32</span>(<span class="ruby-value">4_294_967_295</span>)
+</pre>
+
+<p>@param value [Integer] the integer value (0..4294967295) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_uint64" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_uint64" title="Link to this method">
+                <span class="method-name">create_uint64</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_uint64-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 135</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint64</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT64</span>, <span class="ruby-string">&#39;UINT64&#39;</span>)
+
+  <span class="ruby-identifier">_create_uint64</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a new <a href="Value.html"><code>DuckDB::Value</code></a> with a UINT64 (UBIGINT) value.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_uint64</span>(<span class="ruby-value">18_446_744_073_709_551_615</span>)
+</pre>
+
+<p>@param value [Integer] the integer value (0..18446744073709551615) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_uint8" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_uint8" title="Link to this method">
+                <span class="method-name">create_uint8</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_uint8-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 90</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint8</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT8</span>, <span class="ruby-string">&#39;UINT8&#39;</span>)
+
+  <span class="ruby-identifier">_create_uint8</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a new <a href="Value.html"><code>DuckDB::Value</code></a> with a UINT8 (UTINYINT) value.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_uint8</span>(<span class="ruby-value">255</span>)
+</pre>
+
+<p>@param value [Integer] the integer value (0..255) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
         </div>
 
 
