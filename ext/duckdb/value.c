@@ -10,6 +10,10 @@ static VALUE duckdb_value_s__create_int8(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_int32(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_int64(VALUE klass, VALUE val);
+static VALUE duckdb_value_s__create_uint8(VALUE klass, VALUE val);
+static VALUE duckdb_value_s__create_uint16(VALUE klass, VALUE val);
+static VALUE duckdb_value_s__create_uint32(VALUE klass, VALUE val);
+static VALUE duckdb_value_s__create_uint64(VALUE klass, VALUE val);
 
 static const rb_data_type_t value_data_type = {
     "DuckDB/Value",
@@ -55,6 +59,26 @@ static VALUE duckdb_value_s__create_int32(VALUE klass, VALUE val) {
 
 static VALUE duckdb_value_s__create_int64(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_int64((int64_t)NUM2LL(val));
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_uint8(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_uint8((uint8_t)NUM2UINT(val));
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_uint16(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_uint16((uint16_t)NUM2UINT(val));
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_uint32(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_uint32((uint32_t)NUM2UINT(val));
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_uint64(VALUE klass, VALUE val) {
+    duckdb_value value = duckdb_create_uint64((uint64_t)RB_NUM2ULL(val));
     return rbduckdb_value_new(value);
 }
 
@@ -179,5 +203,9 @@ void rbduckdb_init_duckdb_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int16", duckdb_value_s__create_int16, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int32", duckdb_value_s__create_int32, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int64", duckdb_value_s__create_int64, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint8", duckdb_value_s__create_uint8, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint16", duckdb_value_s__create_uint16, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint32", duckdb_value_s__create_uint32, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint64", duckdb_value_s__create_uint64, 1);
 }
 

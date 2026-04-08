@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_int16`.
 - add `DuckDB::Value.create_int32`.
 - add `DuckDB::Value.create_int64`.
+- add `DuckDB::Value.create_uint8`.
+- add `DuckDB::Value.create_uint16`.
+- add `DuckDB::Value.create_uint32`.
+- add `DuckDB::Value.create_uint64`.
 
 ## Breaking Changes
 - rename `DuckDB::ValueImpl` to `DuckDB::Value`
