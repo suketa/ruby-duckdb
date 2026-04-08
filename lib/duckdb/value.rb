@@ -79,6 +79,66 @@ module DuckDB
         _create_int64(value)
       end
 
+      # Creates a new DuckDB::Value with a UINT8 (UTINYINT) value.
+      #
+      #   require 'duckdb'
+      #   value = DuckDB::Value.create_uint8(255)
+      #
+      # @param value [Integer] the integer value (0..255)
+      # @return [DuckDB::Value]
+      # @raise [ArgumentError] if value is not an Integer or out of range
+      def create_uint8(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_UINT8, 'UINT8')
+
+        _create_uint8(value)
+      end
+
+      # Creates a new DuckDB::Value with a UINT16 (USMALLINT) value.
+      #
+      #   require 'duckdb'
+      #   value = DuckDB::Value.create_uint16(65_535)
+      #
+      # @param value [Integer] the integer value (0..65535)
+      # @return [DuckDB::Value]
+      # @raise [ArgumentError] if value is not an Integer or out of range
+      def create_uint16(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_UINT16, 'UINT16')
+
+        _create_uint16(value)
+      end
+
+      # Creates a new DuckDB::Value with a UINT32 (UINTEGER) value.
+      #
+      #   require 'duckdb'
+      #   value = DuckDB::Value.create_uint32(4_294_967_295)
+      #
+      # @param value [Integer] the integer value (0..4294967295)
+      # @return [DuckDB::Value]
+      # @raise [ArgumentError] if value is not an Integer or out of range
+      def create_uint32(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_UINT32, 'UINT32')
+
+        _create_uint32(value)
+      end
+
+      # Creates a new DuckDB::Value with a UINT64 (UBIGINT) value.
+      #
+      #   require 'duckdb'
+      #   value = DuckDB::Value.create_uint64(18_446_744_073_709_551_615)
+      #
+      # @param value [Integer] the integer value (0..18446744073709551615)
+      # @return [DuckDB::Value]
+      # @raise [ArgumentError] if value is not an Integer or out of range
+      def create_uint64(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_UINT64, 'UINT64')
+
+        _create_uint64(value)
+      end
+
       private
 
       def check_range!(value, range, type_name)

@@ -198,6 +198,150 @@ module DuckDBTest
       end
     end
 
+    def test_create_uint8_with_zero
+      value = DuckDB::Value.create_uint8(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint8_with_max
+      value = DuckDB::Value.create_uint8(255)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint8_with_positive
+      value = DuckDB::Value.create_uint8(128)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint8_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint8('invalid')
+      end
+    end
+
+    def test_create_uint8_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint8(256)
+      end
+    end
+
+    def test_create_uint8_with_negative_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint8(-1)
+      end
+    end
+
+    def test_create_uint16_with_zero
+      value = DuckDB::Value.create_uint16(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint16_with_max
+      value = DuckDB::Value.create_uint16(65_535)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint16_with_positive
+      value = DuckDB::Value.create_uint16(32_768)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint16_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint16('invalid')
+      end
+    end
+
+    def test_create_uint16_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint16(65_536)
+      end
+    end
+
+    def test_create_uint16_with_negative_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint16(-1)
+      end
+    end
+
+    def test_create_uint32_with_zero
+      value = DuckDB::Value.create_uint32(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint32_with_max
+      value = DuckDB::Value.create_uint32(4_294_967_295)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint32_with_positive
+      value = DuckDB::Value.create_uint32(2_147_483_648)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint32_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint32('invalid')
+      end
+    end
+
+    def test_create_uint32_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint32(4_294_967_296)
+      end
+    end
+
+    def test_create_uint32_with_negative_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint32(-1)
+      end
+    end
+
+    def test_create_uint64_with_zero
+      value = DuckDB::Value.create_uint64(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint64_with_max
+      value = DuckDB::Value.create_uint64(18_446_744_073_709_551_615)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint64_with_positive
+      value = DuckDB::Value.create_uint64(9_223_372_036_854_775_808)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uint64_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint64('invalid')
+      end
+    end
+
+    def test_create_uint64_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint64(18_446_744_073_709_551_616)
+      end
+    end
+
+    def test_create_uint64_with_negative_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uint64(-1)
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -216,6 +360,46 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_int64 WHERE id = 1')
 
       assert_equal(9_223_372_036_854_775_807, result.first[0])
+    end
+
+    def test_create_uint8_bind_value
+      @con.query('CREATE TABLE e2e_uint8 (id INTEGER, val UTINYINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_uint8 VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_uint8(255))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_uint8 WHERE id = 1')
+
+      assert_equal(255, result.first[0])
+    end
+
+    def test_create_uint16_bind_value
+      @con.query('CREATE TABLE e2e_uint16 (id INTEGER, val USMALLINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_uint16 VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_uint16(65_535))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_uint16 WHERE id = 1')
+
+      assert_equal(65_535, result.first[0])
+    end
+
+    def test_create_uint32_bind_value
+      @con.query('CREATE TABLE e2e_uint32 (id INTEGER, val UINTEGER)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_uint32 VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_uint32(4_294_967_295))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_uint32 WHERE id = 1')
+
+      assert_equal(4_294_967_295, result.first[0])
+    end
+
+    def test_create_uint64_bind_value
+      @con.query('CREATE TABLE e2e_uint64 (id INTEGER, val UBIGINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_uint64 VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_uint64(18_446_744_073_709_551_615))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_uint64 WHERE id = 1')
+
+      assert_equal(18_446_744_073_709_551_615, result.first[0])
     end
   end
 end
