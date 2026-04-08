@@ -25,6 +25,13 @@ module DuckDB
         _create_int16(value)
       end
 
+      def create_int32(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_INT32, 'INT32')
+
+        _create_int32(value)
+      end
+
       private
 
       def check_range!(value, range, type_name)
