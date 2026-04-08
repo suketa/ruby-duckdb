@@ -342,6 +342,12 @@ module DuckDBTest
       end
     end
 
+    def test_create_null
+      value = DuckDB::Value.create_null
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -400,6 +406,16 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_uint64 WHERE id = 1')
 
       assert_equal(18_446_744_073_709_551_615, result.first[0])
+    end
+
+    def test_create_null_bind_value
+      @con.query('CREATE TABLE e2e_null (id INTEGER, val INTEGER)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_null VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_null)
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_null WHERE id = 1')
+
+      assert_nil(result.first[0])
     end
   end
 end
