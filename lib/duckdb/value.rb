@@ -139,6 +139,30 @@ module DuckDB
         _create_uint64(value)
       end
 
+      # Creates a DuckDB::Value of FLOAT type.
+      #
+      #   value = DuckDB::Value.create_float(1.5)
+      #
+      # @param value [Numeric] the numeric value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a Numeric.
+      def create_float(value)
+        check_type!(value, [Integer, Float])
+        _create_float(value)
+      end
+
+      # Creates a DuckDB::Value of DOUBLE type.
+      #
+      #   value = DuckDB::Value.create_double(1.5)
+      #
+      # @param value [Numeric] the numeric value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a Numeric.
+      def create_double(value)
+        check_type!(value, [Integer, Float])
+        _create_double(value)
+      end
+
       private
 
       def check_range!(value, range, type_name)

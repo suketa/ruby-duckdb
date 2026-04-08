@@ -348,6 +348,66 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, value)
     end
 
+    def test_create_float_with_zero
+      value = DuckDB::Value.create_float(0.0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_float_with_positive
+      value = DuckDB::Value.create_float(1.5)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_float_with_negative
+      value = DuckDB::Value.create_float(-1.5)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_float_with_integer
+      value = DuckDB::Value.create_float(42)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_float_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_float('invalid')
+      end
+    end
+
+    def test_create_double_with_zero
+      value = DuckDB::Value.create_double(0.0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_double_with_positive
+      value = DuckDB::Value.create_double(1.5)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_double_with_negative
+      value = DuckDB::Value.create_double(-1.5)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_double_with_integer
+      value = DuckDB::Value.create_double(42)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_double_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_double('invalid')
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -416,6 +476,26 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_null WHERE id = 1')
 
       assert_nil(result.first[0])
+    end
+
+    def test_create_float_bind_value
+      @con.query('CREATE TABLE e2e_float (id INTEGER, val FLOAT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_float VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_float(1.5))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_float WHERE id = 1')
+
+      assert_in_delta(1.5, result.first[0], 0.001)
+    end
+
+    def test_create_double_bind_value
+      @con.query('CREATE TABLE e2e_double (id INTEGER, val DOUBLE)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_double VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_double(1.7976931348623157))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_double WHERE id = 1')
+
+      assert_in_delta(1.7976931348623157, result.first[0], 1e-15)
     end
   end
 end
