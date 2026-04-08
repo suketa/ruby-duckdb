@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_bool`.
 - add `DuckDB::Value.create_int8`.
 - add `DuckDB::Value.create_int16`.
+- add `DuckDB::Value.create_int32`.
+- add `DuckDB::Value.create_int64`.
 
 ## Breaking Changes
 - rename `DuckDB::ValueImpl` to `DuckDB::Value`
