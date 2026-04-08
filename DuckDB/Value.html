@@ -78,6 +78,8 @@
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
       <li ><a href="#method-c-create_bool">create_bool</a></li>
+      <li ><a href="#method-c-create_double">create_double</a></li>
+      <li ><a href="#method-c-create_float">create_float</a></li>
       <li ><a href="#method-c-create_int16">create_int16</a></li>
       <li ><a href="#method-c-create_int32">create_int32</a></li>
       <li ><a href="#method-c-create_int64">create_int64</a></li>
@@ -173,6 +175,76 @@
 </pre>
 
 <p>@param value [TrueClass, FalseClass] the boolean value @return [DuckDB::Value] @raise [ArgumentError] if value is not a boolean</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_double" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_double" title="Link to this method">
+                <span class="method-name">create_double</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_double-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 161</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_double</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, [<span class="ruby-constant">Integer</span>, <span class="ruby-constant">Float</span>])
+  <span class="ruby-identifier">_create_double</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of DOUBLE type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_double</span>(<span class="ruby-value">1.5</span>)
+</pre>
+
+<p>@param value [Numeric] the numeric value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a Numeric.</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_float" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_float" title="Link to this method">
+                <span class="method-name">create_float</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_float-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 149</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_float</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, [<span class="ruby-constant">Integer</span>, <span class="ruby-constant">Float</span>])
+  <span class="ruby-identifier">_create_float</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of FLOAT type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_float</span>(<span class="ruby-value">1.5</span>)
+</pre>
+
+<p>@param value [Numeric] the numeric value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a Numeric.</p>
         </div>
 
 
