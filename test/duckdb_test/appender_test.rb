@@ -236,6 +236,23 @@ module DuckDBTest
       assert_duckdb_appender(-2_147_483_648, 'INTEGER') { |a| a.append_int32(-2_147_483_648) }
     end
 
+    def test_append_value_with_int32
+      value = DuckDB::Value.create_int32(42)
+      assert_duckdb_appender(42, 'INTEGER') { |a| a.append_value(value) }
+    end
+
+    def test_append_value_with_invalid_type
+      create_appender('col INTEGER')
+      e = assert_raises(ArgumentError) { @appender.append_value(42) }
+      assert_equal('expected DuckDB::Value, got Integer', e.message)
+    end
+
+    def test_append_value_with_invalid_type_variations
+      create_appender('col INTEGER')
+      assert_raises(ArgumentError) { @appender.append_value('foo') }
+      assert_raises(ArgumentError) { @appender.append_value(nil) }
+    end
+
     def test_append_uint32
       assert_duckdb_appender(4_294_967_295, 'BIGINT') { |a| a.append_uint32(4_294_967_295) }
     end
