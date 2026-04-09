@@ -420,9 +420,33 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, value)
     end
 
+    def test_create_varchar_with_us_ascii_string
+      value = DuckDB::Value.create_varchar('Hello'.encode(Encoding::US_ASCII))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
     def test_create_varchar_with_integer_raises_argument_error
       assert_raises(ArgumentError) do
         DuckDB::Value.create_varchar(123)
+      end
+    end
+
+    def test_create_varchar_with_invalid_utf8_bytes_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_varchar(String.new("\x80\x81", encoding: 'UTF-8'))
+      end
+    end
+
+    def test_create_varchar_with_binary_encoding_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_varchar("\x00\x01\x02\xff".b)
+      end
+    end
+
+    def test_create_varchar_with_non_utf8_encoding_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_varchar('Hello'.encode(Encoding::Shift_JIS))
       end
     end
 
