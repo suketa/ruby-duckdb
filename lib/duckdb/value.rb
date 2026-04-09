@@ -163,6 +163,19 @@ module DuckDB
         _create_double(value)
       end
 
+      # Creates a DuckDB::Value of VARCHAR type.
+      #
+      #   value = DuckDB::Value.create_varchar('hello')
+      #
+      # @param value [String] the string value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a String.
+      def create_varchar(value)
+        check_type!(value, String)
+        check_utf8_compatible!(value)
+        _create_varchar(value)
+      end
+
       private
 
       def check_range!(value, range, type_name)
@@ -174,6 +187,12 @@ module DuckDB
         return if types.any? { |type| value.is_a?(type) }
 
         raise ArgumentError, "expected #{types.map(&:name).join(' or ')}, got #{value.class.name}"
+      end
+
+      def check_utf8_compatible!(value)
+        return if [Encoding::UTF_8, Encoding::US_ASCII].include?(value.encoding) && value.valid_encoding?
+
+        raise ArgumentError, "expected valid UTF-8 or US-ASCII string, got #{value.encoding}"
       end
     end
   end
