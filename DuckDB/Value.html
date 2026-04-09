@@ -89,6 +89,7 @@
       <li ><a href="#method-c-create_uint32">create_uint32</a></li>
       <li ><a href="#method-c-create_uint64">create_uint64</a></li>
       <li ><a href="#method-c-create_uint8">create_uint8</a></li>
+      <li ><a href="#method-c-create_varchar">create_varchar</a></li>
     </ul>
   </div>
 
@@ -583,6 +584,42 @@
 </pre>
 
 <p>@param value [Integer] the integer value (0..255) @return [DuckDB::Value] @raise [ArgumentError] if value is not an Integer or out of range</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-create_varchar" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_varchar" title="Link to this method">
+                <span class="method-name">create_varchar</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_varchar-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 173</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_varchar</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">String</span>)
+  <span class="ruby-identifier">check_utf8_compatible!</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">_create_varchar</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of VARCHAR type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;hello&#39;</span>)
+</pre>
+
+<p>@param value [String] the string value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a String.</p>
         </div>
 
 
