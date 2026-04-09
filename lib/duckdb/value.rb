@@ -163,6 +163,18 @@ module DuckDB
         _create_double(value)
       end
 
+      # Creates a DuckDB::Value of VARCHAR type.
+      #
+      #   value = DuckDB::Value.create_varchar('hello')
+      #
+      # @param value [String] the string value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a String.
+      def create_varchar(value)
+        check_type!(value, String)
+        _create_varchar(value)
+      end
+
       private
 
       def check_range!(value, range, type_name)

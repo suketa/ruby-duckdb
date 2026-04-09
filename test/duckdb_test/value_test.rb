@@ -408,6 +408,24 @@ module DuckDBTest
       end
     end
 
+    def test_create_varchar
+      value = DuckDB::Value.create_varchar('Hello')
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_varchar_with_empty_string
+      value = DuckDB::Value.create_varchar('')
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_varchar_with_integer_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_varchar(123)
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -496,6 +514,16 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_double WHERE id = 1')
 
       assert_in_delta(1.7976931348623157, result.first[0], 1e-15)
+    end
+
+    def test_create_varchar_bind_value
+      @con.query('CREATE TABLE e2e_varchar (id INTEGER, val VARCHAR)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_varchar VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_varchar('Hello DuckDB'))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_varchar WHERE id = 1')
+
+      assert_equal('Hello DuckDB', result.first[0])
     end
   end
 end
