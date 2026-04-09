@@ -563,6 +563,28 @@ module DuckDB
       raise_appender_error('failed to append_interval')
     end
 
+    # call-seq:
+    #   appender.append_value(val) -> self
+    #
+    # Appends a DuckDB::Value to the current row in the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE numbers (num INTEGER)')
+    #   appender = con.appender('numbers')
+    #   appender
+    #     .append_value(DuckDB::Value.create_int32(42))
+    #     .end_row
+    #     .flush
+    def append_value(value)
+      raise ArgumentError, "expected DuckDB::Value, got #{value.class}" unless value.is_a?(DuckDB::Value)
+
+      return self if _append_value(value)
+
+      raise_appender_error('failed to append_value')
+    end
+
     # appends value.
     #
     #   require 'duckdb'
