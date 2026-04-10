@@ -313,6 +313,16 @@ static VALUE update_process_rows(VALUE varg) {
         ret = rb_protect(call_update_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
             report_ruby_error_to_duckdb(arg->info);
+            /*
+             * DuckDB does not call the destroy callback on the update error
+             * path, so we must remove reachable states from the registry
+             * ourselves to avoid leaking Ruby VALUEs.  Iterate all rows in
+             * the chunk — multiple rows may share the same state (same
+             * group), but state_registry_remove is idempotent.
+             */
+            for (j = 0; j < arg->row_count; j++) {
+                state_registry_remove(states[j]);
+            }
             return Qnil;
         }
 
