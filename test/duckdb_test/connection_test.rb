@@ -270,7 +270,6 @@ module DuckDBTest
       assert_equal([1, 'foo'], r.first)
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_appender_from_query
       skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
 
@@ -294,9 +293,7 @@ module DuckDBTest
 
       assert_equal([[1, 'hello world'], [2, 'bye bye']], @con.query('SELECT * FROM t ORDER BY i').to_a)
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_appender_from_query_omitting_args
       skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
 
@@ -320,7 +317,6 @@ module DuckDBTest
 
       assert_equal([[1, 'hello world'], [2, 'bye bye']], @con.query('SELECT * FROM t ORDER BY i').to_a)
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def test_appender_from_query_with_block
       skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
@@ -436,7 +432,7 @@ module DuckDBTest
       assert_equal 'olleh', rows[0][0]
     end
 
-    def test_register_scalar_function_rejects_object_with_keywords # rubocop:disable Metrics/MethodLength
+    def test_register_scalar_function_rejects_object_with_keywords
       sf = DuckDB::ScalarFunction.create(
         name: :test,
         return_type: DuckDB::LogicalType::INTEGER

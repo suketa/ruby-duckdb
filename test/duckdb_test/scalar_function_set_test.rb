@@ -98,7 +98,7 @@ module DuckDBTest
       assert_equal 3, result
     end
 
-    def test_register_scalar_function_set_with_multiple_overloads # rubocop:disable Metrics/AbcSize
+    def test_register_scalar_function_set_with_multiple_overloads
       sf_int = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
       sf_dbl = DuckDB::ScalarFunction.create(return_type: :double, parameter_types: %i[double double]) { |a, b| a + b }
       sf_str = DuckDB::ScalarFunction.create(return_type: :varchar, parameter_types: %i[varchar varchar]) { |a, b| "#{a}#{b}" }

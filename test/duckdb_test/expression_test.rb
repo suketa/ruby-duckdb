@@ -98,7 +98,7 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { expr.fold(client_context) }
     end
 
-    def test_fold_returns_time_for_timestamp_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
+    def test_fold_returns_time_for_timestamp_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_ts', :timestamp,
         "SELECT test_fold_ts('2025-01-15 12:34:56.123456'::TIMESTAMP)"
@@ -145,7 +145,7 @@ module DuckDBTest
       assert_equal 123_456, value.usec
     end
 
-    def test_fold_returns_time_for_timestamp_s_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+    def test_fold_returns_time_for_timestamp_s_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_ts_s', :timestamp_s,
         "SELECT test_fold_ts_s('2025-03-15 08:30:45'::TIMESTAMP_S)",
@@ -164,7 +164,7 @@ module DuckDBTest
       assert_equal 45,   value.sec
     end
 
-    def test_fold_returns_time_for_timestamp_ms_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+    def test_fold_returns_time_for_timestamp_ms_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_ts_ms', :timestamp_ms,
         "SELECT test_fold_ts_ms('2025-06-20 14:22:33'::TIMESTAMP_MS)",
@@ -183,7 +183,7 @@ module DuckDBTest
       assert_equal 33,   value.sec
     end
 
-    def test_fold_returns_time_for_timestamp_ns_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+    def test_fold_returns_time_for_timestamp_ns_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_ts_ns', :timestamp_ns,
         "SELECT test_fold_ts_ns('2025-09-10 20:11:59'::TIMESTAMP_NS)",
@@ -202,7 +202,7 @@ module DuckDBTest
       assert_equal 59,   value.sec
     end
 
-    def test_fold_returns_time_for_time_tz_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+    def test_fold_returns_time_for_time_tz_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_time_tz', :time_tz,
         "SELECT test_fold_time_tz('08:30:45+05:30'::TIMETZ)",
@@ -219,7 +219,7 @@ module DuckDBTest
       assert_equal 19_800, value.utc_offset
     end
 
-    def test_fold_returns_time_for_timestamp_tz_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/AbcSize, Metrics/MethodLength
+    def test_fold_returns_time_for_timestamp_tz_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_ts_tz', :timestamp_tz,
         "SELECT test_fold_ts_tz('2025-06-15 10:30:45+00'::TIMESTAMPTZ)",
@@ -267,7 +267,7 @@ module DuckDBTest
       assert_equal 170_141_183_460_469_231_731_687_303_715_884_105_728, value
     end
 
-    def test_fold_returns_interval_for_interval_literal # rubocop:disable Minitest/MultipleAssertions, Metrics/MethodLength
+    def test_fold_returns_interval_for_interval_literal # rubocop:disable Minitest/MultipleAssertions
       expr, client_context = bind_argument_of(
         'test_fold_interval', :interval,
         "SELECT test_fold_interval('1 year 2 months 3 days 04:05:06'::INTERVAL)",

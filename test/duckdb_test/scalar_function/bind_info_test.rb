@@ -78,7 +78,7 @@ module DuckDBTest
     end
 
     # argument_count returns 2 when two parameters were added
-    def test_bind_info_argument_count_multiple_params # rubocop:disable Metrics/MethodLength
+    def test_bind_info_argument_count_multiple_params
       arg_count = nil
 
       sf = DuckDB::ScalarFunction.new
@@ -137,7 +137,7 @@ module DuckDBTest
     end
 
     # bind callback works correctly in a WHERE clause
-    def test_set_bind_in_where_clause # rubocop:disable Metrics/MethodLength
+    def test_set_bind_in_where_clause
       called = false
 
       sf = DuckDB::ScalarFunction.new
@@ -155,7 +155,7 @@ module DuckDBTest
     end
 
     # practical use: use argument_count to validate and set_error early (varargs function)
-    def test_set_bind_validates_argument_count_with_set_error # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    def test_set_bind_validates_argument_count_with_set_error
       sf = DuckDB::ScalarFunction.new
       sf.name = 'test_bind_validate_argc'
       sf.return_type = :integer

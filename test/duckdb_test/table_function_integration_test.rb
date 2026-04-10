@@ -51,7 +51,6 @@ module DuckDBTest
 
     private
 
-    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     def create_simple_function
       done = false # Track state with closure variable
 
@@ -127,7 +126,6 @@ module DuckDBTest
 
       table_function
     end
-    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
     def create_minimal_function
       table_function = DuckDB::TableFunction.new

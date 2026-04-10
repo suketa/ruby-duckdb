@@ -4,7 +4,6 @@ require 'test_helper'
 
 module DuckDBTest
   # Tests for GC stress and compaction safety
-  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   class GCStressTest < Minitest::Test
     def setup
       @db = DuckDB::Database.open
@@ -186,5 +185,4 @@ module DuckDBTest
       end
     end
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 end
