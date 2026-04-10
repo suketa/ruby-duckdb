@@ -251,6 +251,19 @@ module DuckDB
       _register_scalar_function_set(scalar_function_set)
     end
 
+    # Registers an aggregate function with the connection.
+    #
+    # @param aggregate_function [DuckDB::AggregateFunction] the aggregate function to register
+    # @raise [TypeError] if argument is not a DuckDB::AggregateFunction
+    # @return [self]
+    def register_aggregate_function(aggregate_function)
+      unless aggregate_function.is_a?(AggregateFunction)
+        raise TypeError, "#{aggregate_function.class} is not a DuckDB::AggregateFunction"
+      end
+
+      _register_aggregate_function(aggregate_function)
+    end
+
     #
     # Registers a table function with the database connection.
     #

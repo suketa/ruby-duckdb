@@ -32,6 +32,7 @@
 #include "./function_executor.h"
 #include "./scalar_function.h"
 #include "./scalar_function_set.h"
+#include "./aggregate_function.h"
 #include "./expression.h"
 #include "./client_context.h"
 #include "./scalar_function_bind_info.h"
@@ -56,5 +57,6 @@ extern VALUE NegativeInfinity;
 extern VALUE cDuckDBInstanceCache;
 extern VALUE cDuckDBValue;
 extern VALUE cDuckDBScalarFunction;
+extern VALUE cDuckDBAggregateFunction;
 
 #endif
