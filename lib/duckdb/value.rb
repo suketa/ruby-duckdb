@@ -189,6 +189,21 @@ module DuckDB
         _create_blob(value)
       end
 
+      # Creates a DuckDB::Value of HUGEINT type.
+      #
+      #   value = DuckDB::Value.create_hugeint(1_234_567_890_123_456_789_012_345)
+      #
+      # @param value [Integer] the integer value (-(2**127)..(2**127 - 1))
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not an Integer or out of range.
+      def create_hugeint(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_HUGEINT, 'HUGEINT')
+
+        lower, upper = integer_to_hugeint(value)
+        _create_hugeint(lower, upper)
+      end
+
       private
 
       def check_range!(value, range, type_name)
