@@ -72,6 +72,14 @@
 </div>
 
   
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="FunctionTypeValidation.html">DuckDB::FunctionTypeValidation</a>
+  </ul>
+</div>
+
   
   
   <div class="nav-section">
@@ -327,7 +335,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 132</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 101</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -381,7 +389,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 147</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 116</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -414,7 +422,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="set_bind-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 199</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 168</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;block is required&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block</span>
 
@@ -491,7 +499,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="set_special_handling-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 163</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 132</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
   <span class="ruby-identifier">_set_special_handling</span>
 <span class="ruby-keyword">end</span></pre>
@@ -524,7 +532,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
 
         <div class="method-description">
           <div class="method-source-code" id="varargs_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 180</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/scalar_function.rb, line 149</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">varargs_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 

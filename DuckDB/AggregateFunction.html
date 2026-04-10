@@ -72,6 +72,14 @@
 </div>
 
   
+<div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+    <li><a class="include" href="FunctionTypeValidation.html">DuckDB::FunctionTypeValidation</a>
+  </ul>
+</div>
+
   
   
   <div class="nav-section">
@@ -204,6 +212,7 @@
     p-&gt;update_proc = Qnil;
     p-&gt;combine_proc = Qnil;
     p-&gt;finalize_proc = Qnil;
+    p-&gt;special_handling = false;
     return self;
 }</pre>
           </div>
@@ -238,14 +247,16 @@
 
         <div class="method-description">
           <div class="method-source-code" id="add_parameter-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 21</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 27</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
+  <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
+
   <span class="ruby-identifier">_add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>Adds a parameter to the aggregate function.</p>
 
-<p>@param logical_type [DuckDB::LogicalType] the parameter type @return [DuckDB::AggregateFunction] self</p>
+<p>@param logical_type [DuckDB::LogicalType | :logical_type_symbol] the parameter type @return [DuckDB::AggregateFunction] self @raise [DuckDB::Error] if the type is not supported</p>
         </div>
 
 
@@ -303,14 +314,16 @@
 
         <div class="method-description">
           <div class="method-source-code" id="return_type-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 16</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
+  <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
+
   <span class="ruby-identifier">_set_return_type</span>(<span class="ruby-identifier">logical_type</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
           <p>Sets the return type for the aggregate function.</p>
 
-<p>@param logical_type [DuckDB::LogicalType] the return type @return [DuckDB::AggregateFunction] self</p>
+<p>@param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type @return [DuckDB::AggregateFunction] self @raise [DuckDB::Error] if the type is not supported</p>
         </div>
 
 
@@ -334,7 +347,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="set_special_handling-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 35</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 43</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
   <span class="ruby-identifier">_set_special_handling</span>
 <span class="ruby-keyword">end</span></pre>
