@@ -68,6 +68,38 @@ module DuckDBTest
       assert_equal 'abc', result.first.first
     end
 
+    def test_aggregate_destructor_cleans_up_states_after_error
+      # Register an aggregate whose update block deliberately raises for a
+      # specific input value so the query fails before finalize is called.
+      af = build_aggregate('error_sum',
+                           init: -> { 0 },
+                           update: ->(state, value) {
+                             raise 'deliberate error' if value == 50
+                             state + value
+                           },
+                           finalize: ->(state) { state })
+      @con.register_aggregate_function(af)
+
+      # The query must fail — the update block raises for input 50.
+      assert_raises(DuckDB::Error) do
+        @con.query('SELECT error_sum(i) FROM range(100) t(i)')
+      end
+
+      # Apply GC pressure.  Without a destructor registered via
+      # duckdb_aggregate_function_set_destructor the g_aggregate_state_registry
+      # still holds entries for every state DuckDB freed without calling
+      # finalize — those entries will never be removed.
+      GC.start
+      GC.compact if GC.respond_to?(:compact)
+      GC.start
+
+      # With the destructor wired the registry must be empty now.
+      # _state_registry_size is a C-level helper exposed specifically to make
+      # this invariant observable from Ruby tests.
+      assert_equal 0, DuckDB::AggregateFunction._state_registry_size,
+                   'state registry must be empty after all aggregate states are destroyed'
+    end
+
     def test_aggregate_combine_merges_partial_states_in_parallel
       af = build_aggregate('my_parallel_sum',
                            init: -> { 0 },
