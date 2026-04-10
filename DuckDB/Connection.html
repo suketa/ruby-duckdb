@@ -91,6 +91,7 @@
       <li ><a href="#method-i-query">query</a></li>
       <li ><a href="#method-i-query_multi_sql">query_multi_sql</a></li>
       <li ><a href="#method-i-query_progress">query_progress</a></li>
+      <li ><a href="#method-i-register_aggregate_function">register_aggregate_function</a></li>
       <li ><a href="#method-i-register_logical_type">register_logical_type</a></li>
       <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
       <li ><a href="#method-i-register_scalar_function_set">register_scalar_function_set</a></li>
@@ -369,7 +370,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="expose_as_table-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 298</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 311</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">expose_as_table</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
@@ -684,6 +685,41 @@
 
       </div>
 
+      <div id="method-i-register_aggregate_function" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-register_aggregate_function" title="Link to this method">
+                <span class="method-name">register_aggregate_function</span>
+                <span class="method-args">(aggregate_function)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="register_aggregate_function-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 259</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_aggregate_function</span>(<span class="ruby-identifier">aggregate_function</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">AggregateFunction</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{aggregate_function.class} is not a DuckDB::AggregateFunction&quot;</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">_register_aggregate_function</span>(<span class="ruby-identifier">aggregate_function</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Registers an aggregate function with the connection.</p>
+
+<p>@param aggregate_function [DuckDB::AggregateFunction] the aggregate function to register @raise [TypeError] if argument is not a <a href="AggregateFunction.html"><code>DuckDB::AggregateFunction</code></a> @return [self]</p>
+        </div>
+
+
+      </div>
+
       <div id="method-i-register_logical_type" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
@@ -868,7 +904,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="register_table_function-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 263</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/connection.rb, line 276</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
 
