@@ -194,21 +194,19 @@ module DuckDBTest
 
     def test_aggregate_with_hash_state
       double_type = DuckDB::LogicalType::DOUBLE
-
-      af = DuckDB::AggregateFunction.new
-      af.name = 'my_avg'
-      af.return_type = double_type
-      af.add_parameter(double_type)
-      af.set_init { { sum: 0.0, count: 0 } }
-      # set_update modifies the Hash state in place and returns it.
-      # The returned VALUE must replace the state entry in the registry so
-      # that subsequent callbacks (combine, finalize) receive the up-to-date
-      # Hash rather than the init state. This exercises the full round-trip of
-      # a complex Ruby heap object through the state registry.
-      af.set_update { |state, value| state[:sum] += value; state[:count] += 1; state }
-      af.set_combine { |s1, s2| { sum: s1[:sum] + s2[:sum], count: s1[:count] + s2[:count] } }
-      af.set_finalize { |state| state[:count] > 0 ? state[:sum] / state[:count] : nil }
-      @con.register_aggregate_function(af)
+      update_proc = lambda { |state, value|
+        state[:sum] += value
+        state[:count] += 1
+        state
+      }
+      register_aggregate(
+        'my_avg',
+        type: double_type,
+        init: -> { { sum: 0.0, count: 0 } },
+        update: update_proc,
+        combine: ->(s1, s2) { { sum: s1[:sum] + s2[:sum], count: s1[:count] + s2[:count] } },
+        finalize: ->(state) { state[:count] > 0 ? state[:sum] / state[:count] : nil }
+      )
 
       result = @con.query('SELECT my_avg(i::DOUBLE) FROM range(11) t(i)')
 
