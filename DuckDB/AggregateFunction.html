@@ -170,6 +170,8 @@
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &amp;aggregate_function_data_type, p);
     p-&gt;aggregate_function = duckdb_create_aggregate_function();
     p-&gt;init_proc = Qnil;
+    p-&gt;update_proc = Qnil;
+    p-&gt;combine_proc = Qnil;
     p-&gt;finalize_proc = Qnil;
     return self;
 }</pre>
