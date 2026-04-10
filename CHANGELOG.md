@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_varchar`.
 - add `DuckDB::Value.create_blob`.
 - add `DuckDB::Appender#append_value`.
+- add `DuckDB::AggregateFunction`.
 
 ## Breaking Changes
 - rename `DuckDB::ValueImpl` to `DuckDB::Value`
