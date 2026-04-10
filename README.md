@@ -265,3 +265,21 @@ res.first.first # => 4
 #### Global configuration
 
 Set `DuckDB.default_timezone` to control how TIMESTAMP and TIME values without time zone are converted to Ruby `Time` objects. The default is `:local`, but you can use `:utc` for UTC conversion.
+
+## Versioning and DuckDB support
+
+The first three digits of the gem version track the DuckDB release that the
+gem is aligned with. For example, ruby-duckdb `1.5.1.0` runs with DuckDB
+`1.5.1`.
+
+All releases in the same `1.5.1.x` series target DuckDB `1.5.1`. The fourth
+digit is reserved for ruby-duckdb-only releases, such as gem bug fixes or new
+gem features. For example, `1.5.1.1` still targets DuckDB `1.5.1`.
+
+We also aim to support the latest release from the previous minor series, so
+the `1.5.1.x` series should also support DuckDB `1.4.x`.
+
+In addition, we try to support DuckDB LTS releases whenever practical.
+
+This gem aims to support most DuckDB minor releases, but we may occasionally
+skip a minor series.
