@@ -486,6 +486,42 @@ module DuckDBTest
       end
     end
 
+    def test_create_hugeint_with_zero
+      value = DuckDB::Value.create_hugeint(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_hugeint_with_max
+      value = DuckDB::Value.create_hugeint((1 << 127) - 1)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_hugeint_with_min
+      value = DuckDB::Value.create_hugeint(-(1 << 127))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_hugeint_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_hugeint('invalid')
+      end
+    end
+
+    def test_create_hugeint_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_hugeint(1 << 127)
+      end
+    end
+
+    def test_create_hugeint_with_underflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_hugeint(-(1 << 127) - 1)
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -594,6 +630,16 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_blob WHERE id = 1')
 
       assert_equal("\x00\x01\x02\xff".b, result.first[0])
+    end
+
+    def test_create_hugeint_bind_value
+      @con.query('CREATE TABLE e2e_hugeint (id INTEGER, val HUGEINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_hugeint VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_hugeint(1_234_567_890_123_456_789_012_345))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_hugeint WHERE id = 1')
+
+      assert_equal(1_234_567_890_123_456_789_012_345, result.first[0])
     end
   end
 end
