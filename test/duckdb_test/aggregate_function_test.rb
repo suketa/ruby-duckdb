@@ -205,7 +205,7 @@ module DuckDBTest
         init: -> { { sum: 0.0, count: 0 } },
         update: update_proc,
         combine: ->(s1, s2) { { sum: s1[:sum] + s2[:sum], count: s1[:count] + s2[:count] } },
-        finalize: ->(state) { state[:count] > 0 ? state[:sum] / state[:count] : nil }
+        finalize: ->(state) { state[:count].positive? ? state[:sum] / state[:count] : nil }
       )
 
       result = @con.query('SELECT my_avg(i::DOUBLE) FROM range(11) t(i)')
@@ -258,7 +258,7 @@ module DuckDBTest
       af.add_parameter(bigint) # weight
       set_callbacks(af,
                     init: -> { 0 },
-                    update: ->(state, value, weight) { state + value * weight },
+                    update: ->(state, value, weight) { state + (value * weight) },
                     combine: ->(s1, s2) { s1 + s2 },
                     finalize: ->(state) { state })
       @con.register_aggregate_function(af)

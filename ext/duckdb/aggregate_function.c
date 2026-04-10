@@ -101,7 +101,7 @@ static VALUE duckdb_aggregate_function_initialize(VALUE self) {
     p->update_proc = Qnil;
     p->combine_proc = Qnil;
     p->finalize_proc = Qnil;
-    p->special_handling = 0;
+    p->special_handling = false;
     return self;
 }
 
@@ -757,7 +757,7 @@ static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
 static VALUE rbduckdb_aggregate_function__set_special_handling(VALUE self) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    p->special_handling = 1;
+    p->special_handling = true;
     duckdb_aggregate_function_set_special_handling(p->aggregate_function);
     return self;
 }
