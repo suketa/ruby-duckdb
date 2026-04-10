@@ -17,6 +17,7 @@ static VALUE duckdb_value_s__create_uint64(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_float(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_double(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_varchar(VALUE klass, VALUE str);
+static VALUE duckdb_value_s__create_blob(VALUE klass, VALUE str);
 static VALUE duckdb_value_s_create_null(VALUE klass);
 
 static const rb_data_type_t value_data_type = {
@@ -100,6 +101,13 @@ static VALUE duckdb_value_s__create_varchar(VALUE klass, VALUE str) {
     const char *str_ptr = StringValuePtr(str);
     idx_t str_len = RSTRING_LEN(str);
     duckdb_value value = duckdb_create_varchar_length(str_ptr, str_len);
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_blob(VALUE klass, VALUE str) {
+    const uint8_t *data_ptr = (const uint8_t *)StringValuePtr(str);
+    idx_t data_len = RSTRING_LEN(str);
+    duckdb_value value = duckdb_create_blob(data_ptr, data_len);
     return rbduckdb_value_new(value);
 }
 
@@ -245,6 +253,7 @@ void rbduckdb_init_duckdb_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_float", duckdb_value_s__create_float, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_double", duckdb_value_s__create_double, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_varchar", duckdb_value_s__create_varchar, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_blob", duckdb_value_s__create_blob, 1);
     rb_define_singleton_method(cDuckDBValue, "create_null", duckdb_value_s_create_null, 0);
 }
 
