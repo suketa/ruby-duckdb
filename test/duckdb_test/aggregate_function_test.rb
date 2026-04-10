@@ -232,6 +232,23 @@ module DuckDBTest
       end
     end
 
+    def test_null_values_skipped_by_default
+      # Without set_special_handling, DuckDB's default behaviour is to skip
+      # NULL input values before calling the update callback.
+      register_aggregate('count_skip_nulls',
+                         init: -> { 0 },
+                         update: ->(state, _value) { state + 1 },
+                         finalize: ->(state) { state })
+
+      @con.query('CREATE TABLE null_skip_test (i BIGINT)')
+      @con.query('INSERT INTO null_skip_test VALUES (1), (NULL), (3), (NULL), (5)')
+
+      result = @con.query('SELECT count_skip_nulls(i) FROM null_skip_test')
+
+      # The 2 NULL rows must be skipped; only the 3 non-NULL rows reach update.
+      assert_equal 3, result.first.first
+    end
+
     def test_aggregate_with_multiple_parameters
       bigint = DuckDB::LogicalType::BIGINT
       af = DuckDB::AggregateFunction.new
