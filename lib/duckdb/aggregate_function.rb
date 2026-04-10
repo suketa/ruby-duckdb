@@ -21,5 +21,19 @@ module DuckDB
     def add_parameter(logical_type)
       _add_parameter(logical_type)
     end
+
+    # Sets special NULL handling for the aggregate function.
+    # By default DuckDB skips rows with NULL input values.  Calling this
+    # method disables that behaviour so the update callback is invoked even
+    # when inputs are NULL, receiving +nil+ for each NULL argument.  This
+    # lets the function implement its own NULL semantics (e.g. counting
+    # NULLs).
+    #
+    # Wraps +duckdb_aggregate_function_set_special_handling+.
+    #
+    # @return [DuckDB::AggregateFunction] self
+    def set_special_handling
+      _set_special_handling
+    end
   end
 end
