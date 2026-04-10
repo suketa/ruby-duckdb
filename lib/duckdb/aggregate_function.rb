@@ -6,38 +6,7 @@ module DuckDB
   # @note DuckDB::AggregateFunction is experimental. Phase 1.0 only supports
   #   +set_init+ and +set_finalize+; +update+ and +combine+ are internal no-ops.
   class AggregateFunction
-    # Supported types for aggregate function parameters and return values
-    SUPPORTED_TYPES = %i[
-      any
-      bigint
-      blob
-      boolean
-      date
-      decimal
-      double
-      float
-      hugeint
-      integer
-      interval
-      smallint
-      time
-      timestamp
-      timestamp_s
-      timestamp_ms
-      timestamp_ns
-      time_tz
-      timestamp_tz
-      tinyint
-      ubigint
-      uhugeint
-      uinteger
-      usmallint
-      utinyint
-      uuid
-      varchar
-    ].freeze
-
-    private_constant :SUPPORTED_TYPES
+    include FunctionTypeValidation
 
     # Sets the return type for the aggregate function.
     #
@@ -73,18 +42,6 @@ module DuckDB
     # @return [DuckDB::AggregateFunction] self
     def set_special_handling
       _set_special_handling
-    end
-
-    private
-
-    def check_supported_type!(type)
-      logical_type = DuckDB::LogicalType.resolve(type)
-
-      unless SUPPORTED_TYPES.include?(logical_type.type)
-        raise DuckDB::Error, "Type `#{type}` is not supported. Only #{SUPPORTED_TYPES.inspect} are available."
-      end
-
-      logical_type
     end
   end
 end
