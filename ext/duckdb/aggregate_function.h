@@ -5,6 +5,7 @@ struct _rubyDuckDBAggregateFunction {
     duckdb_aggregate_function aggregate_function;
     VALUE init_proc;
     VALUE update_proc;
+    VALUE combine_proc;
     VALUE finalize_proc;
 };
 

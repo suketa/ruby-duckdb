@@ -27,6 +27,7 @@ static VALUE rbduckdb_aggregate_function__set_return_type(VALUE self, VALUE logi
 static VALUE rbduckdb_aggregate_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_aggregate_function_set_init(VALUE self);
 static VALUE rbduckdb_aggregate_function_set_update(VALUE self);
+static VALUE rbduckdb_aggregate_function_set_combine(VALUE self);
 static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self);
 
 static const rb_data_type_t aggregate_function_data_type = {
@@ -39,6 +40,7 @@ static void mark(void *ctx) {
     rubyDuckDBAggregateFunction *p = (rubyDuckDBAggregateFunction *)ctx;
     rb_gc_mark_movable(p->init_proc);
     rb_gc_mark_movable(p->update_proc);
+    rb_gc_mark_movable(p->combine_proc);
     rb_gc_mark_movable(p->finalize_proc);
 }
 
@@ -55,6 +57,9 @@ static void compact(void *ctx) {
     }
     if (p->update_proc != Qnil) {
         p->update_proc = rb_gc_location(p->update_proc);
+    }
+    if (p->combine_proc != Qnil) {
+        p->combine_proc = rb_gc_location(p->combine_proc);
     }
     if (p->finalize_proc != Qnil) {
         p->finalize_proc = rb_gc_location(p->finalize_proc);
@@ -82,6 +87,7 @@ static VALUE duckdb_aggregate_function_initialize(VALUE self) {
     p->aggregate_function = duckdb_create_aggregate_function();
     p->init_proc = Qnil;
     p->update_proc = Qnil;
+    p->combine_proc = Qnil;
     p->finalize_proc = Qnil;
     return self;
 }
@@ -348,7 +354,8 @@ static void noop_combine_callback(duckdb_function_info info,
 }
 
 /*
- * Default combine for Phase 1.1: move source state into target state.
+ * Fallback combine used when update_proc is supplied but the user did not
+ * register a combine_proc via set_combine.
  *
  * DuckDB invokes combine even for single-partition aggregates: after update
  * has accumulated values into a source state, DuckDB freshly initialises a
@@ -357,8 +364,9 @@ static void noop_combine_callback(duckdb_function_info info,
  * Without a user-provided combine_proc we cannot perform an arbitrary merge,
  * so this minimal implementation overwrites target->ruby_state with the
  * source value. This is correct for the common single-group/single-thread
- * path exercised by the tests; richer combine semantics will arrive together
- * with a user-facing set_combine callback in a later phase.
+ * path; parallel execution requires the user to supply a combine_proc via
+ * set_combine, in which case combine_callback is wired instead of this
+ * fallback.
  */
 static void default_combine_callback(duckdb_function_info info,
                                      duckdb_aggregate_state *source,
@@ -375,6 +383,82 @@ static void default_combine_callback(duckdb_function_info info,
                      state_registry_key(tgt[i]),
                      tgt[i]->ruby_state);
     }
+}
+
+/* combine_callback dispatch argument */
+struct combine_callback_arg {
+    rubyDuckDBAggregateFunction *ctx;
+    duckdb_function_info info;
+    duckdb_aggregate_state *source;
+    duckdb_aggregate_state *target;
+    idx_t count;
+};
+
+struct combine_one_arg {
+    VALUE combine_proc;
+    VALUE source_state;
+    VALUE target_state;
+};
+
+static VALUE call_combine_proc(VALUE varg) {
+    struct combine_one_arg *arg = (struct combine_one_arg *)varg;
+    VALUE argv[2];
+    argv[0] = arg->source_state;
+    argv[1] = arg->target_state;
+    return rb_funcallv(arg->combine_proc, rb_intern("call"), 2, argv);
+}
+
+static void execute_combine_callback_protected(void *user_data) {
+    struct combine_callback_arg *arg = (struct combine_callback_arg *)user_data;
+    ruby_aggregate_state **src = (ruby_aggregate_state **)arg->source;
+    ruby_aggregate_state **tgt = (ruby_aggregate_state **)arg->target;
+    idx_t i;
+
+    for (i = 0; i < arg->count; i++) {
+        struct combine_one_arg one;
+        int exception_state;
+        VALUE ret;
+
+        one.combine_proc = arg->ctx->combine_proc;
+        one.source_state = src[i]->ruby_state;
+        one.target_state = tgt[i]->ruby_state;
+
+        ret = rb_protect(call_combine_proc, (VALUE)&one, &exception_state);
+        if (exception_state) {
+            report_ruby_error_to_duckdb(arg->info);
+            return;
+        }
+
+        tgt[i]->ruby_state = ret;
+        rb_hash_aset(g_aggregate_state_registry,
+                     state_registry_key(tgt[i]), ret);
+
+        /* source state is consumed by combine; release its registry entry
+         * so the Ruby VALUE can be GC'd. */
+        rb_hash_delete(g_aggregate_state_registry,
+                       state_registry_key(src[i]));
+    }
+}
+
+static void combine_callback(duckdb_function_info info,
+                             duckdb_aggregate_state *source,
+                             duckdb_aggregate_state *target,
+                             idx_t count) {
+    rubyDuckDBAggregateFunction *ctx;
+    struct combine_callback_arg arg;
+
+    ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
+    if (ctx == NULL || ctx->combine_proc == Qnil) {
+        return;
+    }
+
+    arg.ctx = ctx;
+    arg.info = info;
+    arg.source = source;
+    arg.target = target;
+    arg.count = count;
+
+    rbduckdb_function_executor_dispatch(execute_combine_callback_protected, &arg);
 }
 
 /* finalize callback dispatch argument */
@@ -397,18 +481,29 @@ static VALUE call_finalize_proc(VALUE varg) {
     return rb_funcall(arg->finalize_proc, rb_intern("call"), 1, arg->ruby_state);
 }
 
+struct vector_set_arg {
+    duckdb_vector vector;
+    duckdb_logical_type element_type;
+    idx_t index;
+    VALUE value;
+};
+
+static VALUE call_vector_set_value_at(VALUE varg) {
+    struct vector_set_arg *a = (struct vector_set_arg *)varg;
+    rbduckdb_vector_set_value_at(a->vector, a->element_type, a->index, a->value);
+    return Qnil;
+}
+
 static void execute_finalize_callback_protected(void *user_data) {
     struct finalize_callback_arg *arg = (struct finalize_callback_arg *)user_data;
     ruby_aggregate_state **states = (ruby_aggregate_state **)arg->source_p;
-    /* Phase 1.0: result type is hardcoded to BIGINT. Non-BIGINT return types
-     * will be supported in a later phase once vector_set_value_at-style
-     * type dispatch is shared between scalar and aggregate functions. */
-    int64_t *result_data = (int64_t *)duckdb_vector_get_data(arg->result);
+    duckdb_logical_type result_type = duckdb_vector_get_column_type(arg->result);
     idx_t i;
 
     for (i = 0; i < arg->count; i++) {
         ruby_aggregate_state *state = states[i];
         struct finalize_one_arg one;
+        struct vector_set_arg vsa;
         int exception_state;
         VALUE ret;
 
@@ -418,14 +513,26 @@ static void execute_finalize_callback_protected(void *user_data) {
         ret = rb_protect(call_finalize_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
             report_ruby_error_to_duckdb(arg->info);
-            return;
+            goto cleanup;
         }
 
-        result_data[arg->offset + i] = NUM2LL(ret);
+        vsa.vector = arg->result;
+        vsa.element_type = result_type;
+        vsa.index = arg->offset + i;
+        vsa.value = ret;
+
+        rb_protect(call_vector_set_value_at, (VALUE)&vsa, &exception_state);
+        if (exception_state) {
+            report_ruby_error_to_duckdb(arg->info);
+            goto cleanup;
+        }
 
         /* Release Ruby state from the GC registry. */
         rb_hash_delete(g_aggregate_state_registry, state_registry_key(state));
     }
+
+cleanup:
+    duckdb_destroy_logical_type(&result_type);
 }
 
 static void finalize_callback(duckdb_function_info info,
@@ -465,7 +572,8 @@ static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
         state_size_callback,
         state_init_callback,
         (p->update_proc != Qnil) ? update_callback : noop_update_callback,
-        (p->update_proc != Qnil) ? default_combine_callback : noop_combine_callback,
+        (p->combine_proc != Qnil) ? combine_callback :
+            ((p->update_proc != Qnil) ? default_combine_callback : noop_combine_callback),
         finalize_callback);
 
     /* Ensure the global executor thread is running for multi-thread dispatch.
@@ -506,6 +614,22 @@ static VALUE rbduckdb_aggregate_function_set_update(VALUE self) {
 }
 
 /* :nodoc: */
+static VALUE rbduckdb_aggregate_function_set_combine(VALUE self) {
+    rubyDuckDBAggregateFunction *p;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, "block is required");
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
+    p->combine_proc = rb_block_proc();
+
+    maybe_set_functions(p);
+
+    return self;
+}
+
+/* :nodoc: */
 static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
     rubyDuckDBAggregateFunction *p;
 
@@ -533,6 +657,7 @@ void rbduckdb_init_duckdb_aggregate_function(void) {
     rb_define_private_method(cDuckDBAggregateFunction, "_add_parameter", rbduckdb_aggregate_function_add_parameter, 1);
     rb_define_method(cDuckDBAggregateFunction, "set_init", rbduckdb_aggregate_function_set_init, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_update", rbduckdb_aggregate_function_set_update, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_combine", rbduckdb_aggregate_function_set_combine, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_finalize", rbduckdb_aggregate_function_set_finalize, 0);
 
     g_aggregate_state_registry = rb_hash_new();

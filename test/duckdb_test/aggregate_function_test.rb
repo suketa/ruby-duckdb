@@ -15,13 +15,9 @@ module DuckDBTest
     end
 
     def test_minimal_aggregate_returns_initial_state
-      af = DuckDB::AggregateFunction.new
-      af.name = 'my_agg'
-      af.return_type = DuckDB::LogicalType::BIGINT
-      af.add_parameter(DuckDB::LogicalType::BIGINT)
-      af.set_init     { 42 }
-      af.set_finalize { |state| state }
-
+      af = build_aggregate('my_agg',
+                           init: -> { 42 },
+                           finalize: ->(state) { state })
       @con.register_aggregate_function(af)
 
       result = @con.query('SELECT my_agg(i) FROM range(100) t(i)')
@@ -30,20 +26,85 @@ module DuckDBTest
     end
 
     def test_aggregate_update_sums_values
-      af = DuckDB::AggregateFunction.new
-      af.name = 'my_sum'
-      af.return_type = DuckDB::LogicalType::BIGINT
-      af.add_parameter(DuckDB::LogicalType::BIGINT)
-      af.set_init     { 0 }
-      af.set_update   { |state, value| state + value }
-      af.set_finalize { |state| state }
-
+      af = build_aggregate('my_sum',
+                           init: -> { 0 },
+                           update: ->(state, value) { state + value },
+                           finalize: ->(state) { state })
       @con.register_aggregate_function(af)
 
       result = @con.query('SELECT my_sum(i) FROM range(100) t(i)')
 
       # sum(0..99) == 4950
       assert_equal 4950, result.first.first
+    end
+
+    def test_aggregate_double_return_and_input
+      double_type = DuckDB::LogicalType::DOUBLE
+      af = build_aggregate('my_dsum',
+                           type: double_type,
+                           init: -> { 0.0 },
+                           update: ->(state, value) { state + value },
+                           combine: ->(s1, s2) { s1 + s2 },
+                           finalize: ->(state) { state })
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT my_dsum(i::DOUBLE) FROM range(10) t(i)')
+      # sum(0.0..9.0) == 45.0
+      assert_in_delta 45.0, result.first.first, 0.001
+    end
+
+    def test_aggregate_varchar_return_and_input
+      varchar_type = DuckDB::LogicalType::VARCHAR
+      af = build_aggregate('my_concat',
+                           type: varchar_type,
+                           init: -> { +'' },
+                           update: ->(state, value) { state + value },
+                           combine: ->(s1, s2) { s1 + s2 },
+                           finalize: ->(state) { state })
+      @con.register_aggregate_function(af)
+
+      result = @con.query("SELECT my_concat(x) FROM (VALUES ('a'), ('b'), ('c')) t(x)")
+
+      assert_equal 'abc', result.first.first
+    end
+
+    def test_aggregate_combine_merges_partial_states_in_parallel
+      af = build_aggregate('my_parallel_sum',
+                           init: -> { 0 },
+                           update: ->(state, value) { state + value },
+                           combine: ->(s1, s2) { s1 + s2 },
+                           finalize: ->(state) { state })
+      @con.register_aggregate_function(af)
+      force_parallel_execution(@con)
+
+      result = @con.query('SELECT my_parallel_sum(i) FROM range(100000) t(i)')
+      # sum(0..99_999) == 4_999_950_000
+      assert_equal 4_999_950_000, result.first.first
+    end
+
+    private
+
+    # Force DuckDB to actually parallelise aggregation so the combine callback
+    # receives more than one partial state to merge.
+    def force_parallel_execution(con)
+      con.query('PRAGMA threads=4')
+      con.query('PRAGMA verify_parallelism')
+    end
+
+    def build_aggregate(name, type: DuckDB::LogicalType::BIGINT, **callbacks)
+      af = DuckDB::AggregateFunction.new
+      af.name = name
+      af.return_type = type
+      af.add_parameter(type)
+      set_callbacks(af, callbacks)
+      af
+    end
+
+    def set_callbacks(func, callbacks)
+      func.set_init(&callbacks[:init])
+      func.set_update(&callbacks[:update]) if callbacks[:update]
+      func.set_combine(&callbacks[:combine]) if callbacks[:combine]
+      func.set_finalize(&callbacks[:finalize])
     end
   end
 end
