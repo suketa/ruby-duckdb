@@ -136,50 +136,37 @@ module DuckDBTest
       assert_equal 4_999_950_000, result.first.first
     end
 
-    def test_gc_compaction_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_gc_compaction_safety
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
       baseline = DuckDB::AggregateFunction._state_registry_size
 
-      # Register an aggregate function whose procs capture local variables so
-      # that the captured Proc objects can be moved by GC compaction.
-      accumulator_label = 'gc_compact_sum'
+      # Register an aggregate whose Proc objects are stored as Ruby VALUEs inside
+      # the C extension struct.  compact_heap moves every moveable object; any
+      # VALUE NOT updated via rb_gc_location in the compact callback becomes a
+      # stale pointer and the subsequent query will crash or return wrong results.
       register_aggregate(
-        accumulator_label,
+        'gc_compact_sum',
         init: -> { 0 },
         update: ->(state, value) { state + value },
         combine: ->(s1, s2) { s1 + s2 },
         finalize: ->(state) { state }
       )
 
-      # Use verify_compaction_references when available — it double-compacts the
-      # heap, moving every moveable object at least twice.  Any VALUE stored in a
-      # C struct that is NOT updated via rb_gc_location in the compact callback
-      # becomes a stale pointer and the subsequent query will return wrong results
-      # or crash.  Fall back to GC.compact when the stricter API is absent.
-      if GC.respond_to?(:verify_compaction_references)
-        GC.verify_compaction_references(double_heap: true, toward: :empty)
-      else
-        GC.compact
-      end
+      compact_heap
 
-      result = @con.query("SELECT #{accumulator_label}(i) FROM range(100) t(i)")
+      result = @con.query('SELECT gc_compact_sum(i) FROM range(100) t(i)')
 
       # sum(0..99) == 4950
       assert_equal 4950, result.first.first,
                    'Aggregate callback returned wrong result after GC compaction'
-
       assert_equal baseline, DuckDB::AggregateFunction._state_registry_size,
                    'State registry must return to baseline after a successful query post-compaction'
 
       # A second compaction after the query must also be safe (no dangling refs).
-      if GC.respond_to?(:verify_compaction_references)
-        GC.verify_compaction_references(double_heap: true, toward: :empty)
-      else
-        GC.compact
-      end
+      compact_heap
 
-      result2 = @con.query("SELECT #{accumulator_label}(i) FROM range(10) t(i)")
+      result2 = @con.query('SELECT gc_compact_sum(i) FROM range(10) t(i)')
 
       # sum(0..9) == 45
       assert_equal 45, result2.first.first,
@@ -226,6 +213,17 @@ module DuckDBTest
     def register_aggregate(name, **)
       af = build_aggregate(name, **)
       @con.register_aggregate_function(af)
+    end
+
+    # Use verify_compaction_references when available — it double-compacts the
+    # heap, moving every moveable object at least twice, which is stricter than
+    # a single GC.compact pass.
+    def compact_heap
+      if GC.respond_to?(:verify_compaction_references)
+        GC.verify_compaction_references(double_heap: true, toward: :empty)
+      else
+        GC.compact
+      end
     end
 
     def set_callbacks(func, callbacks)
