@@ -6,19 +6,27 @@ module DuckDB
   # @note DuckDB::AggregateFunction is experimental. Phase 1.0 only supports
   #   +set_init+ and +set_finalize+; +update+ and +combine+ are internal no-ops.
   class AggregateFunction
+    include FunctionTypeValidation
+
     # Sets the return type for the aggregate function.
     #
-    # @param logical_type [DuckDB::LogicalType] the return type
+    # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type
     # @return [DuckDB::AggregateFunction] self
+    # @raise [DuckDB::Error] if the type is not supported
     def return_type=(logical_type)
+      logical_type = check_supported_type!(logical_type)
+
       _set_return_type(logical_type)
     end
 
     # Adds a parameter to the aggregate function.
     #
-    # @param logical_type [DuckDB::LogicalType] the parameter type
+    # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the parameter type
     # @return [DuckDB::AggregateFunction] self
+    # @raise [DuckDB::Error] if the type is not supported
     def add_parameter(logical_type)
+      logical_type = check_supported_type!(logical_type)
+
       _add_parameter(logical_type)
     end
 

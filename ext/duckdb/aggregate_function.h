@@ -7,6 +7,7 @@ struct _rubyDuckDBAggregateFunction {
     VALUE update_proc;
     VALUE combine_proc;
     VALUE finalize_proc;
+    bool special_handling; /* true when set_special_handling was called */
 };
 
 typedef struct _rubyDuckDBAggregateFunction rubyDuckDBAggregateFunction;

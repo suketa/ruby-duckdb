@@ -136,6 +136,43 @@ module DuckDBTest
       assert_equal 4_999_950_000, result.first.first
     end
 
+    def test_gc_compaction_safety
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+
+      baseline = DuckDB::AggregateFunction._state_registry_size
+
+      # Register an aggregate whose Proc objects are stored as Ruby VALUEs inside
+      # the C extension struct.  compact_heap moves every moveable object; any
+      # VALUE NOT updated via rb_gc_location in the compact callback becomes a
+      # stale pointer and the subsequent query will crash or return wrong results.
+      register_aggregate(
+        'gc_compact_sum',
+        init: -> { 0 },
+        update: ->(state, value) { state + value },
+        combine: ->(s1, s2) { s1 + s2 },
+        finalize: ->(state) { state }
+      )
+
+      compact_heap
+
+      result = @con.query('SELECT gc_compact_sum(i) FROM range(100) t(i)')
+
+      # sum(0..99) == 4950
+      assert_equal 4950, result.first.first,
+                   'Aggregate callback returned wrong result after GC compaction'
+      assert_equal baseline, DuckDB::AggregateFunction._state_registry_size,
+                   'State registry must return to baseline after a successful query post-compaction'
+
+      # A second compaction after the query must also be safe (no dangling refs).
+      compact_heap
+
+      result2 = @con.query('SELECT gc_compact_sum(i) FROM range(10) t(i)')
+
+      # sum(0..9) == 45
+      assert_equal 45, result2.first.first,
+                   'Aggregate callback returned wrong result after second GC compaction'
+    end
+
     def test_set_special_handling_passes_null_values_to_update
       af = build_aggregate('count_with_nulls',
                            init: -> { 0 },
@@ -153,6 +190,86 @@ module DuckDBTest
       # return 3.  With it the update callback receives all 5 rows (NULLs
       # arrive as nil), so the count must be 5.
       assert_equal 5, result.first.first
+    end
+
+    def test_aggregate_with_hash_state
+      double_type = DuckDB::LogicalType::DOUBLE
+      update_proc = lambda { |state, value|
+        state[:sum] += value
+        state[:count] += 1
+        state
+      }
+      register_aggregate(
+        'my_avg',
+        type: double_type,
+        init: -> { { sum: 0.0, count: 0 } },
+        update: update_proc,
+        combine: ->(s1, s2) { { sum: s1[:sum] + s2[:sum], count: s1[:count] + s2[:count] } },
+        finalize: ->(state) { state[:count].positive? ? state[:sum] / state[:count] : nil }
+      )
+
+      result = @con.query('SELECT my_avg(i::DOUBLE) FROM range(11) t(i)')
+
+      # average of 0..10 == 5.0
+      assert_in_delta 5.0, result.first.first, 0.001
+    end
+
+    def test_return_type_setter_raises_for_unsupported_type
+      af = DuckDB::AggregateFunction.new
+      bit_type = DuckDB::LogicalType::BIT # BIT is unsupported as a function return type
+
+      assert_raises(DuckDB::Error) do
+        af.return_type = bit_type
+      end
+    end
+
+    def test_add_parameter_raises_for_unsupported_type
+      af = DuckDB::AggregateFunction.new
+      bit_type = DuckDB::LogicalType::BIT # BIT is unsupported as a parameter type
+
+      assert_raises(DuckDB::Error) do
+        af.add_parameter(bit_type)
+      end
+    end
+
+    def test_null_values_skipped_by_default
+      # Without set_special_handling, DuckDB's default behaviour is to skip
+      # NULL input values before calling the update callback.
+      register_aggregate('count_skip_nulls',
+                         init: -> { 0 },
+                         update: ->(state, _value) { state + 1 },
+                         finalize: ->(state) { state })
+
+      @con.query('CREATE TABLE null_skip_test (i BIGINT)')
+      @con.query('INSERT INTO null_skip_test VALUES (1), (NULL), (3), (NULL), (5)')
+
+      result = @con.query('SELECT count_skip_nulls(i) FROM null_skip_test')
+
+      # The 2 NULL rows must be skipped; only the 3 non-NULL rows reach update.
+      assert_equal 3, result.first.first
+    end
+
+    def test_aggregate_with_multiple_parameters
+      bigint = DuckDB::LogicalType::BIGINT
+      af = DuckDB::AggregateFunction.new
+      af.name = 'weighted_sum'
+      af.return_type = bigint
+      af.add_parameter(bigint) # value
+      af.add_parameter(bigint) # weight
+      set_callbacks(af,
+                    init: -> { 0 },
+                    update: ->(state, value, weight) { state + (value * weight) },
+                    combine: ->(s1, s2) { s1 + s2 },
+                    finalize: ->(state) { state })
+      @con.register_aggregate_function(af)
+
+      @con.query('CREATE TABLE weighted (v BIGINT, w BIGINT)')
+      @con.query('INSERT INTO weighted VALUES (1, 2), (3, 4), (5, 6)')
+
+      result = @con.query('SELECT weighted_sum(v, w) FROM weighted')
+
+      # 1*2 + 3*4 + 5*6 = 2 + 12 + 30 = 44
+      assert_equal 44, result.first.first
     end
 
     private
@@ -176,6 +293,17 @@ module DuckDBTest
     def register_aggregate(name, **)
       af = build_aggregate(name, **)
       @con.register_aggregate_function(af)
+    end
+
+    # Use verify_compaction_references when available — it double-compacts the
+    # heap, moving every moveable object at least twice, which is stricter than
+    # a single GC.compact pass.
+    def compact_heap
+      if GC.respond_to?(:verify_compaction_references)
+        GC.verify_compaction_references(double_heap: true, toward: :empty)
+      else
+        GC.compact
+      end
     end
 
     def set_callbacks(func, callbacks)

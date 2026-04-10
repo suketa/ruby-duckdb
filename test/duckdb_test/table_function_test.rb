@@ -12,7 +12,7 @@ module DuckDBTest
     end
 
     # Test: Create function with set_value (high-level API)
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    # rubocop:disable Minitest/MultipleAssertions
     def test_create_with_set_value
       db = DuckDB::Database.open
       conn = db.connect
@@ -52,7 +52,7 @@ module DuckDBTest
       conn.disconnect
       db.close
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    # rubocop:enable Minitest/MultipleAssertions
 
     # Test: Create requires name
     def test_create_requires_name
@@ -86,8 +86,7 @@ module DuckDBTest
       end
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
-    def test_gc_compaction_safety
+    def test_gc_compaction_safety # rubocop:disable Minitest/MultipleAssertions
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
       db = DuckDB::Database.open
@@ -152,9 +151,7 @@ module DuckDBTest
       conn.disconnect
       db.close
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def test_symbol_columns
       db = DuckDB::Database.open
       conn = db.connect
@@ -204,7 +201,6 @@ module DuckDBTest
       conn.disconnect
       db.close
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     private
 

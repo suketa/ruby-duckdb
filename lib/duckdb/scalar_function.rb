@@ -87,38 +87,7 @@ module DuckDB
       sf
     end
 
-    # Supported types for scalar function parameters and return values
-    SUPPORTED_TYPES = %i[
-      any
-      bigint
-      blob
-      boolean
-      date
-      decimal
-      double
-      float
-      hugeint
-      integer
-      interval
-      smallint
-      time
-      timestamp
-      timestamp_s
-      timestamp_ms
-      timestamp_ns
-      time_tz
-      timestamp_tz
-      tinyint
-      ubigint
-      uhugeint
-      uinteger
-      usmallint
-      utinyint
-      uuid
-      varchar
-    ].freeze
-
-    private_constant :SUPPORTED_TYPES
+    include FunctionTypeValidation
 
     # Adds a parameter to the scalar function.
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT,
@@ -200,18 +169,6 @@ module DuckDB
       raise ArgumentError, 'block is required' unless block
 
       _set_bind(&block)
-    end
-
-    private
-
-    def check_supported_type!(type)
-      logical_type = DuckDB::LogicalType.resolve(type)
-
-      unless SUPPORTED_TYPES.include?(logical_type.type)
-        raise DuckDB::Error, "Type `#{type}` is not supported. Only #{SUPPORTED_TYPES.inspect} are available."
-      end
-
-      logical_type
     end
   end
 end

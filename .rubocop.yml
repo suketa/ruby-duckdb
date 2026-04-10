@@ -12,6 +12,10 @@ AllCops:
     - 'ext/**/*'
     - 'benchmark/**/*'
 
+Metrics/AbcSize:
+  Exclude:
+    - 'test/**/*_test.rb'
+
 Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
@@ -23,6 +27,10 @@ Metrics/ClassLength:
     - 'lib/duckdb/prepared_statement.rb'
     - 'lib/duckdb/appender.rb'
     - 'lib/duckdb/connection.rb'
+
+Metrics/MethodLength:
+  Exclude:
+    - 'test/**/*_test.rb'
 
 Metrics/ModuleLength:
   Exclude:

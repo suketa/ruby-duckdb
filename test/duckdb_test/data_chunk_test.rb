@@ -55,7 +55,7 @@ module DuckDBTest
     end
 
     # Test 4: Vector#logical_type returns LogicalType
-    def test_vector_logical_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_vector_logical_type # rubocop:disable Minitest/MultipleAssertions
       @conn.execute('SET threads=1')
 
       table_function = DuckDB::TableFunction.new
@@ -97,7 +97,7 @@ module DuckDBTest
     end
 
     # Test 5: DataChunk#set_value with INTEGER
-    def test_data_chunk_set_value_integer # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_data_chunk_set_value_integer
       @conn.execute('SET threads=1')
 
       done = false
@@ -132,7 +132,7 @@ module DuckDBTest
     end
 
     # Test 6: DataChunk#set_value with BIGINT
-    def test_data_chunk_set_value_bigint # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_data_chunk_set_value_bigint
       @conn.execute('SET threads=1')
 
       done = false
@@ -164,7 +164,7 @@ module DuckDBTest
     end
 
     # Test 7: DataChunk#set_value with VARCHAR
-    def test_data_chunk_set_value_varchar # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_data_chunk_set_value_varchar
       @conn.execute('SET threads=1')
 
       done = false
@@ -198,7 +198,7 @@ module DuckDBTest
     end
 
     # Test 8: DataChunk#set_value with DOUBLE
-    def test_data_chunk_set_value_double # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_data_chunk_set_value_double
       @conn.execute('SET threads=1')
 
       done = false
@@ -232,7 +232,7 @@ module DuckDBTest
     end
 
     # Test 9: DataChunk#set_value with NULL
-    def test_data_chunk_set_value_null # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_data_chunk_set_value_null # rubocop:disable Minitest/MultipleAssertions
       @conn.execute('SET threads=1')
 
       done = false
@@ -268,7 +268,7 @@ module DuckDBTest
     end
 
     # Test 10: DataChunk#set_value with BLOB
-    def test_data_chunk_set_value_blob # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_data_chunk_set_value_blob
       @conn.execute('SET threads=1')
 
       done = false
@@ -304,7 +304,7 @@ module DuckDBTest
     end
 
     # Test 11: DataChunk#set_value with multiple columns
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    # rubocop:disable Minitest/MultipleAssertions
     def test_data_chunk_set_value_multiple_columns
       @conn.execute('SET threads=1')
 
@@ -357,10 +357,10 @@ module DuckDBTest
       assert_equal 'Bob', row1[1]
       assert_in_delta 87.3, row1[2], 0.001
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    # rubocop:enable Minitest/MultipleAssertions
 
     # Test 12: DataChunk#set_value with TIMESTAMP
-    def test_data_chunk_set_value_timestamp # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_data_chunk_set_value_timestamp
       @conn.execute('SET threads=1')
 
       done = false
@@ -397,7 +397,7 @@ module DuckDBTest
     end
 
     # Test 13: DataChunk#set_value with TIMESTAMP_TZ
-    def test_data_chunk_set_value_timestamp_tz # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_data_chunk_set_value_timestamp_tz # rubocop:disable Minitest/MultipleAssertions
       @conn.execute('SET threads=1')
 
       done = false

@@ -114,7 +114,7 @@ module DuckDBTest
       assert_equal [[10], [20], [30]], result.to_a
     end
 
-    def test_scalar_function_with_two_parameters # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_with_two_parameters
       @con.execute('CREATE TABLE test_table (a INTEGER, b INTEGER)')
       @con.execute('INSERT INTO test_table VALUES (5, 3), (10, 2), (15, 4)')
 
@@ -227,7 +227,7 @@ module DuckDBTest
       assert_equal [['Hello, Alice!'], ['Hello, Bob!']], result.to_a
     end
 
-    def test_scalar_function_blob_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_blob_return_type
       @con.execute('CREATE TABLE test_table (data BLOB)')
       @con.execute("INSERT INTO test_table VALUES ('\\x00\\x01\\x02\\x03'::BLOB), ('\\x00\\xAA\\xBB\\xCC'::BLOB)")
 
@@ -246,7 +246,7 @@ module DuckDBTest
       assert_equal "\xFF\x00\xAA\xBB\xCC".b, rows[1][0]
     end
 
-    def test_scalar_function_timestamp_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_return_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00'), ('2024-12-25 23:59:59')")
 
@@ -265,7 +265,7 @@ module DuckDBTest
       assert_equal Time.new(2024, 12, 26, 0, 59, 59), rows[1][0]
     end
 
-    def test_scalar_function_date_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_date_return_type
       @con.execute('CREATE TABLE test_table (d DATE)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15'), ('2024-12-25')")
 
@@ -284,7 +284,7 @@ module DuckDBTest
       assert_equal Date.new(2024, 12, 26), rows[1][0]
     end
 
-    def test_scalar_function_time_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_time_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (t TIME)')
       @con.execute("INSERT INTO test_table VALUES ('10:30:00'), ('23:59:59')")
 
@@ -307,7 +307,7 @@ module DuckDBTest
       assert_equal 59, rows[1][0].min
     end
 
-    def test_scalar_function_smallint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_smallint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value SMALLINT)')
       @con.execute('INSERT INTO test_table VALUES (32767), (-32768), (1000)')
 
@@ -327,7 +327,7 @@ module DuckDBTest
       assert_equal(-32_669, rows[2][0]) # 32767 + 100 = 32867, overflows to -32669
     end
 
-    def test_scalar_function_tinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_tinyint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value TINYINT)')
       @con.execute('INSERT INTO test_table VALUES (100), (-50), (0)')
 
@@ -347,7 +347,7 @@ module DuckDBTest
       assert_equal(-56, rows[2][0])  # 100 * 2 = 200, overflows to -56
     end
 
-    def test_scalar_function_utinyint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_utinyint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value UTINYINT)')
       @con.execute('INSERT INTO test_table VALUES (255), (0), (100)')
 
@@ -368,7 +368,7 @@ module DuckDBTest
       assert_equal 9, rows[2][0]   # 255 + 10 = 265, overflows to 9
     end
 
-    def test_scalar_function_usmallint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_usmallint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value USMALLINT)')
       @con.execute('INSERT INTO test_table VALUES (65535), (0), (1000)')
 
@@ -388,7 +388,7 @@ module DuckDBTest
       assert_equal 99, rows[2][0]    # 65535 + 100 = 65635, overflows to 99
     end
 
-    def test_scalar_function_uinteger_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_uinteger_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value UINTEGER)')
       @con.execute('INSERT INTO test_table VALUES (4294967200), (0), (1000000)')
 
@@ -408,7 +408,7 @@ module DuckDBTest
       assert_equal 4, rows[2][0] # 4294967200 + 100 = 4294967300, overflows to 4
     end
 
-    def test_scalar_function_ubigint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_ubigint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value UBIGINT)')
       @con.execute('INSERT INTO test_table VALUES (9223372036854775807), (0), (1000000000)')
 
@@ -428,7 +428,7 @@ module DuckDBTest
       assert_equal 18_446_744_073_709_551_614, rows[2][0] # 9223372036854775807 * 2
     end
 
-    def test_scalar_function_hugeint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_hugeint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value HUGEINT)')
       @con.execute('INSERT INTO test_table VALUES (85070591730234615865843651857942052863), ' \
                    '(-85070591730234615865843651857942052864), (0)')
@@ -451,7 +451,7 @@ module DuckDBTest
       assert_equal 170_141_183_460_469_231_731_687_303_715_884_105_726, rows[2][0]
     end
 
-    def test_scalar_function_uhugeint_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_uhugeint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value UHUGEINT)')
       @con.execute('INSERT INTO test_table VALUES (170141183460469231731687303715884105727), (0), (1000000000)')
 
@@ -472,7 +472,7 @@ module DuckDBTest
       assert_equal 340_282_366_920_938_463_463_374_607_431_768_211_454, rows[2][0]
     end
 
-    def test_scalar_function_gc_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_gc_safety
       # Register function and immediately lose reference
       @con.register_scalar_function(DuckDB::ScalarFunction.new.tap do |sf|
         sf.name = 'test_func'
@@ -498,7 +498,7 @@ module DuckDBTest
       end
     end
 
-    def test_gc_compaction_safety # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_gc_compaction_safety
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
       # Register scalar function with callback that captures local variable
@@ -527,7 +527,7 @@ module DuckDBTest
       assert_equal 30, result.first.first
     end
 
-    def test_gc_compaction_with_table_scan # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_gc_compaction_with_table_scan
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
       @con.execute('CREATE TABLE test_table (value INTEGER)')
@@ -556,7 +556,7 @@ module DuckDBTest
 
     # Tests for ScalarFunction.create class method
 
-    def test_create_with_single_parameter # rubocop:disable Metrics/MethodLength
+    def test_create_with_single_parameter
       sf = DuckDB::ScalarFunction.create(
         name: :triple,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -573,7 +573,7 @@ module DuckDBTest
       assert_equal 15, rows[0][0]
     end
 
-    def test_create_with_multiple_parameters # rubocop:disable Metrics/MethodLength
+    def test_create_with_multiple_parameters
       sf = DuckDB::ScalarFunction.create(
         name: :add_numbers,
         return_type: DuckDB::LogicalType::INTEGER,
@@ -656,7 +656,7 @@ module DuckDBTest
       assert_equal 456, rows[0][0]
     end
 
-    def test_create_with_different_types # rubocop:disable Metrics/MethodLength
+    def test_create_with_different_types
       sf = DuckDB::ScalarFunction.create(
         name: :concat_with_separator,
         return_type: DuckDB::LogicalType::VARCHAR,
@@ -856,7 +856,7 @@ module DuckDBTest
       assert_equal [[6], [15]], result.to_a
     end
 
-    def test_scalar_function_with_varargs_null_handling # rubocop:disable Metrics/AbcSize
+    def test_scalar_function_with_varargs_null_handling
       # DuckDB applies standard SQL NULL propagation by default: if ANY argument
       # is NULL the function returns NULL without invoking the block.
       # This matches the DuckDB C API test: my_addition(40, 42, NULL) → NULL.
@@ -898,7 +898,7 @@ module DuckDBTest
       end
     end
 
-    def test_scalar_function_with_varargs_any_type # rubocop:disable Metrics/AbcSize
+    def test_scalar_function_with_varargs_any_type
       # varargs_type= with DuckDB::LogicalType::ANY allows the function to
       # accept arguments of any type — each arg may differ.  The DuckDB C API
       # test uses DUCKDB_TYPE_ANY for this (capi_scalar_functions.cpp,
@@ -1087,7 +1087,7 @@ module DuckDBTest
       assert_equal 42, @con.execute('SELECT null_as_zero(42)').first.first
     end
 
-    def test_set_special_handling_with_two_parameters_any_null # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
+    def test_set_special_handling_with_two_parameters_any_null # rubocop:disable Minitest/MultipleAssertions
       # Both parameters arrive as-is (nil or value) when special handling is
       # set.  The block should handle every combination of nil / non-nil.
 
@@ -1108,7 +1108,7 @@ module DuckDBTest
       assert_equal 0, @con.execute('SELECT add_nullable(NULL, NULL)').first.first
     end
 
-    def test_set_special_handling_with_varargs_null_coalesce # rubocop:disable Metrics/AbcSize
+    def test_set_special_handling_with_varargs_null_coalesce
       # Varargs + special handling: even if individual args are NULL the block
       # is invoked and may inspect/replace each nil in the splat.
 
@@ -1160,7 +1160,7 @@ module DuckDBTest
       assert_equal 7, @con.execute('SELECT passthrough_null(7)').first.first
     end
 
-    def test_set_special_handling_null_count_varargs_integer # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
+    def test_set_special_handling_null_count_varargs_integer # rubocop:disable Minitest/MultipleAssertions
       # Mirrors the canonical DuckDB C API test (capi_scalar_functions.cpp,
       # "Test Scalar Functions - variadic number of ANY parameters") but uses
       # INTEGER varargs instead of ANY, because DuckDB::LogicalType::ANY is not
@@ -1191,7 +1191,7 @@ module DuckDBTest
       assert_equal 0, @con.execute('SELECT my_null_count()').first.first
     end
 
-    def test_set_special_handling_null_count_any_varargs # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Minitest/MultipleAssertions
+    def test_set_special_handling_null_count_any_varargs # rubocop:disable Minitest/MultipleAssertions
       # Same null_count function as above but using DuckDB::LogicalType::ANY,
       # which allows arguments of mixed types (matching the DuckDB C API test
       # exactly: my_null_count(40, [1], 'hello', 3) → 0).
@@ -1214,7 +1214,7 @@ module DuckDBTest
       assert_equal 0, @con.execute('SELECT my_null_count_any()').first.first
     end
 
-    def test_scalar_function_timestamp_s_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_s_return_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_S)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00'), ('2024-12-25 23:59:59')")
 
@@ -1233,7 +1233,7 @@ module DuckDBTest
       assert_equal Time.new(2024, 12, 26, 0, 59, 59), rows[1][0]
     end
 
-    def test_scalar_function_timestamp_s_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_s_parameter_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_S)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00'), ('2024-12-25 23:59:59')")
 
@@ -1252,7 +1252,7 @@ module DuckDBTest
       assert_equal '2024-12-25 23:59:59', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_s_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_s_varargs_type
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_S, ts2 TIMESTAMP_S)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00', '2024-06-15 12:00:00')")
 
@@ -1284,7 +1284,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_s_null_test('2024-01-15 10:30:00'::TIMESTAMP_S)").first.first
     end
 
-    def test_scalar_function_create_with_timestamp_s_symbol # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_timestamp_s_symbol
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_S)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00'), ('2024-12-25 23:59:59')")
 
@@ -1318,7 +1318,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_s_null_aware('2024-01-15 10:30:00'::TIMESTAMP_S)").first.first
     end
 
-    def test_scalar_function_timestamp_s_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_s_multiple_parameters
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_S, ts2 TIMESTAMP_S)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00', '2024-06-15 12:00:00')")
       @con.execute("INSERT INTO test_table VALUES ('2024-12-25 23:59:59', '2024-03-01 00:00:00')")
@@ -1339,7 +1339,7 @@ module DuckDBTest
       assert_equal 'first', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_ms_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ms_return_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_MS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123'), ('2024-12-25 23:59:59.999')")
 
@@ -1358,7 +1358,7 @@ module DuckDBTest
       assert_equal Time.new(2024, 12, 26, 0, 59, 59.999r), rows[1][0]
     end
 
-    def test_scalar_function_timestamp_ms_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ms_parameter_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_MS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123'), ('2024-12-25 23:59:59.999')")
 
@@ -1377,7 +1377,7 @@ module DuckDBTest
       assert_equal '2024-12-25 23:59:59.999', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_ms_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ms_varargs_type
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_MS, ts2 TIMESTAMP_MS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123', '2024-06-15 12:00:00.456')")
 
@@ -1409,7 +1409,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_ms_null_test('2024-01-15 10:30:00.123'::TIMESTAMP_MS)").first.first
     end
 
-    def test_scalar_function_create_with_timestamp_ms_symbol # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_timestamp_ms_symbol
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_MS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123'), ('2024-12-25 23:59:59.999')")
 
@@ -1443,7 +1443,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_ms_null_aware('2024-01-15 10:30:00.123'::TIMESTAMP_MS)").first.first
     end
 
-    def test_scalar_function_timestamp_ms_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ms_multiple_parameters
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_MS, ts2 TIMESTAMP_MS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123', '2024-06-15 12:00:00.456')")
       @con.execute("INSERT INTO test_table VALUES ('2024-12-25 23:59:59.999', '2024-03-01 00:00:00.001')")
@@ -1464,7 +1464,7 @@ module DuckDBTest
       assert_equal 'first', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_ns_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ns_return_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_NS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456'), ('2024-12-25 23:59:59.999999')")
 
@@ -1483,7 +1483,7 @@ module DuckDBTest
       assert_equal Time.new(2024, 12, 26, 0, 59, Rational(999_999, 1_000_000) + 59), rows[1][0]
     end
 
-    def test_scalar_function_timestamp_ns_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ns_parameter_type
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_NS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456'), ('2024-12-25 23:59:59.999999')")
 
@@ -1502,7 +1502,7 @@ module DuckDBTest
       assert_equal '2024-12-25 23:59:59.999999000', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_ns_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ns_varargs_type
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_NS, ts2 TIMESTAMP_NS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456', '2024-06-15 12:00:00.654321')")
 
@@ -1534,7 +1534,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_ns_null_test('2024-01-15 10:30:00.123456'::TIMESTAMP_NS)").first.first
     end
 
-    def test_scalar_function_create_with_timestamp_ns_symbol # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_timestamp_ns_symbol
       @con.execute('CREATE TABLE test_table (ts TIMESTAMP_NS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456'), ('2024-12-25 23:59:59.999999')")
 
@@ -1568,7 +1568,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_ns_null_aware('2024-01-15 10:30:00.123456'::TIMESTAMP_NS)").first.first
     end
 
-    def test_scalar_function_timestamp_ns_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_ns_multiple_parameters
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMP_NS, ts2 TIMESTAMP_NS)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00.123456', '2024-06-15 12:00:00.654321')")
       @con.execute("INSERT INTO test_table VALUES ('2024-12-25 23:59:59.999999', '2024-03-01 00:00:00.000001')")
@@ -1589,7 +1589,7 @@ module DuckDBTest
       assert_equal 'first', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_tz_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_tz_return_type
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
@@ -1610,7 +1610,7 @@ module DuckDBTest
       assert_equal Time.new(2024, 12, 26, 0, 59, 59, 'UTC'), rows[1][0]
     end
 
-    def test_scalar_function_timestamp_tz_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_tz_parameter_type
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
@@ -1631,7 +1631,7 @@ module DuckDBTest
       assert_equal '2024-12-25 23:59:59', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_tz_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_tz_varargs_type
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMPTZ, ts2 TIMESTAMPTZ)')
@@ -1651,7 +1651,7 @@ module DuckDBTest
       assert_equal '2024-06-15 12:00:00', rows[0][0]
     end
 
-    def test_scalar_function_timestamp_tz_default_null_handling # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_tz_default_null_handling
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
 
@@ -1668,7 +1668,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_tz_null_test('2024-01-15 10:30:00+00'::TIMESTAMPTZ)").first.first
     end
 
-    def test_scalar_function_create_with_timestamp_tz_symbol # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_create_with_timestamp_tz_symbol
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
@@ -1689,7 +1689,7 @@ module DuckDBTest
       assert_equal '2024-12-25 23:59:59', rows[1][0]
     end
 
-    def test_scalar_function_timestamp_tz_null_handling_true # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_timestamp_tz_null_handling_true
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
 
@@ -1707,7 +1707,7 @@ module DuckDBTest
                    @con.execute("SELECT ts_tz_null_aware('2024-01-15 10:30:00+00'::TIMESTAMPTZ)").first.first
     end
 
-    def test_scalar_function_timestamp_tz_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_timestamp_tz_multiple_parameters
       @con.execute('INSTALL icu; LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMPTZ, ts2 TIMESTAMPTZ)')
@@ -1730,7 +1730,7 @@ module DuckDBTest
       assert_equal 'first', rows[1][0]
     end
 
-    def test_scalar_function_time_tz_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_time_tz_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (t TIMETZ)')
       @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30'), ('23:59:59+00')")
 
@@ -1753,7 +1753,7 @@ module DuckDBTest
       assert_equal 59, rows[1][0].sec
     end
 
-    def test_scalar_function_time_tz_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_time_tz_parameter_type
       @con.execute('CREATE TABLE test_table (t TIMETZ)')
       @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30'), ('23:59:59+00')")
 
@@ -1772,7 +1772,7 @@ module DuckDBTest
       assert_equal '23:59:59', rows[1][0]
     end
 
-    def test_scalar_function_time_tz_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_time_tz_varargs_type
       @con.execute('CREATE TABLE test_table (t1 TIMETZ, t2 TIMETZ)')
       @con.execute("INSERT INTO test_table VALUES ('08:00:00+00', '17:30:00+00')")
 
@@ -1804,7 +1804,7 @@ module DuckDBTest
                    @con.execute("SELECT time_tz_null_test('10:30:00+05:30'::TIMETZ)").first.first
     end
 
-    def test_scalar_function_create_with_time_tz_symbol # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_time_tz_symbol
       @con.execute('CREATE TABLE test_table (t TIMETZ)')
       @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30'), ('23:59:59+00')")
 
@@ -1838,7 +1838,7 @@ module DuckDBTest
                    @con.execute("SELECT time_tz_null_aware('10:30:00+05:30'::TIMETZ)").first.first
     end
 
-    def test_scalar_function_time_tz_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_time_tz_multiple_parameters
       @con.execute('CREATE TABLE test_table (t1 TIMETZ, t2 TIMETZ)')
       @con.execute("INSERT INTO test_table VALUES ('10:30:00+05:30', '17:00:00+00')")
       @con.execute("INSERT INTO test_table VALUES ('23:59:59+00', '08:00:00+09')")
@@ -1859,7 +1859,7 @@ module DuckDBTest
       assert_equal 'first', rows[1][0]
     end
 
-    def test_scalar_function_interval_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_interval_parameter_type
       @con.execute('CREATE TABLE test_table (i INTERVAL)')
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days 4 hours')")
 
@@ -1878,7 +1878,7 @@ module DuckDBTest
       assert_includes %w[0 14], rows[1][0]
     end
 
-    def test_scalar_function_interval_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Minitest/MultipleAssertions
+    def test_scalar_function_interval_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (i INTERVAL)')
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days')")
 
@@ -1904,7 +1904,7 @@ module DuckDBTest
       assert_equal 0,  rows[1][0].interval_micros
     end
 
-    def test_scalar_function_interval_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_interval_varargs_type
       @con.execute('CREATE TABLE test_table (i1 INTERVAL, i2 INTERVAL)')
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 month', INTERVAL '2 months')")
 
@@ -1951,7 +1951,7 @@ module DuckDBTest
                    @con.execute("SELECT interval_null_aware(INTERVAL '1 year 2 months'::INTERVAL)").first.first
     end
 
-    def test_scalar_function_create_with_interval_symbol # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_interval_symbol
       @con.execute('CREATE TABLE test_table (i INTERVAL)')
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 year 2 months'), (INTERVAL '3 days')")
 
@@ -1970,7 +1970,7 @@ module DuckDBTest
       assert_includes %w[0 14], rows[1][0]
     end
 
-    def test_scalar_function_interval_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_interval_multiple_parameters
       @con.execute('CREATE TABLE test_table (i1 INTERVAL, i2 INTERVAL)')
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '1 month', INTERVAL '2 months')")
       @con.execute("INSERT INTO test_table VALUES (INTERVAL '5 months', INTERVAL '3 months')")
@@ -1994,7 +1994,7 @@ module DuckDBTest
     UUID1 = '550e8400-e29b-41d4-a716-446655440000'
     UUID2 = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
 
-    def test_scalar_function_uuid_parameter_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_uuid_parameter_type
       @con.execute('CREATE TABLE test_table (u UUID)')
       @con.execute("INSERT INTO test_table VALUES ('#{UUID1}'), ('#{UUID2}')")
 
@@ -2013,7 +2013,7 @@ module DuckDBTest
       assert_includes [UUID1, UUID2], rows[1][0]
     end
 
-    def test_scalar_function_uuid_return_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_uuid_return_type
       @con.execute('CREATE TABLE test_table (u UUID)')
       @con.execute("INSERT INTO test_table VALUES ('#{UUID1}'), ('#{UUID2}')")
 
@@ -2032,7 +2032,7 @@ module DuckDBTest
       assert_includes [UUID1, UUID2], rows[1][0]
     end
 
-    def test_scalar_function_uuid_varargs_type # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_uuid_varargs_type
       @con.execute('CREATE TABLE test_table (u1 UUID, u2 UUID)')
       @con.execute("INSERT INTO test_table VALUES ('#{UUID1}', '#{UUID2}')")
 
@@ -2077,7 +2077,7 @@ module DuckDBTest
       assert_equal UUID1, @con.execute("SELECT uuid_null_aware('#{UUID1}'::UUID)").first.first
     end
 
-    def test_scalar_function_create_with_uuid_symbol # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_uuid_symbol
       @con.execute('CREATE TABLE test_table (u UUID)')
       @con.execute("INSERT INTO test_table VALUES ('#{UUID1}'), ('#{UUID2}')")
 
@@ -2096,7 +2096,7 @@ module DuckDBTest
       assert_includes [UUID1, UUID2], rows[1][0]
     end
 
-    def test_scalar_function_uuid_multiple_parameters # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def test_scalar_function_uuid_multiple_parameters
       @con.execute('CREATE TABLE test_table (u1 UUID, u2 UUID)')
       @con.execute("INSERT INTO test_table VALUES ('#{UUID1}', '#{UUID2}')")
       @con.execute("INSERT INTO test_table VALUES ('#{UUID2}', '#{UUID1}')")
@@ -2117,7 +2117,7 @@ module DuckDBTest
     end
 
     # Step 2: DECIMAL as parameter_type
-    def test_scalar_function_decimal_parameter # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def test_scalar_function_decimal_parameter
       require 'bigdecimal'
       @con.execute('CREATE TABLE test_table (d DECIMAL(10, 2))')
       @con.execute('INSERT INTO test_table VALUES (123.45), (678.90)')
@@ -2139,7 +2139,7 @@ module DuckDBTest
     end
 
     # Step 3: DECIMAL as return_type
-    def test_scalar_function_decimal_return_type # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def test_scalar_function_decimal_return_type
       require 'bigdecimal'
       @con.execute('CREATE TABLE test_table (d DECIMAL(10, 2))')
       @con.execute('INSERT INTO test_table VALUES (123.45)')
@@ -2160,7 +2160,7 @@ module DuckDBTest
     end
 
     # Step 4: DECIMAL as varargs_type
-    def test_scalar_function_decimal_varargs # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def test_scalar_function_decimal_varargs
       require 'bigdecimal'
       @con.execute('CREATE TABLE test_table (a DECIMAL(10, 2), b DECIMAL(10, 2))')
       @con.execute('INSERT INTO test_table VALUES (1.00, 2.50)')
@@ -2196,7 +2196,7 @@ module DuckDBTest
       assert_nil result.first.first
     end
 
-    def test_scalar_function_decimal_null_handling # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def test_scalar_function_decimal_null_handling
       require 'bigdecimal'
       decimal_type = DuckDB::LogicalType.create_decimal(10, 2)
       sf = DuckDB::ScalarFunction.new
@@ -2213,7 +2213,7 @@ module DuckDBTest
     end
 
     # Step 6: ScalarFunction.create with DECIMAL
-    def test_scalar_function_create_with_decimal # rubocop:disable Metrics/MethodLength
+    def test_scalar_function_create_with_decimal
       require 'bigdecimal'
       @con.execute('CREATE TABLE test_table (d DECIMAL(10, 2))')
       @con.execute('INSERT INTO test_table VALUES (99.99)')
