@@ -93,6 +93,23 @@ module DuckDBTest
                    'state registry must not grow after a successful aggregate query'
     end
 
+    def test_aggregate_state_cleanup_after_finalize_error
+      baseline = DuckDB::AggregateFunction._state_registry_size
+
+      af = build_aggregate('err_finalize',
+                           init: -> { 0 },
+                           update: ->(state, value) { state + value },
+                           finalize: ->(_state) { raise 'finalize boom' })
+      @con.register_aggregate_function(af)
+
+      assert_raises(DuckDB::Error) do
+        @con.query('SELECT err_finalize(i) FROM range(10) t(i)')
+      end
+
+      assert_equal baseline, DuckDB::AggregateFunction._state_registry_size,
+                   'state registry must not leak after a finalize callback error'
+    end
+
     def test_aggregate_combine_merges_partial_states_in_parallel
       af = build_aggregate('my_parallel_sum',
                            init: -> { 0 },
