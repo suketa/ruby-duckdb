@@ -101,6 +101,7 @@ static VALUE duckdb_aggregate_function_initialize(VALUE self) {
     p->update_proc = Qnil;
     p->combine_proc = Qnil;
     p->finalize_proc = Qnil;
+    p->special_handling = 0;
     return self;
 }
 
@@ -300,6 +301,27 @@ static VALUE update_process_rows(VALUE varg) {
         struct update_one_arg one;
         int exception_state;
         VALUE ret;
+
+        /*
+         * Without set_special_handling, DuckDB's default behaviour is to
+         * skip rows where any input value is NULL.  Check the validity mask
+         * of every input column and skip the row if any value is invalid.
+         * When special_handling is enabled the callback receives all rows,
+         * including those with NULL inputs.
+         */
+        if (!arg->ctx->special_handling) {
+            int has_null = 0;
+            for (j = 0; j < arg->col_count; j++) {
+                uint64_t *validity = duckdb_vector_get_validity(arg->input_vectors[j]);
+                if (validity && !duckdb_validity_row_is_valid(validity, i)) {
+                    has_null = 1;
+                    break;
+                }
+            }
+            if (has_null) {
+                continue;
+            }
+        }
 
         arg->args[0] = state->ruby_state;
         for (j = 0; j < arg->col_count; j++) {
@@ -735,6 +757,7 @@ static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
 static VALUE rbduckdb_aggregate_function__set_special_handling(VALUE self) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
+    p->special_handling = 1;
     duckdb_aggregate_function_set_special_handling(p->aggregate_function);
     return self;
 }
