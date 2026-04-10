@@ -379,9 +379,15 @@ static void default_combine_callback(duckdb_function_info info,
 
     for (i = 0; i < count; i++) {
         tgt[i]->ruby_state = src[i]->ruby_state;
-        rb_hash_aset(g_aggregate_state_registry,
-                     state_registry_key(tgt[i]),
-                     tgt[i]->ruby_state);
+        /*
+         * Do NOT call any Ruby API here.  This callback is invoked by a
+         * DuckDB worker thread that does not hold the GVL; any rb_* call
+         * from this context is unsafe and causes a SIGSEGV on Windows.
+         *
+         * The copied VALUE is already GC-protected via the source state's
+         * existing registry entry.  That entry leaks until the destructor
+         * callback is wired up in Phase 2.
+         */
     }
 }
 
