@@ -104,6 +104,26 @@ module DuckDBTest
                    'state registry must not leak after a finalize callback error'
     end
 
+    def test_aggregate_update_error_surfaces_and_leaks_one_registry_entry
+      # When the update block raises, the error is surfaced as DuckDB::Error.
+      # However, DuckDB does NOT call the destroy callback on the update error
+      # path, so the init'd state's registry entry leaks.  This is a known
+      # DuckDB limitation — we document it here rather than assert zero delta.
+      baseline = DuckDB::AggregateFunction._state_registry_size
+      update_proc = lambda { |state, value|
+        raise 'boom in update' if value == 5
+
+        state + value
+      }
+      register_aggregate('err_update', init: -> { 0 }, update: update_proc, finalize: ->(state) { state })
+
+      error = assert_raises(DuckDB::Error) { @con.query('SELECT err_update(i) FROM range(10) t(i)') }
+
+      assert_match(/boom in update/, error.message)
+      assert_equal 1, DuckDB::AggregateFunction._state_registry_size - baseline,
+                   'DuckDB does not call destroy after update error — 1 entry leaks'
+    end
+
     def test_aggregate_combine_merges_partial_states_in_parallel
       register_aggregate('my_parallel_sum',
                          init: -> { 0 },
