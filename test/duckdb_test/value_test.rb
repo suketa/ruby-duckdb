@@ -462,6 +462,18 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, value)
     end
 
+    def test_create_blob_with_binary_duckdb_blob
+      value = DuckDB::Value.create_blob(DuckDB::Blob.new("\x00\x01\x02".b))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_blob_with_utf8_duckdb_blob_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_blob(DuckDB::Blob.new('hello'))
+      end
+    end
+
     def test_create_blob_with_utf8_string_raises_argument_error
       assert_raises(ArgumentError) do
         DuckDB::Value.create_blob('hello')
