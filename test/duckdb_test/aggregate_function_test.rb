@@ -215,15 +215,17 @@ module DuckDBTest
     end
 
     def test_aggregate_with_multiple_parameters
+      bigint = DuckDB::LogicalType::BIGINT
       af = DuckDB::AggregateFunction.new
       af.name = 'weighted_sum'
-      af.return_type = DuckDB::LogicalType::BIGINT
-      af.add_parameter(DuckDB::LogicalType::BIGINT) # value
-      af.add_parameter(DuckDB::LogicalType::BIGINT) # weight
-      af.set_init { 0 }
-      af.set_update { |state, value, weight| state + value * weight }
-      af.set_combine { |s1, s2| s1 + s2 }
-      af.set_finalize { |state| state }
+      af.return_type = bigint
+      af.add_parameter(bigint) # value
+      af.add_parameter(bigint) # weight
+      set_callbacks(af,
+                    init: -> { 0 },
+                    update: ->(state, value, weight) { state + value * weight },
+                    combine: ->(s1, s2) { s1 + s2 },
+                    finalize: ->(state) { state })
       @con.register_aggregate_function(af)
 
       @con.query('CREATE TABLE weighted (v BIGINT, w BIGINT)')
