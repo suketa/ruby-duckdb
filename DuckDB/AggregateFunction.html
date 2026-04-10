@@ -77,6 +77,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-_state_registry_size">_state_registry_size</a></li>
       <li ><a href="#method-c-new">new</a></li>
     </ul>
   </div>
@@ -89,6 +90,7 @@
       <li ><a href="#method-i-add_parameter">add_parameter</a></li>
       <li ><a href="#method-i-name-3D">name=</a></li>
       <li ><a href="#method-i-return_type-3D">return_type=</a></li>
+      <li ><a href="#method-i-set_special_handling">set_special_handling</a></li>
     </ul>
   </div>
 
@@ -146,6 +148,35 @@
        <header>
          <h3>Public Class Methods</h3>
        </header>
+
+      <div id="method-c-_state_registry_size" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-_state_registry_size" title="Link to this method">
+                <span class="method-name">_state_registry_size</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="_state_registry_size-source">
+            <pre>static VALUE aggregate_function_state_registry_size(VALUE klass) {
+    (void)klass;
+    return LONG2NUM((long)RHASH_SIZE(g_aggregate_state_registry));
+}</pre>
+          </div>
+          <p>Returns the number of Ruby states currently tracked in the registry.</p>
+        </div>
+
+
+      </div>
 
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
@@ -280,6 +311,39 @@
           <p>Sets the return type for the aggregate function.</p>
 
 <p>@param logical_type [DuckDB::LogicalType] the return type @return [DuckDB::AggregateFunction] self</p>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-set_special_handling" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-i-set_special_handling" title="Link to this method">
+                <span class="method-name">set_special_handling</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="set_special_handling-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 35</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
+  <span class="ruby-identifier">_set_special_handling</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Sets special NULL handling for the aggregate function. By default <a href="../DuckDB.html"><code>DuckDB</code></a> skips rows with NULL input values.  Calling this method disables that behaviour so the update callback is invoked even when inputs are NULL, receiving <code>nil</code> for each NULL argument.  This lets the function implement its own NULL semantics (e.g. counting NULLs).</p>
+
+<p>Wraps <code>duckdb_aggregate_function_set_special_handling</code>.</p>
+
+<p>@return [DuckDB::AggregateFunction] self</p>
         </div>
 
 
