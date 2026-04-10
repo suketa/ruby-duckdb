@@ -26,6 +26,7 @@ static VALUE rbduckdb_aggregate_function_set_name(VALUE self, VALUE name);
 static VALUE rbduckdb_aggregate_function__set_return_type(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_aggregate_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE rbduckdb_aggregate_function_set_init(VALUE self);
+static VALUE rbduckdb_aggregate_function_set_update(VALUE self);
 static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self);
 
 static const rb_data_type_t aggregate_function_data_type = {
@@ -37,6 +38,7 @@ static const rb_data_type_t aggregate_function_data_type = {
 static void mark(void *ctx) {
     rubyDuckDBAggregateFunction *p = (rubyDuckDBAggregateFunction *)ctx;
     rb_gc_mark_movable(p->init_proc);
+    rb_gc_mark_movable(p->update_proc);
     rb_gc_mark_movable(p->finalize_proc);
 }
 
@@ -50,6 +52,9 @@ static void compact(void *ctx) {
     rubyDuckDBAggregateFunction *p = (rubyDuckDBAggregateFunction *)ctx;
     if (p->init_proc != Qnil) {
         p->init_proc = rb_gc_location(p->init_proc);
+    }
+    if (p->update_proc != Qnil) {
+        p->update_proc = rb_gc_location(p->update_proc);
     }
     if (p->finalize_proc != Qnil) {
         p->finalize_proc = rb_gc_location(p->finalize_proc);
@@ -76,6 +81,7 @@ static VALUE duckdb_aggregate_function_initialize(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
     p->aggregate_function = duckdb_create_aggregate_function();
     p->init_proc = Qnil;
+    p->update_proc = Qnil;
     p->finalize_proc = Qnil;
     return self;
 }
@@ -194,13 +200,140 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
     rbduckdb_function_executor_dispatch(execute_init_callback_protected, &arg);
 }
 
-/* No-op update: Phase 1.0 does not dispatch update to Ruby. */
+/* No-op update: used when no update_proc has been supplied. */
 static void noop_update_callback(duckdb_function_info info,
                                  duckdb_data_chunk input,
                                  duckdb_aggregate_state *states) {
     (void)info;
     (void)input;
     (void)states;
+}
+
+/* update callback dispatch argument */
+struct update_callback_arg {
+    rubyDuckDBAggregateFunction *ctx;
+    duckdb_function_info info;
+    duckdb_data_chunk input;
+    duckdb_aggregate_state *states;
+    duckdb_vector *input_vectors;
+    duckdb_logical_type *input_types;
+    VALUE *args;
+    idx_t row_count;
+    idx_t col_count;
+};
+
+struct update_one_arg {
+    VALUE update_proc;
+    int argc;
+    VALUE *argv;
+};
+
+static VALUE call_update_proc(VALUE varg) {
+    struct update_one_arg *arg = (struct update_one_arg *)varg;
+    return rb_funcallv(arg->update_proc, rb_intern("call"), arg->argc, arg->argv);
+}
+
+/*
+ * Body of the update callback: allocate input buffers, walk each row,
+ * dispatch to the user's update_proc. Runs inside rb_ensure so that
+ * update_cleanup_callback always runs — even if rbduckdb_vector_value_at
+ * or the Ruby proc call raises, allocated buffers and logical types are
+ * released on the unwind path.
+ *
+ * Ruby exceptions raised by the user's proc are caught inline via
+ * rb_protect and reported to DuckDB as scalar errors; other Ruby
+ * exceptions (e.g. from vector_value_at) propagate and are cleaned up
+ * by rb_ensure.
+ */
+static VALUE update_process_rows(VALUE varg) {
+    struct update_callback_arg *arg = (struct update_callback_arg *)varg;
+    ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
+    idx_t i, j;
+
+    arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
+    arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
+    arg->args = ALLOC_N(VALUE, arg->col_count + 1);
+
+    for (j = 0; j < arg->col_count; j++) {
+        arg->input_vectors[j] = duckdb_data_chunk_get_vector(arg->input, j);
+        arg->input_types[j] = duckdb_vector_get_column_type(arg->input_vectors[j]);
+    }
+
+    for (i = 0; i < arg->row_count; i++) {
+        ruby_aggregate_state *state = states[i];
+        struct update_one_arg one;
+        int exception_state;
+        VALUE ret;
+
+        arg->args[0] = state->ruby_state;
+        for (j = 0; j < arg->col_count; j++) {
+            arg->args[j + 1] = rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i);
+        }
+
+        one.update_proc = arg->ctx->update_proc;
+        one.argc = (int)(arg->col_count + 1);
+        one.argv = arg->args;
+
+        ret = rb_protect(call_update_proc, (VALUE)&one, &exception_state);
+        if (exception_state) {
+            report_ruby_error_to_duckdb(arg->info);
+            return Qnil;
+        }
+
+        state->ruby_state = ret;
+        rb_hash_aset(g_aggregate_state_registry, state_registry_key(state), ret);
+    }
+
+    return Qnil;
+}
+
+static VALUE update_cleanup_callback(VALUE varg) {
+    struct update_callback_arg *arg = (struct update_callback_arg *)varg;
+    idx_t j;
+
+    if (arg->input_types != NULL) {
+        for (j = 0; j < arg->col_count; j++) {
+            duckdb_destroy_logical_type(&arg->input_types[j]);
+        }
+        xfree(arg->input_types);
+    }
+    if (arg->args != NULL) {
+        xfree(arg->args);
+    }
+    if (arg->input_vectors != NULL) {
+        xfree(arg->input_vectors);
+    }
+
+    return Qnil;
+}
+
+static void execute_update_callback_protected(void *user_data) {
+    struct update_callback_arg *arg = (struct update_callback_arg *)user_data;
+    rb_ensure(update_process_rows, (VALUE)arg, update_cleanup_callback, (VALUE)arg);
+}
+
+static void update_callback(duckdb_function_info info,
+                            duckdb_data_chunk input,
+                            duckdb_aggregate_state *states) {
+    rubyDuckDBAggregateFunction *ctx;
+    struct update_callback_arg arg;
+
+    ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
+    if (ctx == NULL || ctx->update_proc == Qnil) {
+        return;
+    }
+
+    arg.ctx = ctx;
+    arg.info = info;
+    arg.input = input;
+    arg.states = states;
+    arg.input_vectors = NULL;
+    arg.input_types = NULL;
+    arg.args = NULL;
+    arg.row_count = duckdb_data_chunk_get_size(input);
+    arg.col_count = duckdb_data_chunk_get_column_count(input);
+
+    rbduckdb_function_executor_dispatch(execute_update_callback_protected, &arg);
 }
 
 /* No-op combine: Phase 1.0 does not dispatch combine to Ruby. */
@@ -212,6 +345,36 @@ static void noop_combine_callback(duckdb_function_info info,
     (void)source;
     (void)target;
     (void)count;
+}
+
+/*
+ * Default combine for Phase 1.1: move source state into target state.
+ *
+ * DuckDB invokes combine even for single-partition aggregates: after update
+ * has accumulated values into a source state, DuckDB freshly initialises a
+ * target state and calls combine to merge source into target before finalize.
+ *
+ * Without a user-provided combine_proc we cannot perform an arbitrary merge,
+ * so this minimal implementation overwrites target->ruby_state with the
+ * source value. This is correct for the common single-group/single-thread
+ * path exercised by the tests; richer combine semantics will arrive together
+ * with a user-facing set_combine callback in a later phase.
+ */
+static void default_combine_callback(duckdb_function_info info,
+                                     duckdb_aggregate_state *source,
+                                     duckdb_aggregate_state *target,
+                                     idx_t count) {
+    ruby_aggregate_state **src = (ruby_aggregate_state **)source;
+    ruby_aggregate_state **tgt = (ruby_aggregate_state **)target;
+    idx_t i;
+    (void)info;
+
+    for (i = 0; i < count; i++) {
+        tgt[i]->ruby_state = src[i]->ruby_state;
+        rb_hash_aset(g_aggregate_state_registry,
+                     state_registry_key(tgt[i]),
+                     tgt[i]->ruby_state);
+    }
 }
 
 /* finalize callback dispatch argument */
@@ -301,8 +464,8 @@ static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
         p->aggregate_function,
         state_size_callback,
         state_init_callback,
-        noop_update_callback,
-        noop_combine_callback,
+        (p->update_proc != Qnil) ? update_callback : noop_update_callback,
+        (p->update_proc != Qnil) ? default_combine_callback : noop_combine_callback,
         finalize_callback);
 
     /* Ensure the global executor thread is running for multi-thread dispatch.
@@ -320,6 +483,22 @@ static VALUE rbduckdb_aggregate_function_set_init(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
     p->init_proc = rb_block_proc();
+
+    maybe_set_functions(p);
+
+    return self;
+}
+
+/* :nodoc: */
+static VALUE rbduckdb_aggregate_function_set_update(VALUE self) {
+    rubyDuckDBAggregateFunction *p;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, "block is required");
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
+    p->update_proc = rb_block_proc();
 
     maybe_set_functions(p);
 
@@ -353,6 +532,7 @@ void rbduckdb_init_duckdb_aggregate_function(void) {
     rb_define_private_method(cDuckDBAggregateFunction, "_set_return_type", rbduckdb_aggregate_function__set_return_type, 1);
     rb_define_private_method(cDuckDBAggregateFunction, "_add_parameter", rbduckdb_aggregate_function_add_parameter, 1);
     rb_define_method(cDuckDBAggregateFunction, "set_init", rbduckdb_aggregate_function_set_init, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_update", rbduckdb_aggregate_function_set_update, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_finalize", rbduckdb_aggregate_function_set_finalize, 0);
 
     g_aggregate_state_registry = rb_hash_new();
