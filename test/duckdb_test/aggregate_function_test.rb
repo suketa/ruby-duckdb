@@ -214,6 +214,24 @@ module DuckDBTest
       assert_in_delta 5.0, result.first.first, 0.001
     end
 
+    def test_return_type_setter_raises_for_unsupported_type
+      af = DuckDB::AggregateFunction.new
+      bit_type = DuckDB::LogicalType::BIT # BIT is unsupported as a function return type
+
+      assert_raises(DuckDB::Error) do
+        af.return_type = bit_type
+      end
+    end
+
+    def test_add_parameter_raises_for_unsupported_type
+      af = DuckDB::AggregateFunction.new
+      bit_type = DuckDB::LogicalType::BIT # BIT is unsupported as a parameter type
+
+      assert_raises(DuckDB::Error) do
+        af.add_parameter(bit_type)
+      end
+    end
+
     def test_aggregate_with_multiple_parameters
       bigint = DuckDB::LogicalType::BIGINT
       af = DuckDB::AggregateFunction.new
