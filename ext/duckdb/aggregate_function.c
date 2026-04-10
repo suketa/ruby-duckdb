@@ -40,6 +40,7 @@ static VALUE rbduckdb_aggregate_function_set_init(VALUE self);
 static VALUE rbduckdb_aggregate_function_set_update(VALUE self);
 static VALUE rbduckdb_aggregate_function_set_combine(VALUE self);
 static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self);
+static VALUE rbduckdb_aggregate_function_set_special_handling(VALUE self);
 
 static const rb_data_type_t aggregate_function_data_type = {
     "DuckDB/AggregateFunction",
@@ -715,6 +716,13 @@ static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
     return self;
 }
 
+static VALUE rbduckdb_aggregate_function_set_special_handling(VALUE self) {
+    rubyDuckDBAggregateFunction *p;
+    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
+    duckdb_aggregate_function_set_special_handling(p->aggregate_function);
+    return self;
+}
+
 /* Returns the number of Ruby states currently tracked in the registry. */
 static VALUE aggregate_function_state_registry_size(VALUE klass) {
     (void)klass;
@@ -735,6 +743,7 @@ void rbduckdb_init_duckdb_aggregate_function(void) {
     rb_define_method(cDuckDBAggregateFunction, "set_update", rbduckdb_aggregate_function_set_update, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_combine", rbduckdb_aggregate_function_set_combine, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_finalize", rbduckdb_aggregate_function_set_finalize, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_special_handling", rbduckdb_aggregate_function_set_special_handling, 0);
     rb_define_singleton_method(cDuckDBAggregateFunction, "_state_registry_size",
                                aggregate_function_state_registry_size, 0);
 
