@@ -214,6 +214,27 @@ module DuckDBTest
       assert_in_delta 5.0, result.first.first, 0.001
     end
 
+    def test_aggregate_with_multiple_parameters
+      af = DuckDB::AggregateFunction.new
+      af.name = 'weighted_sum'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT) # value
+      af.add_parameter(DuckDB::LogicalType::BIGINT) # weight
+      af.set_init { 0 }
+      af.set_update { |state, value, weight| state + value * weight }
+      af.set_combine { |s1, s2| s1 + s2 }
+      af.set_finalize { |state| state }
+      @con.register_aggregate_function(af)
+
+      @con.query('CREATE TABLE weighted (v BIGINT, w BIGINT)')
+      @con.query('INSERT INTO weighted VALUES (1, 2), (3, 4), (5, 6)')
+
+      result = @con.query('SELECT weighted_sum(v, w) FROM weighted')
+
+      # 1*2 + 3*4 + 5*6 = 2 + 12 + 30 = 44
+      assert_equal 44, result.first.first
+    end
+
     private
 
     # Force DuckDB to actually parallelise aggregation so the combine callback
