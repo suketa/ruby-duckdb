@@ -4,15 +4,26 @@ VALUE cDuckDBAggregateFunction;
 
 /*
  * Global Ruby Hash used to keep aggregate state Ruby VALUEs alive during
- * aggregation. Keys identify the state buffer pointer (see state_registry_key),
- * values are the Ruby VALUE returned from the user's init_proc and later passed
- * to finalize_proc.
+ * aggregation. Keys are monotonic state IDs (see state_registry_key) that
+ * survive DuckDB's internal memcpy of state buffers. Values are the Ruby
+ * VALUE returned from the user's init_proc and later passed to
+ * finalize_proc.
  *
  * Protected from GC via rb_gc_register_mark_object on init.
  */
 static VALUE g_aggregate_state_registry;
 
+/*
+ * Monotonic counter for aggregate state IDs.  Each state_init_callback
+ * assigns the next ID; because DuckDB memcpy's state buffers internally
+ * (e.g. from a temporary allocation into the hash-table row layout), the
+ * embedded ID is the only reliable way to match a state across init /
+ * combine / finalize / destroy calls.
+ */
+static unsigned long long g_next_state_id = 0;
+
 typedef struct {
+    unsigned long long state_id;
     VALUE ruby_state;
 } ruby_aggregate_state;
 
@@ -127,11 +138,27 @@ static VALUE rbduckdb_aggregate_function_add_parameter(VALUE self, VALUE logical
 }
 
 /*
- * Build a Ruby Hash key that uniquely identifies a state buffer pointer.
+ * Build a Ruby Hash key from the state's embedded ID.
  * Used for the g_aggregate_state_registry GC root.
  */
 static inline VALUE state_registry_key(ruby_aggregate_state *state) {
-    return ULL2NUM((unsigned long long)(uintptr_t)state);
+    return ULL2NUM(state->state_id);
+}
+
+/*
+ * Store (or update) a Ruby VALUE in the global state registry so that
+ * it stays reachable by the GC for the lifetime of the aggregate state.
+ */
+static inline void state_registry_store(ruby_aggregate_state *state, VALUE value) {
+    rb_hash_aset(g_aggregate_state_registry, state_registry_key(state), value);
+}
+
+/*
+ * Remove a state entry from the registry.  Safe to call even if the
+ * entry was already removed (rb_hash_delete is a no-op for missing keys).
+ */
+static inline void state_registry_remove(ruby_aggregate_state *state) {
+    rb_hash_delete(g_aggregate_state_registry, state_registry_key(state));
 }
 
 /*
@@ -174,6 +201,7 @@ static void execute_init_callback_protected(void *user_data) {
 
     /* Initialise buffer to a safe value before calling Ruby. */
     state->ruby_state = Qnil;
+    state->state_id = ++g_next_state_id;
 
     result = rb_protect(call_init_proc, (VALUE)arg, &exception_state);
     if (exception_state) {
@@ -182,7 +210,7 @@ static void execute_init_callback_protected(void *user_data) {
     }
 
     state->ruby_state = result;
-    rb_hash_aset(g_aggregate_state_registry, state_registry_key(state), result);
+    state_registry_store(state, result);
 }
 
 static void state_init_callback(duckdb_function_info info, duckdb_aggregate_state state_p) {
@@ -196,6 +224,7 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
          * buffer anyway to keep the Ruby state slot well-defined. */
         ruby_aggregate_state *state = (ruby_aggregate_state *)state_p;
         state->ruby_state = Qnil;
+        state->state_id = 0;
         return;
     }
 
@@ -287,7 +316,7 @@ static VALUE update_process_rows(VALUE varg) {
         }
 
         state->ruby_state = ret;
-        rb_hash_aset(g_aggregate_state_registry, state_registry_key(state), ret);
+        state_registry_store(state, ret);
     }
 
     return Qnil;
@@ -385,8 +414,9 @@ static void default_combine_callback(duckdb_function_info info,
          * from this context is unsafe and causes a SIGSEGV on Windows.
          *
          * The copied VALUE is already GC-protected via the source state's
-         * existing registry entry.  That entry leaks until the destructor
-         * callback is wired up in Phase 2.
+         * existing registry entry — which shares the same state_id (because
+         * DuckDB memcpy'd the buffer).  The destructor callback will clean
+         * up that entry when DuckDB frees the source state.
          */
     }
 }
@@ -436,13 +466,11 @@ static void execute_combine_callback_protected(void *user_data) {
         }
 
         tgt[i]->ruby_state = ret;
-        rb_hash_aset(g_aggregate_state_registry,
-                     state_registry_key(tgt[i]), ret);
+        state_registry_store(tgt[i], ret);
 
         /* source state is consumed by combine; release its registry entry
          * so the Ruby VALUE can be GC'd. */
-        rb_hash_delete(g_aggregate_state_registry,
-                       state_registry_key(src[i]));
+        state_registry_remove(src[i]);
     }
 }
 
@@ -534,7 +562,7 @@ static void execute_finalize_callback_protected(void *user_data) {
         }
 
         /* Release Ruby state from the GC registry. */
-        rb_hash_delete(g_aggregate_state_registry, state_registry_key(state));
+        state_registry_remove(state);
     }
 
 cleanup:
@@ -564,6 +592,41 @@ static void finalize_callback(duckdb_function_info info,
     rbduckdb_function_executor_dispatch(execute_finalize_callback_protected, &arg);
 }
 
+/* destroy_callback dispatch argument */
+struct destroy_callback_arg {
+    duckdb_aggregate_state *states;
+    idx_t count;
+};
+
+static void execute_destroy_callback(void *data) {
+    struct destroy_callback_arg *arg = (struct destroy_callback_arg *)data;
+    ruby_aggregate_state **s = (ruby_aggregate_state **)arg->states;
+    idx_t i;
+    for (i = 0; i < arg->count; i++) {
+        state_registry_remove(s[i]);
+    }
+}
+
+/*
+ * Called by DuckDB when it frees aggregate state buffers.  On success paths
+ * this runs after finalize has already removed the final-state entries, so
+ * the delete is a harmless no-op for those; for intermediate states created
+ * by DuckDB's internal memcpy, this is the only cleanup path.
+ *
+ * Dispatches through the executor thread so that rb_hash_delete is called
+ * with the GVL held.
+ *
+ * The executor thread is guaranteed to be running because
+ * maybe_set_functions() calls rbduckdb_function_executor_ensure_started()
+ * before registering this destructor.
+ */
+static void destroy_callback(duckdb_aggregate_state *states, idx_t count) {
+    struct destroy_callback_arg arg;
+    arg.states = states;
+    arg.count = count;
+    rbduckdb_function_executor_dispatch(execute_destroy_callback, &arg);
+}
+
 /*
  * Wire up all 5 DuckDB aggregate callbacks on the underlying aggregate_function.
  * Called once both init_proc and finalize_proc have been supplied.
@@ -581,6 +644,7 @@ static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
         (p->combine_proc != Qnil) ? combine_callback :
             ((p->update_proc != Qnil) ? default_combine_callback : noop_combine_callback),
         finalize_callback);
+    duckdb_aggregate_function_set_destructor(p->aggregate_function, destroy_callback);
 
     /* Ensure the global executor thread is running for multi-thread dispatch.
      * Deferred until callbacks are actually wired to DuckDB. */
@@ -651,6 +715,12 @@ static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
     return self;
 }
 
+/* Returns the number of Ruby states currently tracked in the registry. */
+static VALUE aggregate_function_state_registry_size(VALUE klass) {
+    (void)klass;
+    return LONG2NUM((long)RHASH_SIZE(g_aggregate_state_registry));
+}
+
 void rbduckdb_init_duckdb_aggregate_function(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -665,6 +735,8 @@ void rbduckdb_init_duckdb_aggregate_function(void) {
     rb_define_method(cDuckDBAggregateFunction, "set_update", rbduckdb_aggregate_function_set_update, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_combine", rbduckdb_aggregate_function_set_combine, 0);
     rb_define_method(cDuckDBAggregateFunction, "set_finalize", rbduckdb_aggregate_function_set_finalize, 0);
+    rb_define_singleton_method(cDuckDBAggregateFunction, "_state_registry_size",
+                               aggregate_function_state_registry_size, 0);
 
     g_aggregate_state_registry = rb_hash_new();
     rb_gc_register_mark_object(g_aggregate_state_registry);

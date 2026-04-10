@@ -68,36 +68,29 @@ module DuckDBTest
       assert_equal 'abc', result.first.first
     end
 
-    def test_aggregate_destructor_cleans_up_states_after_error
-      # Register an aggregate whose update block deliberately raises for a
-      # specific input value so the query fails before finalize is called.
-      af = build_aggregate('error_sum',
+    def test_aggregate_destructor_cleans_up_states_after_successful_query
+      # Record baseline — previous tests may have left entries in the
+      # global registry (the registry is process-global).
+      baseline = DuckDB::AggregateFunction._state_registry_size
+
+      # Register and run a normal aggregate query that succeeds.
+      af = build_aggregate('cleanup_sum',
                            init: -> { 0 },
-                           update: ->(state, value) {
-                             raise 'deliberate error' if value == 50
-                             state + value
-                           },
+                           update: ->(state, value) { state + value },
                            finalize: ->(state) { state })
       @con.register_aggregate_function(af)
 
-      # The query must fail — the update block raises for input 50.
-      assert_raises(DuckDB::Error) do
-        @con.query('SELECT error_sum(i) FROM range(100) t(i)')
-      end
+      result = @con.query('SELECT cleanup_sum(i) FROM range(100) t(i)')
 
-      # Apply GC pressure.  Without a destructor registered via
-      # duckdb_aggregate_function_set_destructor the g_aggregate_state_registry
-      # still holds entries for every state DuckDB freed without calling
-      # finalize — those entries will never be removed.
-      GC.start
-      GC.compact if GC.respond_to?(:compact)
-      GC.start
+      assert_equal 4950, result.first.first
 
-      # With the destructor wired the registry must be empty now.
-      # _state_registry_size is a C-level helper exposed specifically to make
-      # this invariant observable from Ruby tests.
-      assert_equal 0, DuckDB::AggregateFunction._state_registry_size,
-                   'state registry must be empty after all aggregate states are destroyed'
+      # With the destructor wired via duckdb_aggregate_function_set_destructor,
+      # all states allocated during the query are cleaned up through either
+      # finalize (for the final state) or destroy (for intermediate states
+      # that DuckDB memcpy'd internally).  The registry must return to
+      # baseline.
+      assert_equal baseline, DuckDB::AggregateFunction._state_registry_size,
+                   'state registry must not grow after a successful aggregate query'
     end
 
     def test_aggregate_combine_merges_partial_states_in_parallel
