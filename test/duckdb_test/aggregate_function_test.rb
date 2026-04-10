@@ -15,10 +15,9 @@ module DuckDBTest
     end
 
     def test_minimal_aggregate_returns_initial_state
-      af = build_aggregate('my_agg',
-                           init: -> { 42 },
-                           finalize: ->(state) { state })
-      @con.register_aggregate_function(af)
+      register_aggregate('my_agg',
+                         init: -> { 42 },
+                         finalize: ->(state) { state })
 
       result = @con.query('SELECT my_agg(i) FROM range(100) t(i)')
 
@@ -26,11 +25,10 @@ module DuckDBTest
     end
 
     def test_aggregate_update_sums_values
-      af = build_aggregate('my_sum',
-                           init: -> { 0 },
-                           update: ->(state, value) { state + value },
-                           finalize: ->(state) { state })
-      @con.register_aggregate_function(af)
+      register_aggregate('my_sum',
+                         init: -> { 0 },
+                         update: ->(state, value) { state + value },
+                         finalize: ->(state) { state })
 
       result = @con.query('SELECT my_sum(i) FROM range(100) t(i)')
 
@@ -40,13 +38,12 @@ module DuckDBTest
 
     def test_aggregate_double_return_and_input
       double_type = DuckDB::LogicalType::DOUBLE
-      af = build_aggregate('my_dsum',
-                           type: double_type,
-                           init: -> { 0.0 },
-                           update: ->(state, value) { state + value },
-                           combine: ->(s1, s2) { s1 + s2 },
-                           finalize: ->(state) { state })
-      @con.register_aggregate_function(af)
+      register_aggregate('my_dsum',
+                         type: double_type,
+                         init: -> { 0.0 },
+                         update: ->(state, value) { state + value },
+                         combine: ->(s1, s2) { s1 + s2 },
+                         finalize: ->(state) { state })
 
       result = @con.query('SELECT my_dsum(i::DOUBLE) FROM range(10) t(i)')
       # sum(0.0..9.0) == 45.0
@@ -55,13 +52,12 @@ module DuckDBTest
 
     def test_aggregate_varchar_return_and_input
       varchar_type = DuckDB::LogicalType::VARCHAR
-      af = build_aggregate('my_concat',
-                           type: varchar_type,
-                           init: -> { +'' },
-                           update: ->(state, value) { state + value },
-                           combine: ->(s1, s2) { s1 + s2 },
-                           finalize: ->(state) { state })
-      @con.register_aggregate_function(af)
+      register_aggregate('my_concat',
+                         type: varchar_type,
+                         init: -> { +'' },
+                         update: ->(state, value) { state + value },
+                         combine: ->(s1, s2) { s1 + s2 },
+                         finalize: ->(state) { state })
 
       result = @con.query("SELECT my_concat(x) FROM (VALUES ('a'), ('b'), ('c')) t(x)")
 
@@ -74,11 +70,10 @@ module DuckDBTest
       baseline = DuckDB::AggregateFunction._state_registry_size
 
       # Register and run a normal aggregate query that succeeds.
-      af = build_aggregate('cleanup_sum',
-                           init: -> { 0 },
-                           update: ->(state, value) { state + value },
-                           finalize: ->(state) { state })
-      @con.register_aggregate_function(af)
+      register_aggregate('cleanup_sum',
+                         init: -> { 0 },
+                         update: ->(state, value) { state + value },
+                         finalize: ->(state) { state })
 
       result = @con.query('SELECT cleanup_sum(i) FROM range(100) t(i)')
 
@@ -96,11 +91,10 @@ module DuckDBTest
     def test_aggregate_state_cleanup_after_finalize_error
       baseline = DuckDB::AggregateFunction._state_registry_size
 
-      af = build_aggregate('err_finalize',
-                           init: -> { 0 },
-                           update: ->(state, value) { state + value },
-                           finalize: ->(_state) { raise 'finalize boom' })
-      @con.register_aggregate_function(af)
+      register_aggregate('err_finalize',
+                         init: -> { 0 },
+                         update: ->(state, value) { state + value },
+                         finalize: ->(_state) { raise 'finalize boom' })
 
       assert_raises(DuckDB::Error) do
         @con.query('SELECT err_finalize(i) FROM range(10) t(i)')
@@ -111,12 +105,11 @@ module DuckDBTest
     end
 
     def test_aggregate_combine_merges_partial_states_in_parallel
-      af = build_aggregate('my_parallel_sum',
-                           init: -> { 0 },
-                           update: ->(state, value) { state + value },
-                           combine: ->(s1, s2) { s1 + s2 },
-                           finalize: ->(state) { state })
-      @con.register_aggregate_function(af)
+      register_aggregate('my_parallel_sum',
+                         init: -> { 0 },
+                         update: ->(state, value) { state + value },
+                         combine: ->(s1, s2) { s1 + s2 },
+                         finalize: ->(state) { state })
       force_parallel_execution(@con)
 
       result = @con.query('SELECT my_parallel_sum(i) FROM range(100000) t(i)')
@@ -159,6 +152,11 @@ module DuckDBTest
       af.add_parameter(type)
       set_callbacks(af, callbacks)
       af
+    end
+
+    def register_aggregate(name, **)
+      af = build_aggregate(name, **)
+      @con.register_aggregate_function(af)
     end
 
     def set_callbacks(func, callbacks)
