@@ -567,6 +567,11 @@ static void execute_finalize_callback_protected(void *user_data) {
     }
 
 cleanup:
+    /* Clean up registry entries for the current (failed) state and any
+       remaining unprocessed states so we don't leak GC-registered objects. */
+    for (; i < arg->count; i++) {
+        state_registry_remove(states[i]);
+    }
     duckdb_destroy_logical_type(&result_type);
 }
 
