@@ -176,6 +176,19 @@ module DuckDB
         _create_varchar(value)
       end
 
+      # Creates a DuckDB::Value of BLOB type.
+      #
+      #   value = DuckDB::Value.create_blob("\x00\x01\x02".b)
+      #
+      # @param value [String] the binary string value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a BINARY encoded String.
+      def create_blob(value)
+        check_type!(value, String)
+        check_binary!(value)
+        _create_blob(value)
+      end
+
       private
 
       def check_range!(value, range, type_name)
@@ -187,6 +200,12 @@ module DuckDB
         return if types.any? { |type| value.is_a?(type) }
 
         raise ArgumentError, "expected #{types.map(&:name).join(' or ')}, got #{value.class.name}"
+      end
+
+      def check_binary!(value)
+        return if value.encoding == Encoding::BINARY
+
+        raise ArgumentError, "expected BINARY encoding, got #{value.encoding}"
       end
 
       def check_utf8_compatible!(value)

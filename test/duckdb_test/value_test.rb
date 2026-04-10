@@ -450,6 +450,42 @@ module DuckDBTest
       end
     end
 
+    def test_create_blob
+      value = DuckDB::Value.create_blob("\x00\x01\x02".b)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_blob_with_empty_string
+      value = DuckDB::Value.create_blob(''.b)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_blob_with_binary_duckdb_blob
+      value = DuckDB::Value.create_blob(DuckDB::Blob.new("\x00\x01\x02".b))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_blob_with_utf8_duckdb_blob_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_blob(DuckDB::Blob.new('hello'))
+      end
+    end
+
+    def test_create_blob_with_utf8_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_blob('hello')
+      end
+    end
+
+    def test_create_blob_with_integer_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_blob(123)
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -548,6 +584,16 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_varchar WHERE id = 1')
 
       assert_equal('Hello DuckDB', result.first[0])
+    end
+
+    def test_create_blob_bind_value
+      @con.query('CREATE TABLE e2e_blob (id INTEGER, val BLOB)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_blob VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_blob("\x00\x01\x02\xff".b))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_blob WHERE id = 1')
+
+      assert_equal("\x00\x01\x02\xff".b, result.first[0])
     end
   end
 end
