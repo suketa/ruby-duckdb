@@ -29,6 +29,7 @@
 #include "./config.h"
 #include "./instance_cache.h"
 #include "./value.h"
+#include "./function_executor.h"
 #include "./scalar_function.h"
 #include "./scalar_function_set.h"
 #include "./expression.h"
