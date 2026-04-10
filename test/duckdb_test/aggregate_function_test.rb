@@ -107,6 +107,25 @@ module DuckDBTest
       assert_equal 4_999_950_000, result.first.first
     end
 
+    def test_set_special_handling_passes_null_values_to_update
+      af = build_aggregate('count_with_nulls',
+                           init: -> { 0 },
+                           update: ->(state, _value) { state + 1 },
+                           finalize: ->(state) { state })
+      af.set_special_handling
+      @con.register_aggregate_function(af)
+
+      @con.query('CREATE TABLE null_test (i BIGINT)')
+      @con.query('INSERT INTO null_test VALUES (1), (NULL), (3), (NULL), (5)')
+
+      result = @con.query('SELECT count_with_nulls(i) FROM null_test')
+
+      # Without set_special_handling DuckDB would skip the 2 NULL rows and
+      # return 3.  With it the update callback receives all 5 rows (NULLs
+      # arrive as nil), so the count must be 5.
+      assert_equal 5, result.first.first
+    end
+
     private
 
     # Force DuckDB to actually parallelise aggregation so the combine callback
