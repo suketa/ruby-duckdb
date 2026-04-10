@@ -77,6 +77,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-create_blob">create_blob</a></li>
       <li ><a href="#method-c-create_bool">create_bool</a></li>
       <li ><a href="#method-c-create_double">create_double</a></li>
       <li ><a href="#method-c-create_float">create_float</a></li>
@@ -143,6 +144,42 @@
        <header>
          <h3>Public Class Methods</h3>
        </header>
+
+      <div id="method-c-create_blob" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-create_blob" title="Link to this method">
+                <span class="method-name">create_blob</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="create_blob-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/value.rb, line 186</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_blob</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">String</span>)
+  <span class="ruby-identifier">check_binary!</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">_create_blob</span>(<span class="ruby-identifier">value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of BLOB type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_blob</span>(<span class="ruby-string">&quot;\x00\x01\x02&quot;</span>.<span class="ruby-identifier">b</span>)
+</pre>
+
+<p>@param value [String] the binary string value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a BINARY encoded String.</p>
+        </div>
+
+
+      </div>
 
       <div id="method-c-create_bool" class="method-detail anchor-link ">
         <div class="method-header">
