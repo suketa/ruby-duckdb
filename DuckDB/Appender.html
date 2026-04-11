@@ -91,6 +91,7 @@
       <li ><a href="#method-i-append">append</a></li>
       <li ><a href="#method-i-append_blob">append_blob</a></li>
       <li ><a href="#method-i-append_bool">append_bool</a></li>
+      <li ><a href="#method-i-append_data_chunk">append_data_chunk</a></li>
       <li ><a href="#method-i-append_date">append_date</a></li>
       <li ><a href="#method-i-append_default">append_default</a></li>
       <li ><a href="#method-i-append_double">append_double</a></li>
@@ -359,7 +360,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 599</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 609</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -483,6 +484,40 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+        </div>
+
+
+      </div>
+
+      <div id="method-i-append_data_chunk" class="method-detail anchor-link ">
+        <div class="method-header">
+              <div class="method-heading">
+                <a href="#method-i-append_data_chunk" title="Link to this method">
+                  <span class="method-callseq">
+                    append_data_chunk(chunk) &rarr; self
+                  </span>
+                </a>
+              </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="append_data_chunk-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 590</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_data_chunk</span>(<span class="ruby-identifier">chunk</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected DuckDB::DataChunk, got #{chunk.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">DataChunk</span>)
+
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_data_chunk</span>(<span class="ruby-identifier">chunk</span>)
+
+  <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_data_chunk&#39;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
         </div>
 
 
@@ -991,7 +1026,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="append_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 632</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 642</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)

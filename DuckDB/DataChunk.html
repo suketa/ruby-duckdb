@@ -74,6 +74,13 @@
   
   
   
+  <div class="nav-section">
+    <h3>Class Methods</h3>
+    <ul class="link-list" role="directory">
+      <li ><a href="#method-c-new">new</a></li>
+    </ul>
+  </div>
+
 
 
   <div class="nav-section">
@@ -152,6 +159,79 @@
 
 
 
+
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-new" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-new" title="Link to this method">
+                <span class="method-name">new</span>
+                <span class="method-args">(p1 = v1)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="new-source">
+            <pre>static VALUE initialize(int argc, VALUE *argv, VALUE self) {
+    rubyDuckDBDataChunk *ctx;
+    VALUE logical_types;
+    idx_t column_count;
+    duckdb_logical_type *types;
+    long i;
+
+    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &amp;data_chunk_data_type, ctx);
+
+    rb_scan_args(argc, argv, &quot;01&quot;, &amp;logical_types);
+    if (NIL_P(logical_types)) {
+        return self;
+    }
+
+    Check_Type(logical_types, T_ARRAY);
+
+    if (ctx-&gt;owned &amp;&amp; ctx-&gt;data_chunk) {
+        duckdb_destroy_data_chunk(&amp;(ctx-&gt;data_chunk));
+        ctx-&gt;owned = false;
+    }
+
+    column_count = (idx_t)RARRAY_LEN(logical_types);
+    types = ALLOC_N(duckdb_logical_type, column_count);
+
+    for (i = 0; i &lt; RARRAY_LEN(logical_types); i++) {
+        VALUE logical_type = rb_ary_entry(logical_types, i);
+        rubyDuckDBLogicalType *logical_type_ctx = get_struct_logical_type(logical_type);
+        types[i] = logical_type_ctx-&gt;logical_type;
+    }
+
+    ctx-&gt;data_chunk = duckdb_create_data_chunk(types, column_count);
+    xfree(types);
+
+    if (!ctx-&gt;data_chunk) {
+        rb_raise(eDuckDBError, &quot;Failed to create data chunk&quot;);
+    }
+
+    ctx-&gt;owned = true;
+
+    return self;
+}</pre>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+    </section>
 
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
@@ -265,9 +345,8 @@
           <div class="method-source-code" id="set_value-source">
             <pre><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 48</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_value</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">vector</span> = <span class="ruby-identifier">get_vector</span>(<span class="ruby-identifier">col_idx</span>)
-  <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">logical_type</span>
-  <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>
+  <span class="ruby-identifier">vector</span> = <span class="ruby-identifier">cached_vector</span>(<span class="ruby-identifier">col_idx</span>)
+  <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">cached_type_id</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>)
 
   <span class="ruby-comment"># Handle NULL</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
@@ -277,51 +356,37 @@
 
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">type_id</span>
   <span class="ruby-keyword">when</span> <span class="ruby-value">:boolean</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_boolean</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_boolean</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:tinyint</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_tinyint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_tinyint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:smallint</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_smallint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_smallint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:integer</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_integer</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_integer</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:bigint</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_bigint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_bigint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:utinyint</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_utinyint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_utinyint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:usmallint</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_usmallint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_usmallint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:uinteger</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_uinteger</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_uinteger</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:ubigint</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_ubigint</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_ubigint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:float</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_float</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_float</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:double</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_double</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_double</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:varchar</span>
     <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:blob</span>
     <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element_len</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp_tz</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp_tz</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp_tz</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">when</span> <span class="ruby-value">:date</span>
-    <span class="ruby-identifier">data</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_date</span>(<span class="ruby-identifier">data</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
+    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_date</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unsupported type for DataChunk#set_value: #{type_id} for value `#{value.inspect}`&quot;</span>
   <span class="ruby-keyword">end</span>
