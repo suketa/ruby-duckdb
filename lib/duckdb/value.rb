@@ -204,6 +204,21 @@ module DuckDB
         _create_hugeint(lower, upper)
       end
 
+      # Creates a DuckDB::Value of UHUGEINT type.
+      #
+      #   value = DuckDB::Value.create_uhugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
+      #
+      # @param value [Integer] the integer value (0..(2**128 - 1))
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not an Integer or out of range.
+      def create_uhugeint(value)
+        check_type!(value, Integer)
+        check_range!(value, RANGE_UHUGEINT, 'UHUGEINT')
+
+        lower, upper = integer_to_hugeint(value)
+        _create_uhugeint(lower, upper)
+      end
+
       private
 
       def check_range!(value, range, type_name)
