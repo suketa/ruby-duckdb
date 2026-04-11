@@ -60,7 +60,7 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Config, config.set_config('aaa_invalid_option', 'READ_ONLY'))
       assert_raises(DuckDB::Error) do
-        DuckDB::Database.open(nil, config)
+        DuckDB::Database.open(config: config)
       end
     end
 
@@ -77,7 +77,7 @@ module DuckDBTest
     def test_duckdb_api_config_set_to_ruby_custom
       config = DuckDB::Config.new
       config.set_config('threads', '2')
-      db = DuckDB::Database.open(nil, config)
+      db = DuckDB::Database.open(config: config)
       conn = db.connect
       result = conn.query('PRAGMA user_agent')
       user_agent = result.first[0]
