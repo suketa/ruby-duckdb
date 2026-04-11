@@ -585,6 +585,16 @@ module DuckDB
       raise_appender_error('failed to append_value')
     end
 
+    # call-seq:
+    #   appender.append_data_chunk(chunk) -> self
+    def append_data_chunk(chunk)
+      raise ArgumentError, "expected DuckDB::DataChunk, got #{chunk.class}" unless chunk.is_a?(DuckDB::DataChunk)
+
+      return self if _append_data_chunk(chunk)
+
+      raise_appender_error('failed to append_data_chunk')
+    end
+
     # appends value.
     #
     #   require 'duckdb'
