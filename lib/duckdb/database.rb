@@ -21,9 +21,6 @@ module DuckDB
   #     p row
   #   end
   class Database
-    private_class_method :_open
-    private_class_method :_open_ext
-
     # Opens a DuckDB database.
     #
     #   DuckDB::Database.new                    #=> in-memory database
@@ -43,36 +40,24 @@ module DuckDB
 
     class << self
       # Opens database.
-      # The first argument is DuckDB database file path to open.
-      # If there is no argument, the method opens DuckDB database in memory.
-      # The method yields block if block is given.
       #
-      #   DuckDB::Database.open('duckdb_database.db') #=> DuckDB::Database
-      #
-      #   DuckDB::Database.open #=> opens DuckDB::Database in memory.
+      #   DuckDB::Database.open                          #=> in-memory database
+      #   DuckDB::Database.open('test.db')               #=> file database
+      #   DuckDB::Database.open('test.db', config: config)
+      #   DuckDB::Database.open(config: config)          #=> in-memory with config
       #
       #   DuckDB::Database.open do |db|
       #     con = db.connect
       #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       #   end
-      def open(dbpath = nil, config = nil)
-        db = _db_open(dbpath, config)
+      def open(path = :memory, config: nil)
+        db = new(path, config: config)
         return db unless block_given?
 
         begin
           yield db
         ensure
           db.close
-        end
-      end
-
-      private
-
-      def _db_open(dbpath, config) # :nodoc:
-        if config
-          _open_ext(dbpath, config)
-        else
-          _open(dbpath)
         end
       end
     end
