@@ -60,7 +60,7 @@ jobs:
       uses: nick-fields/retry@v3
       with:
         timeout_minutes: 1
-        max_attempts: 3
+        max_attempts: 1
         command: bundle exec rake test TEST=test/duckdb_test/scalar_function_test.rb TESTOPTS="--verbose"
 
   post-test:
