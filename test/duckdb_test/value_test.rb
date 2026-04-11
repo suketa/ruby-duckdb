@@ -506,7 +506,7 @@ module DuckDBTest
 
     def test_create_hugeint_with_string_raises_argument_error
       assert_raises(ArgumentError) do
-        DuckDB::Value.create_hugeint('invalid')
+        DuckDB::Value.create_hugeint('not HUGEINT')
       end
     end
 
@@ -519,6 +519,42 @@ module DuckDBTest
     def test_create_hugeint_with_underflow_raises_argument_error
       assert_raises(ArgumentError) do
         DuckDB::Value.create_hugeint(-(1 << 127) - 1)
+      end
+    end
+
+    def test_create_uhugeint_with_zero
+      value = DuckDB::Value.create_uhugeint(0)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uhugeint_with_max
+      value = DuckDB::Value.create_uhugeint((1 << 128) - 1)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uhugeint_with_positive
+      value = DuckDB::Value.create_uhugeint(1 << 64)
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_uhugeint_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uhugeint('not UHUGEINT')
+      end
+    end
+
+    def test_create_uhugeint_with_overflow_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uhugeint(1 << 128)
+      end
+    end
+
+    def test_create_uhugeint_with_negative_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_uhugeint(-1)
       end
     end
 
@@ -640,6 +676,19 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_hugeint WHERE id = 1')
 
       assert_equal(1_234_567_890_123_456_789_012_345, result.first[0])
+    end
+
+    def test_create_uhugeint_bind_value
+      @con.query('CREATE TABLE e2e_uhugeint (id INTEGER, val UHUGEINT)')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_uhugeint VALUES (1, ?)')
+      stmt.bind_value(
+        1,
+        DuckDB::Value.create_uhugeint(340_282_366_920_938_463_463_374_607_431_768_211_455)
+      )
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_uhugeint WHERE id = 1')
+
+      assert_equal(340_282_366_920_938_463_463_374_607_431_768_211_455, result.first[0])
     end
   end
 end

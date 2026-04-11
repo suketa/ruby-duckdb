@@ -19,6 +19,7 @@ static VALUE duckdb_value_s__create_double(VALUE klass, VALUE val);
 static VALUE duckdb_value_s__create_varchar(VALUE klass, VALUE str);
 static VALUE duckdb_value_s__create_blob(VALUE klass, VALUE str);
 static VALUE duckdb_value_s__create_hugeint(VALUE klass, VALUE lower, VALUE upper);
+static VALUE duckdb_value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper);
 static VALUE duckdb_value_s_create_null(VALUE klass);
 
 static const rb_data_type_t value_data_type = {
@@ -117,6 +118,14 @@ static VALUE duckdb_value_s__create_hugeint(VALUE klass, VALUE lower, VALUE uppe
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
     duckdb_value value = duckdb_create_hugeint(hugeint);
+    return rbduckdb_value_new(value);
+}
+
+static VALUE duckdb_value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper) {
+    duckdb_uhugeint uhugeint;
+    uhugeint.lower = NUM2ULL(lower);
+    uhugeint.upper = NUM2ULL(upper);
+    duckdb_value value = duckdb_create_uhugeint(uhugeint);
     return rbduckdb_value_new(value);
 }
 
@@ -264,6 +273,7 @@ void rbduckdb_init_duckdb_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_varchar", duckdb_value_s__create_varchar, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_blob", duckdb_value_s__create_blob, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_hugeint", duckdb_value_s__create_hugeint, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uhugeint", duckdb_value_s__create_uhugeint, 2);
     rb_define_singleton_method(cDuckDBValue, "create_null", duckdb_value_s_create_null, 0);
 }
 

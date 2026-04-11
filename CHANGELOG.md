@@ -24,6 +24,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_double`.
 - add `DuckDB::Value.create_varchar`.
 - add `DuckDB::Value.create_blob`.
+- add `DuckDB::Value.create_hugeint`.
+- add `DuckDB::Value.create_uhugeint`.
 - add `DuckDB::Appender#append_value`.
 - add `DuckDB::AggregateFunction`.
 
