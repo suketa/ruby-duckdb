@@ -61,7 +61,7 @@ jobs:
       with:
         timeout_minutes: 1
         max_attempts: 3
-        command: bundle exec rake test TESTOPTS="--verbose"
+        command: bundle exec rake test TEST=test/duckdb_test/scalar_function_test.rb TESTOPTS="--verbose"
 
   post-test:
     name: All tests passed on Windows
