@@ -129,6 +129,31 @@ module DuckDBTest
       db.close
     end
 
+    def test_s_open_with_positional_config_deprecated
+      config = DuckDB::Config.new
+      config['access_mode'] = 'read_write'
+      db = nil
+
+      assert_output(nil, /deprecated/) { db = DuckDB::Database.open(nil, config) }
+
+      assert_instance_of(DuckDB::Database, db)
+      con = db.connect
+      result = con.execute("SELECT current_setting('access_mode') AS access_mode;")
+
+      assert_equal('read_write', result.first.first)
+      db.close
+    end
+
+    def test_s_open_with_path_and_positional_config_deprecated
+      config = DuckDB::Config.new
+      db = nil
+
+      assert_output(nil, /deprecated/) { db = DuckDB::Database.open(@path, config) }
+
+      assert_instance_of(DuckDB::Database, db)
+      db.close
+    end
+
     def test_close
       db = DuckDB::Database.open
       con = db.connect

@@ -50,7 +50,18 @@ module DuckDB
       #     con = db.connect
       #     con.query('CREATE TABLE users (id INTEGER, name VARCHAR(30))')
       #   end
-      def open(path = :memory, config: nil)
+      def open(path = :memory, *args, config: nil)
+        unless args.empty?
+          if args.first.is_a?(DuckDB::Config)
+            warn 'DuckDB::Database.open(path, config) is deprecated. Use DuckDB::Database.open(path, config: config) instead.'
+            config = args.first
+          else
+            raise TypeError, "expected DuckDB::Config, got #{args.first.class}"
+          end
+        end
+
+        path = :memory if path.nil?
+
         db = new(path, config: config)
         return db unless block_given?
 
