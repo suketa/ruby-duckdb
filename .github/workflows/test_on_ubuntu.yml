@@ -95,7 +95,7 @@ jobs:
       env:
         MYSQL_TEST: 1
       run: |
-        env RUBYOPT=-W:deprecated rake test
+        env RUBYOPT=-W:deprecated bundle exec rake test
 
   post-test:
     name: All tests passed on Ubuntu
