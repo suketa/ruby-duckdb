@@ -338,6 +338,9 @@ static VALUE rbduckdb_scalar_function__set_bind(VALUE self) {
     duckdb_scalar_function_set_extra_info(p->scalar_function, p, NULL);
     duckdb_scalar_function_set_bind(p->scalar_function, scalar_function_bind_callback);
 
+    /* Ensure the global executor thread is running for GVL-safe dispatch */
+    rbduckdb_function_executor_ensure_started();
+
     return self;
 }
 
@@ -351,37 +354,55 @@ static VALUE call_bind_proc(VALUE varg) {
     return rb_funcall(arg->bind_proc, rb_intern("call"), 1, arg->bind_info_obj);
 }
 
-/*
- * The bind callback: called once at query planning time.
- *
- * Retrieves the rubyDuckDBScalarFunction context via extra_info, creates a
- * ScalarFunction::BindInfo Ruby object wrapping the duckdb_bind_info, and
- * calls the stored bind_proc with it.
- *
- * The bind callback is invoked from the calling Ruby thread during planning,
- * so we call rb_protect directly. For a Ruby thread that has released the GVL
- * we reacquire it via rb_thread_call_with_gvl.
- */
-static void scalar_function_bind_callback(duckdb_bind_info info) {
+/* Payload for dispatching the bind callback through the executor */
+struct bind_dispatch_arg {
     rubyDuckDBScalarFunction *ctx;
+    duckdb_bind_info info;
+};
+
+/*
+ * Executes the bind proc under rb_protect, reporting any Ruby exception
+ * back to DuckDB via duckdb_scalar_function_bind_set_error.
+ * Called via rbduckdb_function_executor_dispatch with the GVL held.
+ */
+static void execute_bind_callback_protected(void *user_data) {
+    struct bind_dispatch_arg *darg = (struct bind_dispatch_arg *)user_data;
     int exception_state;
     struct bind_call_arg arg;
 
-    ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_bind_get_extra_info(info);
-    if (ctx == NULL || ctx->bind_proc == Qnil) return;
-
-    arg.bind_proc = ctx->bind_proc;
-    arg.bind_info_obj = rbduckdb_scalar_function_bind_info_new(info);
+    arg.bind_proc = darg->ctx->bind_proc;
+    arg.bind_info_obj = rbduckdb_scalar_function_bind_info_new(darg->info);
 
     rb_protect(call_bind_proc, (VALUE)&arg, &exception_state);
     if (exception_state) {
         VALUE errinfo = rb_errinfo();
         if (errinfo != Qnil) {
             VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
-            duckdb_scalar_function_bind_set_error(info, StringValueCStr(msg));
+            duckdb_scalar_function_bind_set_error(darg->info, StringValueCStr(msg));
         }
         rb_set_errinfo(Qnil);
     }
+}
+
+/*
+ * The bind callback: called once at query planning time.
+ *
+ * Retrieves the rubyDuckDBScalarFunction context via extra_info and dispatches
+ * the Ruby bind proc through the function executor. The executor ensures the
+ * GVL is held before calling Ruby code, which is necessary because this
+ * callback is invoked from within duckdb_query which runs without the GVL.
+ */
+static void scalar_function_bind_callback(duckdb_bind_info info) {
+    rubyDuckDBScalarFunction *ctx;
+    struct bind_dispatch_arg darg;
+
+    ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_bind_get_extra_info(info);
+    if (ctx == NULL || ctx->bind_proc == Qnil) return;
+
+    darg.ctx = ctx;
+    darg.info = info;
+
+    rbduckdb_function_executor_dispatch(execute_bind_callback_protected, &darg);
 }
 
 
