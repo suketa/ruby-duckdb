@@ -436,7 +436,7 @@ module DuckDBTest
       assert_equal time1.utc, rows[2].first.utc # time3 (JST) equals time1 (UTC) as same instant
     end
 
-    def test_s_new_constructs_owned_data_chunk # rubocop:disable Minitest/MultipleAssertions
+    def test_s_new_constructs_owned_data_chunk
       data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::BIGINT, DuckDB::LogicalType::VARCHAR])
 
       assert_equal 2, data_chunk.column_count
