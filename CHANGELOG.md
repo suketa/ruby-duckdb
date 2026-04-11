@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `DuckDB::Database.new(path = :memory, config: nil, &block)` to create a database instance. `path` is a positional argument (default `:memory` for in-memory database, or a String path for file database). `config:` accepts an optional `DuckDB::Config` object. When a block is given, the database is yielded and automatically closed afterwards.
 - add `TIME_NS` column support to `DuckDB::Result`. `TIME_NS` values are returned as `Time` objects with nanoseconds truncated to microseconds.
 - add `INTERVAL` as a supported `return_type` for `DuckDB::ScalarFunction`. The scalar function block can now return a `DuckDB::Interval` object and it will be written back to the result vector correctly.
 - add `UUID` as a supported `return_type` for `DuckDB::ScalarFunction`. The scalar function block can now return a UUID string and it will be written back to the result vector correctly.
