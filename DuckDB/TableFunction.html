@@ -579,6 +579,8 @@
 
     duckdb_table_function_set_bind(ctx-&gt;table_function, table_function_bind_callback);
 
+    rbduckdb_function_executor_ensure_started();
+
     return self;
 }</pre>
           </div>
@@ -624,6 +626,8 @@
 
     ctx-&gt;execute_proc = rb_block_proc();
     duckdb_table_function_set_function(ctx-&gt;table_function, table_function_execute_callback);
+
+    rbduckdb_function_executor_ensure_started();
 
     return self;
 }</pre>
@@ -675,6 +679,8 @@
 
     ctx-&gt;init_proc = rb_block_proc();
     duckdb_table_function_set_init(ctx-&gt;table_function, table_function_init_callback);
+
+    rbduckdb_function_executor_ensure_started();
 
     return self;
 }</pre>
