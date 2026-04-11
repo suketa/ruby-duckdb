@@ -107,6 +107,7 @@
               </ul>
             </details>
           </li>
+          <li>      <a href="#label-Versioning+and+DuckDB+support">Versioning and DuckDB support</a>
 
               </ul>
             </details>
@@ -400,6 +401,18 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <h4 id="label-Global+configuration">Global configuration<span><a href="#label-Global+configuration">&para;</a> <a href="#top">&uarr;</a></span></h4>
 
 <p>Set <a href="DuckDB.html#attribute-c-default_timezone"><code>DuckDB.default_timezone</code></a> to control how TIMESTAMP and TIME values without time zone are converted to Ruby <code>Time</code> objects. The default is <code>:local</code>, but you can use <code>:utc</code> for UTC conversion.</p>
+
+<h2 id="label-Versioning+and+DuckDB+support">Versioning and <a href="DuckDB.html"><code>DuckDB</code></a> support<span><a href="#label-Versioning+and+DuckDB+support">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The first three digits of the gem version track the <a href="DuckDB.html"><code>DuckDB</code></a> release that the gem is aligned with. For example, ruby-duckdb <code>1.5.1.0</code> runs with <a href="DuckDB.html"><code>DuckDB</code></a> <code>1.5.1</code>.</p>
+
+<p>All releases in the same <code>1.5.1.x</code> series target <a href="DuckDB.html"><code>DuckDB</code></a> <code>1.5.1</code>. The fourth digit is reserved for ruby-duckdb-only releases, such as gem bug fixes or new gem features. For example, <code>1.5.1.1</code> still targets <a href="DuckDB.html"><code>DuckDB</code></a> <code>1.5.1</code>.</p>
+
+<p>We also aim to support the latest release from the previous minor series, so the <code>1.5.1.x</code> series should also support <a href="DuckDB.html"><code>DuckDB</code></a> <code>1.4.x</code>.</p>
+
+<p>In addition, we try to support <a href="DuckDB.html"><code>DuckDB</code></a> LTS releases whenever practical.</p>
+
+<p>This gem aims to support most <a href="DuckDB.html"><code>DuckDB</code></a> minor releases, but we may occasionally skip a minor series.</p>
 
 </main>
 
