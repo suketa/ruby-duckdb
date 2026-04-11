@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBDataChunk {
     duckdb_data_chunk data_chunk;
+    bool owned;
 };
 
 typedef struct _rubyDuckDBDataChunk rubyDuckDBDataChunk;

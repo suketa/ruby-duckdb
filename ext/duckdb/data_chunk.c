@@ -6,6 +6,7 @@ extern VALUE cDuckDBVector;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
+static VALUE initialize(int argc, VALUE *argv, VALUE self);
 static VALUE rbduckdb_data_chunk_column_count(VALUE self);
 static VALUE rbduckdb_data_chunk_get_size(VALUE self);
 static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size);
@@ -19,6 +20,11 @@ static const rb_data_type_t data_chunk_data_type = {
 
 static void deallocate(void *ctx) {
     rubyDuckDBDataChunk *p = (rubyDuckDBDataChunk *)ctx;
+
+    if (p->owned && p->data_chunk) {
+        duckdb_destroy_data_chunk(&(p->data_chunk));
+    }
+
     xfree(p);
 }
 
@@ -35,6 +41,48 @@ rubyDuckDBDataChunk *get_struct_data_chunk(VALUE obj) {
     rubyDuckDBDataChunk *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
     return ctx;
+}
+
+static VALUE initialize(int argc, VALUE *argv, VALUE self) {
+    rubyDuckDBDataChunk *ctx;
+    VALUE logical_types;
+    idx_t column_count;
+    duckdb_logical_type *types;
+    long i;
+
+    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+
+    rb_scan_args(argc, argv, "01", &logical_types);
+    if (NIL_P(logical_types)) {
+        return self;
+    }
+
+    Check_Type(logical_types, T_ARRAY);
+
+    if (ctx->owned && ctx->data_chunk) {
+        duckdb_destroy_data_chunk(&(ctx->data_chunk));
+        ctx->owned = false;
+    }
+
+    column_count = (idx_t)RARRAY_LEN(logical_types);
+    types = ALLOC_N(duckdb_logical_type, column_count);
+
+    for (i = 0; i < RARRAY_LEN(logical_types); i++) {
+        VALUE logical_type = rb_ary_entry(logical_types, i);
+        rubyDuckDBLogicalType *logical_type_ctx = get_struct_logical_type(logical_type);
+        types[i] = logical_type_ctx->logical_type;
+    }
+
+    ctx->data_chunk = duckdb_create_data_chunk(types, column_count);
+    xfree(types);
+
+    if (!ctx->data_chunk) {
+        rb_raise(eDuckDBError, "Failed to create data chunk");
+    }
+
+    ctx->owned = true;
+
+    return self;
 }
 
 /*
@@ -130,6 +178,7 @@ void rbduckdb_init_duckdb_data_chunk(void) {
     cDuckDBDataChunk = rb_define_class_under(mDuckDB, "DataChunk", rb_cObject);
     rb_define_alloc_func(cDuckDBDataChunk, allocate);
 
+    rb_define_method(cDuckDBDataChunk, "initialize", initialize, -1);
     rb_define_method(cDuckDBDataChunk, "column_count", rbduckdb_data_chunk_column_count, 0);
     rb_define_method(cDuckDBDataChunk, "size", rbduckdb_data_chunk_get_size, 0);
     rb_define_method(cDuckDBDataChunk, "size=", rbduckdb_data_chunk_set_size, 1);

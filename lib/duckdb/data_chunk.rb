@@ -46,9 +46,8 @@ module DuckDB
     #
     # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
     def set_value(col_idx, row_idx, value)
-      vector = get_vector(col_idx)
-      logical_type = vector.logical_type
-      type_id = logical_type.type
+      vector = cached_vector(col_idx)
+      type_id = cached_type_id(col_idx, vector)
 
       # Handle NULL
       if value.nil?
@@ -58,51 +57,37 @@ module DuckDB
 
       case type_id
       when :boolean
-        data = vector.get_data
-        MemoryHelper.write_boolean(data, row_idx, value)
+        MemoryHelper.write_boolean(cached_data(col_idx, vector), row_idx, value)
       when :tinyint
-        data = vector.get_data
-        MemoryHelper.write_tinyint(data, row_idx, value)
+        MemoryHelper.write_tinyint(cached_data(col_idx, vector), row_idx, value)
       when :smallint
-        data = vector.get_data
-        MemoryHelper.write_smallint(data, row_idx, value)
+        MemoryHelper.write_smallint(cached_data(col_idx, vector), row_idx, value)
       when :integer
-        data = vector.get_data
-        MemoryHelper.write_integer(data, row_idx, value)
+        MemoryHelper.write_integer(cached_data(col_idx, vector), row_idx, value)
       when :bigint
-        data = vector.get_data
-        MemoryHelper.write_bigint(data, row_idx, value)
+        MemoryHelper.write_bigint(cached_data(col_idx, vector), row_idx, value)
       when :utinyint
-        data = vector.get_data
-        MemoryHelper.write_utinyint(data, row_idx, value)
+        MemoryHelper.write_utinyint(cached_data(col_idx, vector), row_idx, value)
       when :usmallint
-        data = vector.get_data
-        MemoryHelper.write_usmallint(data, row_idx, value)
+        MemoryHelper.write_usmallint(cached_data(col_idx, vector), row_idx, value)
       when :uinteger
-        data = vector.get_data
-        MemoryHelper.write_uinteger(data, row_idx, value)
+        MemoryHelper.write_uinteger(cached_data(col_idx, vector), row_idx, value)
       when :ubigint
-        data = vector.get_data
-        MemoryHelper.write_ubigint(data, row_idx, value)
+        MemoryHelper.write_ubigint(cached_data(col_idx, vector), row_idx, value)
       when :float
-        data = vector.get_data
-        MemoryHelper.write_float(data, row_idx, value)
+        MemoryHelper.write_float(cached_data(col_idx, vector), row_idx, value)
       when :double
-        data = vector.get_data
-        MemoryHelper.write_double(data, row_idx, value)
+        MemoryHelper.write_double(cached_data(col_idx, vector), row_idx, value)
       when :varchar
         vector.assign_string_element(row_idx, value.to_s)
       when :blob
         vector.assign_string_element_len(row_idx, value.to_s)
       when :timestamp
-        data = vector.get_data
-        MemoryHelper.write_timestamp(data, row_idx, value)
+        MemoryHelper.write_timestamp(cached_data(col_idx, vector), row_idx, value)
       when :timestamp_tz
-        data = vector.get_data
-        MemoryHelper.write_timestamp_tz(data, row_idx, value)
+        MemoryHelper.write_timestamp_tz(cached_data(col_idx, vector), row_idx, value)
       when :date
-        data = vector.get_data
-        MemoryHelper.write_date(data, row_idx, value)
+        MemoryHelper.write_date(cached_data(col_idx, vector), row_idx, value)
       else
         raise ArgumentError, "Unsupported type for DataChunk#set_value: #{type_id} for value `#{value.inspect}`"
       end
@@ -110,5 +95,22 @@ module DuckDB
       value
     end
     # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+
+    private
+
+    def cached_vector(col_idx)
+      @vector_cache ||= {}
+      @vector_cache[col_idx] ||= get_vector(col_idx)
+    end
+
+    def cached_type_id(col_idx, vector)
+      @type_id_cache ||= {}
+      @type_id_cache[col_idx] ||= vector.logical_type.type
+    end
+
+    def cached_data(col_idx, vector)
+      @data_cache ||= {}
+      @data_cache[col_idx] ||= vector.get_data
+    end
   end
 end

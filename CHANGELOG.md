@@ -27,6 +27,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_hugeint`.
 - add `DuckDB::Value.create_uhugeint`.
 - add `DuckDB::Appender#append_value`.
+- add `DuckDB::Appender#append_data_chunk` to append a `DuckDB::DataChunk` in one call.
+- add `DuckDB::DataChunk.new(types)` to create an owned data chunk from Ruby logical types.
 - add `DuckDB::AggregateFunction`.
 
 ## Breaking Changes

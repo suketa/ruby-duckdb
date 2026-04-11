@@ -1,6 +1,7 @@
 #include "ruby-duckdb.h"
 
 static VALUE cDuckDBAppender;
+extern VALUE cDuckDBDataChunk;
 
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
@@ -34,6 +35,7 @@ static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VAL
 static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_value(VALUE self, VALUE val);
+static VALUE appender__append_data_chunk(VALUE self, VALUE chunk);
 static VALUE appender__flush(VALUE self);
 static VALUE appender__close(VALUE self);
 static VALUE duckdb_state_to_bool_value(duckdb_state state);
@@ -428,6 +430,17 @@ static VALUE appender__append_value(VALUE self, VALUE val) {
 }
 
 /* :nodoc: */
+static VALUE appender__append_data_chunk(VALUE self, VALUE chunk) {
+    rubyDuckDBAppender *ctx;
+    rubyDuckDBDataChunk *chunk_ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+    chunk_ctx = get_struct_data_chunk(chunk);
+
+    return duckdb_state_to_bool_value(duckdb_append_data_chunk(ctx->appender, chunk_ctx->data_chunk));
+}
+
+/* :nodoc: */
 static VALUE appender__flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -485,4 +498,5 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_append_hugeint", appender__append_hugeint, 2);
     rb_define_private_method(cDuckDBAppender, "_append_uhugeint", appender__append_uhugeint, 2);
     rb_define_private_method(cDuckDBAppender, "_append_value", appender__append_value, 1);
+    rb_define_private_method(cDuckDBAppender, "_append_data_chunk", appender__append_data_chunk, 1);
 }
