@@ -71,10 +71,6 @@ jobs:
         sudo cp libduckdb-linux-amd64/libduckdb.so /usr/local/lib/
         sudo ldconfig
 
-    - name: bundle install with Ruby ${{ matrix.ruby }}
-      run: |
-        bundle install --jobs 4 --retry 3
-
     - name: Build test with DUCKDB_API_NO_DEPRECATED and Ruby ${{ matrix.ruby }}
       run: |
         env DUCKDB_API_NO_DEPRECATED=1 bundle exec rake build -- --with-duckdb-include=${GITHUB_WORKSPACE}/libduckdb-linux-amd64 --with-duckdb-lib=${GITHUB_WORKSPACE}/libduckdb-linux-amd64
