@@ -30,6 +30,7 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
 
     - name: duckdb cache
       id: duckdb-cache
@@ -53,7 +54,6 @@ jobs:
 
     - name: Build with Rake with Ruby ${{ matrix.ruby }}
       run: |
-        bundle install
         bundle exec rake build -- --with-duckdb-include=../../../../libduckdb-windows-amd64 --with-duckdb-lib=../../../../libduckdb-windows-amd64
 
     - name: rake test

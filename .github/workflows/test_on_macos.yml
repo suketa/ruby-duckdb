@@ -30,6 +30,7 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
 
     - name: duckdb cache
       id: duckdb-cache
@@ -52,10 +53,6 @@ jobs:
         echo "${EXPECTED_SHA256}  libduckdb-osx-universal.zip" | shasum -a 256 -c
         mkdir libduckdb-osx-universal
         unzip libduckdb-osx-universal.zip -d libduckdb-osx-universal
-
-    - name: bundle install with Ruby ${{ matrix.ruby }}
-      run: |
-        bundle install --jobs 4 --retry 3
 
     - name: Build test with DUCKDB_API_NO_DEPRECATED and Ruby ${{ matrix.ruby }}
       run: |
@@ -93,7 +90,7 @@ jobs:
         MYSQL_TEST: 1
         DYLD_LIBRARY_PATH: ${{ github.workspace }}/libduckdb-osx-universal
       run: |
-        env RUBYOPT=-W:deprecated rake test
+        env RUBYOPT=-W:deprecated bundle exec rake test
 
   post-test:
     name: All tests passed on macos
