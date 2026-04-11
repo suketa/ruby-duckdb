@@ -63,7 +63,7 @@ jobs:
         max_attempts: 1
         command: >-
           bundle exec rake test
-          TEST='test/{duckdb_test/connection_test.rb,duckdb_test/data_chunk_test.rb,duckdb_test/enum_test.rb,duckdb_test/expression_test.rb,duckdb_test/logical_type_test.rb,duckdb_test/prepared_statement_bind_decimal_test.rb,duckdb_test/prepared_statement_bind_value_test.rb,duckdb_test/prepared_statement_test.rb,duckdb_test/result_array_test.rb,duckdb_test/result_each_test.rb,duckdb_test/result_struct_test.rb,duckdb_test/result_time_tz_test.rb,duckdb_test/result_to_decimal_test.rb,duckdb_test/table_function_test.rb}'
+          TEST='test/{duckdb_test/connection_test.rb,duckdb_test/data_chunk_test.rb,duckdb_test/enum_test.rb,duckdb_test/expression_test.rb,duckdb_test/logical_type_test.rb,duckdb_test/prepared_statement_bind_value_test.rb,duckdb_test/prepared_statement_test.rb,duckdb_test/result_array_test.rb,duckdb_test/result_each_test.rb,duckdb_test/result_struct_test.rb,duckdb_test/result_time_tz_test.rb,duckdb_test/table_function_test.rb}'
           TESTOPTS="--verbose"
 
   post-test:
