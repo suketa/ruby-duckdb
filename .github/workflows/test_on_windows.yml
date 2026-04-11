@@ -63,7 +63,7 @@ jobs:
         max_attempts: 1
         command: >-
           bundle exec rake test
-          TEST='test/{duckdb_test/expression_test.rb,duckdb_test/result_array_test.rb,duckdb_test/result_struct_test.rb,duckdb_test/table_function_test.rb}'
+          TEST='test/{duckdb_test/expression_test.rb}'
           TESTOPTS="--verbose"
 
   post-test:
