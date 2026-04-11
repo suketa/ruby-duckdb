@@ -87,6 +87,7 @@ module DuckDBTest
       con = db.connect
       con.query('CREATE TABLE t (id INTEGER)')
       con.query('INSERT INTO t VALUES (42)')
+      con.disconnect
       db.close
 
       db2 = DuckDB::Database.new(@path)
