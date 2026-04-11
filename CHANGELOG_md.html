@@ -8,7 +8,7 @@
 <title>CHANGELOG - RDoc Documentation</title>
 
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Result`.">
+  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Database.">
 
 
 <script type="text/javascript">
@@ -347,6 +347,8 @@
 
 <h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
 <ul><li>
+<p>add <a href="DuckDB/Database.html#method-c-new"><code>DuckDB::Database.new(path = :memory, config: nil, &amp;block)</code></a> to create a database instance. <code>path</code> is a positional argument (default <code>:memory</code> for in-memory database, or a String path for file database). <code>config:</code> accepts an optional <a href="DuckDB/Config.html"><code>DuckDB::Config</code></a> object. When a block is given, the database is yielded and automatically closed afterwards.</p>
+</li><li>
 <p>add <code>TIME_NS</code> column support to <a href="DuckDB/Result.html"><code>DuckDB::Result</code></a>. <code>TIME_NS</code> values are returned as <code>Time</code> objects with nanoseconds truncated to microseconds.</p>
 </li><li>
 <p>add <code>INTERVAL</code> as a supported <code>return_type</code> for <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a>. The scalar function block can now return a <a href="DuckDB/Interval.html"><code>DuckDB::Interval</code></a> object and it will be written back to the result vector correctly.</p>
@@ -405,6 +407,8 @@
 <p>rename <code>DuckDB::ValueImpl</code> to <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a></p>
 </li><li>
 <p>remove <code>DuckDB::ExtractedStatementsImpl</code>. use <a href="DuckDB/ExtractedStatements.html"><code>DuckDB::ExtractedStatements</code></a></p>
+</li><li>
+<p><a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open</code></a> to delegate to <a href="DuckDB/Database.html#method-c-new"><code>DuckDB::Database.new</code></a>. The signature changes from <code>open(dbpath = nil, config = nil)</code> to <code>open(path = :memory, config: nil)</code>. <a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open</code></a> now accepts <code>:memory</code> symbol and <code>config:</code> keyword argument.</p>
 </li></ul>
 
 <h1 id="label-1.5.1.1+-+2026-04-04">1.5.1.1 - 2026-04-04<span><a href="#label-1.5.1.1+-+2026-04-04">&para;</a> <a href="#top">&uarr;</a></span></h1>

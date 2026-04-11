@@ -77,6 +77,7 @@
   <div class="nav-section">
     <h3>Class Methods</h3>
     <ul class="link-list" role="directory">
+      <li ><a href="#method-c-new">new</a></li>
       <li ><a href="#method-c-open">open</a></li>
     </ul>
   </div>
@@ -161,12 +162,54 @@
          <h3>Public Class Methods</h3>
        </header>
 
+      <div id="method-c-new" class="method-detail anchor-link ">
+        <div class="method-header">
+            <div class="method-heading">
+              <a href="#method-c-new" title="Link to this method">
+                <span class="method-name">new</span>
+                <span class="method-args">(path = :memory, config: nil, &amp;block)</span>
+              </a>
+            </div>
+        </div>
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+
+        <div class="method-description">
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/duckdb/database.rb, line 31</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">path</span> = <span class="ruby-value">:memory</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">path</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">!=</span> <span class="ruby-value">:memory</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;path must be a String or :memory, got #{path.inspect}&quot;</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">dbpath</span> = <span class="ruby-identifier">path</span> <span class="ruby-operator">==</span> <span class="ruby-value">:memory</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">path</span>
+  <span class="ruby-identifier">_initialize</span>(<span class="ruby-identifier">dbpath</span>, <span class="ruby-identifier">config</span>)
+  <span class="ruby-identifier">_yield_self_and_close</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          <p>Opens a <a href="../DuckDB.html"><code>DuckDB</code></a> database.</p>
+
+<pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>                    <span class="ruby-comment">#=&gt; in-memory database</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:memory</span>)           <span class="ruby-comment">#=&gt; in-memory database</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;test.db&#39;</span>)         <span class="ruby-comment">#=&gt; file database</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;test.db&#39;</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>) <span class="ruby-comment">#=&gt; with config</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)    <span class="ruby-comment">#=&gt; in-memory with config</span>
+</pre>
+        </div>
+
+
+      </div>
+
       <div id="method-c-open" class="method-detail anchor-link ">
         <div class="method-header">
             <div class="method-heading">
               <a href="#method-c-open" title="Link to this method">
                 <span class="method-name">open</span>
-                <span class="method-args">(dbpath = nil, config = nil) { |db| ... }</span>
+                <span class="method-args">(path = :memory, *args, config: nil) { |db| ... }</span>
               </a>
             </div>
         </div>
@@ -179,9 +222,11 @@
 
         <div class="method-description">
           <div class="method-source-code" id="open-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/database.rb, line 41</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">open</span>(<span class="ruby-identifier">dbpath</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">config</span> = <span class="ruby-keyword">nil</span>)
-  <span class="ruby-identifier">db</span> = <span class="ruby-identifier">_db_open</span>(<span class="ruby-identifier">dbpath</span>, <span class="ruby-identifier">config</span>)
+            <pre><span class="ruby-comment"># File lib/duckdb/database.rb, line 53</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">open</span>(<span class="ruby-identifier">path</span> = <span class="ruby-value">:memory</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">_handle_deprecated_open_args</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">config</span>)
+
+  <span class="ruby-identifier">db</span> = <span class="ruby-identifier">new</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">db</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
   <span class="ruby-keyword">begin</span>
@@ -191,11 +236,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
-          <p>Opens database. The first argument is <a href="../DuckDB.html"><code>DuckDB</code></a> database file path to open. If there is no argument, the method opens <a href="../DuckDB.html"><code>DuckDB</code></a> database in memory. The method yields block if block is given.</p>
+          <p>Opens database.</p>
 
-<pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;duckdb_database.db&#39;</span>) <span class="ruby-comment">#=&gt; DuckDB::Database</span>
-
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-comment">#=&gt; opens DuckDB::Database in memory.</span>
+<pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>                          <span class="ruby-comment">#=&gt; in-memory database</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;test.db&#39;</span>)               <span class="ruby-comment">#=&gt; file database</span>
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;test.db&#39;</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)
+<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)          <span class="ruby-comment">#=&gt; in-memory with config</span>
 
 <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
   <span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
@@ -264,7 +310,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="connect-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/database.rb, line 74</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/database.rb, line 103</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">connect</span>
   <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">_connect</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">conn</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
