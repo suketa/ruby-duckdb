@@ -30,14 +30,14 @@ module DuckDB
   class Interval
     # :stopdoc:
     ISO8601_REGEXP = Regexp.compile(
-      '(?<negativ>-{0,1})P
+      '\A(?<negativ>-{0,1})P
       (?<year>-{0,1}\d+Y){0,1}
       (?<month>-{0,1}\d+M){0,1}
       (?<day>-{0,1}\d+D){0,1}
       T{0,1}
       (?<hour>-{0,1}\d+H){0,1}
       (?<min>-{0,1}\d+M){0,1}
-      ((?<sec>-{0,1}\d+)\.{0,1}(?<usec>\d*)S){0,1}',
+      ((?<sec>-{0,1}\d+)\.{0,1}(?<usec>\d*)S){0,1}\z',
       Regexp::EXTENDED
     )
     private_constant :ISO8601_REGEXP
