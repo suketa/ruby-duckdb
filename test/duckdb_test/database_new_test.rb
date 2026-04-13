@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+require 'securerandom'
 require 'test_helper'
 
 module DuckDBTest
-  class DuckDBDatabaseNewTest < Minitest::Test
+  class DatabaseNewTest < Minitest::Test
     def setup
-      @path = "#{Time.now.strftime('%Y%m%d%H%M%S')}-#{Process.pid}-#{rand(100..999)}"
+      @path = "#{Time.now.strftime('%Y%m%d%H%M%S')}-#{Process.pid}-#{SecureRandom.hex(8)}"
     end
 
     def teardown
@@ -83,18 +84,18 @@ module DuckDBTest
     end
 
     def test_database_new_with_path_persists_data
-      db = DuckDB::Database.new(@path)
-      con = db.connect
-      con.query('CREATE TABLE t (id INTEGER)')
-      con.query('INSERT INTO t VALUES (42)')
-      con.disconnect
-      db.close
+      DuckDB::Database.open(@path) do |db|
+        db.connect do |con|
+          con.query('CREATE TABLE t (id INTEGER)')
+          con.query('INSERT INTO t VALUES (42)')
+        end
+      end
 
-      db2 = DuckDB::Database.new(@path)
-      result = db2.connect.query('SELECT * FROM t')
-
-      assert_equal([[42]], result.to_a)
-      db2.close
+      DuckDB::Database.open(@path) do |db2|
+        db2.connect do |con2|
+          assert_equal([[42]], con2.query('SELECT * FROM t').to_a)
+        end
+      end
     end
   end
 end
