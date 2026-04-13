@@ -31,8 +31,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Appender#append_data_chunk` to append a `DuckDB::DataChunk` in one call.
 - add `DuckDB::DataChunk.new(types)` to create an owned data chunk from Ruby logical types.
 - add `DuckDB::AggregateFunction`.
-- add `DuckDB::TableDescription` to retrieve metadata about a table.
-- add `DuckDB::ColumnDescription` to describe a column's name, logical type, and whether it has a default value.
+- add `DuckDB::TableDescription` to retrieve metadata about a table (with DuckDB >= 1.5.0).
+- add `DuckDB::ColumnDescription` to describe a column's name, logical type, and whether it has a default value (with DuckDB >= 1.5.0).
 
 ## Breaking Changes
 - rename `DuckDB::ValueImpl` to `DuckDB::Value`

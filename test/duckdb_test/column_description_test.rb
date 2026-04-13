@@ -3,7 +3,8 @@
 require 'test_helper'
 
 module DuckDBTest
-  class ColumnDescriptionTest < Minitest::Test
+  if defined?(DuckDB::TableDescription)
+  class ColumnDescriptionTest < Minitest::Test # rubocop:disable Layout/IndentationWidth
     def setup
       @db = DuckDB::Database.open
       @con = @db.connect
@@ -40,5 +41,6 @@ module DuckDBTest
       refute_predicate(cds[0], :has_default?)
       assert_predicate(cds[1], :has_default?)
     end
+  end
   end
 end
