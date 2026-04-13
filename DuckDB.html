@@ -122,6 +122,34 @@
         <h3>Constants</h3>
       </header>
       <dl>
+        <dt id="ColumnDescription">ColumnDescription
+        <dd>
+          <p><a href="DuckDB.html#ColumnDescription"><code>DuckDB::ColumnDescription</code></a> is an immutable value object describing a single column returned by <a href="DuckDB/TableDescription.html#method-i-column_descriptions"><code>DuckDB::TableDescription#column_descriptions</code></a>.</p>
+
+<p>It is defined using <code>Data.define</code> and exposes three attributes:</p>
+<ul><li>
+<p><code>name</code> — the column name as a String</p>
+</li><li>
+<p><code>logical_type</code> — a <a href="DuckDB/LogicalType.html"><code>DuckDB::LogicalType</code></a> representing the column’s type</p>
+</li><li>
+<p><code>has_default</code> — <code>true</code> if the column has a DEFAULT value, <code>false</code> otherwise</p>
+</li></ul>
+
+<p>A predicate alias <code>has_default?</code> is provided for idiomatic Ruby usage.</p>
+
+<p>Requires <a href="DuckDB.html"><code>DuckDB</code></a> &gt;= 1.5.0.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;CREATE TABLE t (id INTEGER, name VARCHAR DEFAULT &#39;anon&#39;)&quot;</span>)
+
+<span class="ruby-identifier">td</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableDescription</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-string">&#39;t&#39;</span>)
+<span class="ruby-identifier">cd</span> = <span class="ruby-identifier">td</span>.<span class="ruby-identifier">column_descriptions</span>.<span class="ruby-identifier">last</span>
+<span class="ruby-identifier">cd</span>.<span class="ruby-identifier">name</span>               <span class="ruby-comment">#=&gt; &quot;name&quot;</span>
+<span class="ruby-identifier">cd</span>.<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span>  <span class="ruby-comment">#=&gt; :varchar</span>
+<span class="ruby-identifier">cd</span>.<span class="ruby-identifier">has_default?</span>       <span class="ruby-comment">#=&gt; true</span>
+</pre>
         <dt id="DEPRECATED_CONSTANTS">DEPRECATED_CONSTANTS
         <dd>
           
@@ -192,7 +220,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="const_missing-source">
-            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 57</span>
+            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 59</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">const_missing</span>(<span class="ruby-identifier">name</span>)
   <span class="ruby-identifier">deprecated</span> = <span class="ruby-constant">DEPRECATED_CONSTANTS</span>[<span class="ruby-identifier">name</span>]
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">super</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">deprecated</span>
@@ -229,7 +257,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="default_timezone-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 51</span>
+            <pre><span class="ruby-comment"># File lib/duckdb.rb, line 53</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">default_timezone=</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;DuckDB.default_timezone must be either :utc or :local.&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-node">%i[local utc]</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">value</span>)
 
