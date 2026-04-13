@@ -30,17 +30,20 @@ module DuckDB
   class Interval
     # :stopdoc:
     ISO8601_REGEXP = Regexp.compile(
-      '(?<negativ>-{0,1})P
-      (?<year>-{0,1}\d+Y){0,1}
-      (?<month>-{0,1}\d+M){0,1}
-      (?<day>-{0,1}\d+D){0,1}
-      T{0,1}
-      (?<hour>-{0,1}\d+H){0,1}
-      (?<min>-{0,1}\d+M){0,1}
-      ((?<sec>-{0,1}\d+)\.{0,1}(?<usec>\d*)S){0,1}',
+      '\A(?<negativ>-?+)P
+      (?<year>-?+\d++Y)?+
+        (?<month>-?+\d++M)?+
+        (?<day>-?+\d++D)?+
+        T?+
+        (?<hour>-?+\d++H)?+
+        (?<min>-?+\d++M)?+
+        ((?<sec>-?+\d++)\.?+(?<usec>\d*+)S)?+\z',
       Regexp::EXTENDED
     )
     private_constant :ISO8601_REGEXP
+
+    ISO8601_STRING_LENGTH = 1_000
+    private_constant :ISO8601_STRING_LENGTH
     # :startdoc:
 
     class << self
@@ -49,8 +52,11 @@ module DuckDB
       #   DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
       #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def iso8601_parse(value)
-        m = ISO8601_REGEXP.match(value)
+        if value.length > ISO8601_STRING_LENGTH
+          raise ArgumentError, "Argument of iso8601_parse is too long. It must be less than #{ISO8601_STRING_LENGTH}."
+        end
 
+        m = ISO8601_REGEXP.match(value)
         raise ArgumentError, "The argument `#{value}` can't be parse." if m.nil?
 
         year, month, day, hour, min, sec, usec = matched_to_i(m)
