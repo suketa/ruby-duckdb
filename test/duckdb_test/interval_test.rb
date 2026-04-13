@@ -57,6 +57,10 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Interval.iso8601_parse('1Y2M3DT4H5M6.7') }
     end
 
+    def test_s_iso8601_parse_value_having_more_1000chars
+      assert_raises(ArgumentError) { DuckDB::Interval.iso8601_parse("P#{'1' * 1_000}Y") }
+    end
+
     def test_s_mk_interval_positive_full
       assert_equal(
         DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 14_706_700_000),

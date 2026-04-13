@@ -49,8 +49,9 @@ module DuckDB
       #   DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
       #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def iso8601_parse(value)
-        m = ISO8601_REGEXP.match(value)
+        raise ArgumentError, "input #{value} too long." if value.length > 1000
 
+        m = ISO8601_REGEXP.match(value)
         raise ArgumentError, "The argument `#{value}` can't be parse." if m.nil?
 
         year, month, day, hour, min, sec, usec = matched_to_i(m)
