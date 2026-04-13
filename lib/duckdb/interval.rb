@@ -41,6 +41,8 @@ module DuckDB
       Regexp::EXTENDED
     )
     private_constant :ISO8601_REGEXP
+
+    ISO8601_STRING_LENGTH = 1_000
     # :startdoc:
 
     class << self
@@ -49,7 +51,9 @@ module DuckDB
       #   DuckDB::Interval.iso8601_parse('P1Y2M3DT4H5M6.123456S')
       #   => #<DuckDB::Interval:0x00007f9b9c0b3b60 @interval_months=14, @interval_days=3, @interval_micros=14706123456>
       def iso8601_parse(value)
-        raise ArgumentError, "input #{value} too long." if value.length > 1000
+        if value.length > ISO8601_STRING_LENGTH
+          raise ArgumentError, "Argument of iso8601_parse is too long. It must be less than #{ISO8601_STRING_LENGTH}."
+        end
 
         m = ISO8601_REGEXP.match(value)
         raise ArgumentError, "The argument `#{value}` can't be parse." if m.nil?
