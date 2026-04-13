@@ -231,10 +231,13 @@
 
         <div class="method-description">
           <div class="method-source-code" id="iso8601_parse-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 51</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 54</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">iso8601_parse</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">m</span> = <span class="ruby-constant">ISO8601_REGEXP</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">ISO8601_STRING_LENGTH</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Argument of iso8601_parse is too long. It must be less than #{ISO8601_STRING_LENGTH}.&quot;</span>
+  <span class="ruby-keyword">end</span>
 
+  <span class="ruby-identifier">m</span> = <span class="ruby-constant">ISO8601_REGEXP</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;The argument `#{value}` can&#39;t be parse.&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">m</span>.<span class="ruby-identifier">nil?</span>
 
   <span class="ruby-identifier">year</span>, <span class="ruby-identifier">month</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>, <span class="ruby-identifier">usec</span> = <span class="ruby-identifier">matched_to_i</span>(<span class="ruby-identifier">m</span>)
@@ -269,7 +272,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="mk_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 65</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 71</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">mk_interval</span>(<span class="ruby-value">year:</span> <span class="ruby-value">0</span>, <span class="ruby-value">month:</span> <span class="ruby-value">0</span>, <span class="ruby-value">day:</span> <span class="ruby-value">0</span>, <span class="ruby-value">hour:</span> <span class="ruby-value">0</span>, <span class="ruby-value">min:</span> <span class="ruby-value">0</span>, <span class="ruby-value">sec:</span> <span class="ruby-value">0</span>, <span class="ruby-value">usec:</span> <span class="ruby-value">0</span>) <span class="ruby-comment"># rubocop:disable Metrics/ParameterLists</span>
   <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">new</span>(
     <span class="ruby-value">interval_months:</span> (<span class="ruby-identifier">year</span> <span class="ruby-operator">*</span> <span class="ruby-value">12</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">month</span>,
@@ -305,7 +308,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 150</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 156</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-value">interval_months:</span> <span class="ruby-value">0</span>, <span class="ruby-value">interval_days:</span> <span class="ruby-value">0</span>, <span class="ruby-value">interval_micros:</span> <span class="ruby-value">0</span>)
   <span class="ruby-ivar">@interval_months</span> = <span class="ruby-identifier">interval_months</span>
   <span class="ruby-ivar">@interval_days</span> = <span class="ruby-identifier">interval_days</span>
@@ -339,7 +342,7 @@
 
         <div class="method-description">
           <div class="method-source-code" id="to_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 85</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 91</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">to_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span>
@@ -389,7 +392,7 @@ DuckDB::Interval.to_interval(interval)
 
         <div class="method-description">
           <div class="method-source-code" id="3D-3D-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 156</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 162</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">==</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Interval</span>) <span class="ruby-operator">&amp;&amp;</span>
     <span class="ruby-ivar">@interval_months</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">interval_months</span> <span class="ruby-operator">&amp;&amp;</span>
@@ -421,7 +424,7 @@ DuckDB::Interval.to_interval(interval)
 
         <div class="method-description">
           <div class="method-source-code" id="eql-3F-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 163</span>
+            <pre><span class="ruby-comment"># File lib/duckdb/interval.rb, line 169</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">eql?</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-keyword">self</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>
 <span class="ruby-keyword">end</span></pre>
