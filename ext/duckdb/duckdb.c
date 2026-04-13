@@ -69,4 +69,5 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_table_function_bind_info();
     rbduckdb_init_duckdb_table_function_init_info();
     rbduckdb_init_duckdb_table_function_function_info();
+    rbduckdb_init_duckdb_table_description();
 }

@@ -44,6 +44,7 @@
 #include "./data_chunk.h"
 #include "./memory_helper.h"
 #include "./table_function.h"
+#include "./table_description.h"
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;
