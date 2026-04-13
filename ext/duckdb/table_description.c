@@ -1,5 +1,7 @@
 #include "ruby-duckdb.h"
 
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+
 VALUE cDuckDBTableDescription;
 
 static void deallocate(void *ctx);
@@ -8,6 +10,7 @@ static size_t memsize(const void *p);
 static rubyDuckDBTableDescription *get_struct_table_description(VALUE obj);
 static VALUE rbduckdb_table_description_error_message(VALUE self);
 static VALUE duckdb_table_description__initialize(VALUE self, VALUE conn, VALUE catalog, VALUE schema, VALUE table);
+
 static VALUE duckdb_table_description__column_count(VALUE self);
 static VALUE duckdb_table_description__column_name(VALUE self, VALUE idx);
 static VALUE duckdb_table_description__column_logical_type(VALUE self, VALUE idx);
@@ -138,4 +141,4 @@ void rbduckdb_init_duckdb_table_description(void) {
     rb_define_private_method(cDuckDBTableDescription, "_column_logical_type", duckdb_table_description__column_logical_type, 1);
     rb_define_private_method(cDuckDBTableDescription, "_column_has_default", duckdb_table_description__column_has_default, 1);
 }
-
+#endif
