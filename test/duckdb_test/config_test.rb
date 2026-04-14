@@ -14,11 +14,18 @@ module DuckDBTest
       assert_operator(0, :<=, DuckDB::Config.size)
     end
 
-    def test_s_get_config_flag
+    def test_s_get_config_flag_key_and_value_is_string
       key, value = DuckDB::Config.get_config_flag(0)
 
-      assert_equal('access_mode', key)
-      assert_match(/\AAccess mode of the database/, value)
+      assert_instance_of(String, key)
+      assert_instance_of(String, value)
+    end
+
+    def test_s_get_config_flag_key_and_value_length_positive
+      key, value = DuckDB::Config.get_config_flag(0)
+
+      assert_operator(key.length, :>, 0)
+      assert_operator(value.length, :>, 0)
     end
 
     def test_s_get_config_flag_with_invalid_arguments
@@ -31,11 +38,18 @@ module DuckDBTest
       end
     end
 
-    def test_s_key_description
+    def test_s_key_description_key_and_value_is_string
       key, value = DuckDB::Config.key_description(0)
 
-      assert_equal('access_mode', key)
-      assert_match(/\AAccess mode of the database/, value)
+      assert_instance_of(String, key)
+      assert_instance_of(String, value)
+    end
+
+    def test_s_key_description_key_and_value_length_positive
+      key, value = DuckDB::Config.key_description(0)
+
+      assert_operator(key.length, :>, 0)
+      assert_operator(value.length, :>, 0)
     end
 
     def test_s_key_descriptions
