@@ -3,13 +3,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>class DuckDB::PreparedStatement - RDoc Documentation</title>
 
-  <meta name="keywords" content="ruby,class,DuckDB::PreparedStatement">
 
-    <meta name="description" content="class DuckDB::PreparedStatement: PreparedStatement encapsulates connection with DuckDB prepared statement. Database.">
+  <meta
+    name="keywords"
+    content="ruby,class,DuckDB::PreparedStatement"
+  >
+
+    <meta
+      name="description"
+      content="class DuckDB::PreparedStatement: PreparedStatement encapsulates connection with DuckDB prepared statement. Database."
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class DuckDB::PreparedStatement - RDoc Documentation">
+
+
+
+    <meta property="og:description" content="PreparedStatement encapsulates connection with DuckDB prepared statement. Database.">
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class DuckDB::PreparedStatement - RDoc Documentation">
+
+
+
+    <meta name="twitter:description" content="PreparedStatement encapsulates connection with DuckDB prepared statement. Database.">
+
 
 
 <script type="text/javascript">
@@ -17,126 +49,542 @@
   var index_rel_prefix = "../";
 </script>
 
-<script src="../js/navigation.js" defer></script>
-<script src="../js/search.js" defer></script>
-<script src="../js/search_index.js" defer></script>
-<script src="../js/searcher.js" defer></script>
-<script src="../js/darkfish.js" defer></script>
+<script
+  src="../js/theme-toggle.js?v=7.0.3"
+></script>
 
-<link href="../css/fonts.css" rel="stylesheet">
-<link href="../css/rdoc.css" rel="stylesheet">
+<script
+  src="../js/search_navigation.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_data.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_ranker.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_controller.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/c_highlighter.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/aliki.js?v=7.0.3"
+  defer
+></script>
+
+<link
+  href="../css/rdoc.css?v=7.0.3"
+  rel="stylesheet"
+>
 
 
-<body id="top" role="document" class="class">
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="../index.html" class="navbar-brand">
+    RDoc Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
   <span aria-hidden="true">&#9776;</span>
 </div>
 
 
-<nav id="navigation" role="navigation">
-  <div id="project-navigation">
-    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
-  <h2>
-    <a href="../index.html" rel="home">Home</a>
-  </h2>
+<nav id="navigation" role="navigation" hidden>
+  
 
-  <div id="table-of-contents-navigation">
-    <a href="../table_of_contents.html#pages">Pages</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="../CHANGELOG_md.html">
+                CHANGELOG
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../CONTRIBUTION_md.html">
+                CONTRIBUTION
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../LICENSE.html">
+                LICENSE
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
   </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
+  </details>
 </div>
 
-    <div id="search-section" role="search" class="project-section initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <div id="search-field-wrapper">
-      <input id="search-field" role="combobox" aria-label="Search"
-             aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </div>
-
-    <ul id="search-results" aria-label="Search Results"
-        aria-busy="false" aria-expanded="false"
-        aria-atomic="false" class="initially-hidden"></ul>
-  </form>
-</div>
-
-  </div>
 
   
-  
-  <div id="parent-class-section" class="nav-section">
-  <h3>Ancestors</h3>
-  <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
-</div>
 
   
-  
+
   
   <div class="nav-section">
-    <h3>Class Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-c-new">new</a></li>
-      <li ><a href="#method-c-prepare">prepare</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-new">new</a></li>
+
+        <li ><a href="#method-c-prepare">prepare</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
 
   <div class="nav-section">
-    <h3>Instance Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-i-bind">bind</a></li>
-      <li ><a href="#method-i-bind_args">bind_args</a></li>
-      <li ><a href="#method-i-bind_blob">bind_blob</a></li>
-      <li ><a href="#method-i-bind_bool">bind_bool</a></li>
-      <li ><a href="#method-i-bind_date">bind_date</a></li>
-      <li ><a href="#method-i-bind_decimal">bind_decimal</a></li>
-      <li ><a href="#method-i-bind_double">bind_double</a></li>
-      <li ><a href="#method-i-bind_float">bind_float</a></li>
-      <li ><a href="#method-i-bind_hugeint">bind_hugeint</a></li>
-      <li ><a href="#method-i-bind_hugeint_internal">bind_hugeint_internal</a></li>
-      <li ><a href="#method-i-bind_int16">bind_int16</a></li>
-      <li ><a href="#method-i-bind_int32">bind_int32</a></li>
-      <li ><a href="#method-i-bind_int64">bind_int64</a></li>
-      <li ><a href="#method-i-bind_int8">bind_int8</a></li>
-      <li ><a href="#method-i-bind_interval">bind_interval</a></li>
-      <li ><a href="#method-i-bind_null">bind_null</a></li>
-      <li ><a href="#method-i-bind_parameter_index">bind_parameter_index</a></li>
-      <li ><a href="#method-i-bind_time">bind_time</a></li>
-      <li ><a href="#method-i-bind_timestamp">bind_timestamp</a></li>
-      <li ><a href="#method-i-bind_uhugeint">bind_uhugeint</a></li>
-      <li ><a href="#method-i-bind_uint16">bind_uint16</a></li>
-      <li ><a href="#method-i-bind_uint32">bind_uint32</a></li>
-      <li ><a href="#method-i-bind_uint64">bind_uint64</a></li>
-      <li ><a href="#method-i-bind_uint8">bind_uint8</a></li>
-      <li ><a href="#method-i-bind_value">bind_value</a></li>
-      <li ><a href="#method-i-bind_varchar">bind_varchar</a></li>
-      <li ><a href="#method-i-clear_bindings">clear_bindings</a></li>
-      <li ><a href="#method-i-execute">execute</a></li>
-      <li ><a href="#method-i-nparams">nparams</a></li>
-      <li ><a href="#method-i-param_type">param_type</a></li>
-      <li ><a href="#method-i-parameter_name">parameter_name</a></li>
-      <li ><a href="#method-i-pending_prepared">pending_prepared</a></li>
-      <li ><a href="#method-i-statement_type">statement_type</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-bind">bind</a></li>
+
+        <li ><a href="#method-i-bind_args">bind_args</a></li>
+
+        <li ><a href="#method-i-bind_blob">bind_blob</a></li>
+
+        <li ><a href="#method-i-bind_bool">bind_bool</a></li>
+
+        <li ><a href="#method-i-bind_date">bind_date</a></li>
+
+        <li ><a href="#method-i-bind_decimal">bind_decimal</a></li>
+
+        <li ><a href="#method-i-bind_double">bind_double</a></li>
+
+        <li ><a href="#method-i-bind_float">bind_float</a></li>
+
+        <li ><a href="#method-i-bind_hugeint">bind_hugeint</a></li>
+
+        <li ><a href="#method-i-bind_hugeint_internal">bind_hugeint_internal</a></li>
+
+        <li ><a href="#method-i-bind_int16">bind_int16</a></li>
+
+        <li ><a href="#method-i-bind_int32">bind_int32</a></li>
+
+        <li ><a href="#method-i-bind_int64">bind_int64</a></li>
+
+        <li ><a href="#method-i-bind_int8">bind_int8</a></li>
+
+        <li ><a href="#method-i-bind_interval">bind_interval</a></li>
+
+        <li ><a href="#method-i-bind_null">bind_null</a></li>
+
+        <li ><a href="#method-i-bind_parameter_index">bind_parameter_index</a></li>
+
+        <li ><a href="#method-i-bind_time">bind_time</a></li>
+
+        <li ><a href="#method-i-bind_timestamp">bind_timestamp</a></li>
+
+        <li ><a href="#method-i-bind_uhugeint">bind_uhugeint</a></li>
+
+        <li ><a href="#method-i-bind_uint16">bind_uint16</a></li>
+
+        <li ><a href="#method-i-bind_uint32">bind_uint32</a></li>
+
+        <li ><a href="#method-i-bind_uint64">bind_uint64</a></li>
+
+        <li ><a href="#method-i-bind_uint8">bind_uint8</a></li>
+
+        <li ><a href="#method-i-bind_value">bind_value</a></li>
+
+        <li ><a href="#method-i-bind_varchar">bind_varchar</a></li>
+
+        <li ><a href="#method-i-clear_bindings">clear_bindings</a></li>
+
+        <li ><a href="#method-i-execute">execute</a></li>
+
+        <li ><a href="#method-i-nparams">nparams</a></li>
+
+        <li ><a href="#method-i-param_type">param_type</a></li>
+
+        <li ><a href="#method-i-parameter_name">parameter_name</a></li>
+
+        <li ><a href="#method-i-pending_prepared">pending_prepared</a></li>
+
+        <li ><a href="#method-i-statement_type">statement_type</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
 
-  <footer id="validator-badges" role="contentinfo">
-  <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
-  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
-</footer>
+    <ul class="link-list nav-list"><li><code><a href="../CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="../DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="../DuckDB/Appender.html">Appender</a></code></li><li><code><a href="../DuckDB/Blob.html">Blob</a></code></li><li><code><a href="../DuckDB/Casting.html">Casting</a></code></li><li><code><a href="../DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="../DuckDB/Column.html">Column</a></code></li><li><code><a href="../DuckDB/Config.html">Config</a></code></li><li><code><a href="../DuckDB/Connection.html">Connection</a></code></li><li><code><a href="../DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="../DuckDB/Database.html">Database</a></code></li><li><code><a href="../DuckDB/Error.html">Error</a></code></li><li><code><a href="../DuckDB/Expression.html">Expression</a></code></li><li><code><a href="../DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="../DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="../DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="../DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="../DuckDB/Interval.html">Interval</a></code></li><li><code><a href="../DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="../DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="../DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="../DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="../DuckDB/Result.html">Result</a></code></li><li><code><a href="../DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="../DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="../DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="../DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="../DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="../DuckDB/Value.html">Value</a></code></li><li><code><a href="../DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="../Object.html">Object</a></code></li><li><code><a href="../PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+  </details>
+</div>
 
 </nav>
 
 <main role="main" aria-labelledby="class-DuckDB::PreparedStatement">
   
   
-    <ol role="navigation" aria-label="breadcrumb" class="breadcrumb">
+    <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
       
       <li>
         
@@ -172,7 +620,15 @@
 
   </section>
 
+
   <section id="5Buntitled-5D" class="documentation-section anchor-link">
+
+
+
+
+
+
+
 
 
 
@@ -180,28 +636,30 @@
 
      <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Class Methods</h3>
+         <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
        </header>
+
 
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-new" title="Link to this method">
                 <span class="method-name">new</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre>static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBPreparedStatement *ctx;
 
@@ -219,31 +677,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-prepare" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-prepare" title="Link to this method">
                 <span class="method-name">prepare</span>
                 <span class="method-args">(con, sql) { |stmt| ... }</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="prepare-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 34</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 34</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">prepare</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
   <span class="ruby-identifier">stmt</span> = <span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">stmt</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
@@ -255,6 +726,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>return <a href="PreparedStatement.html"><code>DuckDB::PreparedStatement</code></a> object. The first argument is <a href="Connection.html"><code>DuckDB::Connection</code></a> object. The second argument is SQL string. If block is given, the block is executed and the statement is destroyed.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -265,37 +742,51 @@
   <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">execute</span>
 <span class="ruby-keyword">end</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
+
+
+
+
+
+
 
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Instance Methods</h3>
+         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
        </header>
+
 
       <div id="method-i-bind" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind" title="Link to this method">
                 <span class="method-name">bind</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 317</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 317</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">index</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
@@ -309,6 +800,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is the value of prepared statement parameter.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -318,30 +815,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">1</span>, <span class="ruby-string">&#39;email@example.com&#39;</span>)
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_args" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_args" title="Link to this method">
                 <span class="method-name">bind_args</span>
                 <span class="method-args">(*args, **kwargs)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_args-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 91</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 91</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_args</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span>.<span class="ruby-identifier">with_index</span>(<span class="ruby-value">1</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">bind</span>(<span class="ruby-identifier">i</span>, <span class="ruby-identifier">arg</span>)
@@ -351,6 +855,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds all parameters with SQL prepared statement.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -364,30 +874,37 @@
 <span class="ruby-comment"># or</span>
 <span class="ruby-comment"># stmt.bind_args(id: 1)</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_blob" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_blob" title="Link to this method">
                 <span class="method-name">bind_blob</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_blob-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -399,31 +916,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_bool" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_bool" title="Link to this method">
                 <span class="method-name">bind_bool</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_bool-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -438,37 +968,56 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_date" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_date" title="Link to this method">
                 <span class="method-name">bind_date</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_date-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 209</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 209</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_date</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">date</span> = <span class="ruby-identifier">_parse_date</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">_bind_date</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">date</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">date</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">date</span>.<span class="ruby-identifier">day</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected date.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -480,30 +1029,37 @@
 <span class="ruby-comment">#  or you can specify date string.</span>
 <span class="ruby-comment"># stmt.bind(1, &#39;2021-02-23&#39;)</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_decimal" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_decimal" title="Link to this method">
                 <span class="method-name">bind_decimal</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_decimal-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 281</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 281</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">decimal</span> = <span class="ruby-identifier">_parse_deciaml</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">decimal_to_hugeint</span>(<span class="ruby-identifier">decimal</span>)
@@ -511,6 +1067,12 @@
   <span class="ruby-identifier">_bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>, <span class="ruby-identifier">width</span>, <span class="ruby-identifier">decimal</span>.<span class="ruby-identifier">scale</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected BigDecimal value or any value that can be parsed into a BigDecimal.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -520,30 +1082,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_decimal</span>(<span class="ruby-value">1</span>, <span class="ruby-constant">BigDecimal</span>(<span class="ruby-string">&#39;987654.321&#39;</span>))
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_double" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_double" title="Link to this method">
                 <span class="method-name">bind_double</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_double-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -556,31 +1125,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_float" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_float" title="Link to this method">
                 <span class="method-name">bind_float</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_float-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -593,31 +1175,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_hugeint" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_hugeint" title="Link to this method">
                 <span class="method-name">bind_hugeint</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_hugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 153</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 153</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_hugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
@@ -627,6 +1222,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value. This method uses <a href="PreparedStatement.html#method-i-bind_varchar"><code>bind_varchar</code></a> internally.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -636,35 +1237,48 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_hugeint</span>(<span class="ruby-value">1</span>, <span class="ruby-value">1_234_567_890_123_456_789_012_345</span>)
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_hugeint_internal" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_hugeint_internal" title="Link to this method">
                 <span class="method-name">bind_hugeint_internal</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_hugeint_internal-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 174</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 174</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_hugeint_internal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">_bind_hugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value must be Integer value. This method uses duckdb_bind_hugeint internally.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -674,30 +1288,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_hugeint_internal</span>(<span class="ruby-value">1</span>, <span class="ruby-value">1_234_567_890_123_456_789_012_345</span>)
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_int16" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_int16" title="Link to this method">
                 <span class="method-name">bind_int16</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_int16-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
@@ -710,31 +1331,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_int32" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_int32" title="Link to this method">
                 <span class="method-name">bind_int32</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_int32-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int32_t i32val = NUM2INT(val);
@@ -747,31 +1381,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_int64" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_int64" title="Link to this method">
                 <span class="method-name">bind_int64</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_int64-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
@@ -784,31 +1431,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_int8" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_int8" title="Link to this method">
                 <span class="method-name">bind_int8</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_int8-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int8_t i8val = (int8_t)NUM2INT(val);
@@ -821,36 +1481,55 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_interval" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_interval" title="Link to this method">
                 <span class="method-name">bind_interval</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 264</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 264</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_interval</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">to_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">_bind_interval</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">interval_months</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">interval_days</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">interval_micros</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected ISO8601 time interval string.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -860,30 +1539,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-value">1</span>, <span class="ruby-string">&#39;P1Y2D&#39;</span>)
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_null" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_null" title="Link to this method">
                 <span class="method-name">bind_null</span>
                 <span class="method-args">(p1)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_null-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -895,31 +1581,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_parameter_index" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_parameter_index" title="Link to this method">
                 <span class="method-name">bind_parameter_index</span>
                 <span class="method-args">(p1)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_parameter_index-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx;
 
@@ -931,37 +1630,56 @@
     return ULL2NUM(idx);
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_time" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_time" title="Link to this method">
                 <span class="method-name">bind_time</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_time-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 228</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 228</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_time</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">_bind_time</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">usec</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected time value.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -973,36 +1691,49 @@
 <span class="ruby-comment">#  or you can specify time string.</span>
 <span class="ruby-comment"># stmt.bind(1, &#39;07:39:45&#39;)</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_timestamp" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_timestamp" title="Link to this method">
                 <span class="method-name">bind_timestamp</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_timestamp-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 247</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 247</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_timestamp</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">_bind_timestamp</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">day</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">usec</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected time value.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1014,35 +1745,48 @@
 <span class="ruby-comment">#  or you can specify timestamp string.</span>
 <span class="ruby-comment"># stmt.bind(1, &#39;2022-02-23 07:39:45&#39;)</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_uhugeint" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_uhugeint" title="Link to this method">
                 <span class="method-name">bind_uhugeint</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_uhugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 191</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 191</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uhugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">_bind_uhugeint</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value must be Integer value. This method uses duckdb_bind_uhugeint internally.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1052,92 +1796,125 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_uhugeint</span>(<span class="ruby-value">1</span>, (<span class="ruby-value">2</span><span class="ruby-operator">**</span><span class="ruby-value">128</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>)
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_uint16" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_uint16" title="Link to this method">
                 <span class="method-name">bind_uint16</span>
                 <span class="method-args">(index, val)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_uint16-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 114</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 114</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uint16</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">_bind_uint16</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">between?</span>(<span class="ruby-value">0</span>, <span class="ruby-value">65_535</span>)
 
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;can&#39;t bind uint16(bind_uint16) to `#{val}`. The `#{val}` is out of range 0..65535.&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value between 0 to 65535.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_uint32" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_uint32" title="Link to this method">
                 <span class="method-name">bind_uint32</span>
                 <span class="method-args">(index, val)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_uint32-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 124</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 124</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uint32</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">_bind_uint32</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">between?</span>(<span class="ruby-value">0</span>, <span class="ruby-value">4_294_967_295</span>)
 
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;can&#39;t bind uint32(bind_uint32) to `#{val}`. The `#{val}` is out of range 0..4294967295.&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value between 0 to 4294967295.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_uint64" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_uint64" title="Link to this method">
                 <span class="method-name">bind_uint64</span>
                 <span class="method-args">(index, val)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_uint64-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 134</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 134</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uint64</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">_bind_uint64</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">between?</span>(<span class="ruby-value">0</span>, <span class="ruby-value">18_446_744_073_709_551_615</span>)
 
@@ -1145,62 +1922,88 @@
         <span class="ruby-node">&quot;can&#39;t bind uint64(bind_uint64) to `#{val}`. The `#{val}` is out of range 0..18446744073709551615.&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value between 0 to 18446744073709551615.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_uint8" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_uint8" title="Link to this method">
                 <span class="method-name">bind_uint8</span>
                 <span class="method-args">(index, val)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_uint8-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 104</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 104</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_uint8</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">_bind_uint8</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">val</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">between?</span>(<span class="ruby-value">0</span>, <span class="ruby-value">255</span>)
 
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;can&#39;t bind uint8(bind_uint8) to `#{val}`. The `#{val}` is out of range 0..255.&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value is to expected Integer value between 0 to 255.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_value" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_value" title="Link to this method">
                 <span class="method-name">bind_value</span>
                 <span class="method-args">(index, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_value-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 299</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 299</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_value</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;2nd argument must be DuckDB::Value&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>)
 
@@ -1208,6 +2011,12 @@
   <span class="ruby-keyword">self</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>binds i-th parameter with SQL prepared statement. The first argument is index of parameter. The index of first parameter is 1 not 0. The second argument value must be a <a href="Value.html"><code>DuckDB::Value</code></a> instance.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1217,30 +2026,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-constant">PreparedStatement</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">sql</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">bind_value</span>(<span class="ruby-value">1</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_bool</span>(<span class="ruby-keyword">true</span>))
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-bind_varchar" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-bind_varchar" title="Link to this method">
                 <span class="method-name">bind_varchar</span>
                 <span class="method-args">(p1, p2)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="bind_varchar-source">
-            <pre>static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -1252,14 +2068,28 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-clear_bindings" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-clear_bindings" title="Link to this method">
                   <span class="method-callseq">
@@ -1267,17 +2097,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="clear_bindings-source">
-            <pre>static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
 
@@ -1288,31 +2119,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>clear all bindings of prepared statement.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-execute" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-execute" title="Link to this method">
                 <span class="method-name">execute</span>
                 <span class="method-args">()</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="execute-source">
-            <pre>static VALUE duckdb_prepared_statement_execute(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
     const char *error;
@@ -1344,66 +2188,98 @@
     return result;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-nparams" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-nparams" title="Link to this method">
                 <span class="method-name">nparams</span>
                 <span class="method-args">()</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="nparams-source">
-            <pre>static VALUE duckdb_prepared_statement_nparams(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_nparams(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
     return ULL2NUM(duckdb_nparams(ctx-&gt;prepared_statement));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-param_type" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-param_type" title="Link to this method">
                 <span class="method-name">param_type</span>
                 <span class="method-args">(index)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="param_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 74</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 74</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">param_type</span>(<span class="ruby-identifier">index</span>)
   <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_param_type</span>(<span class="ruby-identifier">index</span>)
   <span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">i</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>returns parameter type. The argument must be index of parameter.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1413,30 +2289,37 @@
 <span class="ruby-identifier">stmt</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">prepared_statement</span>(<span class="ruby-string">&#39;SELECT * FROM users WHERE id = ?&#39;</span>)
 <span class="ruby-identifier">stmt</span>.<span class="ruby-identifier">param_type</span>(<span class="ruby-value">1</span>) <span class="ruby-comment"># =&gt; :integer</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-parameter_name" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-parameter_name" title="Link to this method">
                 <span class="method-name">parameter_name</span>
                 <span class="method-args">(p1)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="parameter_name-source">
-            <pre>static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
+            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     VALUE vname;
     const char *name;
@@ -1453,65 +2336,97 @@
     return vname;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-pending_prepared" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-pending_prepared" title="Link to this method">
                 <span class="method-name">pending_prepared</span>
                 <span class="method-args">()</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="pending_prepared-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 46</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 46</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">pending_prepared</span>
   <span class="ruby-constant">PendingResult</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-statement_type" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-statement_type" title="Link to this method">
                 <span class="method-name">statement_type</span>
                 <span class="method-args">()</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="statement_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 61</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 61</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">statement_type</span>
   <span class="ruby-identifier">i</span> = <span class="ruby-identifier">_statement_type</span>
   <span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">statement_type_to_sym</span>(<span class="ruby-identifier">i</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>returns statement type. The return value is one of the following symbols:</p>
 
 <pre>:invalid, :select, :insert, :update, :explain, :delete, :prepare, :create,
@@ -1524,13 +2439,46 @@
  con = db.connect
  stmt = con.prepared_statement(&#39;SELECT * FROM users&#39;)
  stmt.statement_type # =&gt; :select</pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
 
+
+
+
   </section>
+
 </main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.0.3</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
 

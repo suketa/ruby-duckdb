@@ -3,12 +3,40 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>README - RDoc Documentation</title>
 
+
   <meta name="keywords" content="ruby,documentation,README">
-  <meta name="description" content="README: github. badge.">
+  <meta
+    name="description"
+    content="README: github. badge."
+  >
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="README - RDoc Documentation">
+
+
+
+    <meta property="og:description" content="github. badge.">
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="README - RDoc Documentation">
+
+
+
+    <meta name="twitter:description" content="github. badge.">
+
 
 
 <script type="text/javascript">
@@ -16,140 +44,424 @@
   var index_rel_prefix = "./";
 </script>
 
-<script src="./js/navigation.js" defer></script>
-<script src="./js/search.js" defer></script>
-<script src="./js/search_index.js" defer></script>
-<script src="./js/searcher.js" defer></script>
-<script src="./js/darkfish.js" defer></script>
+<script
+  src="./js/theme-toggle.js?v=7.0.3"
+></script>
 
-<link href="./css/fonts.css" rel="stylesheet">
-<link href="./css/rdoc.css" rel="stylesheet">
+<script
+  src="./js/search_navigation.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/search_data.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/search_ranker.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/search_controller.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/c_highlighter.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/aliki.js?v=7.0.3"
+  defer
+></script>
+
+<link
+  href="./css/rdoc.css?v=7.0.3"
+  rel="stylesheet"
+>
 
 
-<body id="top" role="document" class="file">
+
+
+<body role="document" class="file has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="./index.html" class="navbar-brand">
+    RDoc Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
   <span aria-hidden="true">&#9776;</span>
 </div>
 
 
-<nav id="navigation" role="navigation">
-  <div id="project-navigation">
-    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
-  <h2>
-    <a href="./index.html" rel="home">Home</a>
-  </h2>
-
-  <div id="table-of-contents-navigation">
-    <a href="./table_of_contents.html#pages">Pages</a>
-    <a href="./table_of_contents.html#classes">Classes</a>
-    <a href="./table_of_contents.html#methods">Methods</a>
-  </div>
-</div>
-
-    <div id="search-section" role="search" class="project-section initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <div id="search-field-wrapper">
-      <input id="search-field" role="combobox" aria-label="Search"
-             aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </div>
-
-    <ul id="search-results" aria-label="Search Results"
-        aria-busy="false" aria-expanded="false"
-        aria-atomic="false" class="initially-hidden"></ul>
-  </form>
-</div>
-
-  </div>
-
+<nav id="navigation" role="navigation" hidden>
   
-<div class="nav-section">
-  <h3>Table of Contents</h3>
 
 
 
-  <ul class="link-list" role="directory">
-              <li>
-            <details open>
-              <summary>      <a href="#label-ruby-duckdb">ruby-duckdb</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Description">Description</a>
-          <li>      <a href="#label-Requirement">Requirement</a>
-          <li>      <a href="#label-Pre-requisite+setup+-28Linux-29-3A">Pre-requisite setup (Linux):</a>
-          <li>      <a href="#label-Pre-requisite+setup+-28macOS-29-3A">Pre-requisite setup (macOS):</a>
-          <li>      <a href="#label-Pre-requisite+setup+-28Windows-29-3A">Pre-requisite setup (Windows):</a>
-          <li>      <a href="#label-How+to+install">How to install</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-Usage">Usage</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Using+bind+variables">Using bind variables</a>
-          <li>      <a href="#label-Using+prepared+statement">Using prepared statement</a>
-          <li>      <a href="#label-Using+async+query">Using async query</a>
-          <li>      <a href="#label-Using+BLOB+column">Using BLOB column</a>
-          <li>      <a href="#label-Appender">Appender</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-Configuration">Configuration</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Global+configuration">Global configuration</a>
 
-              </ul>
-            </details>
-          </li>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-Versioning+and+DuckDB+support">Versioning and DuckDB support</a>
 
-              </ul>
-            </details>
-          </li>
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
 
-  </ul>
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="./CHANGELOG_md.html">
+                CHANGELOG
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="./CONTRIBUTION_md.html">
+                CONTRIBUTION
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="./LICENSE.html">
+                LICENSE
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="./README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+
+    <ul class="link-list nav-list"><li><code><a href="./CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="./DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="./DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="./DuckDB/Appender.html">Appender</a></code></li><li><code><a href="./DuckDB/Blob.html">Blob</a></code></li><li><code><a href="./DuckDB/Casting.html">Casting</a></code></li><li><code><a href="./DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="./DuckDB/Column.html">Column</a></code></li><li><code><a href="./DuckDB/Config.html">Config</a></code></li><li><code><a href="./DuckDB/Connection.html">Connection</a></code></li><li><code><a href="./DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="./DuckDB/Database.html">Database</a></code></li><li><code><a href="./DuckDB/Error.html">Error</a></code></li><li><code><a href="./DuckDB/Expression.html">Expression</a></code></li><li><code><a href="./DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="./DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="./DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="./DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="./DuckDB/Interval.html">Interval</a></code></li><li><code><a href="./DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="./DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="./DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="./DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="./DuckDB/Result.html">Result</a></code></li><li><code><a href="./DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="./DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="./DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="./DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="./DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="./DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="./DuckDB/Value.html">Value</a></code></li><li><code><a href="./DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="./Object.html">Object</a></code></li><li><code><a href="./PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="./PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="./PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+  </details>
 </div>
-
-  
-<div id="fileindex-section" class="nav-section">
-  <h3>Pages</h3>
-
-  <ul class="link-list">
-    <li><a href="./CHANGELOG_md.html">CHANGELOG</a>
-    <li><a href="./CONTRIBUTION_md.html">CONTRIBUTION</a>
-    <li><a href="./LICENSE.html">LICENSE</a>
-    <li><a href="./README_md.html">README</a>
-  </ul>
-</div>
-
-
-  <footer id="validator-badges" role="contentinfo">
-  <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
-  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
-</footer>
 
 </nav>
 
 <main role="main" aria-label="Page README.md">
 
-<h1 id="label-ruby-duckdb">ruby-duckdb<span><a href="#label-ruby-duckdb">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-ruby-duckdb"><a href="#label-ruby-duckdb">ruby-duckdb</a></h1>
 
 <p><a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AUbuntu"><img src="https://github.com/suketa/ruby-duckdb/workflows/Ubuntu/badge.svg" alt="Ubuntu"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AMacOS"><img src="https://github.com/suketa/ruby-duckdb/workflows/MacOS/badge.svg" alt="MacOS"></a> <a href="https://github.com/suketa/ruby-duckdb/actions?query=workflow%3AWindows"><img src="https://github.com/suketa/ruby-duckdb/workflows/Windows/badge.svg" alt="Windows"></a> <a href="https://badge.fury.io/rb/duckdb"><img src="https://badge.fury.io/rb/duckdb.svg" alt="Gem Version"></a></p>
 
-<h2 id="label-Description">Description<span><a href="#label-Description">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Description"><a href="#label-Description">Description</a></h2>
 
 <p>This gem <code>duckdb</code> is Ruby client for the <a href="https://www.duckdb.org">DuckDB</a> database engine.</p>
 
-<h2 id="label-Requirement">Requirement<span><a href="#label-Requirement">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Requirement"><a href="#label-Requirement">Requirement</a></h2>
 
 <p>You must have <a href="https://www.duckdb.org">DuckDB</a> engine installed in order to use this gem.</p>
 
-<h2 id="label-Pre-requisite+setup+-28Linux-29-3A">Pre-requisite setup (Linux):<span><a href="#label-Pre-requisite+setup+-28Linux-29-3A">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Pre-requisite+setup+-28Linux-29-3A"><a href="#label-Pre-requisite+setup+-28Linux-29-3A">Pre-requisite setup (Linux):</a></h2>
 <ol><li>
 <p>Download the latest <a href="https://duckdb.org/install/?platform=linux&amp;environment=c">C++ package release for DuckDB</a>.</p>
 </li><li>
@@ -169,14 +481,14 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <pre>sudo ldconfig /usr/local/lib # adding a --verbose flag is optional - but this will let you know if the libduckdb.so library has been linked</pre>
 </li></ol>
 
-<h2 id="label-Pre-requisite+setup+-28macOS-29-3A">Pre-requisite setup (macOS):<span><a href="#label-Pre-requisite+setup+-28macOS-29-3A">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Pre-requisite+setup+-28macOS-29-3A"><a href="#label-Pre-requisite+setup+-28macOS-29-3A">Pre-requisite setup (macOS):</a></h2>
 
 <p>Using <code>brew install</code> is recommended.</p>
 
 <pre class="ruby"><span class="ruby-identifier">brew</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">duckdb</span>
 </pre>
 
-<h2 id="label-Pre-requisite+setup+-28Windows-29-3A">Pre-requisite setup (Windows):<span><a href="#label-Pre-requisite+setup+-28Windows-29-3A">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Pre-requisite+setup+-28Windows-29-3A"><a href="#label-Pre-requisite+setup+-28Windows-29-3A">Pre-requisite setup (Windows):</a></h2>
 
 <p>Using <a href="https://rubyinstaller.org/downloads/">Ruby + Devkit</a> is recommended.</p>
 <ol><li>
@@ -185,7 +497,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <p>Copy <code>duckdb.dll</code> into <code>C:\Windows\System32</code></p>
 </li></ol>
 
-<h2 id="label-How+to+install">How to install<span><a href="#label-How+to+install">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-How+to+install"><a href="#label-How+to+install">How to install</a></h2>
 
 <pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">duckdb</span>
 </pre>
@@ -196,7 +508,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 
 <pre>gem install duckdb -- --with-duckdb-include=/duckdb_header_directory --with-duckdb-lib=/duckdb_library_directory</pre>
 
-<h2 id="label-Usage">Usage<span><a href="#label-Usage">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Usage"><a href="#label-Usage">Usage</a></h2>
 
 <p>The followings are some examples, for more detailed information, please refer to the <a href="https://suketa.github.io/ruby-duckdb/index.html">documentation</a>.</p>
 
@@ -237,7 +549,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <span class="ruby-keyword">end</span>
 </pre>
 
-<h3 id="label-Using+bind+variables">Using bind variables<span><a href="#label-Using+bind+variables">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<h3 id="label-Using+bind+variables"><a href="#label-Using+bind+variables">Using bind variables</a></h3>
 
 <p>You can use bind variables.</p>
 
@@ -246,7 +558,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM users WHERE name = $name AND email = $email&#39;</span>, <span class="ruby-value">name:</span> <span class="ruby-string">&#39;Alice&#39;</span>, <span class="ruby-value">email:</span> <span class="ruby-string">&#39;alice@example.com&#39;</span>)
 </pre>
 
-<h3 id="label-Using+prepared+statement">Using prepared statement<span><a href="#label-Using+prepared+statement">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<h3 id="label-Using+prepared+statement"><a href="#label-Using+prepared+statement">Using prepared statement</a></h3>
 
 <p>You can use prepared statement. Prepared statement object is created by <code>Connection#prepare</code> method or <a href="DuckDB/PreparedStatement.html#method-c-new"><code>DuckDB::PreparedStatement.new</code></a>.</p>
 
@@ -270,7 +582,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
          <span class="ruby-keyword">end</span>
 </pre>
 
-<h3 id="label-Using+async+query">Using async query<span><a href="#label-Using+async+query">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<h3 id="label-Using+async+query"><a href="#label-Using+async+query">Using async query</a></h3>
 
 <p>You can use async query.</p>
 
@@ -283,7 +595,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 
 <p>Here is <a href="./benchmark/async_query_rb.html">the benchmark</a>.</p>
 
-<h3 id="label-Using+BLOB+column">Using BLOB column<span><a href="#label-Using+BLOB+column">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<h3 id="label-Using+BLOB+column"><a href="#label-Using+BLOB+column">Using BLOB column</a></h3>
 
 <p>Use <code>DuckDB::Blob.new</code> or <code>my_string.force_encoding(Encoding::BINARY)</code>.</p>
 
@@ -305,7 +617,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <span class="ruby-keyword">end</span>
 </pre>
 
-<h3 id="label-Appender">Appender<span><a href="#label-Appender">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<h3 id="label-Appender"><a href="#label-Appender">Appender</a></h3>
 
 <p>Appender class provides Ruby interface of <a href="https://duckdb.org/docs/data/appender">DuckDB Appender</a></p>
 
@@ -369,7 +681,7 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <span class="ruby-comment"># append     0.012666   0.000000   0.012666 (  0.012670 )</span>
 </pre>
 
-<h3 id="label-Configuration">Configuration<span><a href="#label-Configuration">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<h3 id="label-Configuration"><a href="#label-Configuration">Configuration</a></h3>
 
 <p>Config class provides Ruby interface of <a href="https://duckdb.org/docs/api/c/config">DuckDB configuration</a>.</p>
 
@@ -389,11 +701,11 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <span class="ruby-identifier">res</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span> <span class="ruby-comment"># =&gt; 4</span>
 </pre>
 
-<h4 id="label-Global+configuration">Global configuration<span><a href="#label-Global+configuration">&para;</a> <a href="#top">&uarr;</a></span></h4>
+<h4 id="label-Global+configuration"><a href="#label-Global+configuration">Global configuration</a></h4>
 
 <p>Set <a href="DuckDB.html#attribute-c-default_timezone"><code>DuckDB.default_timezone</code></a> to control how TIMESTAMP and TIME values without time zone are converted to Ruby <code>Time</code> objects. The default is <code>:local</code>, but you can use <code>:utc</code> for UTC conversion.</p>
 
-<h2 id="label-Versioning+and+DuckDB+support">Versioning and <a href="DuckDB.html"><code>DuckDB</code></a> support<span><a href="#label-Versioning+and+DuckDB+support">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Versioning+and+DuckDB+support"><a href="#label-Versioning+and+DuckDB+support">Versioning and <a href="DuckDB.html"><code>DuckDB</code></a> support</a></h2>
 
 <p>The first three digits of the gem version track the <a href="DuckDB.html"><code>DuckDB</code></a> release that the gem is aligned with. For example, ruby-duckdb <code>1.5.1.0</code> runs with <a href="DuckDB.html"><code>DuckDB</code></a> <code>1.5.1</code>.</p>
 
@@ -406,4 +718,27 @@ sudo mv libduckdb/libduckdb.so /usr/local/lib</pre>
 <p>This gem aims to support most <a href="DuckDB.html"><code>DuckDB</code></a> minor releases, but we may occasionally skip a minor series.</p>
 
 </main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.0.3</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
 

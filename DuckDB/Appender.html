@@ -3,13 +3,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>class DuckDB::Appender - RDoc Documentation</title>
 
-  <meta name="keywords" content="ruby,class,DuckDB::Appender">
 
-    <meta name="description" content="class DuckDB::Appender: Appender encapsulates DuckDB Appender. Database.">
+  <meta
+    name="keywords"
+    content="ruby,class,DuckDB::Appender"
+  >
+
+    <meta
+      name="description"
+      content="class DuckDB::Appender: Appender encapsulates DuckDB Appender. Database."
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class DuckDB::Appender - RDoc Documentation">
+
+
+
+    <meta property="og:description" content="Appender encapsulates DuckDB Appender. Database.">
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class DuckDB::Appender - RDoc Documentation">
+
+
+
+    <meta name="twitter:description" content="Appender encapsulates DuckDB Appender. Database.">
+
 
 
 <script type="text/javascript">
@@ -17,125 +49,540 @@
   var index_rel_prefix = "../";
 </script>
 
-<script src="../js/navigation.js" defer></script>
-<script src="../js/search.js" defer></script>
-<script src="../js/search_index.js" defer></script>
-<script src="../js/searcher.js" defer></script>
-<script src="../js/darkfish.js" defer></script>
+<script
+  src="../js/theme-toggle.js?v=7.0.3"
+></script>
 
-<link href="../css/fonts.css" rel="stylesheet">
-<link href="../css/rdoc.css" rel="stylesheet">
+<script
+  src="../js/search_navigation.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_data.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_ranker.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_controller.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/c_highlighter.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/aliki.js?v=7.0.3"
+  defer
+></script>
+
+<link
+  href="../css/rdoc.css?v=7.0.3"
+  rel="stylesheet"
+>
 
 
-<body id="top" role="document" class="class">
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="../index.html" class="navbar-brand">
+    RDoc Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
   <span aria-hidden="true">&#9776;</span>
 </div>
 
 
-<nav id="navigation" role="navigation">
-  <div id="project-navigation">
-    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
-  <h2>
-    <a href="../index.html" rel="home">Home</a>
-  </h2>
+<nav id="navigation" role="navigation" hidden>
+  
 
-  <div id="table-of-contents-navigation">
-    <a href="../table_of_contents.html#pages">Pages</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="../CHANGELOG_md.html">
+                CHANGELOG
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../CONTRIBUTION_md.html">
+                CONTRIBUTION
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../LICENSE.html">
+                LICENSE
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
   </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
+  </details>
 </div>
 
-    <div id="search-section" role="search" class="project-section initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <div id="search-field-wrapper">
-      <input id="search-field" role="combobox" aria-label="Search"
-             aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </div>
-
-    <ul id="search-results" aria-label="Search Results"
-        aria-busy="false" aria-expanded="false"
-        aria-atomic="false" class="initially-hidden"></ul>
-  </form>
-</div>
-
-  </div>
 
   
-  
-  <div id="parent-class-section" class="nav-section">
-  <h3>Ancestors</h3>
-  <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
-</div>
 
   
-  
+
   
   <div class="nav-section">
-    <h3>Class Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-c-create_query">create_query</a></li>
-      <li ><a href="#method-c-from_query">from_query</a></li>
-      <li ><a href="#method-c-new">new</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-create_query">create_query</a></li>
+
+        <li ><a href="#method-c-from_query">from_query</a></li>
+
+        <li ><a href="#method-c-new">new</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
 
   <div class="nav-section">
-    <h3>Instance Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-i-append">append</a></li>
-      <li ><a href="#method-i-append_blob">append_blob</a></li>
-      <li ><a href="#method-i-append_bool">append_bool</a></li>
-      <li ><a href="#method-i-append_data_chunk">append_data_chunk</a></li>
-      <li ><a href="#method-i-append_date">append_date</a></li>
-      <li ><a href="#method-i-append_default">append_default</a></li>
-      <li ><a href="#method-i-append_double">append_double</a></li>
-      <li ><a href="#method-i-append_float">append_float</a></li>
-      <li ><a href="#method-i-append_hugeint">append_hugeint</a></li>
-      <li ><a href="#method-i-append_int16">append_int16</a></li>
-      <li ><a href="#method-i-append_int32">append_int32</a></li>
-      <li ><a href="#method-i-append_int64">append_int64</a></li>
-      <li ><a href="#method-i-append_int8">append_int8</a></li>
-      <li ><a href="#method-i-append_interval">append_interval</a></li>
-      <li ><a href="#method-i-append_null">append_null</a></li>
-      <li ><a href="#method-i-append_row">append_row</a></li>
-      <li ><a href="#method-i-append_time">append_time</a></li>
-      <li ><a href="#method-i-append_timestamp">append_timestamp</a></li>
-      <li ><a href="#method-i-append_uhugeint">append_uhugeint</a></li>
-      <li ><a href="#method-i-append_uint16">append_uint16</a></li>
-      <li ><a href="#method-i-append_uint32">append_uint32</a></li>
-      <li ><a href="#method-i-append_uint64">append_uint64</a></li>
-      <li ><a href="#method-i-append_uint8">append_uint8</a></li>
-      <li ><a href="#method-i-append_value">append_value</a></li>
-      <li ><a href="#method-i-append_varchar">append_varchar</a></li>
-      <li ><a href="#method-i-append_varchar_length">append_varchar_length</a></li>
-      <li ><a href="#method-i-begin_row">begin_row</a></li>
-      <li ><a href="#method-i-close">close</a></li>
-      <li ><a href="#method-i-end_row">end_row</a></li>
-      <li ><a href="#method-i-error_message">error_message</a></li>
-      <li ><a href="#method-i-flush">flush</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-append">append</a></li>
+
+        <li ><a href="#method-i-append_blob">append_blob</a></li>
+
+        <li ><a href="#method-i-append_bool">append_bool</a></li>
+
+        <li ><a href="#method-i-append_data_chunk">append_data_chunk</a></li>
+
+        <li ><a href="#method-i-append_date">append_date</a></li>
+
+        <li ><a href="#method-i-append_default">append_default</a></li>
+
+        <li ><a href="#method-i-append_double">append_double</a></li>
+
+        <li ><a href="#method-i-append_float">append_float</a></li>
+
+        <li ><a href="#method-i-append_hugeint">append_hugeint</a></li>
+
+        <li ><a href="#method-i-append_int16">append_int16</a></li>
+
+        <li ><a href="#method-i-append_int32">append_int32</a></li>
+
+        <li ><a href="#method-i-append_int64">append_int64</a></li>
+
+        <li ><a href="#method-i-append_int8">append_int8</a></li>
+
+        <li ><a href="#method-i-append_interval">append_interval</a></li>
+
+        <li ><a href="#method-i-append_null">append_null</a></li>
+
+        <li ><a href="#method-i-append_row">append_row</a></li>
+
+        <li ><a href="#method-i-append_time">append_time</a></li>
+
+        <li ><a href="#method-i-append_timestamp">append_timestamp</a></li>
+
+        <li ><a href="#method-i-append_uhugeint">append_uhugeint</a></li>
+
+        <li ><a href="#method-i-append_uint16">append_uint16</a></li>
+
+        <li ><a href="#method-i-append_uint32">append_uint32</a></li>
+
+        <li ><a href="#method-i-append_uint64">append_uint64</a></li>
+
+        <li ><a href="#method-i-append_uint8">append_uint8</a></li>
+
+        <li ><a href="#method-i-append_value">append_value</a></li>
+
+        <li ><a href="#method-i-append_varchar">append_varchar</a></li>
+
+        <li ><a href="#method-i-append_varchar_length">append_varchar_length</a></li>
+
+        <li ><a href="#method-i-begin_row">begin_row</a></li>
+
+        <li ><a href="#method-i-close">close</a></li>
+
+        <li ><a href="#method-i-end_row">end_row</a></li>
+
+        <li ><a href="#method-i-error_message">error_message</a></li>
+
+        <li ><a href="#method-i-flush">flush</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
 
-  <footer id="validator-badges" role="contentinfo">
-  <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
-  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
-</footer>
+    <ul class="link-list nav-list"><li><code><a href="../CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="../DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="../DuckDB/Appender.html">Appender</a></code></li><li><code><a href="../DuckDB/Blob.html">Blob</a></code></li><li><code><a href="../DuckDB/Casting.html">Casting</a></code></li><li><code><a href="../DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="../DuckDB/Column.html">Column</a></code></li><li><code><a href="../DuckDB/Config.html">Config</a></code></li><li><code><a href="../DuckDB/Connection.html">Connection</a></code></li><li><code><a href="../DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="../DuckDB/Database.html">Database</a></code></li><li><code><a href="../DuckDB/Error.html">Error</a></code></li><li><code><a href="../DuckDB/Expression.html">Expression</a></code></li><li><code><a href="../DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="../DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="../DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="../DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="../DuckDB/Interval.html">Interval</a></code></li><li><code><a href="../DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="../DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="../DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="../DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="../DuckDB/Result.html">Result</a></code></li><li><code><a href="../DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="../DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="../DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="../DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="../DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="../DuckDB/Value.html">Value</a></code></li><li><code><a href="../DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="../Object.html">Object</a></code></li><li><code><a href="../PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+  </details>
+</div>
 
 </nav>
 
 <main role="main" aria-labelledby="class-DuckDB::Appender">
   
   
-    <ol role="navigation" aria-label="breadcrumb" class="breadcrumb">
+    <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
       
       <li>
         
@@ -170,7 +617,15 @@
 
   </section>
 
+
   <section id="5Buntitled-5D" class="documentation-section anchor-link">
+
+
+
+
+
+
+
 
 
 
@@ -178,11 +633,14 @@
 
      <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Class Methods</h3>
+         <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
        </header>
+
 
       <div id="method-c-create_query" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-c-create_query" title="Link to this method">
                   <span class="method-callseq">
@@ -190,17 +648,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_query-source">
-            <pre>static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns) {
+            <pre class="c" data-language="c">static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBAppender *ctx;
     char *query_str = StringValuePtr(query);
@@ -248,6 +707,12 @@
     return appender;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns a new <a href="Appender.html"><code>Appender</code></a> instance created from a query.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -258,16 +723,25 @@
 <span class="ruby-identifier">types</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>]
 <span class="ruby-identifier">appender</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Appender</span>.<span class="ruby-identifier">create_query</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-string">&#39;my_appended_data&#39;</span>, <span class="ruby-node">%w[i val]</span>)
 </pre>
+
+
         </div>
+
+
 
         <div class="aliases">
           Also aliased as: <a href="Appender.html#method-c-from_query">from_query</a>
         </div>
 
+
+
       </div>
+
 
       <div id="method-c-from_query" class="method-detail anchor-link method-alias">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-c-from_query" title="Link to this method">
                   <span class="method-callseq">
@@ -275,38 +749,52 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
+
 
 
         <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
         <div class="aliases">
           Alias for: <a href="Appender.html#method-c-create_query">create_query</a>
         </div>
+
       </div>
+
 
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-new" title="Link to this method">
                 <span class="method-name">new</span>
                 <span class="method-args">(p1, p2, p3)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre>static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
+            <pre class="c" data-language="c">static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
 
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBAppender *ctx;
@@ -329,38 +817,58 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
+
+
+
+
+
+
 
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Instance Methods</h3>
+         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
        </header>
+
 
       <div id="method-i-append" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-append" title="Link to this method">
                 <span class="method-name">append</span>
                 <span class="method-args">(value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 609</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 609</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -384,6 +892,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>appends value.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -397,13 +911,21 @@
 </pre>
 
 <p>rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_blob" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_blob" title="Link to this method">
                   <span class="method-callseq">
@@ -411,23 +933,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_blob-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 380</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 380</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_blob</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_blob</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_blob&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a varchar value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -440,13 +969,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_bool" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_bool" title="Link to this method">
                   <span class="method-callseq">
@@ -454,23 +991,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_bool-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 111</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 111</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_bool</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_bool</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_bool&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a boolean value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -484,13 +1028,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_data_chunk" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_data_chunk" title="Link to this method">
                   <span class="method-callseq">
@@ -498,17 +1050,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_data_chunk-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 590</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 590</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_data_chunk</span>(<span class="ruby-identifier">chunk</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected DuckDB::DataChunk, got #{chunk.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">DataChunk</span>)
 
@@ -517,14 +1070,28 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_data_chunk&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_date" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_date" title="Link to this method">
                   <span class="method-callseq">
@@ -532,17 +1099,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_date-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 488</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 488</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_date</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">date</span> = <span class="ruby-identifier">_parse_date</span>(<span class="ruby-identifier">value</span>)
 
@@ -551,6 +1119,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_date&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a date value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -565,13 +1139,21 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_default" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_default" title="Link to this method">
                   <span class="method-callseq">
@@ -579,23 +1161,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_default-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 422</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 422</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_default</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_default</span>
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_default&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a default value to the current row in the appender. If the column does not have a default value, this method appends a NULL value.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -608,13 +1197,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_double" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_double" title="Link to this method">
                   <span class="method-callseq">
@@ -622,23 +1219,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_double-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 320</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 320</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_double</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_double</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_double&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a double value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -651,13 +1255,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_float" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_float" title="Link to this method">
                   <span class="method-callseq">
@@ -665,23 +1277,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_float-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 300</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 300</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_float</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_float</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_float&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a float value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -694,13 +1313,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_hugeint" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_hugeint" title="Link to this method">
                   <span class="method-callseq">
@@ -708,17 +1335,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_hugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 442</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 442</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
 
@@ -727,6 +1355,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_hugeint&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a huge int value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -739,13 +1373,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_int16" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_int16" title="Link to this method">
                   <span class="method-callseq">
@@ -753,23 +1395,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_int16-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 154</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 154</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int16</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int16</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_int16&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an int16(SMALLINT) value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -783,13 +1432,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_int32" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_int32" title="Link to this method">
                   <span class="method-callseq">
@@ -797,23 +1454,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_int32-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 175</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 175</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int32</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int32</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_int32&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an int32(INTEGER) value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -827,13 +1491,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_int64" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_int64" title="Link to this method">
                   <span class="method-callseq">
@@ -841,23 +1513,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_int64-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 196</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 196</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int64</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int64</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_int64&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an int64(BIGINT) value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -871,13 +1550,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_int8" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_int8" title="Link to this method">
                   <span class="method-callseq">
@@ -885,23 +1572,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_int8-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 133</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 133</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_int8</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_int8</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_int8&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an int8(TINYINT) value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -915,13 +1609,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_interval" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_interval" title="Link to this method">
                   <span class="method-callseq">
@@ -929,17 +1631,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_interval-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 558</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 558</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">value</span> = <span class="ruby-constant">Interval</span>.<span class="ruby-identifier">to_interval</span>(<span class="ruby-identifier">value</span>)
 
@@ -948,6 +1651,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_interval&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an interval value to the current row in the appender. The argument must be ISO8601 duration format.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -960,13 +1669,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_null" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_null" title="Link to this method">
                   <span class="method-callseq">
@@ -974,23 +1691,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_null-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 400</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 400</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_null</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_null</span>
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_null&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a NULL value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1003,30 +1727,37 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_row" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-append_row" title="Link to this method">
                 <span class="method-name">append_row</span>
                 <span class="method-args">(*args)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 642</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 642</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)
@@ -1034,6 +1765,12 @@
   <span class="ruby-identifier">end_row</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>append a row.</p>
 
 <pre class="ruby"><span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append_row</span>(<span class="ruby-value">1</span>, <span class="ruby-string">&#39;Alice&#39;</span>)
@@ -1045,13 +1782,21 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append</span>(<span class="ruby-string">&#39;Alice&#39;</span>)
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_time" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_time" title="Link to this method">
                   <span class="method-callseq">
@@ -1059,17 +1804,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_time-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 511</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 511</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_time</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
 
@@ -1078,6 +1824,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_time&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a time value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1091,13 +1843,21 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_timestamp" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_timestamp" title="Link to this method">
                   <span class="method-callseq">
@@ -1105,17 +1865,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_timestamp-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 535</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 535</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_timestamp</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">time</span> = <span class="ruby-identifier">to_time</span>(<span class="ruby-identifier">value</span>)
 
@@ -1124,6 +1885,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_timestamp&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a timestamp value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1138,13 +1905,21 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_uhugeint" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_uhugeint" title="Link to this method">
                   <span class="method-callseq">
@@ -1152,17 +1927,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_uhugeint-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 464</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 464</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uhugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">integer_to_hugeint</span>(<span class="ruby-identifier">value</span>)
 
@@ -1171,6 +1947,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_uhugeint&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an unsigned huge int value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1183,13 +1965,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_uint16" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_uint16" title="Link to this method">
                   <span class="method-callseq">
@@ -1197,23 +1987,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_uint16-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 238</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 238</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint16</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint16</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_uint16&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an uint16 value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1227,13 +2024,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_uint32" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_uint32" title="Link to this method">
                   <span class="method-callseq">
@@ -1241,23 +2046,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_uint32-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 259</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 259</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint32</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint32</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_uint32&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an uint32 value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1271,13 +2083,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_uint64" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_uint64" title="Link to this method">
                   <span class="method-callseq">
@@ -1285,23 +2105,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_uint64-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 280</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 280</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint64</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint64</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_uint64&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an uint64 value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1315,13 +2142,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_uint8" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_uint8" title="Link to this method">
                   <span class="method-callseq">
@@ -1329,23 +2164,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_uint8-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 217</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 217</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_uint8</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_uint8</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_uint8&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends an uint8 value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1359,13 +2201,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_value" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_value" title="Link to this method">
                   <span class="method-callseq">
@@ -1373,17 +2223,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_value-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 580</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 580</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_value</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected DuckDB::Value, got #{value.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>)
 
@@ -1392,6 +2243,12 @@
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_value&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a <a href="Value.html"><code>DuckDB::Value</code></a> to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1404,13 +2261,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_varchar" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_varchar" title="Link to this method">
                   <span class="method-callseq">
@@ -1418,23 +2283,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_varchar-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 340</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 340</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_varchar</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_varchar</span>(<span class="ruby-identifier">value</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_varchar&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a varchar value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1447,13 +2319,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-append_varchar_length" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-append_varchar_length" title="Link to this method">
                   <span class="method-callseq">
@@ -1461,23 +2341,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="append_varchar_length-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 360</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 360</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_varchar_length</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">length</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_varchar_length</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">length</span>)
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_varchar_length&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Appends a varchar value to the current row in the appender.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1490,13 +2377,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-begin_row" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-begin_row" title="Link to this method">
                   <span class="method-callseq">
@@ -1504,6 +2399,7 @@
                   </span>
                 </a>
               </div>
+
               <div class="method-heading">
                 <a href="#method-i-begin_row" title="Link to this method">
                   <span class="method-callseq">
@@ -1511,6 +2407,7 @@
                   </span>
                 </a>
               </div>
+
               <div class="method-heading">
                 <a href="#method-i-begin_row" title="Link to this method">
                   <span class="method-callseq">
@@ -1518,29 +2415,44 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="begin_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 27</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 27</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">begin_row</span>
   <span class="ruby-keyword">self</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-close" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-close" title="Link to this method">
                   <span class="method-callseq">
@@ -1548,23 +2460,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="close-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 90</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 90</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">close</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_close</span>
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to close&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Closes the appender by flushing all intermediate states and closing it for further appends. If flushing the data triggers a constraint violation or any other error, then all data is invalidated, and this method raises <a href="Error.html"><code>DuckDB::Error</code></a>.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1578,13 +2497,21 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">close</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-end_row" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-end_row" title="Link to this method">
                   <span class="method-callseq">
@@ -1592,23 +2519,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="end_row-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 44</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 44</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">end_row</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_end_row</span>
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to end_row&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Finish the current row of appends. After <a href="Appender.html#method-i-end_row"><code>end_row</code></a> is called, the next row can be appended.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1621,13 +2555,21 @@
   .<span class="ruby-identifier">append_varchar</span>(<span class="ruby-string">&#39;Alice&#39;</span>)
   .<span class="ruby-identifier">end_row</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-error_message" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-error_message" title="Link to this method">
                   <span class="method-callseq">
@@ -1635,17 +2577,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="error_message-source">
-            <pre>static VALUE appender_error_message(VALUE self) {
+            <pre class="c" data-language="c">static VALUE appender_error_message(VALUE self) {
     rubyDuckDBAppender *ctx;
     duckdb_error_data error_data;
     const char *msg = NULL;
@@ -1661,6 +2604,12 @@
     return rb_msg;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the error message of the appender. If there is no error, then it returns nil.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1670,13 +2619,21 @@
 <span class="ruby-identifier">appender</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender</span>(<span class="ruby-string">&#39;users&#39;</span>)
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">error_message</span> <span class="ruby-comment"># =&gt; nil</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-flush" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-flush" title="Link to this method">
                   <span class="method-callseq">
@@ -1684,23 +2641,30 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="flush-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/appender.rb, line 67</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 67</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">flush</span>
   <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_flush</span>
 
   <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to flush&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Flushes the appender to the table, forcing the cache of the appender to be cleared. If flushing the data triggers a constraint violation or any other error, then all data is invalidated, and this method raises <a href="Error.html"><code>DuckDB::Error</code></a>.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1714,13 +2678,46 @@
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
 
+
+
+
   </section>
+
 </main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.0.3</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
 

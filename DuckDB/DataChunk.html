@@ -3,13 +3,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>class DuckDB::DataChunk - RDoc Documentation</title>
 
-  <meta name="keywords" content="ruby,class,DuckDB::DataChunk">
 
-    <meta name="description" content="class DuckDB::DataChunk: DataChunk represents a chunk of data for table function output. During table function execution, data chunks are used to return rows.">
+  <meta
+    name="keywords"
+    content="ruby,class,DuckDB::DataChunk"
+  >
+
+    <meta
+      name="description"
+      content="class DuckDB::DataChunk: DataChunk represents a chunk of data for table function output. During table function execution, data chunks are used to return rows."
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class DuckDB::DataChunk - RDoc Documentation">
+
+
+
+    <meta property="og:description" content="DataChunk represents a chunk of data for table function output. During table function execution, data chunks are used to return rows.">
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class DuckDB::DataChunk - RDoc Documentation">
+
+
+
+    <meta name="twitter:description" content="DataChunk represents a chunk of data for table function output. During table function execution, data chunks are used to return rows.">
+
 
 
 <script type="text/javascript">
@@ -17,97 +49,484 @@
   var index_rel_prefix = "../";
 </script>
 
-<script src="../js/navigation.js" defer></script>
-<script src="../js/search.js" defer></script>
-<script src="../js/search_index.js" defer></script>
-<script src="../js/searcher.js" defer></script>
-<script src="../js/darkfish.js" defer></script>
+<script
+  src="../js/theme-toggle.js?v=7.0.3"
+></script>
 
-<link href="../css/fonts.css" rel="stylesheet">
-<link href="../css/rdoc.css" rel="stylesheet">
+<script
+  src="../js/search_navigation.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_data.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_ranker.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_controller.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/c_highlighter.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/aliki.js?v=7.0.3"
+  defer
+></script>
+
+<link
+  href="../css/rdoc.css?v=7.0.3"
+  rel="stylesheet"
+>
 
 
-<body id="top" role="document" class="class">
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="../index.html" class="navbar-brand">
+    RDoc Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
   <span aria-hidden="true">&#9776;</span>
 </div>
 
 
-<nav id="navigation" role="navigation">
-  <div id="project-navigation">
-    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
-  <h2>
-    <a href="../index.html" rel="home">Home</a>
-  </h2>
+<nav id="navigation" role="navigation" hidden>
+  
 
-  <div id="table-of-contents-navigation">
-    <a href="../table_of_contents.html#pages">Pages</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="../CHANGELOG_md.html">
+                CHANGELOG
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../CONTRIBUTION_md.html">
+                CONTRIBUTION
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../LICENSE.html">
+                LICENSE
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
   </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
+  </details>
 </div>
 
-    <div id="search-section" role="search" class="project-section initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <div id="search-field-wrapper">
-      <input id="search-field" role="combobox" aria-label="Search"
-             aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </div>
-
-    <ul id="search-results" aria-label="Search Results"
-        aria-busy="false" aria-expanded="false"
-        aria-atomic="false" class="initially-hidden"></ul>
-  </form>
-</div>
-
-  </div>
 
   
-  
-  <div id="parent-class-section" class="nav-section">
-  <h3>Ancestors</h3>
-  <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
-</div>
 
   
-  
+
   
   <div class="nav-section">
-    <h3>Class Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-c-new">new</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-new">new</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
 
   <div class="nav-section">
-    <h3>Instance Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-i-column_count">column_count</a></li>
-      <li ><a href="#method-i-get_vector">get_vector</a></li>
-      <li ><a href="#method-i-set_value">set_value</a></li>
-      <li ><a href="#method-i-size">size</a></li>
-      <li ><a href="#method-i-size-3D">size=</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-column_count">column_count</a></li>
+
+        <li ><a href="#method-i-get_vector">get_vector</a></li>
+
+        <li ><a href="#method-i-set_value">set_value</a></li>
+
+        <li ><a href="#method-i-size">size</a></li>
+
+        <li ><a href="#method-i-size-3D">size=</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
 
-  <footer id="validator-badges" role="contentinfo">
-  <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
-  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
-</footer>
+    <ul class="link-list nav-list"><li><code><a href="../CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="../DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="../DuckDB/Appender.html">Appender</a></code></li><li><code><a href="../DuckDB/Blob.html">Blob</a></code></li><li><code><a href="../DuckDB/Casting.html">Casting</a></code></li><li><code><a href="../DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="../DuckDB/Column.html">Column</a></code></li><li><code><a href="../DuckDB/Config.html">Config</a></code></li><li><code><a href="../DuckDB/Connection.html">Connection</a></code></li><li><code><a href="../DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="../DuckDB/Database.html">Database</a></code></li><li><code><a href="../DuckDB/Error.html">Error</a></code></li><li><code><a href="../DuckDB/Expression.html">Expression</a></code></li><li><code><a href="../DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="../DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="../DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="../DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="../DuckDB/Interval.html">Interval</a></code></li><li><code><a href="../DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="../DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="../DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="../DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="../DuckDB/Result.html">Result</a></code></li><li><code><a href="../DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="../DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="../DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="../DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="../DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="../DuckDB/Value.html">Value</a></code></li><li><code><a href="../DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="../Object.html">Object</a></code></li><li><code><a href="../PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+  </details>
+</div>
 
 </nav>
 
 <main role="main" aria-labelledby="class-DuckDB::DataChunk">
   
   
-    <ol role="navigation" aria-label="breadcrumb" class="breadcrumb">
+    <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
       
       <li>
         
@@ -154,7 +573,15 @@
 
   </section>
 
+
   <section id="5Buntitled-5D" class="documentation-section anchor-link">
+
+
+
+
+
+
+
 
 
 
@@ -162,28 +589,30 @@
 
      <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Class Methods</h3>
+         <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
        </header>
+
 
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-new" title="Link to this method">
                 <span class="method-name">new</span>
                 <span class="method-args">(p1 = v1)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre>static VALUE initialize(int argc, VALUE *argv, VALUE self) {
+            <pre class="c" data-language="c">static VALUE initialize(int argc, VALUE *argv, VALUE self) {
     rubyDuckDBDataChunk *ctx;
     VALUE logical_types;
     idx_t column_count;
@@ -225,21 +654,42 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
+
+
+
+
+
+
 
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Instance Methods</h3>
+         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
        </header>
+
 
       <div id="method-i-column_count" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-column_count" title="Link to this method">
                   <span class="method-callseq">
@@ -247,17 +697,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="column_count-source">
-            <pre>static VALUE rbduckdb_data_chunk_column_count(VALUE self) {
+            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_column_count(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t count;
 
@@ -268,17 +719,31 @@
     return ULL2NUM(count);
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the number of columns in the data chunk.</p>
 
 <pre class="ruby"><span class="ruby-identifier">data_chunk</span>.<span class="ruby-identifier">column_count</span>  <span class="ruby-comment"># =&gt; 2</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-get_vector" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-get_vector" title="Link to this method">
                   <span class="method-callseq">
@@ -286,17 +751,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="get_vector-source">
-            <pre>static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx) {
+            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx) {
     rubyDuckDBDataChunk *ctx;
     idx_t idx;
     duckdb_vector vector;
@@ -316,34 +782,47 @@
     return vector_obj;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Gets the vector at the specified column index.</p>
 
 <pre class="ruby"><span class="ruby-identifier">vector</span> = <span class="ruby-identifier">data_chunk</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-set_value" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-set_value" title="Link to this method">
                 <span class="method-name">set_value</span>
                 <span class="method-args">(col_idx, row_idx, value)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="set_value-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 48</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 48</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_value</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">vector</span> = <span class="ruby-identifier">cached_vector</span>(<span class="ruby-identifier">col_idx</span>)
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">cached_type_id</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>)
@@ -394,6 +873,12 @@
   <span class="ruby-identifier">value</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Sets a value at the specified column and row index. Type conversion is automatic based on the column’s logical type.</p>
 
 <p>@param col_idx [Integer] <a href="Column.html"><code>Column</code></a> index (0-based) @param row_idx [Integer] Row index (0-based) @param value [Object] <a href="Value.html"><code>Value</code></a> to set (Integer, Float, String, Time, Date, nil) @return [Object] The value that was set</p>
@@ -414,13 +899,21 @@
 </pre>
 
 <p>rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-size" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-size" title="Link to this method">
                   <span class="method-callseq">
@@ -428,17 +921,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="size-source">
-            <pre>static VALUE rbduckdb_data_chunk_get_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_get_size(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t size;
 
@@ -449,17 +943,31 @@
     return ULL2NUM(size);
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the current number of tuples in the data chunk.</p>
 
 <pre class="ruby"><span class="ruby-identifier">data_chunk</span>.<span class="ruby-identifier">size</span>  <span class="ruby-comment"># =&gt; 100</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-size-3D" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-size-3D" title="Link to this method">
                   <span class="method-callseq">
@@ -467,17 +975,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="size-3D-source">
-            <pre>static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size) {
+            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size) {
     rubyDuckDBDataChunk *ctx;
     idx_t sz;
 
@@ -489,17 +998,56 @@
     return size;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Sets the number of tuples in the data chunk.</p>
 
 <pre class="ruby"><span class="ruby-identifier">data_chunk</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">50</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
 
+
+
+
   </section>
+
 </main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.0.3</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
 

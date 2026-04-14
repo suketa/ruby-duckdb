@@ -3,13 +3,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>class DuckDB::LogicalType - RDoc Documentation</title>
 
-  <meta name="keywords" content="ruby,class,DuckDB::LogicalType">
 
-    <meta name="description" content="Documentation for the DuckDB::LogicalType class">
+  <meta
+    name="keywords"
+    content="ruby,class,DuckDB::LogicalType"
+  >
+
+    <meta
+      name="description"
+      content="Documentation for the DuckDB::LogicalType class"
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class DuckDB::LogicalType - RDoc Documentation">
+
+
+
+    <meta
+      property="og:description"
+      content="Documentation for DuckDB::LogicalType class - API reference and code examples"
+    >
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class DuckDB::LogicalType - RDoc Documentation">
+
+
+
+    <meta
+      name="twitter:description"
+      content="Documentation for DuckDB::LogicalType class - API reference and code examples"
+    >
+
 
 
 <script type="text/javascript">
@@ -17,126 +55,542 @@
   var index_rel_prefix = "../";
 </script>
 
-<script src="../js/navigation.js" defer></script>
-<script src="../js/search.js" defer></script>
-<script src="../js/search_index.js" defer></script>
-<script src="../js/searcher.js" defer></script>
-<script src="../js/darkfish.js" defer></script>
+<script
+  src="../js/theme-toggle.js?v=7.0.3"
+></script>
 
-<link href="../css/fonts.css" rel="stylesheet">
-<link href="../css/rdoc.css" rel="stylesheet">
+<script
+  src="../js/search_navigation.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_data.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_ranker.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/search_controller.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/c_highlighter.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="../js/aliki.js?v=7.0.3"
+  defer
+></script>
+
+<link
+  href="../css/rdoc.css?v=7.0.3"
+  rel="stylesheet"
+>
 
 
-<body id="top" role="document" class="class">
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="../index.html" class="navbar-brand">
+    RDoc Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
   <span aria-hidden="true">&#9776;</span>
 </div>
 
 
-<nav id="navigation" role="navigation">
-  <div id="project-navigation">
-    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
-  <h2>
-    <a href="../index.html" rel="home">Home</a>
-  </h2>
+<nav id="navigation" role="navigation" hidden>
+  
 
-  <div id="table-of-contents-navigation">
-    <a href="../table_of_contents.html#pages">Pages</a>
-    <a href="../table_of_contents.html#classes">Classes</a>
-    <a href="../table_of_contents.html#methods">Methods</a>
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="../CHANGELOG_md.html">
+                CHANGELOG
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../CONTRIBUTION_md.html">
+                CONTRIBUTION
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../LICENSE.html">
+                LICENSE
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="../README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
   </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
+  </details>
 </div>
 
-    <div id="search-section" role="search" class="project-section initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <div id="search-field-wrapper">
-      <input id="search-field" role="combobox" aria-label="Search"
-             aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </div>
-
-    <ul id="search-results" aria-label="Search Results"
-        aria-busy="false" aria-expanded="false"
-        aria-atomic="false" class="initially-hidden"></ul>
-  </form>
-</div>
-
-  </div>
 
   
-  
-  <div id="parent-class-section" class="nav-section">
-  <h3>Ancestors</h3>
-  <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
-</div>
 
   
-  
+
   
   <div class="nav-section">
-    <h3>Class Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-c-create_array">create_array</a></li>
-      <li ><a href="#method-c-create_decimal">create_decimal</a></li>
-      <li ><a href="#method-c-create_enum">create_enum</a></li>
-      <li ><a href="#method-c-create_list">create_list</a></li>
-      <li ><a href="#method-c-create_map">create_map</a></li>
-      <li ><a href="#method-c-create_struct">create_struct</a></li>
-      <li ><a href="#method-c-create_union">create_union</a></li>
-      <li ><a href="#method-c-new">new</a></li>
-      <li ><a href="#method-c-resolve">resolve</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-create_array">create_array</a></li>
+
+        <li ><a href="#method-c-create_decimal">create_decimal</a></li>
+
+        <li ><a href="#method-c-create_enum">create_enum</a></li>
+
+        <li ><a href="#method-c-create_list">create_list</a></li>
+
+        <li ><a href="#method-c-create_map">create_map</a></li>
+
+        <li ><a href="#method-c-create_struct">create_struct</a></li>
+
+        <li ><a href="#method-c-create_union">create_union</a></li>
+
+        <li ><a href="#method-c-new">new</a></li>
+
+        <li ><a href="#method-c-resolve">resolve</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
 
   <div class="nav-section">
-    <h3>Instance Methods</h3>
-    <ul class="link-list" role="directory">
-      <li ><a href="#method-i-_internal_type">_internal_type</a></li>
-      <li ><a href="#method-i-alias">alias</a></li>
-      <li ><a href="#method-i-alias-3D">alias=</a></li>
-      <li ><a href="#method-i-child_count">child_count</a></li>
-      <li ><a href="#method-i-child_name_at">child_name_at</a></li>
-      <li ><a href="#method-i-child_type">child_type</a></li>
-      <li ><a href="#method-i-child_type_at">child_type_at</a></li>
-      <li ><a href="#method-i-dictionary_size">dictionary_size</a></li>
-      <li ><a href="#method-i-dictionary_value_at">dictionary_value_at</a></li>
-      <li ><a href="#method-i-each_child_name">each_child_name</a></li>
-      <li ><a href="#method-i-each_child_type">each_child_type</a></li>
-      <li ><a href="#method-i-each_dictionary_value">each_dictionary_value</a></li>
-      <li ><a href="#method-i-each_member_name">each_member_name</a></li>
-      <li ><a href="#method-i-each_member_type">each_member_type</a></li>
-      <li ><a href="#method-i-get_alias">get_alias</a></li>
-      <li ><a href="#method-i-internal_type">internal_type</a></li>
-      <li ><a href="#method-i-key_type">key_type</a></li>
-      <li ><a href="#method-i-member_count">member_count</a></li>
-      <li ><a href="#method-i-member_name_at">member_name_at</a></li>
-      <li ><a href="#method-i-member_type_at">member_type_at</a></li>
-      <li ><a href="#method-i-scale">scale</a></li>
-      <li ><a href="#method-i-set_alias">set_alias</a></li>
-      <li ><a href="#method-i-size">size</a></li>
-      <li ><a href="#method-i-type">type</a></li>
-      <li ><a href="#method-i-value_type">value_type</a></li>
-      <li ><a href="#method-i-width">width</a></li>
-    </ul>
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-_internal_type">_internal_type</a></li>
+
+        <li ><a href="#method-i-alias">alias</a></li>
+
+        <li ><a href="#method-i-alias-3D">alias=</a></li>
+
+        <li ><a href="#method-i-child_count">child_count</a></li>
+
+        <li ><a href="#method-i-child_name_at">child_name_at</a></li>
+
+        <li ><a href="#method-i-child_type">child_type</a></li>
+
+        <li ><a href="#method-i-child_type_at">child_type_at</a></li>
+
+        <li ><a href="#method-i-dictionary_size">dictionary_size</a></li>
+
+        <li ><a href="#method-i-dictionary_value_at">dictionary_value_at</a></li>
+
+        <li ><a href="#method-i-each_child_name">each_child_name</a></li>
+
+        <li ><a href="#method-i-each_child_type">each_child_type</a></li>
+
+        <li ><a href="#method-i-each_dictionary_value">each_dictionary_value</a></li>
+
+        <li ><a href="#method-i-each_member_name">each_member_name</a></li>
+
+        <li ><a href="#method-i-each_member_type">each_member_type</a></li>
+
+        <li ><a href="#method-i-get_alias">get_alias</a></li>
+
+        <li ><a href="#method-i-internal_type">internal_type</a></li>
+
+        <li ><a href="#method-i-key_type">key_type</a></li>
+
+        <li ><a href="#method-i-member_count">member_count</a></li>
+
+        <li ><a href="#method-i-member_name_at">member_name_at</a></li>
+
+        <li ><a href="#method-i-member_type_at">member_type_at</a></li>
+
+        <li ><a href="#method-i-scale">scale</a></li>
+
+        <li ><a href="#method-i-set_alias">set_alias</a></li>
+
+        <li ><a href="#method-i-size">size</a></li>
+
+        <li ><a href="#method-i-type">type</a></li>
+
+        <li ><a href="#method-i-value_type">value_type</a></li>
+
+        <li ><a href="#method-i-width">width</a></li>
+
+      </ul>
+    </details>
   </div>
 
 
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
 
-  <footer id="validator-badges" role="contentinfo">
-  <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
-  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
-</footer>
+    <ul class="link-list nav-list"><li><code><a href="../CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="../DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="../DuckDB/Appender.html">Appender</a></code></li><li><code><a href="../DuckDB/Blob.html">Blob</a></code></li><li><code><a href="../DuckDB/Casting.html">Casting</a></code></li><li><code><a href="../DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="../DuckDB/Column.html">Column</a></code></li><li><code><a href="../DuckDB/Config.html">Config</a></code></li><li><code><a href="../DuckDB/Connection.html">Connection</a></code></li><li><code><a href="../DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="../DuckDB/Database.html">Database</a></code></li><li><code><a href="../DuckDB/Error.html">Error</a></code></li><li><code><a href="../DuckDB/Expression.html">Expression</a></code></li><li><code><a href="../DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="../DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="../DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="../DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="../DuckDB/Interval.html">Interval</a></code></li><li><code><a href="../DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="../DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="../DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="../DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="../DuckDB/Result.html">Result</a></code></li><li><code><a href="../DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="../DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="../DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="../DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="../DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="../DuckDB/Value.html">Value</a></code></li><li><code><a href="../DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="../Object.html">Object</a></code></li><li><code><a href="../PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+  </details>
+</div>
 
 </nav>
 
 <main role="main" aria-labelledby="class-DuckDB::LogicalType">
   
   
-    <ol role="navigation" aria-label="breadcrumb" class="breadcrumb">
+    <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
       
       <li>
         
@@ -161,50 +615,73 @@
     
   </section>
 
+
   <section id="5Buntitled-5D" class="documentation-section anchor-link">
+
+
+
 
 
     <section class="constants-list">
       <header>
-        <h3>Constants</h3>
+        <h3 id="constants"><a href="#constants">Constants</a></h3>
       </header>
       <dl>
-        <dt id="RANGE_DECIMAL_WIDTH">RANGE_DECIMAL_WIDTH
+
+        <dt id="RANGE_DECIMAL_WIDTH">RANGE_DECIMAL_WIDTH</dt>
+
         <dd>
+
           
+        </dd>
+
+
       </dl>
     </section>
 
 
 
+
+
+
+
+
      <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Class Methods</h3>
+         <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
        </header>
+
 
       <div id="method-c-create_array" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_array" title="Link to this method">
                 <span class="method-name">create_array</span>
                 <span class="method-args">(type, size)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_array-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 82</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 82</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">type</span>, <span class="ruby-identifier">size</span>)
   <span class="ruby-identifier">_create_array_type</span>(<span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">type</span>), <span class="ruby-identifier">size</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates an array logical type with the given child type and size.</p>
 
 <p>The <code>type</code> argument can be a symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance. The <code>size</code> argument specifies the fixed size of the array.</p>
@@ -216,30 +693,37 @@
 <span class="ruby-identifier">array_type</span>.<span class="ruby-identifier">child_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :integer</span>
 <span class="ruby-identifier">array_type</span>.<span class="ruby-identifier">size</span> <span class="ruby-comment">#=&gt; 3</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-create_decimal" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_decimal" title="Link to this method">
                 <span class="method-name">create_decimal</span>
                 <span class="method-args">(width, scale)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_decimal-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 173</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 173</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_decimal</span>(<span class="ruby-identifier">width</span>, <span class="ruby-identifier">scale</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;width must be between 1 and 38&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">RANGE_DECIMAL_WIDTH</span>.<span class="ruby-identifier">cover?</span>(<span class="ruby-identifier">width</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;scale must be between 0 and width(#{width})&quot;</span> <span class="ruby-keyword">unless</span> (<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-identifier">width</span>).<span class="ruby-identifier">cover?</span>(<span class="ruby-identifier">scale</span>)
@@ -247,6 +731,12 @@
   <span class="ruby-identifier">_create_decimal_type</span>(<span class="ruby-identifier">width</span>, <span class="ruby-identifier">scale</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates a decimal logical type with the given width and scale.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -256,34 +746,47 @@
 <span class="ruby-identifier">decimal_type</span>.<span class="ruby-identifier">width</span> <span class="ruby-comment">#=&gt; 18</span>
 <span class="ruby-identifier">decimal_type</span>.<span class="ruby-identifier">scale</span> <span class="ruby-comment">#=&gt; 3</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-create_enum" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_enum" title="Link to this method">
                 <span class="method-name">create_enum</span>
                 <span class="method-args">(*members)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_enum-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 161</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 161</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_enum</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">members</span>)
   <span class="ruby-identifier">_create_enum_type</span>(<span class="ruby-identifier">members</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:to_s</span>))
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates an enum logical type with the given members.</p>
 
 <p>Each member must be a String representing an enum member.</p>
@@ -295,34 +798,47 @@
 <span class="ruby-identifier">enum_type</span>.<span class="ruby-identifier">dictionary_size</span> <span class="ruby-comment">#=&gt; 3</span>
 <span class="ruby-identifier">enum_type</span>.<span class="ruby-identifier">dictionary_value_at</span>(<span class="ruby-value">0</span>) <span class="ruby-comment">#=&gt; &quot;happy&quot;</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-create_list" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_list" title="Link to this method">
                 <span class="method-name">create_list</span>
                 <span class="method-args">(type)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_list-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 98</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 98</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">type</span>)
   <span class="ruby-identifier">_create_list_type</span>(<span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">type</span>))
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates a list logical type with the given child type.</p>
 
 <p>The <code>type</code> argument can be a symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance.</p>
@@ -336,34 +852,47 @@
 <span class="ruby-identifier">nested_list</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_list</span>(<span class="ruby-identifier">list_type</span>)
 <span class="ruby-identifier">nested_list</span>.<span class="ruby-identifier">child_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :list</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-create_map" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_map" title="Link to this method">
                 <span class="method-name">create_map</span>
                 <span class="method-args">(key_type, value_type)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_map-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 113</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 113</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_map</span>(<span class="ruby-identifier">key_type</span>, <span class="ruby-identifier">value_type</span>)
   <span class="ruby-identifier">_create_map_type</span>(<span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">key_type</span>), <span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">value_type</span>))
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates a map logical type with the given key and value types.</p>
 
 <p>The <a href="LogicalType.html#method-i-key_type"><code>key_type</code></a> and <a href="LogicalType.html#method-i-value_type"><code>value_type</code></a> arguments can be symbols or <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instances.</p>
@@ -375,35 +904,48 @@
 <span class="ruby-identifier">map_type</span>.<span class="ruby-identifier">key_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :integer</span>
 <span class="ruby-identifier">map_type</span>.<span class="ruby-identifier">value_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :varchar</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-create_struct" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_struct" title="Link to this method">
                 <span class="method-name">create_struct</span>
                 <span class="method-args">(**members)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_struct-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 146</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 146</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_struct</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">members</span>)
   <span class="ruby-identifier">resolved</span> = <span class="ruby-identifier">members</span>.<span class="ruby-identifier">transform_values</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">v</span>) }
   <span class="ruby-identifier">_create_struct_type</span>(<span class="ruby-identifier">resolved</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates a struct logical type with the given member names and types.</p>
 
 <p>The keyword arguments map member names to types. Each type can be a symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance.</p>
@@ -416,35 +958,48 @@
 <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">child_name_at</span>(<span class="ruby-value">0</span>) <span class="ruby-comment">#=&gt; &quot;name&quot;</span>
 <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">child_type_at</span>(<span class="ruby-value">0</span>).<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :varchar</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-create_union" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-create_union" title="Link to this method">
                 <span class="method-name">create_union</span>
                 <span class="method-args">(**members)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="create_union-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 129</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_union</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">members</span>)
   <span class="ruby-identifier">resolved</span> = <span class="ruby-identifier">members</span>.<span class="ruby-identifier">transform_values</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">v</span>) }
   <span class="ruby-identifier">_create_union_type</span>(<span class="ruby-identifier">resolved</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Creates a union logical type with the given member names and types.</p>
 
 <p>The keyword arguments map member names to types. Each type can be a symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance.</p>
@@ -457,30 +1012,37 @@
 <span class="ruby-identifier">union_type</span>.<span class="ruby-identifier">member_name_at</span>(<span class="ruby-value">0</span>) <span class="ruby-comment">#=&gt; &quot;num&quot;</span>
 <span class="ruby-identifier">union_type</span>.<span class="ruby-identifier">member_type_at</span>(<span class="ruby-value">0</span>).<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :integer</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-new" title="Link to this method">
                 <span class="method-name">new</span>
                 <span class="method-args">(p1)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="new-source">
-            <pre>static VALUE initialize(VALUE self, VALUE type_id_arg) {
+            <pre class="c" data-language="c">static VALUE initialize(VALUE self, VALUE type_id_arg) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type = (duckdb_type)NUM2INT(type_id_arg);
     duckdb_logical_type new_logical_type;
@@ -505,31 +1067,44 @@
     return self;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-c-resolve" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-c-resolve" title="Link to this method">
                 <span class="method-name">resolve</span>
                 <span class="method-args">(symbol)</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="resolve-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 61</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 61</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">resolve</span>(<span class="ruby-identifier">symbol</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">symbol</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">symbol</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
 
@@ -540,21 +1115,42 @@
   <span class="ruby-identifier">raise_resolve_error</span>(<span class="ruby-identifier">symbol</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
+
+
+
+
+
+
 
      <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
        <header>
-         <h3>Public Instance Methods</h3>
+         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
        </header>
+
 
       <div id="method-i-_internal_type" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-_internal_type" title="Link to this method">
                   <span class="method-callseq">
@@ -562,17 +1158,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="_internal_type-source">
-            <pre>static VALUE duckdb_logical_type__internal_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type__internal_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_type internal_type_id;
@@ -594,14 +1191,28 @@
     return INT2FIX(internal_type_id);
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the logical type’s internal type.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-alias" class="method-detail anchor-link method-alias">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-alias" title="Link to this method">
                   <span class="method-callseq">
@@ -609,21 +1220,36 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
+
 
 
         <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
         <div class="aliases">
           Alias for: <a href="LogicalType.html#method-i-get_alias">get_alias</a>
         </div>
+
       </div>
+
 
       <div id="method-i-alias-3D" class="method-detail anchor-link method-alias">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-alias-3D" title="Link to this method">
                   <span class="method-callseq">
@@ -631,21 +1257,36 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
+
 
 
         <div class="method-description">
+
+
           
+
+
         </div>
+
+
+
 
 
         <div class="aliases">
           Alias for: <a href="LogicalType.html#method-i-set_alias">set_alias</a>
         </div>
+
       </div>
+
 
       <div id="method-i-child_count" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-child_count" title="Link to this method">
                   <span class="method-callseq">
@@ -653,30 +1294,45 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="child_count-source">
-            <pre>static VALUE duckdb_logical_type_child_count(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_count(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_struct_type_child_count(ctx-&gt;logical_type));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the number of children of a struct type, otherwise 0.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-child_name_at" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-child_name_at" title="Link to this method">
                   <span class="method-callseq">
@@ -684,17 +1340,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="child_name_at-source">
-            <pre>static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx) {
     rubyDuckDBLogicalType *ctx;
     VALUE cname;
     const char *child_name;
@@ -711,14 +1368,28 @@
     return cname;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the name of the struct child at the specified index.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-child_type" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-child_type" title="Link to this method">
                   <span class="method-callseq">
@@ -726,17 +1397,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="child_type-source">
-            <pre>static VALUE duckdb_logical_type_child_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_logical_type child_logical_type;
@@ -761,14 +1433,28 @@
     return logical_type;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the child logical type for list and map types, otherwise nil.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-child_type_at" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-child_type_at" title="Link to this method">
                   <span class="method-callseq">
@@ -776,17 +1462,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="child_type_at-source">
-            <pre>static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type struct_child_type;
     idx_t idx = NUM2ULL(cidx);
@@ -803,14 +1490,28 @@
     return rbduckdb_create_logical_type(struct_child_type);
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the child logical type for struct types at the specified index as a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> object.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-dictionary_size" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-dictionary_size" title="Link to this method">
                   <span class="method-callseq">
@@ -818,30 +1519,45 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="dictionary_size-source">
-            <pre>static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_enum_dictionary_size(ctx-&gt;logical_type));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the dictionary size of the enum type.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-dictionary_value_at" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-dictionary_value_at" title="Link to this method">
                   <span class="method-callseq">
@@ -849,17 +1565,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="dictionary_value_at-source">
-            <pre>static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
     rubyDuckDBLogicalType *ctx;
     VALUE dvalue;
     const char *dict_value;
@@ -876,31 +1593,44 @@
     return dvalue;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the dictionary value at the specified index.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-each_child_name" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-each_child_name" title="Link to this method">
                 <span class="method-name">each_child_name</span>
                 <span class="method-args">() { |child_name_at(i)| ... }</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="each_child_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 280</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 280</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">child_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -909,6 +1639,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Iterates over each struct child name.</p>
 
 <p>When a block is provided, this method yields each struct child name in order. It also returns the total number of children yielded.</p>
@@ -923,30 +1659,37 @@
 <pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">struct_logical_type</span>.<span class="ruby-identifier">each_child_name</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-comment"># =&gt; [&quot;child1&quot;, &quot;child2&quot;]</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-each_child_type" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-each_child_type" title="Link to this method">
                 <span class="method-name">each_child_type</span>
                 <span class="method-args">() { |child_type_at(i)| ... }</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="each_child_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 302</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 302</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_child_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">child_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -955,6 +1698,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Iterates over each struct child type.</p>
 
 <p>When a block is provided, this method yields each struct child type in order. It also returns the total number of children yielded.</p>
@@ -969,30 +1718,37 @@
 <pre class="ruby"><span class="ruby-identifier">types</span> = <span class="ruby-identifier">struct_logical_type</span>.<span class="ruby-identifier">each_child_type</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:type</span>)
 <span class="ruby-comment"># =&gt; [:integer, :varchar]</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-each_dictionary_value" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-each_dictionary_value" title="Link to this method">
                 <span class="method-name">each_dictionary_value</span>
                 <span class="method-args">() { |dictionary_value_at(i)| ... }</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="each_dictionary_value-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 324</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 324</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_dictionary_value</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">dictionary_size</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -1001,6 +1757,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Iterates over each enum dictionary value.</p>
 
 <p>When a block is provided, this method yields each enum dictionary value in order. It also returns the total number of dictionary values yielded.</p>
@@ -1015,30 +1777,37 @@
 <pre class="ruby"><span class="ruby-identifier">values</span> = <span class="ruby-identifier">enum_logical_type</span>.<span class="ruby-identifier">each_value</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-comment"># =&gt; [&quot;happy&quot;, &quot;sad&quot;]</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-each_member_name" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-each_member_name" title="Link to this method">
                 <span class="method-name">each_member_name</span>
                 <span class="method-args">() { |member_name_at(i)| ... }</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="each_member_name-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 236</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 236</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_name</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">member_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -1047,6 +1816,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Iterates over each union member name.</p>
 
 <p>When a block is provided, this method yields each union member name in order. It also returns the total number of members yielded.</p>
@@ -1061,30 +1836,37 @@
 <pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">union_logical_type</span>.<span class="ruby-identifier">each_member_name</span>.<span class="ruby-identifier">to_a</span>
 <span class="ruby-comment"># =&gt; [&quot;member1&quot;, &quot;member2&quot;]</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-each_member_type" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-each_member_type" title="Link to this method">
                 <span class="method-name">each_member_type</span>
                 <span class="method-args">() { |member_type_at(i)| ... }</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="each_member_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 258</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 258</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_member_type</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_enum</span>(<span class="ruby-identifier">__method__</span>) { <span class="ruby-identifier">member_count</span> } <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -1093,6 +1875,12 @@
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Iterates over each union member type.</p>
 
 <p>When a block is provided, this method yields each union member logical type in order. It also returns the total number of members yielded.</p>
@@ -1107,13 +1895,21 @@
 <pre class="ruby"><span class="ruby-identifier">names</span> = <span class="ruby-identifier">union_logical_type</span>.<span class="ruby-identifier">each_member_type</span>.<span class="ruby-identifier">map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:type</span>)
 <span class="ruby-comment"># =&gt; [:varchar, :integer]</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-get_alias" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-get_alias" title="Link to this method">
                   <span class="method-callseq">
@@ -1121,17 +1917,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="get_alias-source">
-            <pre>static VALUE duckdb_logical_type__get_alias(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type__get_alias(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias;
@@ -1146,39 +1943,59 @@
     return alias;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the alias of the logical type.</p>
+
+
         </div>
+
+
 
         <div class="aliases">
           Also aliased as: <a href="LogicalType.html#method-i-alias">alias</a>
         </div>
 
+
+
       </div>
+
 
       <div id="method-i-internal_type" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-internal_type" title="Link to this method">
                 <span class="method-name">internal_type</span>
                 <span class="method-args">()</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="internal_type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 217</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 217</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">internal_type</span>
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_internal_type</span>
   <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>returns logical type’s internal type symbol for Decimal or Enum types ‘:unknown` means that the logical type’s type is unknown/unsupported by ruby-duckdb. ‘:invalid` means that the logical type’s type is invalid in duckdb.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1191,13 +2008,21 @@
 <span class="ruby-identifier">ernum_col</span> = <span class="ruby-identifier">users</span>.<span class="ruby-identifier">columns</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">col</span><span class="ruby-operator">|</span> <span class="ruby-identifier">col</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;enum_col&#39;</span> }
 <span class="ruby-identifier">enum_col</span>.<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">internal_type</span> <span class="ruby-comment">#=&gt; :utinyint</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-key_type" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-key_type" title="Link to this method">
                   <span class="method-callseq">
@@ -1205,17 +2030,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="key_type-source">
-            <pre>static VALUE duckdb_logical_type_key_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_key_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type key_logical_type;
     VALUE logical_type = Qnil;
@@ -1226,14 +2052,28 @@
     return logical_type;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the key logical type for map type, otherwise nil.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-member_count" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-member_count" title="Link to this method">
                   <span class="method-callseq">
@@ -1241,30 +2081,45 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="member_count-source">
-            <pre>static VALUE duckdb_logical_type_member_count(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_member_count(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_union_type_member_count(ctx-&gt;logical_type));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the member count of union type, otherwise 0.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-member_name_at" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-member_name_at" title="Link to this method">
                   <span class="method-callseq">
@@ -1272,17 +2127,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="member_name_at-source">
-            <pre>static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx) {
     rubyDuckDBLogicalType *ctx;
     VALUE mname;
     const char *member_name;
@@ -1299,14 +2155,28 @@
     return mname;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the name of the union member at the specified index.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-member_type_at" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-member_type_at" title="Link to this method">
                   <span class="method-callseq">
@@ -1314,17 +2184,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="member_type_at-source">
-            <pre>static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type union_member_type;
     idx_t idx = NUM2ULL(midx);
@@ -1341,14 +2212,28 @@
     return rbduckdb_create_logical_type(union_member_type);
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the logical type of the union member at the specified index as a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> object.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-scale" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-scale" title="Link to this method">
                   <span class="method-callseq">
@@ -1356,30 +2241,45 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="scale-source">
-            <pre>static VALUE duckdb_logical_type_scale(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_scale(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_scale(ctx-&gt;logical_type));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the scale of the decimal column.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-set_alias" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-set_alias" title="Link to this method">
                   <span class="method-callseq">
@@ -1387,17 +2287,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="set_alias-source">
-            <pre>static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
     rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias = StringValuePtr(aname);
@@ -1411,17 +2312,32 @@
     return alias;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Return the set alias of the logical type.</p>
+
+
         </div>
+
+
 
         <div class="aliases">
           Also aliased as: <a href="LogicalType.html#method-i-alias-3D">alias=</a>
         </div>
 
+
+
       </div>
+
 
       <div id="method-i-size" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-size" title="Link to this method">
                   <span class="method-callseq">
@@ -1429,52 +2345,72 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="size-source">
-            <pre>static VALUE duckdb_logical_type_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_size(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_array_type_array_size(ctx-&gt;logical_type));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the size of the array column, otherwise 0.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-type" class="method-detail anchor-link ">
         <div class="method-header">
+
             <div class="method-heading">
               <a href="#method-i-type" title="Link to this method">
                 <span class="method-name">type</span>
                 <span class="method-args">()</span>
               </a>
             </div>
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="type-source">
-            <pre><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 199</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/logical_type.rb, line 199</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">type</span>
   <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">_type</span>
   <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Converter</span><span class="ruby-operator">::</span><span class="ruby-constant">IntToSym</span>.<span class="ruby-identifier">type_to_sym</span>(<span class="ruby-identifier">type_id</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>returns logical type’s type symbol ‘:unknown` means that the logical type’s type is unknown/unsupported by ruby-duckdb. ‘:invalid` means that the logical type’s type is invalid in duckdb.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
@@ -1486,13 +2422,21 @@
 <span class="ruby-identifier">columns</span> = <span class="ruby-identifier">users</span>.<span class="ruby-identifier">columns</span>
 <span class="ruby-identifier">columns</span>.<span class="ruby-identifier">second</span>.<span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-comment">#=&gt; :decimal</span>
 </pre>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-value_type" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-value_type" title="Link to this method">
                   <span class="method-callseq">
@@ -1500,17 +2444,18 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="value_type-source">
-            <pre>static VALUE duckdb_logical_type_value_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_value_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type value_logical_type;
     VALUE logical_type = Qnil;
@@ -1521,14 +2466,28 @@
     return logical_type;
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the value logical type for map type, otherwise nil.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
       <div id="method-i-width" class="method-detail anchor-link ">
         <div class="method-header">
+
+
               <div class="method-heading">
                 <a href="#method-i-width" title="Link to this method">
                   <span class="method-callseq">
@@ -1536,30 +2495,70 @@
                   </span>
                 </a>
               </div>
+
+
         </div>
+
 
           <div class="method-controls">
             <details class="method-source-toggle">
               <summary>Source</summary>
             </details>
           </div>
-
-        <div class="method-description">
           <div class="method-source-code" id="width-source">
-            <pre>static VALUE duckdb_logical_type_width(VALUE self) {
+            <pre class="c" data-language="c">static VALUE duckdb_logical_type_width(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_width(ctx-&gt;logical_type));
 }</pre>
           </div>
+
+
+
+        <div class="method-description">
+
+
           <p>Returns the width of the decimal column.</p>
+
+
         </div>
+
+
+
 
 
       </div>
 
+
     </section>
 
+
+
+
   </section>
+
 </main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.0.3</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
 

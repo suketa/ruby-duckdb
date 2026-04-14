@@ -1,15 +1,15 @@
-Search = function(data, input, result) {
+SearchController = function(data, input, result) {
   this.data = data;
   this.input = input;
   this.result = result;
 
   this.current = null;
   this.view = this.result.parentNode;
-  this.searcher = new Searcher(data.index);
+  this.ranker = new SearchRanker(data.index);
   this.init();
 }
 
-Search.prototype = Object.assign({}, Navigation, new function() {
+SearchController.prototype = Object.assign({}, SearchNavigation, new function() {
   var suid = 1;
 
   this.init = function() {
@@ -25,7 +25,7 @@ Search.prototype = Object.assign({}, Navigation, new function() {
     this.input.addEventListener('keyup', observer);
     this.input.addEventListener('click', observer); // mac's clear field
 
-    this.searcher.ready(function(results, isLast) {
+    this.ranker.ready(function(results, isLast) {
       _this.addResults(results, isLast);
     })
 
@@ -34,7 +34,9 @@ Search.prototype = Object.assign({}, Navigation, new function() {
   }
 
   this.search = function(value, selectFirstMatch) {
-    value = value.trim().toLowerCase();
+    this.selectFirstMatch = selectFirstMatch;
+
+    value = value.trim();
     if (value) {
       this.setNavigationActive(true);
     } else {
@@ -51,7 +53,7 @@ Search.prototype = Object.assign({}, Navigation, new function() {
       this.result.setAttribute('aria-busy',     'true');
       this.result.setAttribute('aria-expanded', 'true');
       this.firstRun = true;
-      this.searcher.find(value);
+      this.ranker.find(value);
     }
   }
 
@@ -76,7 +78,15 @@ Search.prototype = Object.assign({}, Navigation, new function() {
     //TODO: ECMAScript
     //if (jQuery.browser.msie) this.$element[0].className += '';
 
-    if (isLast) this.result.setAttribute('aria-busy', 'false');
+    if (this.selectFirstMatch && this.current) {
+      this.selectFirstMatch = false;
+      this.select(this.current);
+    }
+
+    if (isLast) {
+      this.selectFirstMatch = false;
+      this.result.setAttribute('aria-busy', 'false');
+    }
   }
 
   this.move = function(isDown) {
@@ -106,5 +116,14 @@ Search.prototype = Object.assign({}, Navigation, new function() {
     });
   }
 
+  this.hide = function() {
+    this.result.setAttribute('aria-expanded', 'false');
+    this.setNavigationActive(false);
+  }
+
+  this.show = function() {
+    this.result.setAttribute('aria-expanded', 'true');
+    this.setNavigationActive(true);
+  }
 });
 

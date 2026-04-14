@@ -3,12 +3,40 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>CHANGELOG - RDoc Documentation</title>
 
+
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
-  <meta name="description" content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Database.">
+  <meta
+    name="description"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Database."
+  >
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="CHANGELOG - RDoc Documentation">
+
+
+
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Database.">
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CHANGELOG - RDoc Documentation">
+
+
+
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Database.">
+
 
 
 <script type="text/javascript">
@@ -16,338 +44,418 @@
   var index_rel_prefix = "./";
 </script>
 
-<script src="./js/navigation.js" defer></script>
-<script src="./js/search.js" defer></script>
-<script src="./js/search_index.js" defer></script>
-<script src="./js/searcher.js" defer></script>
-<script src="./js/darkfish.js" defer></script>
+<script
+  src="./js/theme-toggle.js?v=7.0.3"
+></script>
 
-<link href="./css/fonts.css" rel="stylesheet">
-<link href="./css/rdoc.css" rel="stylesheet">
+<script
+  src="./js/search_navigation.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/search_data.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/search_ranker.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/search_controller.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/c_highlighter.js?v=7.0.3"
+  defer
+></script>
+
+<script
+  src="./js/aliki.js?v=7.0.3"
+  defer
+></script>
+
+<link
+  href="./css/rdoc.css?v=7.0.3"
+  rel="stylesheet"
+>
 
 
-<body id="top" role="document" class="file">
+
+
+<body role="document" class="file has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="./index.html" class="navbar-brand">
+    RDoc Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
   <span aria-hidden="true">&#9776;</span>
 </div>
 
 
-<nav id="navigation" role="navigation">
-  <div id="project-navigation">
-    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
-  <h2>
-    <a href="./index.html" rel="home">Home</a>
-  </h2>
-
-  <div id="table-of-contents-navigation">
-    <a href="./table_of_contents.html#pages">Pages</a>
-    <a href="./table_of_contents.html#classes">Classes</a>
-    <a href="./table_of_contents.html#methods">Methods</a>
-  </div>
-</div>
-
-    <div id="search-section" role="search" class="project-section initially-hidden">
-  <form action="#" method="get" accept-charset="utf-8">
-    <div id="search-field-wrapper">
-      <input id="search-field" role="combobox" aria-label="Search"
-             aria-autocomplete="list" aria-controls="search-results"
-             type="text" name="search" placeholder="Search (/) for a class, method, ..." spellcheck="false"
-             title="Type to search, Up and Down to navigate, Enter to load">
-    </div>
-
-    <ul id="search-results" aria-label="Search Results"
-        aria-busy="false" aria-expanded="false"
-        aria-atomic="false" class="initially-hidden"></ul>
-  </form>
-</div>
-
-  </div>
-
+<nav id="navigation" role="navigation" hidden>
   
-<div class="nav-section">
-  <h3>Table of Contents</h3>
 
 
 
-  <ul class="link-list" role="directory">
-              <li>      <a href="#label-Changelog">Changelog</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-Unreleased">Unreleased</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.5.1.1+-+2026-04-04">1.5.1.1 - 2026-04-04</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.5.1.0+-+2026-03-29">1.5.1.0 - 2026-03-29</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.5.0.2+-+2026-03-22">1.5.0.2 - 2026-03-22</a>
-          <li>      <a href="#label-1.5.0.1+-+2026-03-17">1.5.0.1 - 2026-03-17</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.5.0.0+-+2026-03-15">1.5.0.0 - 2026-03-15</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.4.4.0+-+2026-03-07">1.4.4.0 - 2026-03-07</a>
-          <li>      <a href="#label-1.4.3.0+-+2026-01-10">1.4.3.0 - 2026-01-10</a>
-          <li>      <a href="#label-1.4.2.0+-+2025-12-27">1.4.2.0 - 2025-12-27</a>
-          <li>      <a href="#label-1.4.1.1+-+2025-11-03">1.4.1.1 - 2025-11-03</a>
-          <li>      <a href="#label-1.4.1.0+-+2025-11-01">1.4.1.0 - 2025-11-01</a>
-          <li>      <a href="#label-1.3.1.0+-+2025-06-28">1.3.1.0 - 2025-06-28</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.3.0.0+-+2025-05-31">1.3.0.0 - 2025-05-31</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.2.2.0+-+2025-05-11">1.2.2.0 - 2025-05-11</a>
-          <li>      <a href="#label-1.2.1.0+-+2025-03-30">1.2.1.0 - 2025-03-30</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.2.0.0+-+2025-02-24">1.2.0.0 - 2025-02-24</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
+        <span class="nav-section-title">Pages</span>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.1.3.1+-+2024-11-27">1.1.3.1 - 2024-11-27</a>
-          <li>      <a href="#label-1.1.3.0+-+2024-11-10">1.1.3.0 - 2024-11-10</a>
-          <li>      <a href="#label-1.1.2.1+-+2024-11-04">1.1.2.1 - 2024-11-04</a>
-          <li>      <a href="#label-1.1.2.0+-+2024-10-20">1.1.2.0 - 2024-10-20</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.1.1.0+-+2024-10-06">1.1.1.0 - 2024-10-06</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.1.0.1+-+2024-09-21">1.1.0.1 - 2024-09-21</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.1.0.0+-+2024-09-15">1.1.0.0 - 2024-09-15</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
+      <ul class="nav-list">
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-1.0.0.2+-+2024-06-23">1.0.0.2 - 2024-06-23</a>
-          <li>      <a href="#label-1.0.0.1+-+2024-06-16">1.0.0.1 - 2024-06-16</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-1.0.0.0+-+2024-06-08">1.0.0.0 - 2024-06-08</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.10.3.0+-+2024-05-25">0.10.3.0 - 2024-05-25</a>
-          <li>      <a href="#label-0.10.2.0+-+2024-04-20">0.10.2.0 - 2024-04-20</a>
-          <li>      <a href="#label-0.10.1.1+-+2024-03-31">0.10.1.1 - 2024-03-31</a>
-          <li>      <a href="#label-0.10.1.0+-+2024-03-22">0.10.1.0 - 2024-03-22</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.10.0.0+-+2024-02-18">0.10.0.0 - 2024-02-18</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.9.2.3+-+2023-12-29">0.9.2.3 - 2023-12-29</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.9.2.2+-+2023-12-26">0.9.2.2 - 2023-12-26</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+changes">Breaking changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.9.2.1+-+2023-12-24">0.9.2.1 - 2023-12-24</a>
-          <li>      <a href="#label-0.9.2+-+2023-11-26">0.9.2 - 2023-11-26</a>
-          <li>      <a href="#label-0.9.1.2+-+2023-11-05">0.9.1.2 - 2023-11-05</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.9.1.1+-+2023-10-29">0.9.1.1 - 2023-10-29</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.9.1+-+2023-10-14">0.9.1 - 2023-10-14</a>
-          <li>      <a href="#label-0.9.0.1+-+2023-10-08">0.9.0.1 - 2023-10-08</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.9.0+-+2023-09-30">0.9.0 - 2023-09-30</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.8.1.3">0.8.1.3</a>
-          <li>      <a href="#label-0.8.1.2">0.8.1.2</a>
-          <li>      <a href="#label-0.8.1.1">0.8.1.1</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.8.1">0.8.1</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
+            <li>
+              <a href="./CHANGELOG_md.html">
+                CHANGELOG
+              </a>
+            </li>
 
-              </ul>
-            </details>
-          </li>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.8.0">0.8.0</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.7.1">0.7.1</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.7.0">0.7.0</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.6.1">0.6.1</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.5.1.1">0.5.1.1</a>
-          <li>      <a href="#label-0.5.1">0.5.1</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.5.0">0.5.0</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-Breaking+Changes">Breaking Changes</a>
+            <li>
+              <a href="./CONTRIBUTION_md.html">
+                CONTRIBUTION
+              </a>
+            </li>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.3.4.0">0.3.4.0</a>
-          <li>      <a href="#label-0.3.3.0">0.3.3.0</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.3.2.0">0.3.2.0</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-BREAKING+CHANGE">BREAKING CHANGE</a>
 
-              </ul>
-            </details>
-          </li>
-          <li>      <a href="#label-0.3.1.0">0.3.1.0</a>
-          <li>      <a href="#label-0.2.9.0">0.2.9.0</a>
-          <li>      <a href="#label-0.2.8.0">0.2.8.0</a>
-          <li>      <a href="#label-0.2.7.0">0.2.7.0</a>
-          <li>      <a href="#label-0.2.6.1">0.2.6.1</a>
-          <li>
-            <details open>
-              <summary>      <a href="#label-0.2.6.0">0.2.6.0</a>
-</summary>
-              <ul class="link-list" role="directory">
-                          <li>      <a href="#label-0.0.12">0.0.12</a>
-          <li>      <a href="#label-0.0.11">0.0.11</a>
-          <li>      <a href="#label-0.0.10">0.0.10</a>
-          <li>      <a href="#label-0.0.9">0.0.9</a>
-          <li>      <a href="#label-0.0.8.1">0.0.8.1</a>
-          <li>      <a href="#label-0.0.8">0.0.8</a>
-          <li>      <a href="#label-0.0.7">0.0.7</a>
-          <li>      <a href="#label-0.0.6">0.0.6</a>
-          <li>      <a href="#label-0.0.5">0.0.5</a>
-          <li>      <a href="#label-0.0.4">0.0.4</a>
-          <li>      <a href="#label-0.0.3">0.0.3</a>
-          <li>      <a href="#label-0.0.2">0.0.2</a>
-          <li>      <a href="#label-0.0.1">0.0.1</a>
 
-              </ul>
-            </details>
-          </li>
 
-  </ul>
+            <li>
+              <a href="./LICENSE.html">
+                LICENSE
+              </a>
+            </li>
+
+
+
+
+            <li>
+              <a href="./README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+
+    <ul class="link-list nav-list"><li><code><a href="./CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="./DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="./DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="./DuckDB/Appender.html">Appender</a></code></li><li><code><a href="./DuckDB/Blob.html">Blob</a></code></li><li><code><a href="./DuckDB/Casting.html">Casting</a></code></li><li><code><a href="./DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="./DuckDB/Column.html">Column</a></code></li><li><code><a href="./DuckDB/Config.html">Config</a></code></li><li><code><a href="./DuckDB/Connection.html">Connection</a></code></li><li><code><a href="./DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="./DuckDB/Database.html">Database</a></code></li><li><code><a href="./DuckDB/Error.html">Error</a></code></li><li><code><a href="./DuckDB/Expression.html">Expression</a></code></li><li><code><a href="./DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="./DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="./DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="./DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="./DuckDB/Interval.html">Interval</a></code></li><li><code><a href="./DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="./DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="./DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="./DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="./DuckDB/Result.html">Result</a></code></li><li><code><a href="./DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="./DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="./DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="./DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="./DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="./DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="./DuckDB/Value.html">Value</a></code></li><li><code><a href="./DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="./Object.html">Object</a></code></li><li><code><a href="./PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="./PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="./PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+  </details>
 </div>
-
-  
-<div id="fileindex-section" class="nav-section">
-  <h3>Pages</h3>
-
-  <ul class="link-list">
-    <li><a href="./CHANGELOG_md.html">CHANGELOG</a>
-    <li><a href="./CONTRIBUTION_md.html">CONTRIBUTION</a>
-    <li><a href="./LICENSE.html">LICENSE</a>
-    <li><a href="./README_md.html">README</a>
-  </ul>
-</div>
-
-
-  <footer id="validator-badges" role="contentinfo">
-  <p><a href="https://validator.w3.org/check/referer">Validate</a>
-  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.14.0.
-  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
-</footer>
 
 </nav>
 
 <main role="main" aria-label="Page CHANGELOG.md">
 
-<h1 id="label-Changelog">Changelog<span><a href="#label-Changelog">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-Changelog"><a href="#label-Changelog">Changelog</a></h1>
 
 <p>All notable changes to this project will be documented in this file.</p>
 
-<h1 id="label-Unreleased">Unreleased<span><a href="#label-Unreleased">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
-<p>add <a href="DuckDB/Database.html#method-c-new"><code>DuckDB::Database.new(path = :memory, config: nil, &amp;block)</code></a> to create a database instance. <code>path</code> is a positional argument (default <code>:memory</code> for in-memory database, or a String path for file database). <code>config:</code> accepts an optional <a href="DuckDB/Config.html"><code>DuckDB::Config</code></a> object. When a block is given, the database is yielded and automatically closed afterwards.</p>
+<p>add <code>DuckDB::Database.new(path = :memory, config: nil, &amp;block)</code> to create a database instance. <code>path</code> is a positional argument (default <code>:memory</code> for in-memory database, or a String path for file database). <code>config:</code> accepts an optional <a href="DuckDB/Config.html"><code>DuckDB::Config</code></a> object. When a block is given, the database is yielded and automatically closed afterwards.</p>
 </li><li>
 <p>add <code>TIME_NS</code> column support to <a href="DuckDB/Result.html"><code>DuckDB::Result</code></a>. <code>TIME_NS</code> values are returned as <code>Time</code> objects with nanoseconds truncated to microseconds.</p>
 </li><li>
@@ -406,7 +514,7 @@
 <p>add <code>DuckDB::ColumnDescription</code> to describe a column’s name, logical type, and whether it has a default value (with <a href="DuckDB.html"><code>DuckDB</code></a> &gt;= 1.5.0).</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p>rename <code>DuckDB::ValueImpl</code> to <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a></p>
 </li><li>
@@ -415,7 +523,7 @@
 <p><a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open</code></a> to delegate to <a href="DuckDB/Database.html#method-c-new"><code>DuckDB::Database.new</code></a>. The signature changes from <code>open(dbpath = nil, config = nil)</code> to <code>open(path = :memory, config: nil)</code>. <a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open</code></a> now accepts <code>:memory</code> symbol and <code>config:</code> keyword argument.</p>
 </li></ul>
 
-<h1 id="label-1.5.1.1+-+2026-04-04">1.5.1.1 - 2026-04-04<span><a href="#label-1.5.1.1+-+2026-04-04">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.5.1.1+-+2026-04-04"><a href="#label-1.5.1.1+-+2026-04-04">1.5.1.1 - 2026-04-04</a></h1>
 <ul><li>
 <p>fix <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> to allow <code>HUGEINT</code> and <code>UHUGEINT</code> as <code>return_type</code> and parameter type (the C extension’s vector write path was missing those cases).</p>
 </li><li>
@@ -434,7 +542,7 @@
 <p>add <a href="DuckDB/LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal</code></a> to create a decimal logical type.</p>
 </li></ul>
 
-<h1 id="label-1.5.1.0+-+2026-03-29">1.5.1.0 - 2026-03-29<span><a href="#label-1.5.1.0+-+2026-03-29">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.5.1.0+-+2026-03-29"><a href="#label-1.5.1.0+-+2026-03-29">1.5.1.0 - 2026-03-29</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/ScalarFunction.html#method-i-varargs_type-3D"><code>DuckDB::ScalarFunction#varargs_type=</code></a> to register a scalar function that accepts a variable number of arguments of a given type (wraps <code>duckdb_scalar_function_set_varargs</code>).</p>
 </li><li>
@@ -469,7 +577,7 @@
 <p>add <a href="DuckDB/Expression.html#method-i-fold"><code>DuckDB::Expression#fold(client_context)</code></a> to fold a constant expression to a native Ruby value at query planning time (wraps <code>duckdb_expression_fold</code>). Returns Integer, Float, String, true/false, or nil. Raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a> if the expression is not foldable.</p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p>rename <code>DuckDB::BindInfo</code> to <code>DuckDB::TableFunction::BindInfo</code>. <code>DuckDB::BindInfo</code> still works but emits a deprecation warning.</p>
 </li><li>
@@ -478,7 +586,7 @@
 <p>rename <code>DuckDB::FunctionInfo</code> to <a href="DuckDB/TableFunction/FunctionInfo.html"><code>DuckDB::TableFunction::FunctionInfo</code></a>. <code>DuckDB::FunctionInfo</code> still works but emits a deprecation warning.</p>
 </li></ul>
 
-<h1 id="label-1.5.0.2+-+2026-03-22">1.5.0.2 - 2026-03-22<span><a href="#label-1.5.0.2+-+2026-03-22">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.5.0.2+-+2026-03-22"><a href="#label-1.5.0.2+-+2026-03-22">1.5.0.2 - 2026-03-22</a></h1>
 <ul><li>
 <p>add <a href="DuckDB.html#method-c-vector_size"><code>DuckDB.vector_size</code></a> to return the <a href="DuckDB.html"><code>DuckDB</code></a> vector size (number of rows processed per vectorized operation).</p>
 </li><li>
@@ -487,19 +595,19 @@
 <p>add <a href="DuckDB.html#attribute-c-default_timezone"><code>DuckDB.default_timezone</code></a> configuration (defaults to <code>:local</code>) to control how TIMESTAMP and TIME values without time zone are converted to Ruby <code>Time</code> (<code>:utc</code> or <code>:local</code>).</p>
 </li></ul>
 
-<h1 id="label-1.5.0.1+-+2026-03-17">1.5.0.1 - 2026-03-17<span><a href="#label-1.5.0.1+-+2026-03-17">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.5.0.1+-+2026-03-17"><a href="#label-1.5.0.1+-+2026-03-17">1.5.0.1 - 2026-03-17</a></h1>
 <ul><li>
 <p>enable <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> work with duckdb multi threads.</p>
 </li><li>
 <p>fix mysql_query fails</p>
 </li></ul>
 
-<h1 id="label-1.5.0.0+-+2026-03-15">1.5.0.0 - 2026-03-15<span><a href="#label-1.5.0.0+-+2026-03-15">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.5.0.0+-+2026-03-15"><a href="#label-1.5.0.0+-+2026-03-15">1.5.0.0 - 2026-03-15</a></h1>
 <ul><li>
 <p>bump duckdb to 1.5.0 on CI.</p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p>remove <code>DuckDB::PrepareadStatement#pending_prepared_stream</code> method. Use <a href="DuckDB/PreparedStatement.html#method-i-pending_prepared"><code>DuckDB::PreparedStatement#pending_prepared</code></a> instead.</p>
 </li><li>
@@ -508,7 +616,7 @@
 <p>drop duckdb v1.3.x.</p>
 </li></ul>
 
-<h1 id="label-1.4.4.0+-+2026-03-07">1.4.4.0 - 2026-03-07<span><a href="#label-1.4.4.0+-+2026-03-07">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.4.4.0+-+2026-03-07"><a href="#label-1.4.4.0+-+2026-03-07">1.4.4.0 - 2026-03-07</a></h1>
 <ul><li>
 <p><a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> accepts date.</p>
 </li><li>
@@ -649,12 +757,12 @@
 <p>bump bundler 4.0 in duckdb.gemspec.</p>
 </li></ul>
 
-<h1 id="label-1.4.3.0+-+2026-01-10">1.4.3.0 - 2026-01-10<span><a href="#label-1.4.3.0+-+2026-01-10">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.4.3.0+-+2026-01-10"><a href="#label-1.4.3.0+-+2026-01-10">1.4.3.0 - 2026-01-10</a></h1>
 <ul><li>
 <p>bump duckdb to 1.4.3 on CI.</p>
 </li></ul>
 
-<h1 id="label-1.4.2.0+-+2025-12-27">1.4.2.0 - 2025-12-27<span><a href="#label-1.4.2.0+-+2025-12-27">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.4.2.0+-+2025-12-27"><a href="#label-1.4.2.0+-+2025-12-27">1.4.2.0 - 2025-12-27</a></h1>
 <ul><li>
 <p>support Ruby 4.0.0, add Ruby 4.0.0 on CI.</p>
 </li><li>
@@ -665,11 +773,11 @@
 <p>bump duckdb to 1.4.2 on CI.</p>
 </li></ul>
 
-<h1 id="label-1.4.1.1+-+2025-11-03">1.4.1.1 - 2025-11-03<span><a href="#label-1.4.1.1+-+2025-11-03">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.4.1.1+-+2025-11-03"><a href="#label-1.4.1.1+-+2025-11-03">1.4.1.1 - 2025-11-03</a></h1>
 <ul><li>
 <p><a href="DuckDB/Connection.html#method-i-appender_from_query"><code>DuckDB::Connection#appender_from_query</code></a> accepts block.</p>
 
-<h1 id="label-1.4.1.0+-+2025-11-01">1.4.1.0 - 2025-11-01<span><a href="#label-1.4.1.0+-+2025-11-01">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.4.1.0+-+2025-11-01"><a href="#label-1.4.1.0+-+2025-11-01">1.4.1.0 - 2025-11-01</a></h1>
 </li><li>
 <p>add <a href="DuckDB/Connection.html#method-i-appender_from_query"><code>DuckDB::Connection#appender_from_query</code></a>.</p>
 </li><li>
@@ -692,7 +800,7 @@
 <p>add <a href="DuckDB/LogicalType.html#method-c-new"><code>DuckDB::LogicalType.new(type_id)</code></a> to create a logical type from a type ID.</p>
 </li></ul>
 
-<h1 id="label-1.3.1.0+-+2025-06-28">1.3.1.0 - 2025-06-28<span><a href="#label-1.3.1.0+-+2025-06-28">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.3.1.0+-+2025-06-28"><a href="#label-1.3.1.0+-+2025-06-28">1.3.1.0 - 2025-06-28</a></h1>
 <ul><li>
 <p>Support TIMESTAMP_S, TIMESTAMP_MS infinity, -infinity value.</p>
 </li><li>
@@ -701,12 +809,12 @@
 <p>drop dcukdb v1.1.x.</p>
 </li></ul>
 
-<h1 id="label-1.3.0.0+-+2025-05-31">1.3.0.0 - 2025-05-31<span><a href="#label-1.3.0.0+-+2025-05-31">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.3.0.0+-+2025-05-31"><a href="#label-1.3.0.0+-+2025-05-31">1.3.0.0 - 2025-05-31</a></h1>
 <ul><li>
 <p>bump duckdb to 1.3.0 on CI.</p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p><code>DuckDB::Result#streaming?</code> is deprecated.</p>
 </li><li>
@@ -718,12 +826,12 @@
 </li><li>
 <p><a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> behaves the same as <code>DuckDB::Connection#async_query_stream</code>.</p>
 </li><li>
-<p><code>DuckDB::Connection#async_query_stream</code> will be deprecated. Use <code>async_query</code> instead.</p>
+<p><code>DuckDB::Connection#async_query_stream</code> will be deprecated. Use <a href="sample/async_query_rb.html">async_query</a> instead.</p>
 </li><li>
 <p><code>DuckDB::Result#chunk_each</code>, <code>DuckDB::Result.use_chunk_each</code>, <code>DuckDB::Result.use_chunk_each?</code> are deprecated.</p>
 </li></ul>
 
-<h1 id="label-1.2.2.0+-+2025-05-11">1.2.2.0 - 2025-05-11<span><a href="#label-1.2.2.0+-+2025-05-11">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.2.2.0+-+2025-05-11"><a href="#label-1.2.2.0+-+2025-05-11">1.2.2.0 - 2025-05-11</a></h1>
 <ul><li>
 <p>drop Ruby 3.1.</p>
 </li><li>
@@ -738,7 +846,7 @@
 <p><a href="DuckDB/LogicalType.html"><code>DuckDB::LogicalType</code></a> class is under construction. <a href="DuckDB/LogicalType.html#method-i-internal_type"><code>DuckDB::LogicalType#internal_type</code></a>, <a href="DuckDB/LogicalType.html#method-i-dictionary_size"><code>DuckDB::LogicalType#dictionary_size</code></a>, <a href="DuckDB/LogicalType.html#method-i-dictionary_value_at"><code>DuckDB::LogicalType#dictionary_value_at</code></a>, <a href="DuckDB/LogicalType.html#method-i-each_dictionary_value"><code>DuckDB::LogicalType#each_dictionary_value</code></a>, <a href="DuckDB/LogicalType.html#method-i-alias"><code>DuckDB::LogicalType#alias</code></a>, and <a href="DuckDB/LogicalType.html#method-i-alias-3D"><code>DuckDB::LogicalType#alias=</code></a>are available.</p>
 </li></ul>
 
-<h1 id="label-1.2.1.0+-+2025-03-30">1.2.1.0 - 2025-03-30<span><a href="#label-1.2.1.0+-+2025-03-30">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.2.1.0+-+2025-03-30"><a href="#label-1.2.1.0+-+2025-03-30">1.2.1.0 - 2025-03-30</a></h1>
 <ul><li>
 <p>bump duckdb v1.2.1 on CI.</p>
 </li><li>
@@ -753,7 +861,7 @@
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_uhugeint"><code>DuckDB::PreparedStatement#bind_uhugeint</code></a>.</p>
 </li></ul>
 
-<h1 id="label-1.2.0.0+-+2025-02-24">1.2.0.0 - 2025-02-24<span><a href="#label-1.2.0.0+-+2025-02-24">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.2.0.0+-+2025-02-24"><a href="#label-1.2.0.0+-+2025-02-24">1.2.0.0 - 2025-02-24</a></h1>
 <ul><li>
 <p>bump duckdb to 1.2.0.</p>
 </li><li>
@@ -770,7 +878,7 @@
 <p>bump ruby in CI. use 3.4.2 on MacOS and Ubuntu, 3.4.1 on Windows.</p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p><code>DuckDB::Result#row_count</code>, <code>DuckDB::Result#row_size</code> are deprecated.</p>
 </li><li>
@@ -778,12 +886,12 @@
 </li><li>
 <p><code>DuckDB::Result#chunk_each</code> is deprecated.</p>
 </li><li>
-<p><a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> only works at first time because duckdb_chunk_each C-API is deprecated. Calling <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> twice or more does not work. <code>ruby   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again does not work.   result.each do |record| p record # &lt;= this will not work   end </code> If you prefer to use <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> multiple times, set <code>DuckDB::Result.use_chunk_each = true</code>. But this behavior will be removed in the future release. <code>ruby   DuckDB::Result.use_chunk_each = true   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again works.   result.each do |record| p record # &lt;= this works fine.   end </code></p>
+<p><a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> only works at first time because duckdb_chunk_each C-API is deprecated. Calling <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> twice or more does not work. <code>ruby   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again does not work.   result.each do |record| p record # &lt;= this will not work   end   </code> If you prefer to use <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> multiple times, set <code>DuckDB::Result.use_chunk_each = true</code>. But this behavior will be removed in the future release. <code>ruby   DuckDB::Result.use_chunk_each = true   result = con.query(&#39;SELECT * FROM table&#39;)   result.each do |record| p record # &lt;= this works fine.   end   # calling each again works.   result.each do |record| p record # &lt;= this works fine.   end   </code></p>
 </li><li>
 <p><code>DuckDB::Result#streaming?</code> will be deprecated.</p>
 </li></ul>
 
-<h1 id="label-1.1.3.1+-+2024-11-27">1.1.3.1 - 2024-11-27<span><a href="#label-1.1.3.1+-+2024-11-27">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.3.1+-+2024-11-27"><a href="#label-1.1.3.1+-+2024-11-27">1.1.3.1 - 2024-11-27</a></h1>
 <ul><li>
 <p>fix to <a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a> with multiple SQL statements. Calling PreparedStatement#destroy after each statement executed.</p>
 </li><li>
@@ -792,14 +900,14 @@
 <p>add <a href="DuckDB/Appender.html#method-i-append_default"><code>DuckDB::Appender#append_default</code></a>.</p>
 </li></ul>
 
-<h1 id="label-1.1.3.0+-+2024-11-10">1.1.3.0 - 2024-11-10<span><a href="#label-1.1.3.0+-+2024-11-10">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.3.0+-+2024-11-10"><a href="#label-1.1.3.0+-+2024-11-10">1.1.3.0 - 2024-11-10</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_decimal"><code>DuckDB::PreparedStatement#bind_decimal</code></a>. (Thanks to @otegami)</p>
 </li><li>
 <p>bump duckdb to 1.1.3.</p>
 </li></ul>
 
-<h1 id="label-1.1.2.1+-+2024-11-04">1.1.2.1 - 2024-11-04<span><a href="#label-1.1.2.1+-+2024-11-04">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.2.1+-+2024-11-04"><a href="#label-1.1.2.1+-+2024-11-04">1.1.2.1 - 2024-11-04</a></h1>
 <ul><li>
 <p><a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a> accepts multiple SQL statement.</p>
 </li><li>
@@ -821,7 +929,7 @@
 <span class="ruby-keyword">end</span>
 </pre>
 
-<h1 id="label-1.1.2.0+-+2024-10-20">1.1.2.0 - 2024-10-20<span><a href="#label-1.1.2.0+-+2024-10-20">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.2.0+-+2024-10-20"><a href="#label-1.1.2.0+-+2024-10-20">1.1.2.0 - 2024-10-20</a></h1>
 </li><li>
 <p>bump duckdb to 1.1.2.</p>
 </li><li>
@@ -830,21 +938,21 @@
 <p><a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a>, <a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a>, <code>DuckDB::Connection#async_query_stream</code> call <code>DuckDB::PreparedStatement#destroy</code> to free the prepared statement immediately (#775, #781).</p>
 </li></ul>
 
-<h1 id="label-1.1.1.0+-+2024-10-06">1.1.1.0 - 2024-10-06<span><a href="#label-1.1.1.0+-+2024-10-06">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.1.0+-+2024-10-06"><a href="#label-1.1.1.0+-+2024-10-06">1.1.1.0 - 2024-10-06</a></h1>
 <ul><li>
 <p>bump duckdb to 1.1.1.</p>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 </li><li>
 <p>drop duckdb v0.10.x.</p>
 </li></ul>
 
-<h1 id="label-1.1.0.1+-+2024-09-21">1.1.0.1 - 2024-09-21<span><a href="#label-1.1.0.1+-+2024-09-21">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.0.1+-+2024-09-21"><a href="#label-1.1.0.1+-+2024-09-21">1.1.0.1 - 2024-09-21</a></h1>
 <ul><li>
 <p>add <code>DuckDB::Connection#prepare</code>. <code>DuckDB::Connection#prepare</code> is an alias of <a href="DuckDB/Connection.html#method-i-prepared_statement"><code>DuckDB::Connection#prepared_statement</code></a>.</p>
 </li></ul>
 
-<h1 id="label-1.1.0.0+-+2024-09-15">1.1.0.0 - 2024-09-15<span><a href="#label-1.1.0.0+-+2024-09-15">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.1.0.0+-+2024-09-15"><a href="#label-1.1.0.0+-+2024-09-15">1.1.0.0 - 2024-09-15</a></h1>
 <ul><li>
 <p>drop ruby 3.0.x.</p>
 </li><li>
@@ -877,7 +985,7 @@
 <p><code>DuckDB::Result#use_chunk_each=</code></p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p>drop duckdb v0.9.x.</p>
 </li><li>
@@ -930,7 +1038,7 @@
 <p><a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result#each</code></a> always works the same as <code>DuckDB::Result#chunk_each</code>.</p>
 </li></ul>
 
-<h1 id="label-1.0.0.2+-+2024-06-23">1.0.0.2 - 2024-06-23<span><a href="#label-1.0.0.2+-+2024-06-23">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.0.0.2+-+2024-06-23"><a href="#label-1.0.0.2+-+2024-06-23">1.0.0.2 - 2024-06-23</a></h1>
 <ul><li>
 <p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports TIMESTAMPTZ column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li><li>
@@ -953,7 +1061,7 @@
 <p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports BIT column type (only when DuckDB::Result.use_chunk_each is true).</p>
 </li></ul>
 
-<h1 id="label-1.0.0.1+-+2024-06-16">1.0.0.1 - 2024-06-16<span><a href="#label-1.0.0.1+-+2024-06-16">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.0.0.1+-+2024-06-16"><a href="#label-1.0.0.1+-+2024-06-16">1.0.0.1 - 2024-06-16</a></h1>
 <ul><li>
 <p>support fetch the value from UHUGEINT type column.</p>
 </li><li>
@@ -964,7 +1072,7 @@
 <p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> supports LIST column type (only when DuckDB::Result.use_chunk_each is true). Thanks to stephenprater.</p>
 </li></ul>
 
-<h1 id="label-1.0.0.0+-+2024-06-08">1.0.0.0 - 2024-06-08<span><a href="#label-1.0.0.0+-+2024-06-08">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-1.0.0.0+-+2024-06-08"><a href="#label-1.0.0.0+-+2024-06-08">1.0.0.0 - 2024-06-08</a></h1>
 <ul><li>
 <p>bump duckdb to 1.0.0.</p>
 </li><li>
@@ -1019,36 +1127,36 @@
 <p><code>DuckDB::Result#use_chunk_each?</code></p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p>DuckDB::Result.use_chunk_each is true by default. If you want to use the old behavior, set <code>DuckDB::Result.use_chunk_each = false</code>. But the old behavior will be removed in the future release.</p>
 </li></ul>
 
-<h1 id="label-0.10.3.0+-+2024-05-25">0.10.3.0 - 2024-05-25<span><a href="#label-0.10.3.0+-+2024-05-25">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.10.3.0+-+2024-05-25"><a href="#label-0.10.3.0+-+2024-05-25">0.10.3.0 - 2024-05-25</a></h1>
 <ul><li>
 <p>bump to duckdb v0.10.3.</p>
 </li></ul>
 
-<h1 id="label-0.10.2.0+-+2024-04-20">0.10.2.0 - 2024-04-20<span><a href="#label-0.10.2.0+-+2024-04-20">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.10.2.0+-+2024-04-20"><a href="#label-0.10.2.0+-+2024-04-20">0.10.2.0 - 2024-04-20</a></h1>
 <ul><li>
 <p>remove version from docker-compose.yml.</p>
 </li><li>
 <p>bump to duckdb v0.10.2.</p>
 </li></ul>
 
-<h1 id="label-0.10.1.1+-+2024-03-31">0.10.1.1 - 2024-03-31<span><a href="#label-0.10.1.1+-+2024-03-31">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.10.1.1+-+2024-03-31"><a href="#label-0.10.1.1+-+2024-03-31">0.10.1.1 - 2024-03-31</a></h1>
 <ul><li>
 <p>fix error using binding with name (issue #612). Thanks to pere73.</p>
 </li></ul>
 
-<h1 id="label-0.10.1.0+-+2024-03-22">0.10.1.0 - 2024-03-22<span><a href="#label-0.10.1.0+-+2024-03-22">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.10.1.0+-+2024-03-22"><a href="#label-0.10.1.0+-+2024-03-22">0.10.1.0 - 2024-03-22</a></h1>
 <ul><li>
 <p>drop duckdb v0.8.x.</p>
 </li><li>
 <p>fix column type failures with duckdb v0.10.1.</p>
 </li></ul>
 
-<h1 id="label-0.10.0.0+-+2024-02-18">0.10.0.0 - 2024-02-18<span><a href="#label-0.10.0.0+-+2024-02-18">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.10.0.0+-+2024-02-18"><a href="#label-0.10.0.0+-+2024-02-18">0.10.0.0 - 2024-02-18</a></h1>
 <ul><li>
 <p>bump to duckdb v0.10.0.</p>
 </li><li>
@@ -1059,36 +1167,36 @@
 <p>fix Decimal type conversion.</p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p><a href="DuckDB/Connection.html#method-i-query_progress"><code>DuckDB::Connection#query_progress</code></a> returns <code>DuckDB::QueryProgress</code> object only when duckdb library version is 0.10.0 or later.</p>
 </li><li>
 <p>The available methods are <code>DuckDB::QueryProgress#percentage</code>, <code>DuckDB::QueryProgress#rows_processed</code>, <code>DuckDB::QueryProgress#total_rows_to_process</code>.</p>
 </li></ul>
 
-<h1 id="label-0.9.2.3+-+2023-12-29">0.9.2.3 - 2023-12-29<span><a href="#label-0.9.2.3+-+2023-12-29">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.2.3+-+2023-12-29"><a href="#label-0.9.2.3+-+2023-12-29">0.9.2.3 - 2023-12-29</a></h1>
 <ul><li>
 <p>fix bigdecimal warning with Ruby 3.3.0.</p>
 </li></ul>
 
-<h1 id="label-0.9.2.2+-+2023-12-26">0.9.2.2 - 2023-12-26<span><a href="#label-0.9.2.2+-+2023-12-26">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.2.2+-+2023-12-26"><a href="#label-0.9.2.2+-+2023-12-26">0.9.2.2 - 2023-12-26</a></h1>
 <ul><li>
 <p>bump Ruby to 3.3.0 on CI.</p>
 </li></ul>
 
-<h2 id="label-Breaking+changes">Breaking changes<span><a href="#label-Breaking+changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+changes"><a href="#label-Breaking+changes">Breaking changes</a></h2>
 <ul><li>
 <p>drop Ruby 2.7.</p>
 </li></ul>
 
-<h1 id="label-0.9.2.1+-+2023-12-24">0.9.2.1 - 2023-12-24<span><a href="#label-0.9.2.1+-+2023-12-24">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.2.1+-+2023-12-24"><a href="#label-0.9.2.1+-+2023-12-24">0.9.2.1 - 2023-12-24</a></h1>
 <ul><li>
 <p>support Time column in <code>DuckDB#Result#chunk_each</code>.</p>
 </li><li>
 <p>add <a href="DuckDB/Interval.html#method-i-eql-3F"><code>DuckDB::Interval#eql?</code></a>.</p>
 </li></ul>
 
-<h1 id="label-0.9.2+-+2023-11-26">0.9.2 - 2023-11-26<span><a href="#label-0.9.2+-+2023-11-26">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.2+-+2023-11-26"><a href="#label-0.9.2+-+2023-11-26">0.9.2 - 2023-11-26</a></h1>
 <ul><li>
 <p>add <code>DuckDB::Connection#async_query_stream</code>.</p>
 </li><li>
@@ -1099,14 +1207,14 @@
 <p>add <code>DuckDB::Result#streaming?</code>.</p>
 </li></ul>
 
-<h1 id="label-0.9.1.2+-+2023-11-05">0.9.1.2 - 2023-11-05<span><a href="#label-0.9.1.2+-+2023-11-05">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.1.2+-+2023-11-05"><a href="#label-0.9.1.2+-+2023-11-05">0.9.1.2 - 2023-11-05</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/Connection.html#method-i-interrupt"><code>DuckDB::Connection#interrupt</code></a>, <a href="DuckDB/Connection.html#method-i-query_progress"><code>DuckDB::Connection#query_progress</code></a>.</p>
 </li><li>
 <p>add <a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a>, alias method <code>async_execute</code>.</p>
 </li></ul>
 
-<h1 id="label-0.9.1.1+-+2023-10-29">0.9.1.1 - 2023-10-29<span><a href="#label-0.9.1.1+-+2023-10-29">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.1.1+-+2023-10-29"><a href="#label-0.9.1.1+-+2023-10-29">0.9.1.1 - 2023-10-29</a></h1>
 <ul><li>
 <p>change default branch to main from master.</p>
 </li><li>
@@ -1121,48 +1229,48 @@
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-pending_prepared"><code>DuckDB::PreparedStatement#pending_prepared</code></a>.</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p>drop duckdb v0.7.x.</p>
 </li></ul>
 
-<h1 id="label-0.9.1+-+2023-10-14">0.9.1 - 2023-10-14<span><a href="#label-0.9.1+-+2023-10-14">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.1+-+2023-10-14"><a href="#label-0.9.1+-+2023-10-14">0.9.1 - 2023-10-14</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-parameter_name"><code>DuckDB::PreparedStatement#parameter_name</code></a>.</p>
 </li><li>
 <p>bump duckdb to 0.9.1.</p>
 </li></ul>
 
-<h1 id="label-0.9.0.1+-+2023-10-08">0.9.0.1 - 2023-10-08<span><a href="#label-0.9.0.1+-+2023-10-08">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.0.1+-+2023-10-08"><a href="#label-0.9.0.1+-+2023-10-08">0.9.0.1 - 2023-10-08</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_parameter_index"><code>DuckDB::PreparedStatement#bind_parameter_index</code></a>.</p>
 </li><li>
 <p><a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a> accepts SQL with named bind parameters.</p>
 </li></ul>
 
-<h1 id="label-0.9.0+-+2023-09-30">0.9.0 - 2023-09-30<span><a href="#label-0.9.0+-+2023-09-30">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.9.0+-+2023-09-30"><a href="#label-0.9.0+-+2023-09-30">0.9.0 - 2023-09-30</a></h1>
 <ul><li>
 <p>bump duckdb to 0.9.0.</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p>deprecation warning when <a href="DuckDB/Result.html#method-i-each"><code>DuckDB::Result.each</code></a> calling with <code>DuckDB::Result.use_chunk_each</code> is false. The <code>each</code> behavior will be same as <code>DuckDB::Result.chunk_each</code> in the future. set <code>DuckDB::Result.use_chunk_each = true</code> to suppress the warning.</p>
 </li><li>
 <p><code>DuckDB::Result#chunk_each</code> returns <a href="DuckDB/Interval.html"><code>DuckDB::Interval</code></a> class when the column type is INTERVAL.</p>
 </li></ul>
 
-<h1 id="label-0.8.1.3">0.8.1.3<span><a href="#label-0.8.1.3">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.8.1.3"><a href="#label-0.8.1.3">0.8.1.3</a></h1>
 <ul><li>
 <p>Fix BigDecimal conversion.</p>
 </li></ul>
 
-<h1 id="label-0.8.1.2">0.8.1.2<span><a href="#label-0.8.1.2">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.8.1.2"><a href="#label-0.8.1.2">0.8.1.2</a></h1>
 <ul><li>
 <p>Fix BigDecimal conversion when the value is 0. Thanks to shreeve.</p>
 </li></ul>
 
-<h1 id="label-0.8.1.1">0.8.1.1<span><a href="#label-0.8.1.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.8.1.1"><a href="#label-0.8.1.1">0.8.1.1</a></h1>
 <ul><li>
 <p>DuckDB::Result#chunk_each supports:</p>
 </li><li>
@@ -1183,7 +1291,7 @@
 <p><code>DuckDB::Result#_enum_internal_type</code></p>
 </li></ul>
 
-<h1 id="label-0.8.1">0.8.1<span><a href="#label-0.8.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.8.1"><a href="#label-0.8.1">0.8.1</a></h1>
 <ul><li>
 <p>bump duckdb to 0.8.1.</p>
 </li><li>
@@ -1204,12 +1312,12 @@
 <p>support uuid type in DuckDB::Result#chunk_each.</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p><a href="DuckDB/Config.html#method-i-set_config"><code>DuckDB::Config.set_config</code></a> does not raise exception when invalid key specified. Instead, <a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open</code></a> raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a> with invalid key configuration.</p>
 </li></ul>
 
-<h1 id="label-0.8.0">0.8.0<span><a href="#label-0.8.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.8.0"><a href="#label-0.8.0">0.8.0</a></h1>
 <ul><li>
 <p>bump duckdb to 0.8.0</p>
 </li><li>
@@ -1218,19 +1326,19 @@
 <p>add DuckDB::Result#_to_hugeint_internal</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p><a href="DuckDB/Result.html"><code>DuckDB::Result</code></a> returns BigDecimal object instead of String object if the column type is DECIMAL.</p>
 </li></ul>
 
-<h1 id="label-0.7.1">0.7.1<span><a href="#label-0.7.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.7.1"><a href="#label-0.7.1">0.7.1</a></h1>
 <ul><li>
 <p>bump duckdb to 0.7.1</p>
 </li><li>
 <p>fix docker build error on M1 Mac</p>
 </li></ul>
 
-<h1 id="label-0.7.0">0.7.0<span><a href="#label-0.7.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.7.0"><a href="#label-0.7.0">0.7.0</a></h1>
 <ul><li>
 <p>bump duckdb to 0.7.0</p>
 </li><li>
@@ -1250,12 +1358,12 @@
 </li><li>
 <p>add Ruby mswin on CI test</p>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 </li><li>
 <p>drop Ruby 2.6</p>
 </li></ul>
 
-<h1 id="label-0.6.1">0.6.1<span><a href="#label-0.6.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.6.1"><a href="#label-0.6.1">0.6.1</a></h1>
 <ul><li>
 <p>bump Ruby to 3.2.0 on CI</p>
 </li><li>
@@ -1276,22 +1384,22 @@
 <p>bump duckdb to 0.6.0</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p>drop duckdb &lt;= 0.4.x. ruby-duckdb supports duckdb &gt;= 0.5.0</p>
 </li></ul>
 
-<h1 id="label-0.5.1.1">0.5.1.1<span><a href="#label-0.5.1.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.5.1.1"><a href="#label-0.5.1.1">0.5.1.1</a></h1>
 <ul><li>
 <p>bug fix: reading the boolean column</p>
 </li></ul>
 
-<h1 id="label-0.5.1">0.5.1<span><a href="#label-0.5.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.5.1"><a href="#label-0.5.1">0.5.1</a></h1>
 <ul><li>
 <p>bump duckdb to 0.5.1</p>
 </li></ul>
 
-<h1 id="label-0.5.0">0.5.0<span><a href="#label-0.5.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.5.0"><a href="#label-0.5.0">0.5.0</a></h1>
 <ul><li>
 <p>update bundle version of Gemfile.lock</p>
 </li><li>
@@ -1310,17 +1418,17 @@
 <p>add <a href="DuckDB/Result.html#method-i-column_count"><code>DuckDB::Result#column_count</code></a>, <a href="DuckDB/Result.html#method-i-column_size"><code>DuckDB::Result#column_size</code></a>(alias of column_count).</p>
 </li></ul>
 
-<h2 id="label-Breaking+Changes">Breaking Changes<span><a href="#label-Breaking+Changes">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p>bind_varchar does not raised <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a> when the binding column is date or datetime.</p>
 </li></ul>
 
-<h1 id="label-0.3.4.0">0.3.4.0<span><a href="#label-0.3.4.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.3.4.0"><a href="#label-0.3.4.0">0.3.4.0</a></h1>
 <ul><li>
 <p>bump duckdb to 0.3.4</p>
 </li></ul>
 
-<h1 id="label-0.3.3.0">0.3.3.0<span><a href="#label-0.3.3.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.3.3.0"><a href="#label-0.3.3.0">0.3.3.0</a></h1>
 <ul><li>
 <p><a href="DuckDB/Column.html#method-i-type"><code>DuckDB::Column#type</code></a> supports :decimal.</p>
 </li><li>
@@ -1329,7 +1437,7 @@
 <p>bump Ruby to 2.6.10, 2.7.6, 3.0.4, 3.1.2.</p>
 </li></ul>
 
-<h1 id="label-0.3.2.0">0.3.2.0<span><a href="#label-0.3.2.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.3.2.0"><a href="#label-0.3.2.0">0.3.2.0</a></h1>
 <ul><li>
 <p>bind_time, bind_timestamp, bind_date, bind_timeinterval to <a href="DuckDB/PreparedStatement.html"><code>DuckDB::PreparedStatement</code></a></p>
 </li><li>
@@ -1340,12 +1448,12 @@
 <p>bump Ruby to 2.6.9, 2.7.5, 3.0.3 in CI.</p>
 </li></ul>
 
-<h2 id="label-BREAKING+CHANGE">BREAKING CHANGE<span><a href="#label-BREAKING+CHANGE">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-BREAKING+CHANGE"><a href="#label-BREAKING+CHANGE">BREAKING CHANGE</a></h2>
 <ul><li>
 <p>drop duckdb &lt;= 0.2.8</p>
 </li></ul>
 
-<h1 id="label-0.3.1.0">0.3.1.0<span><a href="#label-0.3.1.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.3.1.0"><a href="#label-0.3.1.0">0.3.1.0</a></h1>
 <ul><li>
 <p>bump duckdb to 0.3.1 in CI.</p>
 </li><li>
@@ -1354,7 +1462,7 @@
 <p>append_time, append_date, append_timestamp of <a href="DuckDB/Appender.html"><code>DuckDB::Appender</code></a> accept argument having to_str to convert time string.</p>
 </li></ul>
 
-<h1 id="label-0.2.9.0">0.2.9.0<span><a href="#label-0.2.9.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.2.9.0"><a href="#label-0.2.9.0">0.2.9.0</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/Appender.html#method-i-append"><code>DuckDB::Appender#append</code></a></p>
 </li><li>
@@ -1388,7 +1496,7 @@
 <p>add <a href="DuckDB/Appender.html#method-i-append_time"><code>DuckDB::Appender#append_time</code></a></p>
 </li></ul>
 
-<h1 id="label-0.2.8.0">0.2.8.0<span><a href="#label-0.2.8.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.2.8.0"><a href="#label-0.2.8.0">0.2.8.0</a></h1>
 <ul><li>
 <p><a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open</code></a> accepts 2-nd argument as <a href="DuckDB/Config.html"><code>DuckDB::Config</code></a> object.</p>
 </li><li>
@@ -1399,7 +1507,7 @@
 <p>bump Ruby to 2.6.8, 2.7.4, 3.0.2 in CI</p>
 </li></ul>
 
-<h1 id="label-0.2.7.0">0.2.7.0<span><a href="#label-0.2.7.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.2.7.0"><a href="#label-0.2.7.0">0.2.7.0</a></h1>
 <ul><li>
 <p>call duckdb_free after calling duckdb_value_blob, duckdb_value_varchar.</p>
 </li><li>
@@ -1410,7 +1518,7 @@
 <p>There is a issue (LoadError) when running rake test on Windows (in GitHub actions).</p>
 </li></ul>
 
-<h1 id="label-0.2.6.1">0.2.6.1<span><a href="#label-0.2.6.1">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.2.6.1"><a href="#label-0.2.6.1">0.2.6.1</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_int8"><code>DuckDB::PreparedStatement#bind_int8</code></a></p>
 </li><li>
@@ -1427,7 +1535,7 @@
 <p>add <a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>.</p>
 </li></ul>
 
-<h1 id="label-0.2.6.0">0.2.6.0<span><a href="#label-0.2.6.0">&para;</a> <a href="#top">&uarr;</a></span></h1>
+<h1 id="label-0.2.6.0"><a href="#label-0.2.6.0">0.2.6.0</a></h1>
 <ul><li>
 <p>change version policy</p>
 </li><li>
@@ -1442,14 +1550,14 @@
 <p>add <a href="DuckDB/Connection.html#method-i-prepared_statement"><code>DuckDB::Connection#prepared_statement</code></a>.</p>
 </li></ul>
 
-<h2 id="label-0.0.12">0.0.12<span><a href="#label-0.0.12">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.12"><a href="#label-0.0.12">0.0.12</a></h2>
 <ul><li>
 <p>bump <a href="DuckDB.html"><code>DuckDB</code></a> to v0.2.5</p>
 </li><li>
 <p>support BLOB type (with <a href="DuckDB.html"><code>DuckDB</code></a> version 0.2.5 or later)</p>
 </li></ul>
 
-<h2 id="label-0.0.11">0.0.11<span><a href="#label-0.0.11">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.11"><a href="#label-0.0.11">0.0.11</a></h2>
 <ul><li>
 <p>fix failure in test_close in test/duckdb_test/database_test.rb because <a href="DuckDB.html"><code>DuckDB</code></a> error message was changed.</p>
 </li><li>
@@ -1462,14 +1570,14 @@
 <p>bunp <a href="DuckDB.html"><code>DuckDB</code></a> to v0.2.3</p>
 </li></ul>
 
-<h2 id="label-0.0.10">0.0.10<span><a href="#label-0.0.10">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.10"><a href="#label-0.0.10">0.0.10</a></h2>
 <ul><li>
 <p>bump <a href="DuckDB.html"><code>DuckDB</code></a> to v0.2.2</p>
 </li><li>
 <p>fix to build failure on MacOS.</p>
 </li></ul>
 
-<h2 id="label-0.0.9">0.0.9<span><a href="#label-0.0.9">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.9"><a href="#label-0.0.9">0.0.9</a></h2>
 <ul><li>
 <p>bump <a href="DuckDB.html"><code>DuckDB</code></a> to v0.2.1</p>
 </li><li>
@@ -1478,14 +1586,14 @@
 <p>bunmp <a href="DuckDB.html"><code>DuckDB</code></a> to v0.2.0</p>
 </li></ul>
 
-<h2 id="label-0.0.8.1">0.0.8.1<span><a href="#label-0.0.8.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.8.1"><a href="#label-0.0.8.1">0.0.8.1</a></h2>
 <ul><li>
 <p>update Gemfile.lock</p>
 </li><li>
 <p>unsupport Ruby 2.4</p>
 </li></ul>
 
-<h2 id="label-0.0.8">0.0.8<span><a href="#label-0.0.8">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.8"><a href="#label-0.0.8">0.0.8</a></h2>
 <ul><li>
 <p>remove test with Ruby 2.4.10</p>
 </li><li>
@@ -1514,7 +1622,7 @@
 <p>update duckdb.gemspec, required ruby version &gt;= 2.4.0</p>
 </li></ul>
 
-<h2 id="label-0.0.7">0.0.7<span><a href="#label-0.0.7">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.7"><a href="#label-0.0.7">0.0.7</a></h2>
 <ul><li>
 <p>bump <a href="DuckDB.html"><code>DuckDB</code></a> to v0.1.5</p>
 </li><li>
@@ -1527,7 +1635,7 @@
 <p>add <a href="DuckDB/Database.html#method-i-close"><code>DuckDB::Database#close</code></a></p>
 </li></ul>
 
-<h2 id="label-0.0.6">0.0.6<span><a href="#label-0.0.6">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.6"><a href="#label-0.0.6">0.0.6</a></h2>
 <ul><li>
 <p>add alias <code>execute</code> of <a href="DuckDB/Connection.html#method-i-query"><code>DuckDB::Connection#query</code></a></p>
 </li><li>
@@ -1540,7 +1648,7 @@
 <p>create database only once in result_test.rb</p>
 </li></ul>
 
-<h2 id="label-0.0.5">0.0.5<span><a href="#label-0.0.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.5"><a href="#label-0.0.5">0.0.5</a></h2>
 <ul><li>
 <p>add <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a></p>
 </li><li>
@@ -1559,27 +1667,50 @@
 <p>fix description in duckdb.gemspec</p>
 </li></ul>
 
-<h2 id="label-0.0.4">0.0.4<span><a href="#label-0.0.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.4"><a href="#label-0.0.4">0.0.4</a></h2>
 <ul><li>
 <p>add test for <a href="DuckDB/Database.html"><code>DuckDB::Database</code></a></p>
 </li><li>
 <p>rename module name to <a href="DuckDB.html"><code>DuckDB</code></a> from <code>Duckdb</code></p>
 </li></ul>
 
-<h2 id="label-0.0.3">0.0.3<span><a href="#label-0.0.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.3"><a href="#label-0.0.3">0.0.3</a></h2>
 <ul><li>
 <p>rename native extension name to duckdb_native</p>
 </li></ul>
 
-<h2 id="label-0.0.2">0.0.2<span><a href="#label-0.0.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.2"><a href="#label-0.0.2">0.0.2</a></h2>
 <ul><li>
 <p>fix gem install error</p>
 </li></ul>
 
-<h2 id="label-0.0.1">0.0.1<span><a href="#label-0.0.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<h2 id="label-0.0.1"><a href="#label-0.0.1">0.0.1</a></h2>
 <ul><li>
 <p>first release</p>
 </li></ul>
 
 </main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.0.3</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
 
