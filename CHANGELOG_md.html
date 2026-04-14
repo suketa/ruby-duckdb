@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Database."
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. DataChunk#reset` to clear a chunk&#39;s contents so it can be reused acros"
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Database.">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. DataChunk#reset` to clear a chunk&#39;s contents so it can be reused acros">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Database.">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. DataChunk#reset` to clear a chunk&#39;s contents so it can be reused acros">
 
 
 
@@ -455,6 +455,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>add <a href="DuckDB/DataChunk.html#method-i-reset"><code>DuckDB::DataChunk#reset</code></a> to clear a chunk’s contents so it can be reused across multiple <code>Appender#append_data_chunk</code> calls without reallocation.</p>
+</li><li>
 <p>add <code>DuckDB::Database.new(path = :memory, config: nil, &amp;block)</code> to create a database instance. <code>path</code> is a positional argument (default <code>:memory</code> for in-memory database, or a String path for file database). <code>config:</code> accepts an optional <a href="DuckDB/Config.html"><code>DuckDB::Config</code></a> object. When a block is given, the database is yielded and automatically closed afterwards.</p>
 </li><li>
 <p>add <code>TIME_NS</code> column support to <a href="DuckDB/Result.html"><code>DuckDB::Result</code></a>. <code>TIME_NS</code> values are returned as <code>Time</code> objects with nanoseconds truncated to microseconds.</p>

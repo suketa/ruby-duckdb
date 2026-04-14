@@ -494,6 +494,8 @@
 
         <li ><a href="#method-i-get_vector">get_vector</a></li>
 
+        <li ><a href="#method-i-reset">reset</a></li>
+
         <li ><a href="#method-i-set_value">set_value</a></li>
 
         <li ><a href="#method-i-size">size</a></li>
@@ -792,6 +794,54 @@
 
 <pre class="ruby"><span class="ruby-identifier">vector</span> = <span class="ruby-identifier">data_chunk</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
 </pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-reset" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-reset" title="Link to this method">
+                <span class="method-name">reset</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="reset-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 104</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">reset</span>
+  <span class="ruby-identifier">_reset</span>
+  <span class="ruby-comment"># duckdb_data_chunk_reset may invalidate previously returned data pointers,</span>
+  <span class="ruby-comment"># so drop the cache; vector/type caches remain valid across resets.</span>
+  <span class="ruby-ivar">@data_cache</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Resets the data chunk so it can be reused for another batch of rows.</p>
+
+<p>@return [DuckDB::DataChunk] self</p>
 
 
         </div>
