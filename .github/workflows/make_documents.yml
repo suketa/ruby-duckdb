@@ -1,5 +1,8 @@
 name: Deploy RDoc to GitHub Pages
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -19,7 +22,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.4
+        ruby-version: 4.0
 
     # RDoc ドキュメントを生成
     - name: Generate RDoc
