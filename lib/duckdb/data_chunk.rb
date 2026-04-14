@@ -96,6 +96,19 @@ module DuckDB
     end
     # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
+    #
+    # Resets the data chunk so it can be reused for another batch of rows.
+    #
+    # @return [DuckDB::DataChunk] self
+    #
+    def reset
+      _reset
+      # duckdb_data_chunk_reset may invalidate previously returned data pointers,
+      # so drop the cache; vector/type caches remain valid across resets.
+      @data_cache = nil
+      self
+    end
+
     private
 
     def cached_vector(col_idx)
