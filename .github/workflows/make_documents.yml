@@ -1,8 +1,5 @@
 name: Deploy RDoc to GitHub Pages
 
-permissions:
-  contents: write
-
 on:
   push:
     branches:
@@ -12,6 +9,8 @@ jobs:
   deploy:
     name: Build and Deploy RDoc
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     # リポジトリをクローン
