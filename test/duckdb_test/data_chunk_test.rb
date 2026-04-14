@@ -443,5 +443,86 @@ module DuckDBTest
       assert_equal :bigint, data_chunk.get_vector(0).logical_type.type
       assert_equal :varchar, data_chunk.get_vector(1).logical_type.type
     end
+
+    def test_reset_returns_self
+      data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+
+      assert_same data_chunk, data_chunk.reset
+    end
+
+    def test_reset_sets_size_to_zero
+      data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      data_chunk.size = 5
+
+      data_chunk.reset
+
+      assert_equal 0, data_chunk.size
+    end
+
+    def test_reset_clears_data_cache
+      data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      data_chunk.set_value(0, 0, 42)
+
+      # Sanity check: @data_cache is populated after set_value
+      refute_nil data_chunk.instance_variable_get(:@data_cache)
+
+      data_chunk.reset
+
+      # After reset, cached data pointers are invalid per DuckDB C API contract
+      # and must be cleared so next set_value re-fetches them.
+      assert_nil data_chunk.instance_variable_get(:@data_cache)
+    end
+
+    def test_reset_is_idempotent
+      data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      data_chunk.size = 3
+
+      data_chunk.reset.reset.reset
+
+      assert_equal 0, data_chunk.size
+    end
+
+    def test_reset_on_fresh_chunk
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+
+      chunk.reset
+
+      assert_equal 0, chunk.size
+      assert_equal 1, chunk.column_count
+    end
+
+    def test_reset_c_helper_is_private
+      assert DuckDB::DataChunk.private_method_defined?(:_reset)
+      refute DuckDB::DataChunk.public_method_defined?(:_reset)
+    end
+
+    def test_reset_allows_reusing_chunk_across_appends
+      @conn.execute('CREATE TABLE t (id INTEGER, name VARCHAR)')
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR])
+      appender = @conn.appender('t')
+
+      # First batch: 2 rows
+      chunk.set_value(0, 0, 1)
+      chunk.set_value(1, 0, 'Alice')
+      chunk.set_value(0, 1, 2)
+      chunk.set_value(1, 1, 'Bob')
+      chunk.size = 2
+      appender.append_data_chunk(chunk)
+
+      # Reuse the same chunk for the second batch
+      chunk.reset
+
+      # Second batch: 1 row
+      chunk.set_value(0, 0, 3)
+      chunk.set_value(1, 0, 'Carol')
+      chunk.size = 1
+      appender.append_data_chunk(chunk)
+
+      appender.flush
+      appender.close
+
+      assert_equal([[1, 'Alice'], [2, 'Bob'], [3, 'Carol']],
+                   @conn.query('SELECT * FROM t ORDER BY id').to_a)
+    end
   end
 end

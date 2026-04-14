@@ -11,6 +11,7 @@ static VALUE rbduckdb_data_chunk_column_count(VALUE self);
 static VALUE rbduckdb_data_chunk_get_size(VALUE self);
 static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size);
 static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx);
+static VALUE rbduckdb_data_chunk__reset(VALUE self);
 
 static const rb_data_type_t data_chunk_data_type = {
     "DuckDB/DataChunk",
@@ -171,6 +172,24 @@ static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx) {
     return vector_obj;
 }
 
+/*
+ * call-seq:
+ *   data_chunk._reset -> self
+ *
+ * Resets the data chunk, clearing its contents and setting its size to 0.
+ *
+ *   data_chunk._reset
+ */
+static VALUE rbduckdb_data_chunk__reset(VALUE self) {
+    rubyDuckDBDataChunk *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+
+    duckdb_data_chunk_reset(ctx->data_chunk);
+
+    return self;
+}
+
 void rbduckdb_init_duckdb_data_chunk(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -183,4 +202,5 @@ void rbduckdb_init_duckdb_data_chunk(void) {
     rb_define_method(cDuckDBDataChunk, "size", rbduckdb_data_chunk_get_size, 0);
     rb_define_method(cDuckDBDataChunk, "size=", rbduckdb_data_chunk_set_size, 1);
     rb_define_method(cDuckDBDataChunk, "get_vector", rbduckdb_data_chunk_get_vector, 1);
+    rb_define_private_method(cDuckDBDataChunk, "_reset", rbduckdb_data_chunk__reset, 0);
 }
