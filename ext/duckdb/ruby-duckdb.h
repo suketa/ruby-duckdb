@@ -1,7 +1,7 @@
 #ifndef RUBY_DUCKDB_H
 #define RUBY_DUCKDB_H
 
-// #define DUCKDB_API_NO_DEPRECATED
+#define DUCKDB_API_NO_DEPRECATED // ruby-duckdb uses no-deprecated DuckDB C-API only.
 #define DUCKDB_NO_EXTENSION_FUNCTIONS // disable extension C-functions
 
 #include "ruby.h"
