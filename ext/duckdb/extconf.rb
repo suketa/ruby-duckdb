@@ -63,6 +63,4 @@ have_func('duckdb_appender_create_query', 'duckdb.h')
 
 have_func('duckdb_unsafe_vector_assign_string_element_len', 'duckdb.h')
 
-$CFLAGS << ' -DDUCKDB_API_NO_DEPRECATED' if ENV['DUCKDB_API_NO_DEPRECATED']
-
 create_makefile('duckdb/duckdb_native')
