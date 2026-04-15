@@ -94,6 +94,7 @@ module DuckDB
     end
 
     def clear
+      self
     end
 
     # call-seq:
