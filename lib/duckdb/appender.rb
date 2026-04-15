@@ -93,6 +93,9 @@ module DuckDB
       raise_appender_error('failed to close')
     end
 
+    def clear
+    end
+
     # call-seq:
     #   appender.append_bool(val) -> self
     #

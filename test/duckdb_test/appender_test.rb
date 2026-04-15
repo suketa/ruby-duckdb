@@ -1000,21 +1000,22 @@ module DuckDBTest
     def test_appender_clear
       skip 'DuckDB::Appender#clear is not available' unless DuckDB::Appender.method_defined?(:clear)
 
-      @con.query('CREATE TABLE t (col1 INTEGER, col2 VARCHAR)')
+      @con.query('CREATE TABLE t (id INTEGER, name VARCHAR)')
       appender = @con.appender('t')
 
-      data = [[1, 2], [3, -4], [5, 6]]
-      data.each do |(col1, col2)|
-        appender.append(col1).append(col2).end_row
-        if col1.positive? && col2.positive?
-          appender.flush
-        else
+      data = [[1, 'John'], [-2, 'Bob'], [3, 'Jane']]
+      data.each do |(id, name)|
+        appender.append(id).append(name).end_row
+        if id.negative?
           appender.clear
+          next
         end
+        appender.flush
       end
-      r = @con.query('SELECT * FROM t ORDER BY col1')
 
-      assert_equal([[1, 2], [5, 6]], r.each.to_a)
+      r = @con.query('SELECT * FROM t ORDER BY id')
+
+      assert_equal([[1, 'John'], [3, 'Jane']], r.each.to_a)
     end
   end
 end
