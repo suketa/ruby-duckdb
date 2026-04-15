@@ -140,19 +140,6 @@ module DuckDB
       Interval.new(interval_months: months, interval_days: days, interval_micros: micros)
     end
 
-    def _to_uuid_from_vector(lower, upper)
-      upper ^= FLIP_HUGEINT
-      upper += HALF_HUGEINT if upper.negative?
-
-      str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
-      "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
-    end
-
-    def _to_uuid_from_uhugeint(lower, upper)
-      str = _to_hugeint_from_vector(lower, upper).to_s(16).rjust(32, '0')
-      "#{str[0, 8]}-#{str[8, 4]}-#{str[12, 4]}-#{str[16, 4]}-#{str[20, 12]}"
-    end
-
     def _uuid_string_to_hugeint(uuid_str)
       hex = uuid_str.to_s.delete('-')
       raise ArgumentError, "Invalid UUID format: #{uuid_str.inspect}" unless /\A\h{32}\z/.match?(hex)
