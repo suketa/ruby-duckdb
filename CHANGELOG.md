@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+# 1.5.2.0 - 2026-04-16
+
 - add `DuckDB::DataChunk#reset` to clear a chunk's contents so it can be reused across multiple `Appender#append_data_chunk` calls without reallocation.
 - add `DuckDB::Database.new(path = :memory, config: nil, &block)` to create a database instance. `path` is a positional argument (default `:memory` for in-memory database, or a String path for file database). `config:` accepts an optional `DuckDB::Config` object. When a block is given, the database is yielded and automatically closed afterwards.
 - add `TIME_NS` column support to `DuckDB::Result`. `TIME_NS` values are returned as `Time` objects with nanoseconds truncated to microseconds.
