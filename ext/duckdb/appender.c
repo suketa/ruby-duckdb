@@ -37,6 +37,11 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_value(VALUE self, VALUE val);
 static VALUE appender__append_data_chunk(VALUE self, VALUE chunk);
 static VALUE appender__flush(VALUE self);
+
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+static VALUE appender__clear(VALUE self);
+#endif
+
 static VALUE appender__close(VALUE self);
 static VALUE duckdb_state_to_bool_value(duckdb_state state);
 
@@ -448,6 +453,16 @@ static VALUE appender__flush(VALUE self) {
     return duckdb_state_to_bool_value(duckdb_appender_flush(ctx->appender));
 }
 
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+/* :nodoc: */
+static VALUE appender__clear(VALUE self) {
+    rubyDuckDBAppender *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+
+    return duckdb_state_to_bool_value(duckdb_appender_clear(ctx->appender));
+}
+#endif
+
 /* :nodoc: */
 static VALUE appender__close(VALUE self) {
     rubyDuckDBAppender *ctx;
@@ -474,6 +489,11 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
     rb_define_private_method(cDuckDBAppender, "_end_row", appender__end_row, 0);
     rb_define_private_method(cDuckDBAppender, "_flush", appender__flush, 0);
+
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+    rb_define_private_method(cDuckDBAppender, "_clear", appender__clear, 0);
+#endif
+
     rb_define_private_method(cDuckDBAppender, "_close", appender__close, 0);
     rb_define_private_method(cDuckDBAppender, "_append_bool", appender__append_bool, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int8", appender__append_int8, 1);
