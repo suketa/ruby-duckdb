@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         ruby: ['3.2.11', '3.3.11', '3.4.9', '4.0.2', 'head']
-        duckdb: ['1.4.4', '1.5.1']
+        duckdb: ['1.4.4', '1.5.2']
 
     steps:
     - uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
       run: |
         curl -OL https://github.com/duckdb/duckdb/releases/download/v${DUCKDB_VERSION}/libduckdb-osx-universal.zip
         case "${DUCKDB_VERSION}" in
-          "1.5.1") EXPECTED_SHA256="d9dd723c59f8571202b468f6bf71d4555238544553dd1445e6c9ecb39f54c0f3" ;;
+          "1.5.2") EXPECTED_SHA256="524f3537330a1b747556a0c98b62a46865a3f48c7ead2b2035c62f1ad3e5ca8b" ;;
           "1.4.4") EXPECTED_SHA256="5e6d79f5fb86bbd4f24d59cee3bc38f113d1433761df35337e3c01c62eeafe26" ;;
           *) echo "No known SHA256 for DuckDB v${DUCKDB_VERSION}"; exit 1 ;;
         esac
