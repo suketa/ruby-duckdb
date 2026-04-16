@@ -58,9 +58,10 @@ dir_config('duckdb')
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
 check_duckdb_library('duckdb', 'duckdb_appender_create_query', DUCKDB_REQUIRED_VERSION)
 
-# check duckdb >= 1.4.0
-have_func('duckdb_appender_create_query', 'duckdb.h')
-
+# check duckdb >= 1.5.0
 have_func('duckdb_unsafe_vector_assign_string_element_len', 'duckdb.h')
+
+# check duckdb >= 1.5.2
+have_func('duckdb_geometry_type_get_crs', 'duckdb.h')
 
 create_makefile('duckdb/duckdb_native')

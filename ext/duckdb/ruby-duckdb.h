@@ -12,6 +12,10 @@
 #define HAVE_DUCKDB_H_GE_V1_5_0 1
 #endif
 
+#ifdef HAVE_DUCKDB_GEOMETRY_TYPE_GET_CRS
+#define HAVE_DUCKDB_H_GE_V1_5_2 1
+#endif
+
 #include "./error.h"
 #include "./database.h"
 #include "./connection.h"
