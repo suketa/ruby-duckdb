@@ -8,9 +8,6 @@ ID id__to_time_from_duckdb_time;
 ID id__to_interval_from_vector;
 ID id__to_hugeint_from_vector;
 ID id__to_decimal_from_hugeint;
-ID id__to_uuid_from_vector;
-ID id__to_uuid_from_uhugeint;
-ID id__uuid_string_to_hugeint;
 ID id__to_time_from_duckdb_timestamp_s;
 ID id__to_time_from_duckdb_timestamp_ms;
 ID id__to_time_from_duckdb_timestamp_ns;
@@ -65,18 +62,145 @@ VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
     return Qnil;
 }
 
+#define DUCKDB_UUID_SIGN_BIT 0x8000000000000000ULL
+
+/*
+ * Write a 128-bit UUID (hi/lo) into buf[36] as "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".
+ *
+ * The 128-bit value is split into two uint64_t halves. Each half is consumed
+ * from its most-significant nibble downward: for each output character we shift
+ * the relevant half right so the target nibble lands in the lowest 4 bits, mask
+ * with 0xf, and use the result as an index into a 16-character lookup table.
+ * This avoids sprintf's format-string overhead and any intermediate heap
+ * allocation — the result is written directly into a 36-byte stack buffer and
+ * wrapped in a single rb_utf8_str_new call.
+ *
+ * Dash positions (8, 13, 18, 23) follow the standard UUID layout:
+ *   xxxxxxxx - xxxx - xxxx - xxxx - xxxxxxxxxxxx
+ *   hi[63:32]  hi[31:16] hi[15:0]  lo[63:48]  lo[47:0]
+ */
+static void uuid_to_str(uint64_t hi, uint64_t lo, char *buf)
+{
+    static const char hex[] = "0123456789abcdef";
+
+    /* xxxxxxxx- (bytes 0-3 of hi) */
+    buf[ 0] = hex[(hi >> 60) & 0xf];
+    buf[ 1] = hex[(hi >> 56) & 0xf];
+    buf[ 2] = hex[(hi >> 52) & 0xf];
+    buf[ 3] = hex[(hi >> 48) & 0xf];
+    buf[ 4] = hex[(hi >> 44) & 0xf];
+    buf[ 5] = hex[(hi >> 40) & 0xf];
+    buf[ 6] = hex[(hi >> 36) & 0xf];
+    buf[ 7] = hex[(hi >> 32) & 0xf];
+    buf[ 8] = '-';
+    /* xxxx- (bytes 4-5 of hi) */
+    buf[ 9] = hex[(hi >> 28) & 0xf];
+    buf[10] = hex[(hi >> 24) & 0xf];
+    buf[11] = hex[(hi >> 20) & 0xf];
+    buf[12] = hex[(hi >> 16) & 0xf];
+    buf[13] = '-';
+    /* xxxx- (bytes 6-7 of hi) */
+    buf[14] = hex[(hi >> 12) & 0xf];
+    buf[15] = hex[(hi >>  8) & 0xf];
+    buf[16] = hex[(hi >>  4) & 0xf];
+    buf[17] = hex[ hi        & 0xf];
+    buf[18] = '-';
+    /* xxxx- (bytes 0-1 of lo) */
+    buf[19] = hex[(lo >> 60) & 0xf];
+    buf[20] = hex[(lo >> 56) & 0xf];
+    buf[21] = hex[(lo >> 52) & 0xf];
+    buf[22] = hex[(lo >> 48) & 0xf];
+    buf[23] = '-';
+    /* xxxxxxxxxxxx (bytes 2-7 of lo) */
+    buf[24] = hex[(lo >> 44) & 0xf];
+    buf[25] = hex[(lo >> 40) & 0xf];
+    buf[26] = hex[(lo >> 36) & 0xf];
+    buf[27] = hex[(lo >> 32) & 0xf];
+    buf[28] = hex[(lo >> 28) & 0xf];
+    buf[29] = hex[(lo >> 24) & 0xf];
+    buf[30] = hex[(lo >> 20) & 0xf];
+    buf[31] = hex[(lo >> 16) & 0xf];
+    buf[32] = hex[(lo >> 12) & 0xf];
+    buf[33] = hex[(lo >>  8) & 0xf];
+    buf[34] = hex[(lo >>  4) & 0xf];
+    buf[35] = hex[ lo        & 0xf];
+}
+
 VALUE rbduckdb_uuid_to_ruby(duckdb_hugeint h) {
-    return rb_funcall(mDuckDBConverter, id__to_uuid_from_vector, 2,
-                      ULL2NUM(h.lower),
-                      LL2NUM(h.upper)
-                      );
+    char buf[36];
+    // DuckDB stores UUIDs with the sign bit of upper flipped for unsigned sort order.
+    // Cast to uint64_t first so all bit manipulation stays unsigned.
+    uint64_t hi = (uint64_t)h.upper ^ DUCKDB_UUID_SIGN_BIT;
+    uint64_t lo = h.lower;
+    uuid_to_str(hi, lo, buf);
+    return rb_utf8_str_new(buf, 36);
 }
 
 VALUE rbduckdb_uuid_uhugeint_to_ruby(duckdb_uhugeint h) {
-    return rb_funcall(mDuckDBConverter, id__to_uuid_from_uhugeint, 2,
-                      ULL2NUM(h.lower),
-                      ULL2NUM(h.upper)
-                      );
+    char buf[36];
+    uuid_to_str(h.upper, h.lower, buf);
+    return rb_utf8_str_new(buf, 36);
+}
+
+// Returns the nibble value (0-15) for a hex character, or -1 if invalid.
+static int hex_nibble(unsigned char c)
+{
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    return -1;
+}
+
+/*
+ * Parse a canonical UUID string ("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") into
+ * a duckdb_hugeint. Returns true on success, false on invalid input.
+ *
+ * Iterates the 36-character string, skipping the four dash positions. The 32
+ * hex nibbles are accumulated directly into two uint64_t halves (hi, lo) with
+ * no bignum arithmetic or intermediate allocation. The sign-bit flip is applied
+ * to hi before storing in upper, matching DuckDB's internal UUID representation.
+ */
+static bool uuid_str_to_hugeint(const char *str, long len, duckdb_hugeint *out)
+{
+    // Expected format: 8-4-4-4-12 = 36 characters with dashes at fixed positions
+    if (len != 36 ||
+        str[8] != '-' || str[13] != '-' || str[18] != '-' || str[23] != '-') {
+        return false;
+    }
+
+    uint64_t hi = 0, lo = 0;
+    int nibble_idx = 0;
+
+    for (int string_idx = 0; string_idx < 36; string_idx++) {
+        if (string_idx == 8 || string_idx == 13 || string_idx == 18 || string_idx == 23) continue;
+        int nib = hex_nibble((unsigned char)str[string_idx]);
+        if (nib < 0) return false;
+        if (nibble_idx < 16) {
+            hi = (hi << 4) | (uint64_t)nib;
+        } else {
+            lo = (lo << 4) | (uint64_t)nib;
+        }
+        nibble_idx++;
+    }
+
+    // Apply the sign-bit flip to match DuckDB's internal UUID representation
+    out->upper = (int64_t)(hi ^ DUCKDB_UUID_SIGN_BIT);
+    out->lower = lo;
+    return true;
+}
+
+/*
+ * Ruby-callable wrapper: parse a UUID string VALUE into a duckdb_hugeint,
+ * raising ArgumentError on invalid input. Returns the hugeint via out param.
+ */
+void rbduckdb_uuid_str_to_hugeint(VALUE uuid_str, duckdb_hugeint *out)
+{
+    StringValue(uuid_str);
+    const char *str = RSTRING_PTR(uuid_str);
+    long len = RSTRING_LEN(uuid_str);
+    if (!uuid_str_to_hugeint(str, len, out)) {
+        rb_raise(rb_eArgError, "Invalid UUID format: %"PRIsVALUE, uuid_str);
+    }
 }
 
 VALUE rbduckdb_interval_to_ruby(duckdb_interval i) {
@@ -205,9 +329,6 @@ void rbduckdb_init_duckdb_converter(void) {
     id__to_interval_from_vector = rb_intern("_to_interval_from_vector");
     id__to_hugeint_from_vector = rb_intern("_to_hugeint_from_vector");
     id__to_decimal_from_hugeint = rb_intern("_to_decimal_from_hugeint");
-    id__to_uuid_from_vector = rb_intern("_to_uuid_from_vector");
-    id__to_uuid_from_uhugeint = rb_intern("_to_uuid_from_uhugeint");
-    id__uuid_string_to_hugeint = rb_intern("_uuid_string_to_hugeint");
     id__to_time_from_duckdb_timestamp_s = rb_intern("_to_time_from_duckdb_timestamp_s");
     id__to_time_from_duckdb_timestamp_ms = rb_intern("_to_time_from_duckdb_timestamp_ms");
     id__to_time_from_duckdb_timestamp_ns = rb_intern("_to_time_from_duckdb_timestamp_ns");

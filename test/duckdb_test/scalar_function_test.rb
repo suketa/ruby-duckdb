@@ -2116,6 +2116,61 @@ module DuckDBTest
       rows.each { |r| assert_equal 'different', r[0] }
     end
 
+    def test_scalar_function_uuid_write_boundary_values
+      boundary_uuids = %w[
+        00000000-0000-0000-0000-000000000000
+        ffffffff-ffff-ffff-ffff-ffffffffffff
+        80000000-0000-0000-0000-000000000000
+      ]
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_boundary_passthrough'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::UUID
+      sf.set_function { |u| u }
+      @con.register_scalar_function(sf)
+
+      boundary_uuids.each do |uuid|
+        result = @con.execute("SELECT uuid_boundary_passthrough('#{uuid}'::UUID)").first.first
+
+        assert_equal uuid, result, "Round-trip failed for #{uuid}"
+      end
+    end
+
+    def test_scalar_function_uuid_write_invalid_raises
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_invalid_write'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::UUID
+      sf.set_function { |_u| 'not-a-uuid' }
+      @con.register_scalar_function(sf)
+
+      # rb_raise inside a scalar function callback is caught by DuckDB and
+      # re-raised as DuckDB::Error with the original message preserved.
+      error = assert_raises(DuckDB::Error) do
+        @con.execute("SELECT uuid_invalid_write('#{UUID1}'::UUID)")
+      end
+
+      assert_match(/Invalid UUID format/, error.message)
+    end
+
+    def test_scalar_function_uuid_write_exact_roundtrip
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'uuid_exact_passthrough'
+      sf.add_parameter(DuckDB::LogicalType::UUID)
+      sf.return_type = DuckDB::LogicalType::UUID
+      sf.set_function { |u| u }
+      @con.register_scalar_function(sf)
+
+      result = @con.execute("SELECT uuid_exact_passthrough('#{UUID1}'::UUID)").first.first
+
+      assert_equal UUID1, result
+
+      result = @con.execute("SELECT uuid_exact_passthrough('#{UUID2}'::UUID)").first.first
+
+      assert_equal UUID2, result
+    end
+
     # Step 2: DECIMAL as parameter_type
     def test_scalar_function_decimal_parameter
       require 'bigdecimal'
