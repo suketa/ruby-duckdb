@@ -93,6 +93,30 @@ module DuckDB
       raise_appender_error('failed to close')
     end
 
+    if DuckDB::Appender.private_method_defined?(:_clear)
+      # :call-seq:
+      #   appender.clear -> self
+      #
+      # Clears all unflushed data from the appender, discarding any appended rows
+      # that have not yet been flushed to the table.
+      #
+      #   require 'duckdb'
+      #   db = DuckDB::Database.open
+      #   con = db.connect
+      #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+      #   appender = con.appender('users')
+      #   appender
+      #     .append_int32(1)
+      #     .append_varchar('Alice')
+      #     .end_row
+      #     .clear # discards the row above without flushing to the table
+      def clear
+        return self if _clear
+
+        raise_appender_error('failed to clear')
+      end
+    end
+
     # call-seq:
     #   appender.append_bool(val) -> self
     #

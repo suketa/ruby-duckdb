@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `DuckDB::Appender#clear` to discard all unflushed data from the appender without writing it to the table (requires DuckDB >= 1.5.0).
+
 # 1.5.2.0 - 2026-04-16
 
 - add `DuckDB::DataChunk#reset` to clear a chunk's contents so it can be reused across multiple `Appender#append_data_chunk` calls without reallocation.
