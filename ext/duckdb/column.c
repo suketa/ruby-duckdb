@@ -5,9 +5,9 @@ static VALUE cDuckDBColumn;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_column__type(VALUE oDuckDBColumn);
-static VALUE duckdb_column__logical_type(VALUE oDuckDBColumn);
-static VALUE duckdb_column_get_name(VALUE oDuckDBColumn);
+static VALUE column__type(VALUE oDuckDBColumn);
+static VALUE column_logical_type(VALUE oDuckDBColumn);
+static VALUE column_name(VALUE oDuckDBColumn);
 
 static const rb_data_type_t column_data_type = {
     "DuckDB/Column",
@@ -31,7 +31,7 @@ static size_t memsize(const void *p) {
 }
 
 /* :nodoc: */
-VALUE duckdb_column__type(VALUE oDuckDBColumn) {
+VALUE column__type(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
     rubyDuckDBResult *ctxresult;
     VALUE result;
@@ -53,7 +53,7 @@ VALUE duckdb_column__type(VALUE oDuckDBColumn) {
  *  Returns the logical type class.
  *
  */
-VALUE duckdb_column__logical_type(VALUE oDuckDBColumn) {
+VALUE column_logical_type(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
     rubyDuckDBResult *ctxresult;
     VALUE result;
@@ -80,7 +80,7 @@ VALUE duckdb_column__logical_type(VALUE oDuckDBColumn) {
  *  Returns the column name.
  *
  */
-VALUE duckdb_column_get_name(VALUE oDuckDBColumn) {
+VALUE column_name(VALUE oDuckDBColumn) {
     rubyDuckDBColumn *ctx;
     VALUE result;
     rubyDuckDBResult *ctxresult;
@@ -107,14 +107,14 @@ VALUE rbduckdb_create_column(VALUE oDuckDBResult, idx_t col) {
     return obj;
 }
 
-void rbduckdb_init_duckdb_column(void) {
+void rbduckdb_init_column(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBColumn = rb_define_class_under(mDuckDB, "Column", rb_cObject);
     rb_define_alloc_func(cDuckDBColumn, allocate);
 
-    rb_define_private_method(cDuckDBColumn, "_type", duckdb_column__type, 0);
-    rb_define_method(cDuckDBColumn, "logical_type", duckdb_column__logical_type, 0);
-    rb_define_method(cDuckDBColumn, "name", duckdb_column_get_name, 0);
+    rb_define_private_method(cDuckDBColumn, "_type", column__type, 0);
+    rb_define_method(cDuckDBColumn, "logical_type", column_logical_type, 0);
+    rb_define_method(cDuckDBColumn, "name", column_name, 0);
 }
