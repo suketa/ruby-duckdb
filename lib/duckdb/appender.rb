@@ -93,6 +93,56 @@ module DuckDB
       raise_appender_error('failed to close')
     end
 
+    # :call-seq:
+    #   appender.add_column(column_name) -> self
+    #
+    # Specifies a column to append to, allowing selective column insertion.
+    # Columns not added will use their default values or be computed from
+    # generated column expressions.
+    # Raises DuckDB::Error if the column does not exist in the table.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+    #   appender = con.appender('t')
+    #   appender.add_column('name')
+    #   appender
+    #     .append_varchar('Alice')
+    #     .end_row
+    #     .flush
+    def add_column(column)
+      return self if _add_column(column)
+
+      raise_appender_error('failed to add_column')
+    end
+
+    # :call-seq:
+    #   appender.clear_columns -> self
+    #
+    # Clears the list of columns previously set by #add_column, so that all
+    # columns of the table become active again. Any previously appended rows
+    # are flushed before the column list is reset; if the flush fails (e.g.
+    # a constraint violation), this method raises DuckDB::Error.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+    #   appender = con.appender('t')
+    #   appender.add_column('name')
+    #   appender
+    #     .append_varchar('Alice')
+    #     .end_row
+    #     .flush
+    #   appender.clear_columns
+    #   # all table columns are active again
+    def clear_columns
+      return self if _clear_columns
+
+      raise_appender_error('failed to clear_columns')
+    end
+
     if DuckDB::Appender.private_method_defined?(:_clear)
       # :call-seq:
       #   appender.clear -> self

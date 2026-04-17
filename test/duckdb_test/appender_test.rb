@@ -997,7 +997,7 @@ module DuckDBTest
       assert_equal([1, 'foo'], r.first)
     end
 
-    def test_appender_clear
+    def test_clear
       skip 'DuckDB::Appender#clear is not available' unless DuckDB::Appender.method_defined?(:clear)
 
       @con.query('CREATE TABLE t (id INTEGER, name VARCHAR)')
@@ -1016,6 +1016,155 @@ module DuckDBTest
       r = @con.query('SELECT * FROM t ORDER BY id')
 
       assert_equal([[1, 'John'], [3, 'Jane']], r.each.to_a)
+    end
+
+    def test_add_column
+      @con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+
+      appender = @con.appender('t')
+      appender.add_column('name')
+
+      data = %w[John Bob Jane]
+
+      data.each do |name|
+        appender.append(name).end_row
+      end
+      appender.flush
+
+      r = @con.query('SELECT name FROM t ORDER BY name')
+
+      assert_equal([['Bob'], ['Jane'], ['John']], r.each.to_a)
+    end
+
+    def test_add_column_with_invalid_column
+      @con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+
+      appender = @con.appender('t')
+
+      assert_raises(DuckDB::Error) do
+        appender.add_column('invalid_column_name')
+      end
+    end
+
+    def test_add_column_returns_self
+      @con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+
+      appender = @con.appender('t')
+
+      assert_same appender, appender.add_column('name')
+    end
+
+    def test_add_column_with_multiple_default_columns
+      @con.query('CREATE TABLE t (i INTEGER DEFAULT 4, j INTEGER, k INTEGER DEFAULT 30)')
+
+      appender = @con.appender('t')
+      appender.add_column('j')
+
+      appender.append_int32(15).end_row
+      appender.flush
+
+      r = @con.query('SELECT i, j, k FROM t')
+
+      assert_equal([[4, 15, 30]], r.each.to_a)
+    end
+
+    def test_add_column_with_multiple_columns
+      @con.query('CREATE TABLE t (i INTEGER DEFAULT 4, j INTEGER, k INTEGER DEFAULT 30)')
+
+      appender = @con.appender('t')
+      appender.add_column('j')
+      appender.add_column('k')
+
+      appender.append_int32(10).append_int32(20).end_row
+      appender.flush
+
+      r = @con.query('SELECT i, j, k FROM t')
+
+      assert_equal([[4, 10, 20]], r.each.to_a)
+    end
+
+    def test_add_column_with_generated_column
+      @con.query('CREATE TABLE t (i INTEGER DEFAULT 4, j INTEGER, k INTEGER DEFAULT 30, l AS (i + k))')
+
+      appender = @con.appender('t')
+      appender.add_column('j')
+
+      appender.append_int32(15).end_row
+      appender.flush
+
+      r = @con.query('SELECT i, j, k, l FROM t')
+
+      assert_equal([[4, 15, 30, 34]], r.each.to_a)
+    end
+
+    def test_add_column_with_non_string_argument
+      @con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+
+      appender = @con.appender('t')
+
+      assert_raises(TypeError) do
+        appender.add_column(123)
+      end
+    end
+
+    def test_clear_columns
+      @con.query('CREATE TABLE t (name VARCHAR, created_at TIMESTAMP DEFAULT NULL)')
+      appender = @con.appender('t')
+      appender.add_column('name')
+      appender.append('John').end_row
+      appender.clear_columns
+      appender.append('Bob').append(Time.local(2026, 4, 17, 12, 34, 56)).end_row.flush
+      r = @con.query('SELECT * FROM t ORDER BY name')
+
+      assert_equal([['Bob', Time.local(2026, 4, 17, 12, 34, 56)], ['John', nil]], r.each.to_a)
+    end
+
+    def test_clear_columns_with_flushing_error
+      @con.query('CREATE TABLE t (name VARCHAR NOT NULL, created_at TIMESTAMP DEFAULT NULL)')
+      appender = @con.appender('t')
+      appender.add_column('name')
+      appender.append_null
+
+      assert_raises(DuckDB::Error) do
+        appender.clear_columns
+      end
+    end
+
+    def test_clear_columns_returns_self
+      @con.query('CREATE TABLE t (id UUID PRIMARY KEY DEFAULT uuidv4(), name VARCHAR)')
+
+      appender = @con.appender('t')
+      appender.add_column('name')
+
+      assert_same appender, appender.clear_columns
+    end
+
+    def test_clear_columns_without_add_column
+      @con.query('CREATE TABLE t (id INTEGER, name VARCHAR)')
+      appender = @con.appender('t')
+
+      appender.clear_columns
+      appender.append_int32(1).append_varchar('Alice').end_row.flush
+
+      r = @con.query('SELECT * FROM t')
+
+      assert_equal([[1, 'Alice']], r.each.to_a)
+    end
+
+    def test_add_column_after_clear_columns
+      @con.query('CREATE TABLE t (i INTEGER DEFAULT 4, j INTEGER, k INTEGER DEFAULT 30)')
+      appender = @con.appender('t')
+
+      appender.add_column('j')
+      appender.append_int32(15).end_row.flush
+
+      appender.clear_columns
+      appender.add_column('k')
+      appender.append_int32(50).end_row.flush
+
+      r = @con.query('SELECT i, j, k FROM t ORDER BY k')
+
+      assert_equal([[4, 15, 30], [4, nil, 50]], r.each.to_a)
     end
   end
 end
