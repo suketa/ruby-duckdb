@@ -5,30 +5,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>class PolarsDataFrameBatchTableAdapter - RDoc Documentation</title>
+<title>HACKING - RDoc Documentation</title>
 
 
+  <meta name="keywords" content="ruby,documentation,HACKING">
   <meta
-    name="keywords"
-    content="ruby,class,PolarsDataFrameBatchTableAdapter"
+    name="description"
+    content="HACKING: C Function Naming Rules ### 1. classname_methodname` The C function must be named `&lt;classname&gt;_&lt;methodname&gt;`, where `classname` is the lowercase fil"
   >
-
-    <meta
-      name="description"
-      content="class PolarsDataFrameBatchTableAdapter: Batch approach: write BATCH_SIZE rows per execute call to reduce Ruby&lt;-&gt;C crossings"
-    >
-
 
 
 
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="class PolarsDataFrameBatchTableAdapter - RDoc Documentation">
+<meta property="og:title" content="HACKING - RDoc Documentation">
 
 
 
-    <meta property="og:description" content="Batch approach: write BATCH_SIZE rows per execute call to reduce Ruby&lt;-&gt;C crossings">
+    <meta property="og:description" content="C Function Naming Rules ### 1. classname_methodname` The C function must be named `&lt;classname&gt;_&lt;methodname&gt;`, where `classname` is the lowercase fil">
 
 
 
@@ -36,11 +31,11 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class PolarsDataFrameBatchTableAdapter - RDoc Documentation">
+<meta name="twitter:title" content="HACKING - RDoc Documentation">
 
 
 
-    <meta name="twitter:description" content="Batch approach: write BATCH_SIZE rows per execute call to reduce Ruby&lt;-&gt;C crossings">
+    <meta name="twitter:description" content="C Function Naming Rules ### 1. classname_methodname` The C function must be named `&lt;classname&gt;_&lt;methodname&gt;`, where `classname` is the lowercase fil">
 
 
 
@@ -91,7 +86,7 @@
 
 
 
-<body role="document" class="class has-toc">
+<body role="document" class="file has-toc">
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <!-- Chevron (right arrow) - used for expand/collapse -->
   <symbol
@@ -369,8 +364,10 @@
 
 
 
+
+
   <div id="fileindex-section" class="nav-section">
-    <details class="nav-section-collapsible" >
+    <details class="nav-section-collapsible" open>
       <summary class="nav-section-header">
         <span class="nav-section-icon">
           <svg>
@@ -441,52 +438,6 @@
   </div>
 
 
-  
-
-  
-<div id="parent-class-section" class="nav-section">
-  <details class="nav-section-collapsible" open>
-    <summary class="nav-section-header">
-      <span class="nav-section-icon">
-        <svg><use href="#icon-ancestors"></use></svg>
-      </span>
-      <span class="nav-section-title">Ancestors</span>
-      <span class="nav-section-chevron">
-        <svg><use href="#icon-chevron"></use></svg>
-      </span>
-    </summary>
-    <ul><li><a href="Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
-  </details>
-</div>
-
-
-  
-
-  
-
-  
-
-
-  <div class="nav-section">
-    <details class="nav-section-collapsible" open>
-      <summary class="nav-section-header">
-        <span class="nav-section-icon">
-          <svg><use href="#icon-instance-methods"></use></svg>
-        </span>
-        <span class="nav-section-title">Instance Methods</span>
-        <span class="nav-section-chevron">
-          <svg><use href="#icon-chevron"></use></svg>
-        </span>
-      </summary>
-      <ul class="nav-list" role="directory">
-
-        <li ><a href="#method-i-call">call</a></li>
-
-      </ul>
-    </details>
-  </div>
-
-
   <div id="classindex-section" class="nav-section">
   <details class="nav-section-collapsible" open>
     <summary class="nav-section-header">
@@ -505,112 +456,115 @@
 
 </nav>
 
-<main role="main" aria-labelledby="class-PolarsDataFrameBatchTableAdapter">
-  
-  
+<main role="main" aria-label="Page HACKING.md">
 
-  <h1 id="class-PolarsDataFrameBatchTableAdapter" class="anchor-link class">
-    class PolarsDataFrameBatchTableAdapter
-  </h1>
+<h1 id="label-Hacking+on+ruby-duckdb"><a href="#label-Hacking+on+ruby-duckdb">Hacking on ruby-duckdb</a></h1>
 
-  <section class="description">
-    
-<p>Batch approach: write <a href="PolarsDataFrameBatchTableAdapter.html#BATCH_SIZE"><code>BATCH_SIZE</code></a> rows per execute call to reduce Ruby&lt;-&gt;C crossings</p>
+<p>This document describes internal conventions for contributors working on the C extension in <code>ext/duckdb/</code>.</p>
+<hr>
 
-  </section>
+<h2 id="label-C+Function+Naming+Rules"><a href="#label-C+Function+Naming+Rules">C Function Naming Rules</a></h2>
 
+<h3 id="label-1.+rb_define_method+-E2-80-94+static+function+name-3A+classname_methodname"><a href="#label-1.+rb_define_method+-E2-80-94+static+function+name-3A+classname_methodname">1. <code>rb_define_method</code> — static function name: <code>classname_methodname</code></a></h3>
 
-  <section id="5Buntitled-5D" class="documentation-section anchor-link">
+<p>The C function must be named <code>&lt;classname&gt;_&lt;methodname&gt;</code>, where <code>classname</code> is the lowercase file name (without <code>.c</code>) and <code>methodname</code> is the Ruby method name.</p>
 
+<pre>rb_define_method(cDuckDBDatabase, &quot;close&quot;, database_close, 0);             // OK
+rb_define_method(cDuckDBDatabase, &quot;close&quot;, duckdb_database_close, 0);      // NG — looks like DuckDB C API
+rb_define_method(cDuckDBDatabase, &quot;close&quot;, rbduckdb_database_close, 0);    // NG — rbduckdb_ is for externs only</pre>
 
+<h3 id="label-2.+rb_define_private_method+-E2-80-94+static+function+name-3A+classname__methodname"><a href="#label-2.+rb_define_private_method+-E2-80-94+static+function+name-3A+classname__methodname">2. <code>rb_define_private_method</code> — static function name: <code>classname__methodname</code></a></h3>
 
+<p>The Ruby method name <strong>must start with <code>_</code></strong>. The C function uses a double underscore naturally: <code>classname</code> + <code>_</code> separator + <code>_methodname</code>.</p>
 
+<pre>rb_define_private_method(cDuckDBDatabase, &quot;_connect&quot;, database__connect, 0);    // OK
+rb_define_private_method(cDuckDBDatabase, &quot;_connect&quot;, database_connect, 0);     // NG — single underscore
+rb_define_private_method(cDuckDBDatabase, &quot;_connect&quot;, rbduckdb_database_connect, 0); // NG
+rb_define_private_method(cDuckDBDatabase, &quot;connect&quot;,  database_connect, 0);     // NG — Ruby name must start with &#39;_&#39;</pre>
 
-    <section class="constants-list">
-      <header>
-        <h3 id="constants"><a href="#constants">Constants</a></h3>
-      </header>
-      <dl>
+<p>Note: private <code>_initialize</code> methods produce C function names like <code>foo__initialize</code>. The double underscore is intentional and consistent with this rule.</p>
 
-        <dt id="BATCH_SIZE">BATCH_SIZE</dt>
+<pre>rb_define_private_method(cDuckDBFoo, &quot;_initialize&quot;, foo__initialize, 2);  // OK — double underscore is intentional</pre>
 
-        <dd>
+<h3 id="label-3.+rb_define_alloc_func+-E2-80-94+static+function+name-3A+allocate"><a href="#label-3.+rb_define_alloc_func+-E2-80-94+static+function+name-3A+allocate">3. <code>rb_define_alloc_func</code> — static function name: <code>allocate</code></a></h3>
 
-          
-        </dd>
+<pre>rb_define_alloc_func(cDuckDBDatabase, allocate);           // OK
+rb_define_alloc_func(cDuckDBDatabase, database_allocate);  // NG</pre>
 
+<h3 id="label-4.+Memory+release+-E2-80-94+static+function+name-3A+deallocate"><a href="#label-4.+Memory+release+-E2-80-94+static+function+name-3A+deallocate">4. Memory release — static function name: <code>deallocate</code></a></h3>
 
-      </dl>
-    </section>
+<pre>static void deallocate(void *ctx) { ... }    // OK
+static void database_free(void *ctx) { ... } // NG</pre>
 
+<h3 id="label-5.+Memory+size+-E2-80-94+static+function+name-3A+memsize"><a href="#label-5.+Memory+size+-E2-80-94+static+function+name-3A+memsize">5. Memory size — static function name: <code>memsize</code></a></h3>
 
+<pre>static size_t memsize(const void *p) { ... }          // OK
+static size_t database_memsize(const void *p) { ... } // NG</pre>
 
+<h3 id="label-6.+Other+static+functions"><a href="#label-6.+Other+static+functions">6. Other static functions</a></h3>
 
+<p>No fixed naming rule, but the name must be meaningful and must not clash with any <a href="DuckDB.html"><code>DuckDB</code></a> C API symbol. A <code>verb_noun</code> or <code>classname_verb_noun</code> pattern is recommended for non-registered internal helpers.</p>
 
+<h3 id="label-7.+Method+name+character+transformations"><a href="#label-7.+Method+name+character+transformations">7. Method name character transformations</a></h3>
 
+<p>Special Ruby method name characters map to C identifiers as follows:</p>
 
+<table role="table">
+<thead>
+<tr>
+<th>Ruby method</th>
+<th>C function suffix</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>finished?</code></td>
+<td><code>finished_p</code></td>
+<td><code>pending_result_finished_p</code></td>
+</tr>
+<tr>
+<td><code>name=</code></td>
+<td><code>set_name</code></td>
+<td><code>scalar_function_set_name</code></td>
+</tr>
+<tr>
+<td><code>method!</code></td>
+<td><code>method_bang</code></td>
+<td><em>(if needed)</em></td>
+</tr>
+</tbody>
+</table>
 
+<p>Using <code>set_</code> prefix for <code>=</code> setters avoids a naming conflict with a getter of the same base name (e.g., <code>name</code> getter → <code>foo_name</code>, <code>name=</code> setter →<code>foo_set_name</code>).</p>
 
+<h3 id="label-8.+rb_define_singleton_method+-E2-80-94+static+function+name-3A+classname_s_methodname"><a href="#label-8.+rb_define_singleton_method+-E2-80-94+static+function+name-3A+classname_s_methodname">8. <code>rb_define_singleton_method</code> — static function name: <code>classname_s_methodname</code></a></h3>
 
+<p>The <code>s_</code> prefix distinguishes singleton (class) methods from instance methods.</p>
 
+<pre>rb_define_singleton_method(cDuckDBDatabase, &quot;open&quot;, database_s_open, 1);  // OK</pre>
 
+<h3 id="label-9.+Public+Ruby+methods+must+not+start+with+_"><a href="#label-9.+Public+Ruby+methods+must+not+start+with+_">9. Public Ruby methods must not start with <code>_</code></a></h3>
 
+<p>Public Ruby methods registered via <code>rb_define_method</code> must not have a <code>_</code> prefix in their Ruby name. The <code>_</code> prefix is reserved for the private-via-wrapper pattern. If a method is private, use <code>rb_define_private_method</code> with a <code>_</code>-prefixed name.</p>
 
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
-       <header>
-         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
-       </header>
+<pre>rb_define_method(cDuckDBFoo, &quot;_internal_type&quot;, foo__internal_type, 0);          // NG — public method with _ prefix
+rb_define_private_method(cDuckDBFoo, &quot;_internal_type&quot;, foo__internal_type, 0);  // OK</pre>
 
+<h3 id="label-10.+rbduckdb_init_-2A+function+naming+-E2-80-94+no+redundant+duckdb_"><a href="#label-10.+rbduckdb_init_-2A+function+naming+-E2-80-94+no+redundant+duckdb_">10. <code>rbduckdb_init_*</code> function naming — no redundant <code>duckdb_</code></a></h3>
 
-      <div id="method-i-call" class="method-detail anchor-link ">
-        <div class="method-header">
+<p>Class-init extern functions must not include a redundant <code>duckdb_</code> segment.</p>
 
-            <div class="method-heading">
-              <a href="#method-i-call" title="Link to this method">
-                <span class="method-name">call</span>
-                <span class="method-args">(data_frame, name, columns: nil)</span>
-              </a>
-            </div>
+<pre>void rbduckdb_init_database(void);         // OK
+void rbduckdb_init_duckdb_database(void);  // NG — redundant duckdb_</pre>
 
-        </div>
+<h3 id="label-11.+Extern+functions+-E2-80-94+prefix-3A+rbduckdb_"><a href="#label-11.+Extern+functions+-E2-80-94+prefix-3A+rbduckdb_">11. Extern functions — prefix: <code>rbduckdb_</code></a></h3>
 
+<p>All functions with external linkage (declared in <code>.h</code> files, called from other <code>.c</code> files) must start with <code>rbduckdb_</code>.</p>
 
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="call-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue922_benchmark.rb, line 42</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">call</span>(<span class="ruby-identifier">data_frame</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
-  <span class="ruby-identifier">columns</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">infer_columns</span>(<span class="ruby-identifier">data_frame</span>)
-  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">create</span>(<span class="ruby-value">name:</span>, <span class="ruby-value">columns:</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">execute_block</span>(<span class="ruby-identifier">data_frame</span>))
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-    </section>
-
-
-
-
-  </section>
+<pre>rubyDuckDB *rbduckdb_get_struct_database(VALUE obj);   // OK
+rubyDuckDB *duckdb_get_struct_database(VALUE obj);     // NG — looks like DuckDB C API
+rubyDuckDB *get_struct_database(VALUE obj);            // NG — no namespace</pre>
 
 </main>
 
