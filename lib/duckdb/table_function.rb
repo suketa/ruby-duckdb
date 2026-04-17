@@ -163,7 +163,6 @@ module DuckDB
       #
       #   # Register and use:
       #   DuckDB::TableFunction.add_table_adapter(CSV, CSVTableAdapter.new)
-      #   con.execute('SET threads=1')
       #   con.expose_as_table(csv, 'csv_table')
       #   con.query('SELECT * FROM csv_table()').to_a
       #

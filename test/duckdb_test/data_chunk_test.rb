@@ -56,8 +56,6 @@ module DuckDBTest
 
     # Test 4: Vector#logical_type returns LogicalType
     def test_vector_logical_type # rubocop:disable Minitest/MultipleAssertions
-      @conn.execute('SET threads=1')
-
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_vector_type'
 
@@ -98,8 +96,6 @@ module DuckDBTest
 
     # Test 5: DataChunk#set_value with INTEGER
     def test_data_chunk_set_value_integer
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_int'
@@ -133,8 +129,6 @@ module DuckDBTest
 
     # Test 6: DataChunk#set_value with BIGINT
     def test_data_chunk_set_value_bigint
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_bigint'
@@ -165,8 +159,6 @@ module DuckDBTest
 
     # Test 7: DataChunk#set_value with VARCHAR
     def test_data_chunk_set_value_varchar
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_varchar'
@@ -199,8 +191,6 @@ module DuckDBTest
 
     # Test 8: DataChunk#set_value with DOUBLE
     def test_data_chunk_set_value_double
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_double'
@@ -233,8 +223,6 @@ module DuckDBTest
 
     # Test 9: DataChunk#set_value with NULL
     def test_data_chunk_set_value_null # rubocop:disable Minitest/MultipleAssertions
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_null'
@@ -269,8 +257,6 @@ module DuckDBTest
 
     # Test 10: DataChunk#set_value with BLOB
     def test_data_chunk_set_value_blob
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_blob'
@@ -306,8 +292,6 @@ module DuckDBTest
     # Test 11: DataChunk#set_value with multiple columns
     # rubocop:disable Minitest/MultipleAssertions
     def test_data_chunk_set_value_multiple_columns
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_multi'
@@ -361,8 +345,6 @@ module DuckDBTest
 
     # Test 12: DataChunk#set_value with TIMESTAMP
     def test_data_chunk_set_value_timestamp
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_timestamp'
@@ -398,8 +380,6 @@ module DuckDBTest
 
     # Test 13: DataChunk#set_value with TIMESTAMP_TZ
     def test_data_chunk_set_value_timestamp_tz # rubocop:disable Minitest/MultipleAssertions
-      @conn.execute('SET threads=1')
-
       done = false
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_set_value_timestamp_tz'

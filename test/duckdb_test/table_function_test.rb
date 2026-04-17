@@ -16,7 +16,6 @@ module DuckDBTest
     def test_create_with_set_value
       db = DuckDB::Database.open
       conn = db.connect
-      conn.query('SET threads=1')
 
       called = 0
 
@@ -91,7 +90,6 @@ module DuckDBTest
 
       db = DuckDB::Database.open
       conn = db.connect
-      conn.query('SET threads=1')
 
       # Capture local variable in callbacks
       row_multiplier = 2
@@ -155,7 +153,6 @@ module DuckDBTest
     def test_symbol_columns
       db = DuckDB::Database.open
       conn = db.connect
-      conn.query('SET threads=1')
 
       # Capture local variable in callbacks
       row_multiplier = 2
