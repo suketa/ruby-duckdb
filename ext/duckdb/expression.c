@@ -74,7 +74,7 @@ static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     VALUE result;
 
     TypedData_Get_Struct(self, rubyDuckDBExpression, &expression_data_type, expr_ctx);
-    cc_ctx = get_struct_client_context(client_context);
+    cc_ctx = rbduckdb_get_struct_client_context(client_context);
 
     error_data = duckdb_expression_fold(cc_ctx->client_context, expr_ctx->expression, &out_value);
 
