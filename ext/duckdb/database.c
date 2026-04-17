@@ -7,9 +7,9 @@ static void deallocate(void * ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static duckdb_config create_config_with_ruby_api(void);
-static VALUE duckdb_database__initialize(VALUE self, VALUE file, VALUE config);
-static VALUE duckdb_database_connect(VALUE self);
-static VALUE duckdb_database_close(VALUE self);
+static VALUE database__initialize(VALUE self, VALUE file, VALUE config);
+static VALUE database__connect(VALUE self);
+static VALUE database_close(VALUE self);
 
 static const rb_data_type_t database_data_type = {
     "DuckDB/Database",
@@ -59,7 +59,7 @@ static duckdb_config create_config_with_ruby_api(void) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_database__initialize(VALUE self, VALUE file, VALUE config) {
+static VALUE database__initialize(VALUE self, VALUE file, VALUE config) {
     rubyDuckDB *ctx;
     rubyDuckDBConfig *ctx_config;
     duckdb_config config_to_use;
@@ -106,7 +106,7 @@ static VALUE duckdb_database__initialize(VALUE self, VALUE file, VALUE config) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_database_connect(VALUE self) {
+static VALUE database__connect(VALUE self) {
     return rbduckdb_create_connection(self);
 }
 
@@ -116,7 +116,7 @@ static VALUE duckdb_database_connect(VALUE self) {
  *
  *  closes DuckDB database.
  */
-static VALUE duckdb_database_close(VALUE self) {
+static VALUE database_close(VALUE self) {
     rubyDuckDB *ctx;
     TypedData_Get_Struct(self, rubyDuckDB, &database_data_type, ctx);
     close_database(ctx);
@@ -131,13 +131,13 @@ VALUE rbduckdb_create_database_obj(duckdb_database db) {
     return obj;
 }
 
-void rbduckdb_init_duckdb_database(void) {
+void rbduckdb_init_database(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBDatabase = rb_define_class_under(mDuckDB, "Database", rb_cObject);
     rb_define_alloc_func(cDuckDBDatabase, allocate);
-    rb_define_private_method(cDuckDBDatabase, "_initialize", duckdb_database__initialize, 2);
-    rb_define_private_method(cDuckDBDatabase, "_connect", duckdb_database_connect, 0);
-    rb_define_method(cDuckDBDatabase, "close", duckdb_database_close, 0);
+    rb_define_private_method(cDuckDBDatabase, "_initialize", database__initialize, 2);
+    rb_define_private_method(cDuckDBDatabase, "_connect", database__connect, 0);
+    rb_define_method(cDuckDBDatabase, "close", database_close, 0);
 }

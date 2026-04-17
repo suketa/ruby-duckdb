@@ -42,7 +42,7 @@ Init_duckdb_native(void) {
     rb_define_singleton_method(mDuckDB, "vector_size", duckdb_s_vector_size, 0);
 
     rbduckdb_init_duckdb_error();
-    rbduckdb_init_duckdb_database();
+    rbduckdb_init_database();
     rbduckdb_init_duckdb_connection();
     rbduckdb_init_duckdb_result();
     rbduckdb_init_duckdb_column();
