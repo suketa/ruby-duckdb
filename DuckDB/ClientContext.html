@@ -585,7 +585,7 @@
             </details>
           </div>
           <div class="method-source-code" id="connection_id-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_client_context_connection_id(VALUE self) {
+            <pre class="c" data-language="c">static VALUE client_context_connection_id(VALUE self) {
     rubyDuckDBClientContext *ctx;
     TypedData_Get_Struct(self, rubyDuckDBClientContext, &amp;client_context_data_type, ctx);
     return ULL2NUM(duckdb_client_context_get_connection_id(ctx-&gt;client_context));
