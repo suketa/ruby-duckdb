@@ -34,6 +34,15 @@ If you spot a problem, [search if an issue already exists](https://github.com/su
 If a related issue doesn't exist, you can open a [new issue](https://github.com/suketa/ruby-duckdb/issues/new).
 
 
+## C Extension Development
+
+For internal conventions when working on the C extension in `ext/duckdb/`
+(function naming rules, extern/static guidelines, etc.), see [HACKING.md](HACKING.md).
+
+When adding or modifying C extension code, follow the naming conventions
+described in `HACKING.md`.
+
+
 ## Fix Issues or Add New Features.
 
 1. Run `rake test`
