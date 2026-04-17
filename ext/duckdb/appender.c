@@ -102,7 +102,7 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
     type_array = ALLOCA_N(duckdb_logical_type, (size_t)column_count);
     for (idx_t i = 0; i < column_count; i++) {
         VALUE type_val = rb_ary_entry(types, i);
-        rubyDuckDBLogicalType *type_ctx = get_struct_logical_type(type_val);
+        rubyDuckDBLogicalType *type_ctx = rbduckdb_get_struct_logical_type(type_val);
         type_array[i] = type_ctx->logical_type;
     }
 

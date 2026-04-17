@@ -135,7 +135,7 @@ static VALUE rbduckdb_bind_info__add_result_column(VALUE self, VALUE column_name
     const char *col_name;
 
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    ctx_logical_type = get_struct_logical_type(logical_type);
+    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
 
     col_name = StringValueCStr(column_name);
     duckdb_bind_add_result_column(ctx->bind_info, col_name, ctx_logical_type->logical_type);
