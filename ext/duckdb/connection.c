@@ -209,7 +209,7 @@ static VALUE duckdb_connection_register_logical_type(VALUE self, VALUE logical_t
     duckdb_state state;
 
     ctxcon = get_struct_connection(self);
-    ctxlt = get_struct_logical_type(logical_type);
+    ctxlt = rbduckdb_get_struct_logical_type(logical_type);
 
     state = duckdb_register_logical_type(ctxcon->con, ctxlt->logical_type, NULL);
 

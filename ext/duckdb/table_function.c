@@ -148,7 +148,7 @@ static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_typ
         rb_raise(eDuckDBError, "Table function is destroyed");
     }
 
-    ctx_logical_type = get_struct_logical_type(logical_type);
+    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
     duckdb_table_function_add_parameter(ctx->table_function, ctx_logical_type->logical_type);
 
     return self;
@@ -174,7 +174,7 @@ static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name,
     }
 
     param_name = StringValueCStr(name);
-    ctx_logical_type = get_struct_logical_type(logical_type);
+    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
     duckdb_table_function_add_named_parameter(ctx->table_function, param_name, ctx_logical_type->logical_type);
 
     return self;

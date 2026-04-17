@@ -70,7 +70,7 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self) {
 
     for (i = 0; i < RARRAY_LEN(logical_types); i++) {
         VALUE logical_type = rb_ary_entry(logical_types, i);
-        rubyDuckDBLogicalType *logical_type_ctx = get_struct_logical_type(logical_type);
+        rubyDuckDBLogicalType *logical_type_ctx = rbduckdb_get_struct_logical_type(logical_type);
         types[i] = logical_type_ctx->logical_type;
     }
 
