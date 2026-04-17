@@ -52,7 +52,7 @@ module DuckDBTest
     # Callbacks are dispatched to the shared executor thread so correctness
     # is preserved even when DuckDB invokes them from worker threads.
     def test_register_table_function_under_multi_thread_setting
-      @connection.execute('SET threads=4')
+      set_multi_thread
       table_function = create_simple_function
 
       @connection.register_table_function(table_function)
@@ -65,7 +65,7 @@ module DuckDBTest
     # DuckDB::Error — even when DuckDB invokes the callback from a worker
     # thread. Guards against longjmp escaping through native frames.
     def test_execute_callback_error_propagation_under_multi_thread_setting
-      @connection.execute('SET threads=4')
+      set_multi_thread
 
       tf = DuckDB::TableFunction.new
       tf.name = 'raising_function'
@@ -85,15 +85,17 @@ module DuckDBTest
     # repeatedly until size=0 is returned. Exercises the executor dispatch
     # across many invocations under threads > 1.
     def test_execute_callback_multi_chunk_under_multi_thread_setting
-      @connection.execute('SET threads=4')
+      set_multi_thread
       target_rows = 5000
       emitted = 0
+      execute_calls = 0
 
       tf = DuckDB::TableFunction.new
       tf.name = 'multi_chunk_function'
       tf.bind { |bind_info| bind_info.add_result_column('n', DuckDB::LogicalType::BIGINT) }
       tf.init { |_init_info| emitted = 0 }
       tf.execute do |_func_info, output|
+        execute_calls += 1
         remaining = target_rows - emitted
         if remaining <= 0
           output.size = 0
@@ -110,9 +112,14 @@ module DuckDBTest
 
       assert_equal target_rows, result[0][0]
       assert_equal (0...target_rows).sum, result[0][1]
+      assert_operator execute_calls, :>, 1, 'expected execute to be invoked across multiple chunks'
     end
 
     private
+
+    def set_multi_thread
+      @connection.execute('SET threads=4')
+    end
 
     def create_simple_function
       done = false # Track state with closure variable
