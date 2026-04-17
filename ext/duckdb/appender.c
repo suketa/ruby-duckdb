@@ -42,6 +42,8 @@ static VALUE appender__flush(VALUE self);
 static VALUE appender__clear(VALUE self);
 #endif
 
+static VALUE appender__add_column(VALUE self, VALUE name);
+static VALUE appender__clear_columns(VALUE self);
 static VALUE appender__close(VALUE self);
 static VALUE duckdb_state_to_bool_value(duckdb_state state);
 
@@ -464,6 +466,23 @@ static VALUE appender__clear(VALUE self) {
 #endif
 
 /* :nodoc: */
+static VALUE appender__add_column(VALUE self, VALUE name) {
+    char *p = StringValuePtr(name);
+    rubyDuckDBAppender *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+
+    return duckdb_state_to_bool_value(duckdb_appender_add_column(ctx->appender, p));
+}
+
+/* :nodoc: */
+static VALUE appender__clear_columns(VALUE self) {
+    rubyDuckDBAppender *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+
+    return duckdb_state_to_bool_value(duckdb_appender_clear_columns(ctx->appender));
+}
+
+/* :nodoc: */
 static VALUE appender__close(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -494,6 +513,8 @@ void rbduckdb_init_duckdb_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_clear", appender__clear, 0);
 #endif
 
+    rb_define_private_method(cDuckDBAppender, "_add_column", appender__add_column, 1);
+    rb_define_private_method(cDuckDBAppender, "_clear_columns", appender__clear_columns, 0);
     rb_define_private_method(cDuckDBAppender, "_close", appender__close, 0);
     rb_define_private_method(cDuckDBAppender, "_append_bool", appender__append_bool, 1);
     rb_define_private_method(cDuckDBAppender, "_append_int8", appender__append_int8, 1);
