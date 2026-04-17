@@ -979,7 +979,7 @@
     }
 
     param_name = StringValueCStr(name);
-    ctx_logical_type = get_struct_logical_type(logical_type);
+    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
     duckdb_table_function_add_named_parameter(ctx-&gt;table_function, param_name, ctx_logical_type-&gt;logical_type);
 
     return self;
@@ -1038,7 +1038,7 @@
         rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
     }
 
-    ctx_logical_type = get_struct_logical_type(logical_type);
+    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
     duckdb_table_function_add_parameter(ctx-&gt;table_function, ctx_logical_type-&gt;logical_type);
 
     return self;

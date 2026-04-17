@@ -512,8 +512,6 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-i-_internal_type">_internal_type</a></li>
-
         <li ><a href="#method-i-alias">alias</a></li>
 
         <li ><a href="#method-i-alias-3D">alias=</a></li>
@@ -1042,7 +1040,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE initialize(VALUE self, VALUE type_id_arg) {
+            <pre class="c" data-language="c">static VALUE logical_type_initialize(VALUE self, VALUE type_id_arg) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type = (duckdb_type)NUM2INT(type_id_arg);
     duckdb_logical_type new_logical_type;
@@ -1147,68 +1145,6 @@
        </header>
 
 
-      <div id="method-i-_internal_type" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-_internal_type" title="Link to this method">
-                  <span class="method-callseq">
-                    logical_type.internal_type &rarr; Symbol
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="_internal_type-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type__internal_type(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    duckdb_type type_id;
-    duckdb_type internal_type_id;
-
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
-
-    type_id = duckdb_get_type_id(ctx-&gt;logical_type);
-    switch (type_id) {
-        case DUCKDB_TYPE_DECIMAL:
-            internal_type_id = duckdb_decimal_internal_type(ctx-&gt;logical_type);
-            break;
-        case DUCKDB_TYPE_ENUM:
-            internal_type_id = duckdb_enum_internal_type(ctx-&gt;logical_type);
-            break;
-        default:
-            internal_type_id = DUCKDB_TYPE_INVALID;
-    }
-
-    return INT2FIX(internal_type_id);
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Returns the logical type’s internal type.</p>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
       <div id="method-i-alias" class="method-detail anchor-link method-alias">
         <div class="method-header">
 
@@ -1305,7 +1241,7 @@
             </details>
           </div>
           <div class="method-source-code" id="child_count-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_count(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_child_count(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_struct_type_child_count(ctx-&gt;logical_type));
@@ -1351,7 +1287,7 @@
             </details>
           </div>
           <div class="method-source-code" id="child_name_at-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx) {
+            <pre class="c" data-language="c">static VALUE logical_type_child_name_at(VALUE self, VALUE cidx) {
     rubyDuckDBLogicalType *ctx;
     VALUE cname;
     const char *child_name;
@@ -1408,7 +1344,7 @@
             </details>
           </div>
           <div class="method-source-code" id="child_type-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_child_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_logical_type child_logical_type;
@@ -1473,7 +1409,7 @@
             </details>
           </div>
           <div class="method-source-code" id="child_type_at-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
+            <pre class="c" data-language="c">static VALUE logical_type_child_type_at(VALUE self, VALUE cidx) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type struct_child_type;
     idx_t idx = NUM2ULL(cidx);
@@ -1530,7 +1466,7 @@
             </details>
           </div>
           <div class="method-source-code" id="dictionary_size-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_dictionary_size(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_enum_dictionary_size(ctx-&gt;logical_type));
@@ -1576,7 +1512,7 @@
             </details>
           </div>
           <div class="method-source-code" id="dictionary_value_at-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
+            <pre class="c" data-language="c">static VALUE logical_type_dictionary_value_at(VALUE self, VALUE didx) {
     rubyDuckDBLogicalType *ctx;
     VALUE dvalue;
     const char *dict_value;
@@ -1928,7 +1864,7 @@
             </details>
           </div>
           <div class="method-source-code" id="get_alias-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type__get_alias(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_get_alias(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias;
@@ -2041,7 +1977,7 @@
             </details>
           </div>
           <div class="method-source-code" id="key_type-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_key_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_key_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type key_logical_type;
     VALUE logical_type = Qnil;
@@ -2092,7 +2028,7 @@
             </details>
           </div>
           <div class="method-source-code" id="member_count-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_member_count(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_member_count(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_union_type_member_count(ctx-&gt;logical_type));
@@ -2138,7 +2074,7 @@
             </details>
           </div>
           <div class="method-source-code" id="member_name_at-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx) {
+            <pre class="c" data-language="c">static VALUE logical_type_member_name_at(VALUE self, VALUE midx) {
     rubyDuckDBLogicalType *ctx;
     VALUE mname;
     const char *member_name;
@@ -2195,7 +2131,7 @@
             </details>
           </div>
           <div class="method-source-code" id="member_type_at-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx) {
+            <pre class="c" data-language="c">static VALUE logical_type_member_type_at(VALUE self, VALUE midx) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type union_member_type;
     idx_t idx = NUM2ULL(midx);
@@ -2252,7 +2188,7 @@
             </details>
           </div>
           <div class="method-source-code" id="scale-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_scale(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_scale(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_scale(ctx-&gt;logical_type));
@@ -2298,7 +2234,7 @@
             </details>
           </div>
           <div class="method-source-code" id="set_alias-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
+            <pre class="c" data-language="c">static VALUE logical_type_set_alias(VALUE self, VALUE aname) {
     rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias = StringValuePtr(aname);
@@ -2356,7 +2292,7 @@
             </details>
           </div>
           <div class="method-source-code" id="size-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_size(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_array_type_array_size(ctx-&gt;logical_type));
@@ -2455,7 +2391,7 @@
             </details>
           </div>
           <div class="method-source-code" id="value_type-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_value_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_value_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type value_logical_type;
     VALUE logical_type = Qnil;
@@ -2506,7 +2442,7 @@
             </details>
           </div>
           <div class="method-source-code" id="width-source">
-            <pre class="c" data-language="c">static VALUE duckdb_logical_type_width(VALUE self) {
+            <pre class="c" data-language="c">static VALUE logical_type_width(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &amp;logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_width(ctx-&gt;logical_type));
