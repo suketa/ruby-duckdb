@@ -50,7 +50,6 @@ module DuckDBTest
     def setup
       @db = DuckDB::Database.open
       @con = @db.connect
-      @con.execute('SET threads=1') # Required for Ruby callbacks
     end
 
     def teardown

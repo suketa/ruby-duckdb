@@ -276,7 +276,6 @@ module DuckDB
     def register_table_function(table_function)
       raise ArgumentError, 'table_function must be a TableFunction' unless table_function.is_a?(TableFunction)
 
-      check_threads
       _register_table_function(table_function)
     end
 
@@ -291,12 +290,10 @@ module DuckDB
     # @param columns [Hash{String => DuckDB::LogicalType}, nil] optional column schema override;
     #   if omitted, the adapter determines the columns (e.g. from headers or inference)
     # @raise [ArgumentError] if no adapter is registered for the object's class
-    # @raise [DuckDB::Error] if threads setting is not 1
     # @return [void]
     #
     # @example Expose a CSV as a table
     #   require 'csv'
-    #   con.execute('SET threads=1')
     #   DuckDB::TableFunction.add_table_adapter(CSV, CSVTableAdapter.new)
     #   csv = CSV.new(File.read('data.csv'), headers: true)
     #   con.expose_as_table(csv, 'csv_table')
@@ -317,18 +314,6 @@ module DuckDB
     end
 
     private
-
-    def check_threads
-      result = execute("SELECT current_setting('threads')")
-      thread_count = result.first.first.to_i
-
-      return unless thread_count > 1
-
-      raise DuckDB::Error,
-            'Functions with Ruby callbacks require single-threaded execution. ' \
-            "Current threads setting: #{thread_count}. " \
-            "Execute 'SET threads=1' before registering functions."
-    end
 
     def run_appender_block(appender, &)
       return appender unless block_given?
