@@ -7,6 +7,6 @@ struct _rubyDuckDBAppender {
 
 typedef struct _rubyDuckDBAppender rubyDuckDBAppender;
 
-void rbduckdb_init_duckdb_appender(void);
+void rbduckdb_init_appender(void);
 
 #endif
