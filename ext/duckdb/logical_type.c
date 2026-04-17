@@ -5,30 +5,32 @@ static VALUE cDuckDBLogicalType;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_logical_type__type(VALUE self);
-static VALUE duckdb_logical_type_width(VALUE self);
-static VALUE duckdb_logical_type_scale(VALUE self);
-static VALUE duckdb_logical_type_child_count(VALUE self);
-static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx);
-static VALUE duckdb_logical_type_child_type(VALUE self);
-static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx);
-static VALUE duckdb_logical_type_size(VALUE self);
-static VALUE duckdb_logical_type_key_type(VALUE self);
-static VALUE duckdb_logical_type_value_type(VALUE self);
-static VALUE duckdb_logical_type_member_count(VALUE self);
-static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx);
-static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx);
-static VALUE duckdb_logical_type__internal_type(VALUE self);
-static VALUE duckdb_logical_type_dictionary_size(VALUE self);
-static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx);
-static VALUE duckdb_logical_type__get_alias(VALUE self);
-static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname);
-static VALUE duckdb_logical_type_s_create_array_type(VALUE klass, VALUE child, VALUE array_size);
-static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child);
-static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE value);
-static VALUE duckdb_logical_type_s_create_union_type(VALUE klass, VALUE members);
-static VALUE duckdb_logical_type_s_create_struct_type(VALUE klass, VALUE members);
-static VALUE initialize(VALUE self, VALUE type_id_arg);
+static VALUE logical_type__type(VALUE self);
+static VALUE logical_type_width(VALUE self);
+static VALUE logical_type_scale(VALUE self);
+static VALUE logical_type_child_count(VALUE self);
+static VALUE logical_type_child_name_at(VALUE self, VALUE cidx);
+static VALUE logical_type_child_type(VALUE self);
+static VALUE logical_type_child_type_at(VALUE self, VALUE cidx);
+static VALUE logical_type_size(VALUE self);
+static VALUE logical_type_key_type(VALUE self);
+static VALUE logical_type_value_type(VALUE self);
+static VALUE logical_type_member_count(VALUE self);
+static VALUE logical_type_member_name_at(VALUE self, VALUE midx);
+static VALUE logical_type_member_type_at(VALUE self, VALUE midx);
+static VALUE logical_type__internal_type(VALUE self);
+static VALUE logical_type_dictionary_size(VALUE self);
+static VALUE logical_type_dictionary_value_at(VALUE self, VALUE didx);
+static VALUE logical_type_get_alias(VALUE self);
+static VALUE logical_type_set_alias(VALUE self, VALUE aname);
+static VALUE logical_type_s__create_array_type(VALUE klass, VALUE child, VALUE array_size);
+static VALUE logical_type_s__create_list_type(VALUE klass, VALUE child);
+static VALUE logical_type_s__create_map_type(VALUE klass, VALUE key, VALUE value);
+static VALUE logical_type_s__create_union_type(VALUE klass, VALUE members);
+static VALUE logical_type_s__create_struct_type(VALUE klass, VALUE members);
+static VALUE logical_type_s__create_enum_type(VALUE klass, VALUE members);
+static VALUE logical_type_s__create_decimal_type(VALUE klass, VALUE width, VALUE scale);
+static VALUE logical_type_initialize(VALUE self, VALUE type_id_arg);
 
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
@@ -46,7 +48,7 @@ static void deallocate(void *ctx) {
     xfree(p);
 }
 
-rubyDuckDBLogicalType *get_struct_logical_type(VALUE obj) {
+rubyDuckDBLogicalType *rbduckdb_get_struct_logical_type(VALUE obj) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return ctx;
@@ -61,7 +63,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBLogicalType);
 }
 
-static VALUE initialize(VALUE self, VALUE type_id_arg) {
+static VALUE logical_type_initialize(VALUE self, VALUE type_id_arg) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type = (duckdb_type)NUM2INT(type_id_arg);
     duckdb_logical_type new_logical_type;
@@ -86,14 +88,8 @@ static VALUE initialize(VALUE self, VALUE type_id_arg) {
     return self;
 }
 
-/*
- *  call-seq:
- *    decimal_col.logical_type.type -> Symbol
- *
- *  Returns the logical type's type symbol.
- *
- */
-static VALUE duckdb_logical_type__type(VALUE self) {
+/* :nodoc: */
+static VALUE logical_type__type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_get_type_id(ctx->logical_type));
@@ -106,7 +102,7 @@ static VALUE duckdb_logical_type__type(VALUE self) {
  *  Returns the width of the decimal column.
  *
  */
-static VALUE duckdb_logical_type_width(VALUE self) {
+static VALUE logical_type_width(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_width(ctx->logical_type));
@@ -119,7 +115,7 @@ static VALUE duckdb_logical_type_width(VALUE self) {
  *  Returns the scale of the decimal column.
  *
  */
-static VALUE duckdb_logical_type_scale(VALUE self) {
+static VALUE logical_type_scale(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_decimal_scale(ctx->logical_type));
@@ -132,7 +128,7 @@ static VALUE duckdb_logical_type_scale(VALUE self) {
  *  Returns the number of children of a struct type, otherwise 0.
  *
  */
-static VALUE duckdb_logical_type_child_count(VALUE self) {
+static VALUE logical_type_child_count(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_struct_type_child_count(ctx->logical_type));
@@ -145,7 +141,7 @@ static VALUE duckdb_logical_type_child_count(VALUE self) {
  *  Returns the name of the struct child at the specified index.
  *
  */
-static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx) {
+static VALUE logical_type_child_name_at(VALUE self, VALUE cidx) {
     rubyDuckDBLogicalType *ctx;
     VALUE cname;
     const char *child_name;
@@ -169,7 +165,7 @@ static VALUE duckdb_logical_type_child_name_at(VALUE self, VALUE cidx) {
  *  Returns the child logical type for list and map types, otherwise nil.
  *
  */
-static VALUE duckdb_logical_type_child_type(VALUE self) {
+static VALUE logical_type_child_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_logical_type child_logical_type;
@@ -202,7 +198,7 @@ static VALUE duckdb_logical_type_child_type(VALUE self) {
  *  DuckDB::LogicalType object.
  *
  */
-static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
+static VALUE logical_type_child_type_at(VALUE self, VALUE cidx) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type struct_child_type;
     idx_t idx = NUM2ULL(cidx);
@@ -226,7 +222,7 @@ static VALUE duckdb_logical_type_child_type_at(VALUE self, VALUE cidx) {
  *  Returns the size of the array column, otherwise 0.
  *
  */
-static VALUE duckdb_logical_type_size(VALUE self) {
+static VALUE logical_type_size(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_array_type_array_size(ctx->logical_type));
@@ -239,7 +235,7 @@ static VALUE duckdb_logical_type_size(VALUE self) {
  *  Returns the key logical type for map type, otherwise nil.
  *
  */
-static VALUE duckdb_logical_type_key_type(VALUE self) {
+static VALUE logical_type_key_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type key_logical_type;
     VALUE logical_type = Qnil;
@@ -257,7 +253,7 @@ static VALUE duckdb_logical_type_key_type(VALUE self) {
  *  Returns the value logical type for map type, otherwise nil.
  *
  */
-static VALUE duckdb_logical_type_value_type(VALUE self) {
+static VALUE logical_type_value_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type value_logical_type;
     VALUE logical_type = Qnil;
@@ -275,7 +271,7 @@ static VALUE duckdb_logical_type_value_type(VALUE self) {
  *  Returns the member count of union type, otherwise 0.
  *
  */
-static VALUE duckdb_logical_type_member_count(VALUE self) {
+static VALUE logical_type_member_count(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_union_type_member_count(ctx->logical_type));
@@ -288,7 +284,7 @@ static VALUE duckdb_logical_type_member_count(VALUE self) {
  *  Returns the name of the union member at the specified index.
  *
  */
-static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx) {
+static VALUE logical_type_member_name_at(VALUE self, VALUE midx) {
     rubyDuckDBLogicalType *ctx;
     VALUE mname;
     const char *member_name;
@@ -313,7 +309,7 @@ static VALUE duckdb_logical_type_member_name_at(VALUE self, VALUE midx) {
  *  DuckDB::LogicalType object.
  *
  */
-static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx) {
+static VALUE logical_type_member_type_at(VALUE self, VALUE midx) {
     rubyDuckDBLogicalType *ctx;
     duckdb_logical_type union_member_type;
     idx_t idx = NUM2ULL(midx);
@@ -337,7 +333,7 @@ static VALUE duckdb_logical_type_member_type_at(VALUE self, VALUE midx) {
  *  Returns the logical type's internal type.
  *
  */
-static VALUE duckdb_logical_type__internal_type(VALUE self) {
+static VALUE logical_type__internal_type(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_type internal_type_id;
@@ -366,7 +362,7 @@ static VALUE duckdb_logical_type__internal_type(VALUE self) {
  *  Returns the dictionary size of the enum type.
  *
  */
-static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
+static VALUE logical_type_dictionary_size(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
     return INT2FIX(duckdb_enum_dictionary_size(ctx->logical_type));
@@ -379,7 +375,7 @@ static VALUE duckdb_logical_type_dictionary_size(VALUE self) {
  *  Returns the dictionary value at the specified index.
  *
  */
-static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
+static VALUE logical_type_dictionary_value_at(VALUE self, VALUE didx) {
     rubyDuckDBLogicalType *ctx;
     VALUE dvalue;
     const char *dict_value;
@@ -403,7 +399,7 @@ static VALUE duckdb_logical_type_dictionary_value_at(VALUE self, VALUE didx) {
  *  Returns the alias of the logical type.
  *
  */
-static VALUE duckdb_logical_type__get_alias(VALUE self) {
+static VALUE logical_type_get_alias(VALUE self) {
     rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias;
@@ -425,7 +421,7 @@ static VALUE duckdb_logical_type__get_alias(VALUE self) {
  *  Return the set alias of the logical type.
  *
  */
-static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
+static VALUE logical_type_set_alias(VALUE self, VALUE aname) {
     rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias = StringValuePtr(aname);
@@ -439,14 +435,9 @@ static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
     return alias;
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_array_type(logical_type, size) -> DuckDB::LogicalType
- *
- *  Return an array logical type from the given child logical type and size.
- */
- static VALUE duckdb_logical_type_s_create_array_type(VALUE klass, VALUE child, VALUE array_size) {
-    rubyDuckDBLogicalType *child_ctx = get_struct_logical_type(child);
+/* :nodoc: */
+static VALUE logical_type_s__create_array_type(VALUE klass, VALUE child, VALUE array_size) {
+    rubyDuckDBLogicalType *child_ctx = rbduckdb_get_struct_logical_type(child);
     idx_t size = NUM2ULL(array_size);
     duckdb_logical_type new_type = duckdb_create_array_type(child_ctx->logical_type, size);
 
@@ -457,14 +448,9 @@ static VALUE duckdb_logical_type__set_alias(VALUE self, VALUE aname) {
     return rbduckdb_create_logical_type(new_type);
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_list_type(logical_type) -> DuckDB::LogicalType
- *
- *  Return a list logical type from the given child logical type.
- */
-static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child) {
-    rubyDuckDBLogicalType *child_ctx = get_struct_logical_type(child);
+/* :nodoc: */
+static VALUE logical_type_s__create_list_type(VALUE klass, VALUE child) {
+    rubyDuckDBLogicalType *child_ctx = rbduckdb_get_struct_logical_type(child);
     duckdb_logical_type new_type = duckdb_create_list_type(child_ctx->logical_type);
 
     if (!new_type) {
@@ -474,15 +460,10 @@ static VALUE duckdb_logical_type_s_create_list_type(VALUE klass, VALUE child) {
     return rbduckdb_create_logical_type(new_type);
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_map_type(key_type, value_type) -> DuckDB::LogicalType
- *
- *  Return a map logical type from the given key and value logical types.
- */
-static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE value) {
-    rubyDuckDBLogicalType *key_ctx = get_struct_logical_type(key);
-    rubyDuckDBLogicalType *value_ctx = get_struct_logical_type(value);
+/* :nodoc: */
+static VALUE logical_type_s__create_map_type(VALUE klass, VALUE key, VALUE value) {
+    rubyDuckDBLogicalType *key_ctx = rbduckdb_get_struct_logical_type(key);
+    rubyDuckDBLogicalType *value_ctx = rbduckdb_get_struct_logical_type(value);
     duckdb_logical_type new_type = duckdb_create_map_type(key_ctx->logical_type, value_ctx->logical_type);
 
     if (!new_type) {
@@ -492,13 +473,8 @@ static VALUE duckdb_logical_type_s_create_map_type(VALUE klass, VALUE key, VALUE
     return rbduckdb_create_logical_type(new_type);
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_union_type(members) -> DuckDB::LogicalType
- *
- *  Return a union logical type from the given member hash.
- */
-static VALUE duckdb_logical_type_s_create_union_type(VALUE klass, VALUE members) {
+/* :nodoc: */
+static VALUE logical_type_s__create_union_type(VALUE klass, VALUE members) {
     idx_t member_size = RHASH_SIZE(members);
     duckdb_logical_type *member_types = NULL;
     const char **member_names = NULL;
@@ -517,7 +493,7 @@ static VALUE duckdb_logical_type_s_create_union_type(VALUE klass, VALUE members)
     for (idx_t i = 0; i < member_size; i++) {
         VALUE key = rb_ary_entry(keys, (long)i);
         VALUE val = rb_hash_aref(members, key);
-        rubyDuckDBLogicalType *type_ctx = get_struct_logical_type(val);
+        rubyDuckDBLogicalType *type_ctx = rbduckdb_get_struct_logical_type(val);
 
         member_names[i] = rb_id2name(SYM2ID(key));
         member_types[i] = type_ctx->logical_type;
@@ -535,13 +511,8 @@ static VALUE duckdb_logical_type_s_create_union_type(VALUE klass, VALUE members)
     return rbduckdb_create_logical_type(new_type);
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_struct_type(members) -> DuckDB::LogicalType
- *
- *  Return a struct logical type from the given member hash.
- */
-static VALUE duckdb_logical_type_s_create_struct_type(VALUE klass, VALUE members) {
+/* :nodoc: */
+static VALUE logical_type_s__create_struct_type(VALUE klass, VALUE members) {
     idx_t member_size = RHASH_SIZE(members);
     duckdb_logical_type *member_types = NULL;
     const char **member_names = NULL;
@@ -560,7 +531,7 @@ static VALUE duckdb_logical_type_s_create_struct_type(VALUE klass, VALUE members
     for (idx_t i = 0; i < member_size; i++) {
         VALUE key = rb_ary_entry(keys, (long)i);
         VALUE val = rb_hash_aref(members, key);
-        rubyDuckDBLogicalType *type_ctx = get_struct_logical_type(val);
+        rubyDuckDBLogicalType *type_ctx = rbduckdb_get_struct_logical_type(val);
 
         member_names[i] = rb_id2name(SYM2ID(key));
         member_types[i] = type_ctx->logical_type;
@@ -578,13 +549,8 @@ static VALUE duckdb_logical_type_s_create_struct_type(VALUE klass, VALUE members
     return rbduckdb_create_logical_type(new_type);
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_enum_type(members) -> DuckDB::LogicalType
- *
- *  Return an enum logical type from the given array of strings.
- */
-static VALUE duckdb_logical_type_s_create_enum_type(VALUE klass, VALUE members) {
+/* :nodoc: */
+static VALUE logical_type_s__create_enum_type(VALUE klass, VALUE members) {
     idx_t member_size = RARRAY_LEN(members);
     const char **member_names = NULL;
     duckdb_logical_type new_type;
@@ -611,13 +577,8 @@ static VALUE duckdb_logical_type_s_create_enum_type(VALUE klass, VALUE members) 
     return rbduckdb_create_logical_type(new_type);
 }
 
-/*
- *  call-seq:
- *    DuckDB::LogicalType._create_decimal_type(width, scale) -> DuckDB::LogicalType
- *
- *  Return a decimal logical type with the given width and scale.
- */
-static VALUE duckdb_logical_type_s_create_decimal_type(VALUE klass, VALUE width, VALUE scale) {
+/* :nodoc: */
+static VALUE logical_type_s__create_decimal_type(VALUE klass, VALUE width, VALUE scale) {
     duckdb_logical_type new_type;
 
     new_type = duckdb_create_decimal_type((uint8_t)NUM2UINT(width), (uint8_t)NUM2UINT(scale));
@@ -641,46 +602,46 @@ VALUE rbduckdb_create_logical_type(duckdb_logical_type logical_type) {
     return obj;
 }
 
-void rbduckdb_init_duckdb_logical_type(void) {
+void rbduckdb_init_logical_type(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBLogicalType = rb_define_class_under(mDuckDB, "LogicalType", rb_cObject);
     rb_define_alloc_func(cDuckDBLogicalType, allocate);
 
-    rb_define_private_method(cDuckDBLogicalType, "_type", duckdb_logical_type__type, 0);
-    rb_define_method(cDuckDBLogicalType, "width", duckdb_logical_type_width, 0);
-    rb_define_method(cDuckDBLogicalType, "scale", duckdb_logical_type_scale, 0);
-    rb_define_method(cDuckDBLogicalType, "child_count", duckdb_logical_type_child_count, 0);
-    rb_define_method(cDuckDBLogicalType, "child_name_at", duckdb_logical_type_child_name_at, 1);
-    rb_define_method(cDuckDBLogicalType, "child_type", duckdb_logical_type_child_type, 0);
-    rb_define_method(cDuckDBLogicalType, "child_type_at", duckdb_logical_type_child_type_at, 1);
-    rb_define_method(cDuckDBLogicalType, "size", duckdb_logical_type_size, 0);
-    rb_define_method(cDuckDBLogicalType, "key_type", duckdb_logical_type_key_type, 0);
-    rb_define_method(cDuckDBLogicalType, "value_type", duckdb_logical_type_value_type, 0);
-    rb_define_method(cDuckDBLogicalType, "member_count", duckdb_logical_type_member_count, 0);
-    rb_define_method(cDuckDBLogicalType, "member_name_at", duckdb_logical_type_member_name_at, 1);
-    rb_define_method(cDuckDBLogicalType, "member_type_at", duckdb_logical_type_member_type_at, 1);
-    rb_define_method(cDuckDBLogicalType, "_internal_type", duckdb_logical_type__internal_type, 0);
-    rb_define_method(cDuckDBLogicalType, "dictionary_size", duckdb_logical_type_dictionary_size, 0);
-    rb_define_method(cDuckDBLogicalType, "dictionary_value_at", duckdb_logical_type_dictionary_value_at, 1);
-    rb_define_method(cDuckDBLogicalType, "get_alias", duckdb_logical_type__get_alias, 0);
-    rb_define_method(cDuckDBLogicalType, "set_alias", duckdb_logical_type__set_alias, 1);
+    rb_define_private_method(cDuckDBLogicalType, "_type", logical_type__type, 0);
+    rb_define_method(cDuckDBLogicalType, "width", logical_type_width, 0);
+    rb_define_method(cDuckDBLogicalType, "scale", logical_type_scale, 0);
+    rb_define_method(cDuckDBLogicalType, "child_count", logical_type_child_count, 0);
+    rb_define_method(cDuckDBLogicalType, "child_name_at", logical_type_child_name_at, 1);
+    rb_define_method(cDuckDBLogicalType, "child_type", logical_type_child_type, 0);
+    rb_define_method(cDuckDBLogicalType, "child_type_at", logical_type_child_type_at, 1);
+    rb_define_method(cDuckDBLogicalType, "size", logical_type_size, 0);
+    rb_define_method(cDuckDBLogicalType, "key_type", logical_type_key_type, 0);
+    rb_define_method(cDuckDBLogicalType, "value_type", logical_type_value_type, 0);
+    rb_define_method(cDuckDBLogicalType, "member_count", logical_type_member_count, 0);
+    rb_define_method(cDuckDBLogicalType, "member_name_at", logical_type_member_name_at, 1);
+    rb_define_method(cDuckDBLogicalType, "member_type_at", logical_type_member_type_at, 1);
+    rb_define_private_method(cDuckDBLogicalType, "_internal_type", logical_type__internal_type, 0);
+    rb_define_method(cDuckDBLogicalType, "dictionary_size", logical_type_dictionary_size, 0);
+    rb_define_method(cDuckDBLogicalType, "dictionary_value_at", logical_type_dictionary_value_at, 1);
+    rb_define_method(cDuckDBLogicalType, "get_alias", logical_type_get_alias, 0);
+    rb_define_method(cDuckDBLogicalType, "set_alias", logical_type_set_alias, 1);
 
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_array_type",
-                             duckdb_logical_type_s_create_array_type, 2);
+                             logical_type_s__create_array_type, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_list_type",
-                             duckdb_logical_type_s_create_list_type, 1);
+                             logical_type_s__create_list_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_map_type",
-                             duckdb_logical_type_s_create_map_type, 2);
+                             logical_type_s__create_map_type, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_union_type",
-                             duckdb_logical_type_s_create_union_type, 1);
+                             logical_type_s__create_union_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_struct_type",
-                             duckdb_logical_type_s_create_struct_type, 1);
+                             logical_type_s__create_struct_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_enum_type",
-                             duckdb_logical_type_s_create_enum_type, 1);
+                             logical_type_s__create_enum_type, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBLogicalType), "_create_decimal_type",
-                             duckdb_logical_type_s_create_decimal_type, 2);
+                             logical_type_s__create_decimal_type, 2);
 
-    rb_define_method(cDuckDBLogicalType, "initialize", initialize, 1);
+    rb_define_method(cDuckDBLogicalType, "initialize", logical_type_initialize, 1);
 }

@@ -139,7 +139,7 @@ static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical
     rubyDuckDBLogicalType *lt;
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
-    lt = get_struct_logical_type(logical_type);
+    lt = rbduckdb_get_struct_logical_type(logical_type);
 
     duckdb_scalar_function_set_return_type(p->scalar_function, lt->logical_type);
 
@@ -151,7 +151,7 @@ static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_typ
     rubyDuckDBLogicalType *lt;
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
-    lt = get_struct_logical_type(logical_type);
+    lt = rbduckdb_get_struct_logical_type(logical_type);
 
     duckdb_scalar_function_set_varargs(p->scalar_function, lt->logical_type);
 
@@ -172,7 +172,7 @@ static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_ty
     rubyDuckDBLogicalType *lt;
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
-    lt = get_struct_logical_type(logical_type);
+    lt = rbduckdb_get_struct_logical_type(logical_type);
 
     duckdb_scalar_function_add_parameter(p->scalar_function, lt->logical_type);
 
