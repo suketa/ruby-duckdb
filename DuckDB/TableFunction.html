@@ -636,7 +636,7 @@
             </details>
           </div>
           <div class="method-source-code" id="add_table_adapter-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 174</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 173</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_table_adapter</span>(<span class="ruby-identifier">klass</span>, <span class="ruby-identifier">adapter</span>)
   <span class="ruby-ivar">@table_adapters</span>[<span class="ruby-identifier">klass</span>] = <span class="ruby-identifier">adapter</span>
 <span class="ruby-keyword">end</span></pre>
@@ -693,7 +693,6 @@
 
 <span class="ruby-comment"># Register and use:</span>
 <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">add_table_adapter</span>(<span class="ruby-constant">CSV</span>, <span class="ruby-constant">CSVTableAdapter</span>.<span class="ruby-identifier">new</span>)
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">expose_as_table</span>(<span class="ruby-identifier">csv</span>, <span class="ruby-string">&#39;csv_table&#39;</span>)
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM csv_table()&#39;</span>).<span class="ruby-identifier">to_a</span>
 </pre>
@@ -902,7 +901,7 @@
             </details>
           </div>
           <div class="method-source-code" id="table_adapter_for-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 186</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/table_function.rb, line 185</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">table_adapter_for</span>(<span class="ruby-identifier">klass</span>)
   <span class="ruby-ivar">@table_adapters</span>[<span class="ruby-identifier">klass</span>]
 <span class="ruby-keyword">end</span></pre>

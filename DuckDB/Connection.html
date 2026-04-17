@@ -875,7 +875,7 @@
             </details>
           </div>
           <div class="method-source-code" id="expose_as_table-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 311</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 308</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">expose_as_table</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
@@ -898,12 +898,11 @@
 
 <pre>if omitted, the adapter determines the columns (e.g. from headers or inference)</pre>
 
-<p>@raise [ArgumentError] if no adapter is registered for the object’s class @raise [DuckDB::Error] if threads setting is not 1 @return [void]</p>
+<p>@raise [ArgumentError] if no adapter is registered for the object’s class @return [void]</p>
 
 <p>@example Expose a CSV as a table</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;csv&#39;</span>
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SET threads=1&#39;</span>)
 <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">add_table_adapter</span>(<span class="ruby-constant">CSV</span>, <span class="ruby-constant">CSVTableAdapter</span>.<span class="ruby-identifier">new</span>)
 <span class="ruby-identifier">csv</span> = <span class="ruby-constant">CSV</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-string">&#39;data.csv&#39;</span>), <span class="ruby-value">headers:</span> <span class="ruby-keyword">true</span>)
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">expose_as_table</span>(<span class="ruby-identifier">csv</span>, <span class="ruby-string">&#39;csv_table&#39;</span>)
@@ -1560,7 +1559,6 @@
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
 
-  <span class="ruby-identifier">check_threads</span>
   <span class="ruby-identifier">_register_table_function</span>(<span class="ruby-identifier">table_function</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
