@@ -30,26 +30,26 @@ module DuckDB
       _add_parameter(logical_type)
     end
 
-    def set_init(&block)
+    def set_init(&)
       _set_update { |state, *| state } unless @update_set
       _set_combine { |s1, _s2| s1 } unless @combine_set
       _set_finalize { |x| x } unless @finalize_set
-      _set_init(&block)
+      _set_init(&)
     end
 
-    def set_update(&block)
+    def set_update(&)
       @update_set = true
-      _set_update(&block)
+      _set_update(&)
     end
 
-    def set_combine(&block)
+    def set_combine(&)
       @combine_set = true
-      _set_combine(&block)
+      _set_combine(&)
     end
 
-    def set_finalize(&block)
+    def set_finalize(&)
       @finalize_set = true
-      _set_finalize(&block)
+      _set_finalize(&)
     end
 
     # Sets special NULL handling for the aggregate function.
