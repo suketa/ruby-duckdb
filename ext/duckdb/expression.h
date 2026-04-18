@@ -7,7 +7,7 @@ struct _rubyDuckDBExpression {
 
 typedef struct _rubyDuckDBExpression rubyDuckDBExpression;
 
-void rbduckdb_init_duckdb_expression(void);
+void rbduckdb_init_expression(void);
 VALUE rbduckdb_expression_new(duckdb_expression expression);
 
 #endif

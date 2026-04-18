@@ -59,7 +59,7 @@ Init_duckdb_native(void) {
     rbduckdb_init_duckdb_scalar_function();
     rbduckdb_init_duckdb_scalar_function_set();
     rbduckdb_init_aggregate_function();
-    rbduckdb_init_duckdb_expression();
+    rbduckdb_init_expression();
     rbduckdb_init_client_context();
     rbduckdb_init_duckdb_scalar_function_bind_info();
     rbduckdb_init_duckdb_vector();
