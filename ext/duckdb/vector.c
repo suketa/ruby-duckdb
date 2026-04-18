@@ -5,12 +5,12 @@ VALUE cDuckDBVector;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE rbduckdb_vector_get_data(VALUE self);
-static VALUE rbduckdb_vector_get_validity(VALUE self);
-static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALUE str);
-static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, VALUE str);
-static VALUE rbduckdb_vector_logical_type(VALUE self);
-static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid);
+static VALUE vector_get_data(VALUE self);
+static VALUE vector_get_validity(VALUE self);
+static VALUE vector_assign_string_element(VALUE self, VALUE index, VALUE str);
+static VALUE vector_assign_string_element_len(VALUE self, VALUE index, VALUE str);
+static VALUE vector_logical_type(VALUE self);
+static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid);
 
 static const rb_data_type_t vector_data_type = {
     "DuckDB/Vector",
@@ -32,7 +32,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBVector);
 }
 
-rubyDuckDBVector *get_struct_vector(VALUE obj) {
+rubyDuckDBVector *rbduckdb_get_struct_vector(VALUE obj) {
     rubyDuckDBVector *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBVector, &vector_data_type, ctx);
     return ctx;
@@ -47,7 +47,7 @@ rubyDuckDBVector *get_struct_vector(VALUE obj) {
  *
  *   ptr = vector.get_data
  */
-static VALUE rbduckdb_vector_get_data(VALUE self) {
+static VALUE vector_get_data(VALUE self) {
     rubyDuckDBVector *ctx;
     void *data;
 
@@ -67,7 +67,7 @@ static VALUE rbduckdb_vector_get_data(VALUE self) {
  *
  *   validity = vector.get_validity
  */
-static VALUE rbduckdb_vector_get_validity(VALUE self) {
+static VALUE vector_get_validity(VALUE self) {
     rubyDuckDBVector *ctx;
     uint64_t *validity;
 
@@ -90,7 +90,7 @@ static VALUE rbduckdb_vector_get_validity(VALUE self) {
  *
  *   vector.assign_string_element(0, 'hello')
  */
-static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
+static VALUE vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
     rubyDuckDBVector *ctx;
     idx_t idx;
     const char *string_val;
@@ -114,7 +114,7 @@ static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALU
  *
  *   vector.assign_string_element_len(0, "\x00\x01\x02\x03")
  */
-static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
+static VALUE vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
     rubyDuckDBVector *ctx;
     idx_t idx;
     const char *string_val;
@@ -141,7 +141,7 @@ static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, 
  *   type = vector.logical_type
  *   type.id  #=> DuckDB::Type::BIGINT
  */
-static VALUE rbduckdb_vector_logical_type(VALUE self) {
+static VALUE vector_logical_type(VALUE self) {
     rubyDuckDBVector *ctx;
     duckdb_logical_type logical_type;
 
@@ -161,7 +161,7 @@ static VALUE rbduckdb_vector_logical_type(VALUE self) {
  *   vector.set_validity(0, false)  # Mark row 0 as NULL
  *   vector.set_validity(1, true)   # Mark row 1 as valid
  */
-static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid) {
+static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid) {
     rubyDuckDBVector *ctx;
     idx_t idx;
     uint64_t *validity;
@@ -185,17 +185,17 @@ static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid) 
     return self;
 }
 
-void rbduckdb_init_duckdb_vector(void) {
+void rbduckdb_init_vector(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBVector = rb_define_class_under(mDuckDB, "Vector", rb_cObject);
     rb_define_alloc_func(cDuckDBVector, allocate);
 
-    rb_define_method(cDuckDBVector, "get_data", rbduckdb_vector_get_data, 0);
-    rb_define_method(cDuckDBVector, "get_validity", rbduckdb_vector_get_validity, 0);
-    rb_define_method(cDuckDBVector, "assign_string_element", rbduckdb_vector_assign_string_element, 2);
-    rb_define_method(cDuckDBVector, "assign_string_element_len", rbduckdb_vector_assign_string_element_len, 2);
-    rb_define_method(cDuckDBVector, "logical_type", rbduckdb_vector_logical_type, 0);
-    rb_define_method(cDuckDBVector, "set_validity", rbduckdb_vector_set_validity, 2);
+    rb_define_method(cDuckDBVector, "get_data", vector_get_data, 0);
+    rb_define_method(cDuckDBVector, "get_validity", vector_get_validity, 0);
+    rb_define_method(cDuckDBVector, "assign_string_element", vector_assign_string_element, 2);
+    rb_define_method(cDuckDBVector, "assign_string_element_len", vector_assign_string_element_len, 2);
+    rb_define_method(cDuckDBVector, "logical_type", vector_logical_type, 0);
+    rb_define_method(cDuckDBVector, "set_validity", vector_set_validity, 2);
 }
