@@ -43,6 +43,21 @@ module DuckDBTest
       assert_equal 4950, result.first.first
     end
 
+    def test_set_update_after_set_init_overrides_default
+      af = DuckDB::AggregateFunction.new
+      af.name = 'sum_update_after_init'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT sum_update_after_init(i) FROM range(100) t(i)')
+
+      # default update would ignore inputs and return 0; real update sums them
+      assert_equal 4950, result.first.first
+    end
+
     def test_aggregate_update_sums_values
       register_aggregate('my_sum',
                          init: -> { 0 },
