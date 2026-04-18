@@ -592,7 +592,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_bigint-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_bigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_bigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int64_t *data;
     idx_t idx;
     int64_t val;
@@ -655,7 +655,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_boolean-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_boolean(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_boolean(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     bool *data;
     idx_t idx;
 
@@ -705,7 +705,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_date-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_date(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_date(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     duckdb_date *data;
     idx_t idx;
 
@@ -761,7 +761,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_double-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_double(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_double(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     double *data;
     idx_t idx;
     double val;
@@ -821,7 +821,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_float-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_float(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_float(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     float *data;
     idx_t idx;
 
@@ -874,7 +874,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_integer-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_integer(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_integer(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int32_t *data;
     idx_t idx;
     int32_t val;
@@ -934,7 +934,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_smallint-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_smallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_smallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int16_t *data;
     idx_t idx;
 
@@ -987,7 +987,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_timestamp-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_timestamp(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     duckdb_timestamp *data;
     idx_t idx;
 
@@ -1050,7 +1050,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_timestamp_tz-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     duckdb_time_tz *data;
     idx_t idx;
     int64_t secs;
@@ -1116,7 +1116,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_tinyint-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_tinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_tinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int8_t *data;
     idx_t idx;
 
@@ -1169,7 +1169,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_ubigint-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_ubigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_ubigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint64_t *data;
     idx_t idx;
 
@@ -1222,7 +1222,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_uinteger-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_uinteger(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_uinteger(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint32_t *data;
     idx_t idx;
 
@@ -1275,7 +1275,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_usmallint-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_usmallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_usmallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint16_t *data;
     idx_t idx;
 
@@ -1328,7 +1328,7 @@
             </details>
           </div>
           <div class="method-source-code" id="write_utinyint-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_memory_helper_write_utinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+            <pre class="c" data-language="c">static VALUE memory_helper_s_write_utinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint8_t *data;
     idx_t idx;
 
