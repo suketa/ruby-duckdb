@@ -431,7 +431,7 @@ static VALUE appender__append_value(VALUE self, VALUE val) {
     rubyDuckDBValue *value_ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    value_ctx = get_struct_value(val);
+    value_ctx = rbduckdb_get_struct_value(val);
 
     return state_to_rbool(duckdb_append_value(ctx->appender, value_ctx->value));
 }
