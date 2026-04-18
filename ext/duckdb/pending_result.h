@@ -8,6 +8,6 @@ struct _rubyDuckDBPendingResult {
 
 typedef struct _rubyDuckDBPendingResult rubyDuckDBPendingResult;
 
-rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj);
-void rbduckdb_init_duckdb_pending_result(void);
+rubyDuckDBPendingResult *rbduckdb_get_struct_pending_result(VALUE obj);
+void rbduckdb_init_pending_result(void);
 #endif

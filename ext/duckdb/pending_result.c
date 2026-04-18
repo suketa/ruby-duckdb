@@ -5,12 +5,12 @@ static VALUE cDuckDBPendingResult;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_pending_result_initialize(int argc, VALUE *args, VALUE self);
-static VALUE duckdb_pending_result_execute_task(VALUE self);
-static VALUE duckdb_pending_result_execute_pending(VALUE self);
-static VALUE duckdb_pending_result_execution_finished_p(VALUE self);
-static VALUE duckdb_pending_result__state(VALUE self);
-static VALUE duckdb_pending_result__execute_check_state(VALUE self);
+static VALUE pending_result_initialize(int argc, VALUE *args, VALUE self);
+static VALUE pending_result_execute_task(VALUE self);
+static VALUE pending_result_execute_pending(VALUE self);
+static VALUE pending_result_execution_finished_p(VALUE self);
+static VALUE pending_result__state(VALUE self);
+static VALUE pending_result__execute_check_state(VALUE self);
 
 static const rb_data_type_t pending_result_data_type = {
     "DuckDB/PendingResult",
@@ -35,7 +35,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBPendingResult);
 }
 
-static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self) {
+static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
     VALUE oDuckDBPreparedStatement;
     VALUE streaming_p = Qfalse;
     duckdb_state state;
@@ -49,7 +49,7 @@ static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self)
         rb_raise(rb_eTypeError, "1st argument must be DuckDB::PreparedStatement");
     }
 
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
 
     state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
@@ -71,14 +71,14 @@ static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self)
  *  pending_result = conn.async_query("slow query")
  *  pending_result.execute_task
  */
-static VALUE duckdb_pending_result_execute_task(VALUE self) {
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+static VALUE pending_result_execute_task(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     ctx->state = duckdb_pending_execute_task(ctx->pending_result);
     return Qnil;
 }
 
-static VALUE duckdb_pending_result_execution_finished_p(VALUE self) {
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+static VALUE pending_result_execution_finished_p(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     return duckdb_pending_execution_is_finished(ctx->state) ? Qtrue : Qfalse;
 }
 
@@ -94,7 +94,7 @@ static VALUE duckdb_pending_result_execution_finished_p(VALUE self) {
  *  pending_result.execute_task while pending_result.state != :ready
  *  result = pending_result.execute_pending # => DuckDB::Result
  */
-static VALUE duckdb_pending_result_execute_pending(VALUE self) {
+static VALUE pending_result_execute_pending(VALUE self) {
     rubyDuckDBPendingResult *ctx;
     rubyDuckDBResult *ctxr;
     VALUE result = rbduckdb_create_result();
@@ -108,34 +108,34 @@ static VALUE duckdb_pending_result_execute_pending(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_pending_result__state(VALUE self) {
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+static VALUE pending_result__state(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     return INT2FIX(ctx->state);
 }
 
 /* :nodoc: */
-static VALUE duckdb_pending_result__execute_check_state(VALUE self) {
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+static VALUE pending_result__execute_check_state(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     return INT2FIX(duckdb_pending_execute_check_state(ctx->pending_result));
 }
 
-rubyDuckDBPendingResult *get_struct_pending_result(VALUE obj) {
+rubyDuckDBPendingResult *rbduckdb_get_struct_pending_result(VALUE obj) {
     rubyDuckDBPendingResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
     return ctx;
 }
 
-void rbduckdb_init_duckdb_pending_result(void) {
+void rbduckdb_init_pending_result(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
 
-    rb_define_method(cDuckDBPendingResult, "initialize", duckdb_pending_result_initialize, -1);
-    rb_define_method(cDuckDBPendingResult, "execute_task", duckdb_pending_result_execute_task, 0);
-    rb_define_method(cDuckDBPendingResult, "execute_pending", duckdb_pending_result_execute_pending, 0);
-    rb_define_method(cDuckDBPendingResult, "execution_finished?", duckdb_pending_result_execution_finished_p, 0);
-    rb_define_private_method(cDuckDBPendingResult, "_state", duckdb_pending_result__state, 0);
-    rb_define_private_method(cDuckDBPendingResult, "_execute_check_state", duckdb_pending_result__execute_check_state, 0);
+    rb_define_method(cDuckDBPendingResult, "initialize", pending_result_initialize, -1);
+    rb_define_method(cDuckDBPendingResult, "execute_task", pending_result_execute_task, 0);
+    rb_define_method(cDuckDBPendingResult, "execute_pending", pending_result_execute_pending, 0);
+    rb_define_method(cDuckDBPendingResult, "execution_finished?", pending_result_execution_finished_p, 0);
+    rb_define_private_method(cDuckDBPendingResult, "_state", pending_result__state, 0);
+    rb_define_private_method(cDuckDBPendingResult, "_execute_check_state", pending_result__execute_check_state, 0);
 }
