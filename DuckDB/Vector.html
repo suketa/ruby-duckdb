@@ -604,7 +604,7 @@
             </details>
           </div>
           <div class="method-source-code" id="assign_string_element-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
+            <pre class="c" data-language="c">static VALUE vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
     rubyDuckDBVector *ctx;
     idx_t idx;
     const char *string_val;
@@ -662,7 +662,7 @@
             </details>
           </div>
           <div class="method-source-code" id="assign_string_element_len-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
+            <pre class="c" data-language="c">static VALUE vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
     rubyDuckDBVector *ctx;
     idx_t idx;
     const char *string_val;
@@ -722,7 +722,7 @@
             </details>
           </div>
           <div class="method-source-code" id="get_data-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_vector_get_data(VALUE self) {
+            <pre class="c" data-language="c">static VALUE vector_get_data(VALUE self) {
     rubyDuckDBVector *ctx;
     void *data;
 
@@ -776,7 +776,7 @@
             </details>
           </div>
           <div class="method-source-code" id="get_validity-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_vector_get_validity(VALUE self) {
+            <pre class="c" data-language="c">static VALUE vector_get_validity(VALUE self) {
     rubyDuckDBVector *ctx;
     uint64_t *validity;
 
@@ -834,7 +834,7 @@
             </details>
           </div>
           <div class="method-source-code" id="logical_type-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_vector_logical_type(VALUE self) {
+            <pre class="c" data-language="c">static VALUE vector_logical_type(VALUE self) {
     rubyDuckDBVector *ctx;
     duckdb_logical_type logical_type;
 
@@ -890,7 +890,7 @@
             </details>
           </div>
           <div class="method-source-code" id="set_validity-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_vector_set_validity(VALUE self, VALUE index, VALUE valid) {
+            <pre class="c" data-language="c">static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid) {
     rubyDuckDBVector *ctx;
     idx_t idx;
     uint64_t *validity;
