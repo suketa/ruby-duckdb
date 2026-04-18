@@ -638,7 +638,7 @@
             </details>
           </div>
           <div class="method-source-code" id="foldable-3F-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_expression_foldable_p(VALUE self) {
+            <pre class="c" data-language="c">static VALUE expression_foldable_p(VALUE self) {
     rubyDuckDBExpression *ctx;
     TypedData_Get_Struct(self, rubyDuckDBExpression, &amp;expression_data_type, ctx);
     return duckdb_expression_is_foldable(ctx-&gt;expression) ? Qtrue : Qfalse;
