@@ -5,8 +5,8 @@ VALUE cDuckDBExpression;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE rbduckdb_expression_foldable_p(VALUE self);
-static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context);
+static VALUE expression_foldable_p(VALUE self);
+static VALUE expression__fold(VALUE self, VALUE client_context);
 
 static const rb_data_type_t expression_data_type = {
     "DuckDB/Expression",
@@ -51,7 +51,7 @@ VALUE rbduckdb_expression_new(duckdb_expression expression) {
  * planning time (e.g. literals, constant arithmetic), +false+ otherwise
  * (e.g. column references, non-deterministic functions).
  */
-static VALUE rbduckdb_expression_foldable_p(VALUE self) {
+static VALUE expression_foldable_p(VALUE self) {
     rubyDuckDBExpression *ctx;
     TypedData_Get_Struct(self, rubyDuckDBExpression, &expression_data_type, ctx);
     return duckdb_expression_is_foldable(ctx->expression) ? Qtrue : Qfalse;
@@ -66,7 +66,7 @@ static VALUE rbduckdb_expression_foldable_p(VALUE self) {
  * Use the public Expression#fold instead, which guards against non-foldable
  * expressions before calling this method.
  */
-static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
+static VALUE expression__fold(VALUE self, VALUE client_context) {
     rubyDuckDBExpression *expr_ctx;
     rubyDuckDBClientContext *cc_ctx;
     duckdb_value out_value = NULL;
@@ -93,12 +93,12 @@ static VALUE rbduckdb_expression_fold(VALUE self, VALUE client_context) {
     return result;
 }
 
-void rbduckdb_init_duckdb_expression(void) {
+void rbduckdb_init_expression(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBExpression = rb_define_class_under(mDuckDB, "Expression", rb_cObject);
     rb_define_alloc_func(cDuckDBExpression, allocate);
-    rb_define_method(cDuckDBExpression, "foldable?", rbduckdb_expression_foldable_p, 0);
-    rb_define_private_method(cDuckDBExpression, "_fold", rbduckdb_expression_fold, 1);
+    rb_define_method(cDuckDBExpression, "foldable?", expression_foldable_p, 0);
+    rb_define_private_method(cDuckDBExpression, "_fold", expression__fold, 1);
 }
