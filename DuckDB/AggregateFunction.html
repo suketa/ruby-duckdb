@@ -627,7 +627,7 @@
             </details>
           </div>
           <div class="method-source-code" id="_state_registry_size-source">
-            <pre class="c" data-language="c">static VALUE aggregate_function_state_registry_size(VALUE klass) {
+            <pre class="c" data-language="c">static VALUE aggregate_function_s__state_registry_size(VALUE klass) {
     (void)klass;
     return LONG2NUM((long)RHASH_SIZE(g_aggregate_state_registry));
 }</pre>
@@ -669,7 +669,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE duckdb_aggregate_function_initialize(VALUE self) {
+            <pre class="c" data-language="c">static VALUE aggregate_function_initialize(VALUE self) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &amp;aggregate_function_data_type, p);
     p-&gt;aggregate_function = duckdb_create_aggregate_function();
@@ -778,7 +778,7 @@
             </details>
           </div>
           <div class="method-source-code" id="name-3D-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_aggregate_function_set_name(VALUE self, VALUE name) {
+            <pre class="c" data-language="c">static VALUE aggregate_function_set_name(VALUE self, VALUE name) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &amp;aggregate_function_data_type, p);
 
