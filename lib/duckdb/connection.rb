@@ -34,7 +34,7 @@ module DuckDB
 
     def query_multi_sql(sql)
       stmts = ExtractedStatements.new(self, sql)
-      return query_sql(sql) if stmts.size == 1
+      return _query_sql(sql) if stmts.size == 1
 
       result = nil
       stmts.each do |stmt|

@@ -120,7 +120,7 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
             column_names[i] = StringValuePtr(col_name_val);
         }
     }
-    ctxcon = get_struct_connection(con);
+    ctxcon = rbduckdb_get_struct_connection(con);
     appender = allocate(klass);
     TypedData_Get_Struct(appender, rubyDuckDBAppender, &appender_data_type, ctx);
     if (duckdb_appender_create_query(ctxcon->con, query_str, column_count, type_array, table_name, column_names, &ctx->appender) == DuckDBError) {
@@ -141,7 +141,7 @@ static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE tabl
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    ctxcon = get_struct_connection(con);
+    ctxcon = rbduckdb_get_struct_connection(con);
 
     if (schema != Qnil) {
         pschema = StringValuePtr(schema);

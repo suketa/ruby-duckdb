@@ -70,7 +70,7 @@ static VALUE duckdb_table_description__initialize(VALUE self, VALUE con, VALUE c
     if (!NIL_P(table)) {
         ptable = StringValuePtr(table);
     }
-    ctxcon = get_struct_connection(con);
+    ctxcon = rbduckdb_get_struct_connection(con);
     ctx = get_struct_table_description(self);
 
     if (ctx->table_description) {
