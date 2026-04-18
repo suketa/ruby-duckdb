@@ -569,21 +569,18 @@ static void execute_finalize_callback_protected(void *user_data) {
 
     for (i = 0; i < arg->count; i++) {
         ruby_aggregate_state *state = states[i];
+        struct finalize_one_arg one;
         struct vector_set_arg vsa;
         int exception_state;
         VALUE ret;
 
-        if (arg->ctx->finalize_proc != Qnil) {
-            struct finalize_one_arg one;
-            one.finalize_proc = arg->ctx->finalize_proc;
-            one.ruby_state = state->ruby_state;
-            ret = rb_protect(call_finalize_proc, (VALUE)&one, &exception_state);
-            if (exception_state) {
-                report_ruby_error_to_duckdb(arg->info);
-                goto cleanup;
-            }
-        } else {
-            ret = state->ruby_state;
+        one.finalize_proc = arg->ctx->finalize_proc;
+        one.ruby_state = state->ruby_state;
+
+        ret = rb_protect(call_finalize_proc, (VALUE)&one, &exception_state);
+        if (exception_state) {
+            report_ruby_error_to_duckdb(arg->info);
+            goto cleanup;
         }
 
         vsa.vector = arg->result;
@@ -619,7 +616,7 @@ static void finalize_callback(duckdb_function_info info,
     struct finalize_callback_arg arg;
 
     ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
-    if (ctx == NULL) {
+    if (ctx == NULL || ctx->finalize_proc == Qnil) {
         return;
     }
 
@@ -670,11 +667,10 @@ static void destroy_callback(duckdb_aggregate_state *states, idx_t count) {
 
 /*
  * Wire up all 5 DuckDB aggregate callbacks on the underlying aggregate_function.
- * Called once init_proc has been supplied.  finalize_proc is optional; when
- * absent the finalize callback uses the identity (returns the state as-is).
+ * Called once both init_proc and finalize_proc have been supplied.
  */
 static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
-    if (p->init_proc == Qnil) {
+    if (p->init_proc == Qnil || p->finalize_proc == Qnil) {
         return;
     }
     duckdb_aggregate_function_set_extra_info(p->aggregate_function, p, NULL);
