@@ -50,7 +50,7 @@ static VALUE duckdb_extracted_statements__initialize(VALUE self, VALUE con, VALU
     }
 
     pquery = StringValuePtr(query);
-    pcon = get_struct_connection(con);
+    pcon = rbduckdb_get_struct_connection(con);
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
 
     ctx->num_statements = duckdb_extract_statements(pcon->con, pquery, &(ctx->extracted_statements));
@@ -88,7 +88,7 @@ static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE co
     if (rb_obj_is_kind_of(con, cDuckDBConnection) != Qtrue) {
         rb_raise(rb_eTypeError, "1st argument must be DuckDB::Connection");
     }
-    pcon = get_struct_connection(con);
+    pcon = rbduckdb_get_struct_connection(con);
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
 
     return rbduckdb_prepared_statement_new(pcon->con, ctx->extracted_statements, NUM2ULL(index));
