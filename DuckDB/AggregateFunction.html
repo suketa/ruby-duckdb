@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="class DuckDB::AggregateFunction: AggregateFunction encapsulates DuckDB&#39;s aggregate function. AggregateFunction is experimental."
+      content="class DuckDB::AggregateFunction: AggregateFunction lets you register a custom aggregate function written in Ruby and call it from SQL. An aggregate function folds many rows into a sin"
     >
 
 
@@ -28,7 +28,7 @@
 
 
 
-    <meta property="og:description" content="AggregateFunction encapsulates DuckDB&#39;s aggregate function. AggregateFunction is experimental.">
+    <meta property="og:description" content="AggregateFunction lets you register a custom aggregate function written in Ruby and call it from SQL. An aggregate function folds many rows into a sin">
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-    <meta name="twitter:description" content="AggregateFunction encapsulates DuckDB&#39;s aggregate function. AggregateFunction is experimental.">
+    <meta name="twitter:description" content="AggregateFunction lets you register a custom aggregate function written in Ruby and call it from SQL. An aggregate function folds many rows into a sin">
 
 
 
@@ -529,7 +529,15 @@
 
         <li ><a href="#method-i-return_type-3D">return_type=</a></li>
 
+        <li ><a href="#method-i-set_combine">set_combine</a></li>
+
+        <li ><a href="#method-i-set_finalize">set_finalize</a></li>
+
+        <li ><a href="#method-i-set_init">set_init</a></li>
+
         <li ><a href="#method-i-set_special_handling">set_special_handling</a></li>
+
+        <li ><a href="#method-i-set_update">set_update</a></li>
 
       </ul>
     </details>
@@ -580,11 +588,70 @@
 
   <section class="description">
     
-<p><a href="AggregateFunction.html"><code>DuckDB::AggregateFunction</code></a> encapsulates DuckDB’s aggregate function.</p>
+<p><a href="AggregateFunction.html"><code>DuckDB::AggregateFunction</code></a> lets you register a custom aggregate function written in Ruby and call it from SQL.</p>
 
-<p>@note <a href="AggregateFunction.html"><code>DuckDB::AggregateFunction</code></a> is experimental. Phase 1.0 only supports</p>
+<p>An aggregate function folds many rows into a single value. You define its behaviour with four callbacks:</p>
+<ul><li>
+<p><a href="AggregateFunction.html#method-i-set_init"><code>set_init</code></a>    — called once per group; returns the initial state.</p>
+</li><li>
+<p><a href="AggregateFunction.html#method-i-set_update"><code>set_update</code></a>  — called once per row; receives the current state and the</p>
 
-<pre>+set_init+ and +set_finalize+; +update+ and +combine+ are internal no-ops.</pre>
+<pre>input value(s), returns the new state.</pre>
+</li><li>
+<p><a href="AggregateFunction.html#method-i-set_combine"><code>set_combine</code></a> — merges two partial states (required for parallel</p>
+
+<pre>execution); receives source and target states, returns the
+merged state.</pre>
+</li><li>
+<p><a href="AggregateFunction.html#method-i-set_finalize"><code>set_finalize</code></a> — converts the final state into the SQL result value.</p>
+</li></ul>
+
+<p>Only <a href="AggregateFunction.html#method-i-set_init"><code>set_init</code></a> is required. The other three have sensible defaults:</p>
+<ul><li>
+<p><a href="AggregateFunction.html#method-i-set_update"><code>set_update</code></a>   defaults to +{ |state, *| state }+ (ignore inputs)</p>
+</li><li>
+<p><a href="AggregateFunction.html#method-i-set_combine"><code>set_combine</code></a>  defaults to +{ |s1, _s2| s1 }+ (keep source state)</p>
+</li><li>
+<p><a href="AggregateFunction.html#method-i-set_finalize"><code>set_finalize</code></a> defaults to +{ |x| x }+ (return state as-is)</p>
+</li></ul>
+
+<p>@note The default <a href="AggregateFunction.html#method-i-set_combine"><code>set_combine</code></a> keeps the source state and discards the</p>
+
+<pre>target, which is only correct for single-threaded (single-partition)
+execution. If DuckDB runs the aggregate in parallel it will produce
+wrong results. Always supply an explicit +set_combine+ when the
+aggregate must be parallel-safe.</pre>
+
+<h2 id="class-DuckDB::AggregateFunction-label-Basic+example-3A+custom+SUM"><a href="#class-DuckDB::AggregateFunction-label-Basic+example-3A+custom+SUM">Basic example: custom SUM</a></h2>
+
+<pre class="ruby"><span class="ruby-identifier">af</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunction</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">name</span>        = <span class="ruby-string">&#39;my_sum&#39;</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
+
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_init</span>    { <span class="ruby-value">0</span> }
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_update</span>  { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">value</span> }
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_combine</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s1</span>, <span class="ruby-identifier">s2</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s1</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">s2</span> }
+
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_aggregate_function</span>(<span class="ruby-identifier">af</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT my_sum(i) FROM range(100) t(i)&#39;</span>).<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span>  <span class="ruby-comment"># =&gt; 4950</span>
+</pre>
+
+<h2 id="class-DuckDB::AggregateFunction-label-Example-3A+weighted+average+with+Hash+state"><a href="#class-DuckDB::AggregateFunction-label-Example-3A+weighted+average+with+Hash+state">Example: weighted average with Hash state</a></h2>
+
+<pre class="ruby"><span class="ruby-identifier">af</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunction</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">name</span>        = <span class="ruby-string">&#39;weighted_avg&#39;</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">DOUBLE</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">DOUBLE</span>)  <span class="ruby-comment"># value</span>
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">DOUBLE</span>)  <span class="ruby-comment"># weight</span>
+
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_init</span>    { { <span class="ruby-value">sum:</span> <span class="ruby-value">0.0</span>, <span class="ruby-value">weight:</span> <span class="ruby-value">0.0</span> } }
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_update</span>  { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">weight</span><span class="ruby-operator">|</span> { <span class="ruby-value">sum:</span> <span class="ruby-identifier">state</span>[<span class="ruby-value">:sum</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">value</span> <span class="ruby-operator">*</span> <span class="ruby-identifier">weight</span>, <span class="ruby-value">weight:</span> <span class="ruby-identifier">state</span>[<span class="ruby-value">:weight</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">weight</span> } }
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_combine</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s1</span>, <span class="ruby-identifier">s2</span><span class="ruby-operator">|</span> { <span class="ruby-value">sum:</span> <span class="ruby-identifier">s1</span>[<span class="ruby-value">:sum</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">s2</span>[<span class="ruby-value">:sum</span>], <span class="ruby-value">weight:</span> <span class="ruby-identifier">s1</span>[<span class="ruby-value">:weight</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">s2</span>[<span class="ruby-value">:weight</span>] } }
+<span class="ruby-identifier">af</span>.<span class="ruby-identifier">set_finalize</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span><span class="ruby-operator">|</span> <span class="ruby-identifier">state</span>[<span class="ruby-value">:weight</span>].<span class="ruby-identifier">zero?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">state</span>[<span class="ruby-value">:sum</span>] <span class="ruby-operator">/</span> <span class="ruby-identifier">state</span>[<span class="ruby-value">:weight</span>] }
+
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_aggregate_function</span>(<span class="ruby-identifier">af</span>)
+</pre>
 
   </section>
 
@@ -732,7 +799,7 @@
             </details>
           </div>
           <div class="method-source-code" id="add_parameter-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 27</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 76</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -825,7 +892,7 @@
             </details>
           </div>
           <div class="method-source-code" id="return_type-3D-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 16</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 65</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -841,6 +908,155 @@
           <p>Sets the return type for the aggregate function.</p>
 
 <p>@param <a href="../lib/duckdb/logical_type_rb.html">logical_type</a> [DuckDB::LogicalType | :logical_type_symbol] the return type @return [DuckDB::AggregateFunction] self @raise [DuckDB::Error] if the type is not supported</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-set_combine" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-set_combine" title="Link to this method">
+                <span class="method-name">set_combine</span>
+                <span class="method-args">(&amp;)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="set_combine-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 124</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_combine</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-ivar">@combine_set</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-identifier">_set_combine</span>(<span class="ruby-operator">&amp;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets the block that merges two partial states during parallel execution. The block receives the source and target states and must return the merged state. May be called after <a href="AggregateFunction.html#method-i-set_init"><code>set_init</code></a> to override the injected default.</p>
+
+<p>@note The default +{ |s1, _s2| s1 }+ is only correct for single-threaded</p>
+
+<pre>execution. Supply an explicit combine block for parallel-safe aggregates.</pre>
+
+<p>@return [DuckDB::AggregateFunction] self</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-set_finalize" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-set_finalize" title="Link to this method">
+                <span class="method-name">set_finalize</span>
+                <span class="method-args">(&amp;)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="set_finalize-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 136</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_finalize</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-ivar">@finalize_set</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-identifier">_set_finalize</span>(<span class="ruby-operator">&amp;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets the block that converts the final state into the SQL result value. The block receives the accumulated state and must return a value compatible with the declared <code>return_type</code>. Default: +{ |x| x }+ (return the state as-is). May be called after <a href="AggregateFunction.html#method-i-set_init"><code>set_init</code></a> to override the injected default.</p>
+
+<p>@return [DuckDB::AggregateFunction] self</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-set_init" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-set_init" title="Link to this method">
+                <span class="method-name">set_init</span>
+                <span class="method-args">(&amp;)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="set_init-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 93</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_init</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@init_set</span>
+    <span class="ruby-identifier">_set_update</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-operator">*</span><span class="ruby-operator">|</span> <span class="ruby-identifier">state</span> } <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@update_set</span>
+    <span class="ruby-identifier">_set_combine</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s1</span>, <span class="ruby-identifier">_s2</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s1</span> } <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@combine_set</span>
+    <span class="ruby-identifier">_set_finalize</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span> } <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@finalize_set</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">_set_init</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-ivar">@init_set</span> = <span class="ruby-keyword">true</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets the block that initialises the per-group state. The block takes no arguments and returns the initial state value. This is the only required callback; defaults for <a href="AggregateFunction.html#method-i-set_update"><code>set_update</code></a>, <a href="AggregateFunction.html#method-i-set_combine"><code>set_combine</code></a>, and <a href="AggregateFunction.html#method-i-set_finalize"><code>set_finalize</code></a> are injected automatically on the first call if those methods have not been called explicitly.</p>
+
+<p>@note The injected default for <a href="AggregateFunction.html#method-i-set_combine"><code>set_combine</code></a> is +{ |s1, _s2| s1 }+, which</p>
+
+<pre>is only correct for single-threaded execution. Always call +set_combine+
+explicitly when the aggregate must be parallel-safe.</pre>
+
+<p>@return [DuckDB::AggregateFunction] self</p>
 
 
         </div>
@@ -871,7 +1087,7 @@
             </details>
           </div>
           <div class="method-source-code" id="set_special_handling-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 43</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 151</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
   <span class="ruby-identifier">_set_special_handling</span>
 <span class="ruby-keyword">end</span></pre>
@@ -885,6 +1101,51 @@
           <p>Sets special NULL handling for the aggregate function. By default <a href="../DuckDB.html"><code>DuckDB</code></a> skips rows with NULL input values.  Calling this method disables that behaviour so the update callback is invoked even when inputs are NULL, receiving <code>nil</code> for each NULL argument.  This lets the function implement its own NULL semantics (e.g. counting NULLs).</p>
 
 <p>Wraps <code>duckdb_aggregate_function_set_special_handling</code>.</p>
+
+<p>@return [DuckDB::AggregateFunction] self</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-set_update" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-set_update" title="Link to this method">
+                <span class="method-name">set_update</span>
+                <span class="method-args">(&amp;)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="set_update-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 110</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_update</span>(<span class="ruby-operator">&amp;</span>)
+  <span class="ruby-ivar">@update_set</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-identifier">_set_update</span>(<span class="ruby-operator">&amp;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets the block that accumulates one row into the state. The block receives the current state followed by the input column value(s) for that row, and must return the updated state. Default: +{ |state, *| state }+ (ignore inputs, keep state unchanged). May be called after <a href="AggregateFunction.html#method-i-set_init"><code>set_init</code></a> to override the injected default.</p>
 
 <p>@return [DuckDB::AggregateFunction] self</p>
 
