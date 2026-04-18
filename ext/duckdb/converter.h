@@ -32,12 +32,6 @@ VALUE rbduckdb_time_to_ruby(duckdb_time t);
 VALUE rbduckdb_date_to_ruby(duckdb_date date);
 VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts);
 
-VALUE infinite_date_value(duckdb_date date);
-VALUE infinite_timestamp_value(duckdb_timestamp timestamp);
-VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s);
-VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms);
-VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns);
-
-void rbduckdb_init_duckdb_converter(void);
+void rbduckdb_init_converter(void);
 
 #endif
