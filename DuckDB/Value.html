@@ -1116,7 +1116,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_null-source">
-            <pre class="c" data-language="c">static VALUE duckdb_value_s_create_null(VALUE klass) {
+            <pre class="c" data-language="c">static VALUE value_s_create_null(VALUE klass) {
     duckdb_value value = duckdb_create_null_value();
     return rbduckdb_value_new(value);
 }</pre>
