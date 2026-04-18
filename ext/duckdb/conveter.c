@@ -17,7 +17,7 @@ ID id__to_time_from_duckdb_timestamp_tz;
 ID id__to_infinity;
 ID id__decimal_to_unscaled;
 
-VALUE infinite_date_value(duckdb_date date) {
+static VALUE infinite_date_value(duckdb_date date) {
     if (duckdb_is_finite_date(date) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
                           INT2NUM(date.days)
@@ -26,7 +26,7 @@ VALUE infinite_date_value(duckdb_date date) {
     return Qnil;
 }
 
-VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
+static VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
     if (duckdb_is_finite_timestamp(timestamp) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
                           LL2NUM(timestamp.micros)
@@ -35,7 +35,7 @@ VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
     return Qnil;
 }
 
-VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
+static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
     if (duckdb_is_finite_timestamp_s(timestamp_s) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
                           LL2NUM(timestamp_s.seconds)
@@ -44,7 +44,7 @@ VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
     return Qnil;
 }
 
-VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
+static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
     if (duckdb_is_finite_timestamp_ms(timestamp_ms) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
                           LL2NUM(timestamp_ms.millis)
@@ -53,7 +53,7 @@ VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
     return Qnil;
 }
 
-VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
+static VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
     if (duckdb_is_finite_timestamp_ns(timestamp_ns) == false) {
         return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
                           LL2NUM(timestamp_ns.nanos)
@@ -320,7 +320,7 @@ VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts) {
     return obj;
 }
 
-void rbduckdb_init_duckdb_converter(void) {
+void rbduckdb_init_converter(void) {
     mDuckDBConverter = rb_define_module_under(mDuckDB, "Converter");
 
     id__to_date = rb_intern("_to_date");
