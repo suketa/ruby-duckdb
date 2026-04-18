@@ -8,5 +8,5 @@ struct _rubyDuckDBExtractedStatements {
 
 typedef struct _rubyDuckDBExtractedStatements rubyDuckDBExtractedStatements;
 
-void rbduckdb_init_duckdb_extracted_statements(void);
+void rbduckdb_init_extracted_statements(void);
 #endif
