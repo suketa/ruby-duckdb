@@ -14,16 +14,6 @@ module DuckDBTest
       @db&.close
     end
 
-    def test_minimal_aggregate_returns_initial_state
-      register_aggregate('my_agg',
-                         init: -> { 42 },
-                         finalize: ->(state) { state })
-
-      result = @con.query('SELECT my_agg(i) FROM range(100) t(i)')
-
-      assert_equal 42, result.first.first
-    end
-
     def test_default_finalize_returns_state_as_is
       register_aggregate('my_agg_default_finalize',
                          init: -> { 42 })
