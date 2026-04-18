@@ -20,6 +20,12 @@ module DuckDB
   # * +set_combine+  defaults to +{ |s1, _s2| s1 }+ (keep source state)
   # * +set_finalize+ defaults to +{ |x| x }+ (return state as-is)
   #
+  # @note The default +set_combine+ keeps the source state and discards the
+  #   target, which is only correct for single-threaded (single-partition)
+  #   execution. If DuckDB runs the aggregate in parallel it will produce
+  #   wrong results. Always supply an explicit +set_combine+ when the
+  #   aggregate must be parallel-safe.
+  #
   # == Basic example: custom SUM
   #
   #   af = DuckDB::AggregateFunction.new
@@ -76,14 +82,17 @@ module DuckDB
     # Sets the block that initialises the per-group state.
     # The block takes no arguments and returns the initial state value.
     # This is the only required callback; defaults for +set_update+,
-    # +set_combine+, and +set_finalize+ are injected automatically if not
-    # called before +set_init+.
+    # +set_combine+, and +set_finalize+ are injected automatically on the
+    # first call if those methods have not been called explicitly.
     #
     # @return [DuckDB::AggregateFunction] self
     def set_init(&)
-      _set_update { |state, *| state } unless @update_set
-      _set_combine { |s1, _s2| s1 } unless @combine_set
-      _set_finalize { |x| x } unless @finalize_set
+      unless @init_set
+        _set_update { |state, *| state } unless @update_set
+        _set_combine { |s1, _s2| s1 } unless @combine_set
+        _set_finalize { |x| x } unless @finalize_set
+        @init_set = true
+      end
       _set_init(&)
     end
 
@@ -101,7 +110,9 @@ module DuckDB
     # Sets the block that merges two partial states during parallel execution.
     # The block receives the source and target states and must return the
     # merged state.
-    # Default: +{ |s1, _s2| s1 }+ (keep the source state).
+    #
+    # @note The default +{ |s1, _s2| s1 }+ is only correct for single-threaded
+    #   execution. Supply an explicit combine block for parallel-safe aggregates.
     #
     # @return [DuckDB::AggregateFunction] self
     def set_combine(&)
