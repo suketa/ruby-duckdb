@@ -272,7 +272,7 @@ static VALUE duckdb_connection_register_aggregate_function(VALUE self, VALUE agg
     duckdb_state state;
 
     ctxcon = get_struct_connection(self);
-    ctxaf = get_struct_aggregate_function(aggregate_function);
+    ctxaf = rbduckdb_get_struct_aggregate_function(aggregate_function);
 
     state = duckdb_register_aggregate_function(ctxcon->con, ctxaf->aggregate_function);
 

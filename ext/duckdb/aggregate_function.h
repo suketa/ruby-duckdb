@@ -12,7 +12,7 @@ struct _rubyDuckDBAggregateFunction {
 
 typedef struct _rubyDuckDBAggregateFunction rubyDuckDBAggregateFunction;
 
-void rbduckdb_init_duckdb_aggregate_function(void);
-rubyDuckDBAggregateFunction *get_struct_aggregate_function(VALUE obj);
+void rbduckdb_init_aggregate_function(void);
+rubyDuckDBAggregateFunction *rbduckdb_get_struct_aggregate_function(VALUE obj);
 
 #endif
