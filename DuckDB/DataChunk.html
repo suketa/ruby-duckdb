@@ -623,7 +623,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE initialize(int argc, VALUE *argv, VALUE self) {
+            <pre class="c" data-language="c">static VALUE data_chunk_initialize(int argc, VALUE *argv, VALUE self) {
     rubyDuckDBDataChunk *ctx;
     VALUE logical_types;
     idx_t column_count;
@@ -719,7 +719,7 @@
             </details>
           </div>
           <div class="method-source-code" id="column_count-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_column_count(VALUE self) {
+            <pre class="c" data-language="c">static VALUE data_chunk_column_count(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t count;
 
@@ -773,7 +773,7 @@
             </details>
           </div>
           <div class="method-source-code" id="get_vector-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx) {
+            <pre class="c" data-language="c">static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx) {
     rubyDuckDBDataChunk *ctx;
     idx_t idx;
     duckdb_vector vector;
@@ -991,7 +991,7 @@
             </details>
           </div>
           <div class="method-source-code" id="size-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_get_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE data_chunk_size(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t size;
 
@@ -1045,7 +1045,7 @@
             </details>
           </div>
           <div class="method-source-code" id="size-3D-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size) {
+            <pre class="c" data-language="c">static VALUE data_chunk_set_size(VALUE self, VALUE size) {
     rubyDuckDBDataChunk *ctx;
     idx_t sz;
 
