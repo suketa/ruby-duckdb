@@ -388,7 +388,7 @@ static void execute_execute_callback_protected(void *user_data) {
     func_info_ctx->info = darg->info;
 
     data_chunk_obj = rb_class_new_instance(0, NULL, cDuckDBDataChunk);
-    data_chunk_ctx = get_struct_data_chunk(data_chunk_obj);
+    data_chunk_ctx = rbduckdb_get_struct_data_chunk(data_chunk_obj);
     data_chunk_ctx->data_chunk = darg->output;
 
     VALUE call_args[3] = { darg->ctx->execute_proc, func_info_obj, data_chunk_obj };

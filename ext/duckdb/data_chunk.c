@@ -6,12 +6,12 @@ extern VALUE cDuckDBVector;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE initialize(int argc, VALUE *argv, VALUE self);
-static VALUE rbduckdb_data_chunk_column_count(VALUE self);
-static VALUE rbduckdb_data_chunk_get_size(VALUE self);
-static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size);
-static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx);
-static VALUE rbduckdb_data_chunk__reset(VALUE self);
+static VALUE data_chunk_initialize(int argc, VALUE *argv, VALUE self);
+static VALUE data_chunk_column_count(VALUE self);
+static VALUE data_chunk_size(VALUE self);
+static VALUE data_chunk_set_size(VALUE self, VALUE size);
+static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx);
+static VALUE data_chunk__reset(VALUE self);
 
 static const rb_data_type_t data_chunk_data_type = {
     "DuckDB/DataChunk",
@@ -38,13 +38,13 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBDataChunk);
 }
 
-rubyDuckDBDataChunk *get_struct_data_chunk(VALUE obj) {
+rubyDuckDBDataChunk *rbduckdb_get_struct_data_chunk(VALUE obj) {
     rubyDuckDBDataChunk *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
     return ctx;
 }
 
-static VALUE initialize(int argc, VALUE *argv, VALUE self) {
+static VALUE data_chunk_initialize(int argc, VALUE *argv, VALUE self) {
     rubyDuckDBDataChunk *ctx;
     VALUE logical_types;
     idx_t column_count;
@@ -94,7 +94,7 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self) {
  *
  *   data_chunk.column_count  # => 2
  */
-static VALUE rbduckdb_data_chunk_column_count(VALUE self) {
+static VALUE data_chunk_column_count(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t count;
 
@@ -113,7 +113,7 @@ static VALUE rbduckdb_data_chunk_column_count(VALUE self) {
  *
  *   data_chunk.size  # => 100
  */
-static VALUE rbduckdb_data_chunk_get_size(VALUE self) {
+static VALUE data_chunk_size(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t size;
 
@@ -132,7 +132,7 @@ static VALUE rbduckdb_data_chunk_get_size(VALUE self) {
  *
  *   data_chunk.size = 50
  */
-static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size) {
+static VALUE data_chunk_set_size(VALUE self, VALUE size) {
     rubyDuckDBDataChunk *ctx;
     idx_t sz;
 
@@ -152,7 +152,7 @@ static VALUE rbduckdb_data_chunk_set_size(VALUE self, VALUE size) {
  *
  *   vector = data_chunk.get_vector(0)
  */
-static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx) {
+static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx) {
     rubyDuckDBDataChunk *ctx;
     idx_t idx;
     duckdb_vector vector;
@@ -180,7 +180,7 @@ static VALUE rbduckdb_data_chunk_get_vector(VALUE self, VALUE col_idx) {
  *
  *   data_chunk._reset
  */
-static VALUE rbduckdb_data_chunk__reset(VALUE self) {
+static VALUE data_chunk__reset(VALUE self) {
     rubyDuckDBDataChunk *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
@@ -190,17 +190,17 @@ static VALUE rbduckdb_data_chunk__reset(VALUE self) {
     return self;
 }
 
-void rbduckdb_init_duckdb_data_chunk(void) {
+void rbduckdb_init_data_chunk(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBDataChunk = rb_define_class_under(mDuckDB, "DataChunk", rb_cObject);
     rb_define_alloc_func(cDuckDBDataChunk, allocate);
 
-    rb_define_method(cDuckDBDataChunk, "initialize", initialize, -1);
-    rb_define_method(cDuckDBDataChunk, "column_count", rbduckdb_data_chunk_column_count, 0);
-    rb_define_method(cDuckDBDataChunk, "size", rbduckdb_data_chunk_get_size, 0);
-    rb_define_method(cDuckDBDataChunk, "size=", rbduckdb_data_chunk_set_size, 1);
-    rb_define_method(cDuckDBDataChunk, "get_vector", rbduckdb_data_chunk_get_vector, 1);
-    rb_define_private_method(cDuckDBDataChunk, "_reset", rbduckdb_data_chunk__reset, 0);
+    rb_define_method(cDuckDBDataChunk, "initialize", data_chunk_initialize, -1);
+    rb_define_method(cDuckDBDataChunk, "column_count", data_chunk_column_count, 0);
+    rb_define_method(cDuckDBDataChunk, "size", data_chunk_size, 0);
+    rb_define_method(cDuckDBDataChunk, "size=", data_chunk_set_size, 1);
+    rb_define_method(cDuckDBDataChunk, "get_vector", data_chunk_get_vector, 1);
+    rb_define_private_method(cDuckDBDataChunk, "_reset", data_chunk__reset, 0);
 }
