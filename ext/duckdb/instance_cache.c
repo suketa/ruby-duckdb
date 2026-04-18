@@ -5,9 +5,9 @@ VALUE cDuckDBInstanceCache;
 static void deallocate(void * ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_instance_cache_initialize(VALUE self);
-static VALUE duckdb_instance_cache_get_or_create(int argc, VALUE *argv, VALUE self);
-static VALUE duckdb_instance_cache_destroy(VALUE self);
+static VALUE instance_cache_initialize(VALUE self);
+static VALUE instance_cache_get_or_create(int argc, VALUE *argv, VALUE self);
+static VALUE instance_cache_destroy(VALUE self);
 
 static const rb_data_type_t instance_cache_data_type = {
     "DuckDB/InstanceCache",
@@ -33,7 +33,7 @@ static VALUE allocate(VALUE klass) {
     return TypedData_Wrap_Struct(klass, &instance_cache_data_type, ctx);
 }
 
-static VALUE duckdb_instance_cache_initialize(VALUE self) {
+static VALUE instance_cache_initialize(VALUE self) {
     rubyDuckDBInstanceCache *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &instance_cache_data_type, ctx);
@@ -47,7 +47,7 @@ static VALUE duckdb_instance_cache_initialize(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_instance_cache_get_or_create(int argc, VALUE *argv, VALUE self) {
+static VALUE instance_cache_get_or_create(int argc, VALUE *argv, VALUE self) {
     VALUE vpath = Qnil;
     VALUE vconfig = Qnil;
     const char *path = NULL;
@@ -82,7 +82,7 @@ static VALUE duckdb_instance_cache_get_or_create(int argc, VALUE *argv, VALUE se
     return rbduckdb_create_database_obj(db);
 }
 
-static VALUE duckdb_instance_cache_destroy(VALUE self) {
+static VALUE instance_cache_destroy(VALUE self) {
     rubyDuckDBInstanceCache *ctx;
     TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &instance_cache_data_type, ctx);
 
@@ -94,13 +94,13 @@ static VALUE duckdb_instance_cache_destroy(VALUE self) {
     return Qnil;
 }
 
-void rbduckdb_init_duckdb_instance_cache(void) {
+void rbduckdb_init_instance_cache(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBInstanceCache = rb_define_class_under(mDuckDB, "InstanceCache", rb_cObject);
-    rb_define_method(cDuckDBInstanceCache, "initialize", duckdb_instance_cache_initialize, 0);
-    rb_define_method(cDuckDBInstanceCache, "get_or_create", duckdb_instance_cache_get_or_create, -1);
-    rb_define_method(cDuckDBInstanceCache, "destroy", duckdb_instance_cache_destroy, 0);
+    rb_define_method(cDuckDBInstanceCache, "initialize", instance_cache_initialize, 0);
+    rb_define_method(cDuckDBInstanceCache, "get_or_create", instance_cache_get_or_create, -1);
+    rb_define_method(cDuckDBInstanceCache, "destroy", instance_cache_destroy, 0);
     rb_define_alloc_func(cDuckDBInstanceCache, allocate);
 }
