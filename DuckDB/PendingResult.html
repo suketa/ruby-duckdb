@@ -630,7 +630,7 @@
     }
 
     rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
-    rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
+    rubyDuckDBPreparedStatement *stmt = rbduckdb_get_struct_prepared_statement(oDuckDBPreparedStatement);
 
     state = duckdb_pending_prepared(stmt-&gt;prepared_statement, &amp;(ctx-&gt;pending_result));
 

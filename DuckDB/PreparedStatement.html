@@ -668,7 +668,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBPreparedStatement *ctx;
 
@@ -913,7 +913,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_blob-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -962,7 +962,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_bool-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -1121,7 +1121,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_double-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -1171,7 +1171,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_float-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -1327,7 +1327,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_int16-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
@@ -1377,7 +1377,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_int32-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int32_t i32val = NUM2INT(val);
@@ -1427,7 +1427,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_int64-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
@@ -1477,7 +1477,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_int8-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int8_t i8val = (int8_t)NUM2INT(val);
@@ -1578,7 +1578,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_null-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_null(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -1627,7 +1627,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_parameter_index-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx;
 
@@ -2065,7 +2065,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_varchar-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -2117,7 +2117,7 @@
             </details>
           </div>
           <div class="method-source-code" id="clear_bindings-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_clear_bindings(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
 
@@ -2165,7 +2165,7 @@
             </details>
           </div>
           <div class="method-source-code" id="execute-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_execute(VALUE self) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
     const char *error;
@@ -2175,13 +2175,13 @@
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
 
-    duckdb_prepared_statement_execute_nogvl_args args = {
+    prepared_statement_execute_nogvl_args args = {
         .prepared_statement = ctx-&gt;prepared_statement,
         .out_result = &amp;(ctxr-&gt;result),
         .retval = DuckDBError,
     };
 
-    rb_thread_call_without_gvl((void *)duckdb_prepared_statement_execute_nogvl, &amp;args, RUBY_UBF_IO, 0);
+    rb_thread_call_without_gvl((void *)prepared_statement_execute_nogvl, &amp;args, RUBY_UBF_IO, 0);
     duckdb_state state = args.retval;
 
     if (state == DuckDBError) {
@@ -2234,7 +2234,7 @@
             </details>
           </div>
           <div class="method-source-code" id="nparams-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_nparams(VALUE self) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_nparams(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
     return ULL2NUM(duckdb_nparams(ctx-&gt;prepared_statement));
@@ -2328,7 +2328,7 @@
             </details>
           </div>
           <div class="method-source-code" id="parameter_name-source">
-            <pre class="c" data-language="c">static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
+            <pre class="c" data-language="c">static VALUE prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     VALUE vname;
     const char *name;
