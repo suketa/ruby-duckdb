@@ -724,7 +724,7 @@
             </details>
           </div>
           <div class="method-source-code" id="column_count-source">
-            <pre class="c" data-language="c">static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
+            <pre class="c" data-language="c">static VALUE result_column_count(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &amp;result_data_type, ctx);
     return LL2NUM(duckdb_column_count(&amp;(ctx-&gt;result)));
@@ -811,7 +811,7 @@
             </details>
           </div>
           <div class="method-source-code" id="columns-source">
-            <pre class="c" data-language="c">static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
+            <pre class="c" data-language="c">static VALUE result_columns(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &amp;result_data_type, ctx);
 
@@ -1018,7 +1018,7 @@
             </details>
           </div>
           <div class="method-source-code" id="rows_changed-source">
-            <pre class="c" data-language="c">static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
+            <pre class="c" data-language="c">static VALUE result_rows_changed(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &amp;result_data_type, ctx);
     return LL2NUM(duckdb_rows_changed(&amp;(ctx-&gt;result)));

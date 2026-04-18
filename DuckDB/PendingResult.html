@@ -748,7 +748,7 @@
     VALUE result = rbduckdb_create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBPendingResult, &amp;pending_result_data_type, ctx);
-    ctxr = get_struct_result(result);
+    ctxr = rbduckdb_get_struct_result(result);
     if (duckdb_execute_pending(ctx-&gt;pending_result, &amp;(ctxr-&gt;result)) == DuckDBError) {
         rb_raise(eDuckDBError, &quot;%s&quot;, duckdb_pending_error(ctx-&gt;pending_result));
     }

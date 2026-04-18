@@ -2173,7 +2173,7 @@
     VALUE msg;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
-    ctxr = get_struct_result(result);
+    ctxr = rbduckdb_get_struct_result(result);
 
     prepared_statement_execute_nogvl_args args = {
         .prepared_statement = ctx-&gt;prepared_statement,

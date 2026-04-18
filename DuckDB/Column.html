@@ -601,7 +601,7 @@
     TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &amp;column_data_type, ctx);
 
     result = rb_ivar_get(oDuckDBColumn, rb_intern(&quot;result&quot;));
-    ctxresult = get_struct_result(result);
+    ctxresult = rbduckdb_get_struct_result(result);
     _logical_type = duckdb_column_logical_type(&amp;(ctxresult-&gt;result), ctx-&gt;col);
 
     if (_logical_type) {
@@ -660,7 +660,7 @@
 
     result = rb_ivar_get(oDuckDBColumn, rb_intern(&quot;result&quot;));
 
-    ctxresult = get_struct_result(result);
+    ctxresult = rbduckdb_get_struct_result(result);
 
     return rb_utf8_str_new_cstr(duckdb_column_name(&amp;(ctxresult-&gt;result), ctx-&gt;col));
 }</pre>
