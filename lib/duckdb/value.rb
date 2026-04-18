@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
+
 module DuckDB
   class Value
     class << self
@@ -217,6 +219,23 @@ module DuckDB
 
         lower, upper = integer_to_hugeint(value)
         _create_uhugeint(lower, upper)
+      end
+
+      # Creates a DuckDB::Value of DECIMAL type.
+      #
+      #   value = DuckDB::Value.create_decimal(BigDecimal('12345.678'))
+      #
+      # @param value [BigDecimal] the decimal value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a BigDecimal or its width is out of range (1..38).
+      def create_decimal(value)
+        check_type!(value, BigDecimal)
+
+        width = _decimal_width(value)
+        check_range!(width, RANGE_DECIMAL_WIDTH, 'DECIMAL width')
+
+        lower, upper = decimal_to_hugeint(value)
+        _create_decimal(lower, upper, width, value.scale)
       end
 
       private

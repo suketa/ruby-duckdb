@@ -281,7 +281,7 @@ module DuckDB
     def bind_decimal(index, value)
       decimal = _parse_deciaml(value)
       lower, upper = decimal_to_hugeint(decimal)
-      width = decimal.to_s('F').gsub(/[^0-9]/, '').length
+      width = _decimal_width(decimal)
       _bind_decimal(index, lower, upper, width, decimal.scale)
     end
 
