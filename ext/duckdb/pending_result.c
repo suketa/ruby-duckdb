@@ -50,7 +50,7 @@ static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
     }
 
     rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
-    rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
+    rubyDuckDBPreparedStatement *stmt = rbduckdb_get_struct_prepared_statement(oDuckDBPreparedStatement);
 
     state = duckdb_pending_prepared(stmt->prepared_statement, &(ctx->pending_result));
 

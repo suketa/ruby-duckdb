@@ -6,39 +6,39 @@ static void destroy_prepared_statement(rubyDuckDBPreparedStatement *p);
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query);
-static VALUE duckdb_prepared_statement_nparams(VALUE self);
-static VALUE duckdb_prepared_statement_execute(VALUE self);
-static VALUE duckdb_prepared_statement_destroy(VALUE self);
+static VALUE prepared_statement_initialize(VALUE self, VALUE con, VALUE query);
+static VALUE prepared_statement_nparams(VALUE self);
+static VALUE prepared_statement_execute(VALUE self);
+static VALUE prepared_statement_destroy(VALUE self);
 static idx_t check_index(VALUE vidx);
 
-static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name);
-static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx);
-static VALUE duckdb_prepared_statement_clear_bindings(VALUE self);
-static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str);
-static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob);
-static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx);
-static VALUE duckdb_prepared_statement__statement_type(VALUE self);
-static VALUE duckdb_prepared_statement__param_type(VALUE self, VALUE vidx);
-static VALUE duckdb_prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val);
-static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day);
-static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros);
-static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
-static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
-static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
-static VALUE duckdb_prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
-static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale);
-static VALUE duckdb_prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_parameter_index(VALUE self, VALUE name);
+static VALUE prepared_statement_parameter_name(VALUE self, VALUE vidx);
+static VALUE prepared_statement_clear_bindings(VALUE self);
+static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str);
+static VALUE prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob);
+static VALUE prepared_statement_bind_null(VALUE self, VALUE vidx);
+static VALUE prepared_statement__statement_type(VALUE self);
+static VALUE prepared_statement__param_type(VALUE self, VALUE vidx);
+static VALUE prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val);
+static VALUE prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day);
+static VALUE prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+static VALUE prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
+static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
+static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
+static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale);
+static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val);
 
 static const rb_data_type_t prepared_statement_data_type = {
     "DuckDB/PreparedStatement",
@@ -84,7 +84,7 @@ VALUE rbduckdb_prepared_statement_new(duckdb_connection con, duckdb_extracted_st
     return obj;
 }
 
-static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
+static VALUE prepared_statement_initialize(VALUE self, VALUE con, VALUE query) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBPreparedStatement *ctx;
 
@@ -102,7 +102,7 @@ static VALUE duckdb_prepared_statement_initialize(VALUE self, VALUE con, VALUE q
     return self;
 }
 
-static VALUE duckdb_prepared_statement_nparams(VALUE self) {
+static VALUE prepared_statement_nparams(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return ULL2NUM(duckdb_nparams(ctx->prepared_statement));
@@ -113,16 +113,16 @@ typedef struct {
     duckdb_prepared_statement prepared_statement;
     duckdb_result *out_result;
     duckdb_state retval;
-} duckdb_prepared_statement_execute_nogvl_args;
+} prepared_statement_execute_nogvl_args;
 
 /* :nodoc: */
-static void duckdb_prepared_statement_execute_nogvl(void *ptr) {
-    duckdb_prepared_statement_execute_nogvl_args *args = (duckdb_prepared_statement_execute_nogvl_args *)ptr;
+static void prepared_statement_execute_nogvl(void *ptr) {
+    prepared_statement_execute_nogvl_args *args = (prepared_statement_execute_nogvl_args *)ptr;
 
     args->retval = duckdb_execute_prepared(args->prepared_statement, args->out_result);
 }
 
-static VALUE duckdb_prepared_statement_execute(VALUE self) {
+static VALUE prepared_statement_execute(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBResult *ctxr;
     const char *error;
@@ -132,13 +132,13 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     ctxr = get_struct_result(result);
 
-    duckdb_prepared_statement_execute_nogvl_args args = {
+    prepared_statement_execute_nogvl_args args = {
         .prepared_statement = ctx->prepared_statement,
         .out_result = &(ctxr->result),
         .retval = DuckDBError,
     };
 
-    rb_thread_call_without_gvl((void *)duckdb_prepared_statement_execute_nogvl, &args, RUBY_UBF_IO, 0);
+    rb_thread_call_without_gvl((void *)prepared_statement_execute_nogvl, &args, RUBY_UBF_IO, 0);
     duckdb_state state = args.retval;
 
     if (state == DuckDBError) {
@@ -157,7 +157,7 @@ static VALUE duckdb_prepared_statement_execute(VALUE self) {
 /*
  * :nodoc:
  */
-static VALUE duckdb_prepared_statement_destroy(VALUE self) {
+static VALUE prepared_statement_destroy(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     destroy_prepared_statement(ctx);
@@ -175,7 +175,7 @@ static idx_t check_index(VALUE vidx) {
     return idx;
 }
 
-static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
+static VALUE prepared_statement_bind_parameter_index(VALUE self, VALUE name) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx;
 
@@ -187,7 +187,7 @@ static VALUE duckdb_prepared_statement_bind_parameter_index(VALUE self, VALUE na
     return ULL2NUM(idx);
 }
 
-static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
+static VALUE prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     VALUE vname;
     const char *name;
@@ -210,7 +210,7 @@ static VALUE duckdb_prepared_statement_parameter_name(VALUE self, VALUE vidx) {
  *
  *  clear all bindings of prepared statement.
  */
-static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
+static VALUE prepared_statement_clear_bindings(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
@@ -221,7 +221,7 @@ static VALUE duckdb_prepared_statement_clear_bindings(VALUE self) {
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -236,7 +236,7 @@ static VALUE duckdb_prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE v
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int8_t i8val = (int8_t)NUM2INT(val);
@@ -250,7 +250,7 @@ static VALUE duckdb_prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE v
 }
 
 
-static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
@@ -263,7 +263,7 @@ static VALUE duckdb_prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int32_t i32val = NUM2INT(val);
@@ -276,7 +276,7 @@ static VALUE duckdb_prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
@@ -289,7 +289,7 @@ static VALUE duckdb_prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -302,7 +302,7 @@ static VALUE duckdb_prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE 
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
@@ -315,7 +315,7 @@ static VALUE duckdb_prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
+static VALUE prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -327,7 +327,7 @@ static VALUE duckdb_prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALU
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
+static VALUE prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -339,7 +339,7 @@ static VALUE duckdb_prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE b
     return self;
 }
 
-static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
+static VALUE prepared_statement_bind_null(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
@@ -352,21 +352,21 @@ static VALUE duckdb_prepared_statement_bind_null(VALUE self, VALUE vidx) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__statement_type(VALUE self) {
+static VALUE prepared_statement__statement_type(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return INT2FIX(duckdb_prepared_statement_type(ctx->prepared_statement));
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__param_type(VALUE self, VALUE vidx) {
+static VALUE prepared_statement__param_type(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return INT2FIX(duckdb_param_type(ctx->prepared_statement, NUM2ULL(vidx)));
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint8_t ui8val = (uint8_t)NUM2UINT(val);
@@ -380,7 +380,7 @@ static VALUE duckdb_prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint16_t ui16val = (uint16_t)NUM2UINT(val);
@@ -394,7 +394,7 @@ static VALUE duckdb_prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALU
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint32_t ui32val = (uint32_t)NUM2UINT(val);
@@ -408,7 +408,7 @@ static VALUE duckdb_prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALU
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint64_t ui64val = (uint64_t)NUM2ULL(val);
@@ -422,7 +422,7 @@ static VALUE duckdb_prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALU
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day) {
+static VALUE prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day) {
     rubyDuckDBPreparedStatement *ctx;
     duckdb_date dt;
     idx_t idx = check_index(vidx);
@@ -439,7 +439,7 @@ static VALUE duckdb_prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE 
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros){
+static VALUE prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros){
     rubyDuckDBPreparedStatement *ctx;
     duckdb_time time;
 
@@ -457,7 +457,7 @@ static VALUE duckdb_prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE 
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
+static VALUE prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp;
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
@@ -472,7 +472,7 @@ static VALUE duckdb_prepared_statement__bind_timestamp(VALUE self, VALUE vidx, V
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros) {
+static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
@@ -488,7 +488,7 @@ static VALUE duckdb_prepared_statement__bind_interval(VALUE self, VALUE vidx, VA
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
+static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
     duckdb_hugeint hugeint;
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
@@ -505,7 +505,7 @@ static VALUE duckdb_prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VAL
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
+static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
     duckdb_uhugeint uhugeint;
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
@@ -522,7 +522,7 @@ static VALUE duckdb_prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VA
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
+static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
     duckdb_hugeint hugeint;
     duckdb_decimal decimal;
     rubyDuckDBPreparedStatement *ctx;
@@ -543,7 +543,7 @@ static VALUE duckdb_prepared_statement__bind_decimal(VALUE self, VALUE vidx, VAL
 }
 
 /* :nodoc: */
-static VALUE duckdb_prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
+static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBValue *val_ctx;
     idx_t idx = check_index(vidx);
@@ -557,13 +557,13 @@ static VALUE duckdb_prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE
     return self;
 }
 
-rubyDuckDBPreparedStatement *get_struct_prepared_statement(VALUE self) {
+rubyDuckDBPreparedStatement *rbduckdb_get_struct_prepared_statement(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return ctx;
 }
 
-void rbduckdb_init_duckdb_prepared_statement(void) {
+void rbduckdb_init_prepared_statement(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
@@ -571,35 +571,35 @@ void rbduckdb_init_duckdb_prepared_statement(void) {
 
     rb_define_alloc_func(cDuckDBPreparedStatement, allocate);
 
-    rb_define_method(cDuckDBPreparedStatement, "initialize", duckdb_prepared_statement_initialize, 2);
-    rb_define_method(cDuckDBPreparedStatement, "execute", duckdb_prepared_statement_execute, 0);
-    rb_define_method(cDuckDBPreparedStatement, "destroy", duckdb_prepared_statement_destroy, 0);
-    rb_define_method(cDuckDBPreparedStatement, "nparams", duckdb_prepared_statement_nparams, 0);
-    rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", duckdb_prepared_statement_bind_parameter_index, 1);
-    rb_define_method(cDuckDBPreparedStatement, "parameter_name", duckdb_prepared_statement_parameter_name, 1);
-    rb_define_method(cDuckDBPreparedStatement, "clear_bindings", duckdb_prepared_statement_clear_bindings, 0);
-    rb_define_method(cDuckDBPreparedStatement, "bind_bool", duckdb_prepared_statement_bind_bool, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_int8", duckdb_prepared_statement_bind_int8, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_int16", duckdb_prepared_statement_bind_int16, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_int32", duckdb_prepared_statement_bind_int32, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_int64", duckdb_prepared_statement_bind_int64, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_float", duckdb_prepared_statement_bind_float, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_double", duckdb_prepared_statement_bind_double, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_varchar", duckdb_prepared_statement_bind_varchar, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_blob", duckdb_prepared_statement_bind_blob, 2);
-    rb_define_method(cDuckDBPreparedStatement, "bind_null", duckdb_prepared_statement_bind_null, 1);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint8", duckdb_prepared_statement__bind_uint8, 2);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint16", duckdb_prepared_statement__bind_uint16, 2);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint32", duckdb_prepared_statement__bind_uint32, 2);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint64", duckdb_prepared_statement__bind_uint64, 2);
-    rb_define_private_method(cDuckDBPreparedStatement, "_statement_type", duckdb_prepared_statement__statement_type, 0);
-    rb_define_private_method(cDuckDBPreparedStatement, "_param_type", duckdb_prepared_statement__param_type, 1);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", duckdb_prepared_statement__bind_date, 4);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_time", duckdb_prepared_statement__bind_time, 5);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp", duckdb_prepared_statement__bind_timestamp, 8);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_interval", duckdb_prepared_statement__bind_interval, 4);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_hugeint", duckdb_prepared_statement__bind_hugeint, 3);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uhugeint", duckdb_prepared_statement__bind_uhugeint, 3);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_decimal", duckdb_prepared_statement__bind_decimal, 5);
-    rb_define_private_method(cDuckDBPreparedStatement, "_bind_value", duckdb_prepared_statement__bind_value, 2);
+    rb_define_method(cDuckDBPreparedStatement, "initialize", prepared_statement_initialize, 2);
+    rb_define_method(cDuckDBPreparedStatement, "execute", prepared_statement_execute, 0);
+    rb_define_method(cDuckDBPreparedStatement, "destroy", prepared_statement_destroy, 0);
+    rb_define_method(cDuckDBPreparedStatement, "nparams", prepared_statement_nparams, 0);
+    rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", prepared_statement_bind_parameter_index, 1);
+    rb_define_method(cDuckDBPreparedStatement, "parameter_name", prepared_statement_parameter_name, 1);
+    rb_define_method(cDuckDBPreparedStatement, "clear_bindings", prepared_statement_clear_bindings, 0);
+    rb_define_method(cDuckDBPreparedStatement, "bind_bool", prepared_statement_bind_bool, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_int8", prepared_statement_bind_int8, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_int16", prepared_statement_bind_int16, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_int32", prepared_statement_bind_int32, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_int64", prepared_statement_bind_int64, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_float", prepared_statement_bind_float, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_double", prepared_statement_bind_double, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_varchar", prepared_statement_bind_varchar, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_blob", prepared_statement_bind_blob, 2);
+    rb_define_method(cDuckDBPreparedStatement, "bind_null", prepared_statement_bind_null, 1);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint8", prepared_statement__bind_uint8, 2);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint16", prepared_statement__bind_uint16, 2);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint32", prepared_statement__bind_uint32, 2);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint64", prepared_statement__bind_uint64, 2);
+    rb_define_private_method(cDuckDBPreparedStatement, "_statement_type", prepared_statement__statement_type, 0);
+    rb_define_private_method(cDuckDBPreparedStatement, "_param_type", prepared_statement__param_type, 1);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", prepared_statement__bind_date, 4);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_time", prepared_statement__bind_time, 5);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp", prepared_statement__bind_timestamp, 8);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_interval", prepared_statement__bind_interval, 4);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_hugeint", prepared_statement__bind_hugeint, 3);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uhugeint", prepared_statement__bind_uhugeint, 3);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_decimal", prepared_statement__bind_decimal, 5);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_value", prepared_statement__bind_value, 2);
 }
