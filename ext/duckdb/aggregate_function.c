@@ -32,15 +32,15 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static void compact(void *);
-static VALUE duckdb_aggregate_function_initialize(VALUE self);
-static VALUE rbduckdb_aggregate_function_set_name(VALUE self, VALUE name);
-static VALUE rbduckdb_aggregate_function__set_return_type(VALUE self, VALUE logical_type);
-static VALUE rbduckdb_aggregate_function_add_parameter(VALUE self, VALUE logical_type);
-static VALUE rbduckdb_aggregate_function_set_init(VALUE self);
-static VALUE rbduckdb_aggregate_function_set_update(VALUE self);
-static VALUE rbduckdb_aggregate_function_set_combine(VALUE self);
-static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self);
-static VALUE rbduckdb_aggregate_function__set_special_handling(VALUE self);
+static VALUE aggregate_function_initialize(VALUE self);
+static VALUE aggregate_function_set_name(VALUE self, VALUE name);
+static VALUE aggregate_function__set_return_type(VALUE self, VALUE logical_type);
+static VALUE aggregate_function__add_parameter(VALUE self, VALUE logical_type);
+static VALUE aggregate_function_set_init(VALUE self);
+static VALUE aggregate_function_set_update(VALUE self);
+static VALUE aggregate_function_set_combine(VALUE self);
+static VALUE aggregate_function_set_finalize(VALUE self);
+static VALUE aggregate_function__set_special_handling(VALUE self);
 
 static const rb_data_type_t aggregate_function_data_type = {
     "DuckDB/AggregateFunction",
@@ -87,13 +87,13 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBAggregateFunction);
 }
 
-rubyDuckDBAggregateFunction *get_struct_aggregate_function(VALUE obj) {
+rubyDuckDBAggregateFunction *rbduckdb_get_struct_aggregate_function(VALUE obj) {
     rubyDuckDBAggregateFunction *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBAggregateFunction, &aggregate_function_data_type, ctx);
     return ctx;
 }
 
-static VALUE duckdb_aggregate_function_initialize(VALUE self) {
+static VALUE aggregate_function_initialize(VALUE self) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
     p->aggregate_function = duckdb_create_aggregate_function();
@@ -105,7 +105,7 @@ static VALUE duckdb_aggregate_function_initialize(VALUE self) {
     return self;
 }
 
-static VALUE rbduckdb_aggregate_function_set_name(VALUE self, VALUE name) {
+static VALUE aggregate_function_set_name(VALUE self, VALUE name) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
 
@@ -115,7 +115,7 @@ static VALUE rbduckdb_aggregate_function_set_name(VALUE self, VALUE name) {
     return self;
 }
 
-static VALUE rbduckdb_aggregate_function__set_return_type(VALUE self, VALUE logical_type) {
+static VALUE aggregate_function__set_return_type(VALUE self, VALUE logical_type) {
     rubyDuckDBAggregateFunction *p;
     rubyDuckDBLogicalType *lt;
 
@@ -127,7 +127,7 @@ static VALUE rbduckdb_aggregate_function__set_return_type(VALUE self, VALUE logi
     return self;
 }
 
-static VALUE rbduckdb_aggregate_function_add_parameter(VALUE self, VALUE logical_type) {
+static VALUE aggregate_function__add_parameter(VALUE self, VALUE logical_type) {
     rubyDuckDBAggregateFunction *p;
     rubyDuckDBLogicalType *lt;
 
@@ -690,7 +690,7 @@ static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function_set_init(VALUE self) {
+static VALUE aggregate_function_set_init(VALUE self) {
     rubyDuckDBAggregateFunction *p;
 
     if (!rb_block_given_p()) {
@@ -706,7 +706,7 @@ static VALUE rbduckdb_aggregate_function_set_init(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function_set_update(VALUE self) {
+static VALUE aggregate_function_set_update(VALUE self) {
     rubyDuckDBAggregateFunction *p;
 
     if (!rb_block_given_p()) {
@@ -722,7 +722,7 @@ static VALUE rbduckdb_aggregate_function_set_update(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function_set_combine(VALUE self) {
+static VALUE aggregate_function_set_combine(VALUE self) {
     rubyDuckDBAggregateFunction *p;
 
     if (!rb_block_given_p()) {
@@ -738,7 +738,7 @@ static VALUE rbduckdb_aggregate_function_set_combine(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
+static VALUE aggregate_function_set_finalize(VALUE self) {
     rubyDuckDBAggregateFunction *p;
 
     if (!rb_block_given_p()) {
@@ -754,7 +754,7 @@ static VALUE rbduckdb_aggregate_function_set_finalize(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function__set_special_handling(VALUE self) {
+static VALUE aggregate_function__set_special_handling(VALUE self) {
     rubyDuckDBAggregateFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
     p->special_handling = true;
@@ -763,28 +763,28 @@ static VALUE rbduckdb_aggregate_function__set_special_handling(VALUE self) {
 }
 
 /* Returns the number of Ruby states currently tracked in the registry. */
-static VALUE aggregate_function_state_registry_size(VALUE klass) {
+static VALUE aggregate_function_s__state_registry_size(VALUE klass) {
     (void)klass;
     return LONG2NUM((long)RHASH_SIZE(g_aggregate_state_registry));
 }
 
-void rbduckdb_init_duckdb_aggregate_function(void) {
+void rbduckdb_init_aggregate_function(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBAggregateFunction = rb_define_class_under(mDuckDB, "AggregateFunction", rb_cObject);
     rb_define_alloc_func(cDuckDBAggregateFunction, allocate);
-    rb_define_method(cDuckDBAggregateFunction, "initialize", duckdb_aggregate_function_initialize, 0);
-    rb_define_method(cDuckDBAggregateFunction, "name=", rbduckdb_aggregate_function_set_name, 1);
-    rb_define_private_method(cDuckDBAggregateFunction, "_set_return_type", rbduckdb_aggregate_function__set_return_type, 1);
-    rb_define_private_method(cDuckDBAggregateFunction, "_add_parameter", rbduckdb_aggregate_function_add_parameter, 1);
-    rb_define_method(cDuckDBAggregateFunction, "set_init", rbduckdb_aggregate_function_set_init, 0);
-    rb_define_method(cDuckDBAggregateFunction, "set_update", rbduckdb_aggregate_function_set_update, 0);
-    rb_define_method(cDuckDBAggregateFunction, "set_combine", rbduckdb_aggregate_function_set_combine, 0);
-    rb_define_method(cDuckDBAggregateFunction, "set_finalize", rbduckdb_aggregate_function_set_finalize, 0);
-    rb_define_private_method(cDuckDBAggregateFunction, "_set_special_handling", rbduckdb_aggregate_function__set_special_handling, 0);
+    rb_define_method(cDuckDBAggregateFunction, "initialize", aggregate_function_initialize, 0);
+    rb_define_method(cDuckDBAggregateFunction, "name=", aggregate_function_set_name, 1);
+    rb_define_private_method(cDuckDBAggregateFunction, "_set_return_type", aggregate_function__set_return_type, 1);
+    rb_define_private_method(cDuckDBAggregateFunction, "_add_parameter", aggregate_function__add_parameter, 1);
+    rb_define_method(cDuckDBAggregateFunction, "set_init", aggregate_function_set_init, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_update", aggregate_function_set_update, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_combine", aggregate_function_set_combine, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_finalize", aggregate_function_set_finalize, 0);
+    rb_define_private_method(cDuckDBAggregateFunction, "_set_special_handling", aggregate_function__set_special_handling, 0);
     rb_define_singleton_method(cDuckDBAggregateFunction, "_state_registry_size",
-                               aggregate_function_state_registry_size, 0);
+                               aggregate_function_s__state_registry_size, 0);
 
     g_aggregate_state_registry = rb_hash_new();
     rb_gc_register_mark_object(g_aggregate_state_registry);
