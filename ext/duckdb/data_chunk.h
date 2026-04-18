@@ -8,7 +8,7 @@ struct _rubyDuckDBDataChunk {
 
 typedef struct _rubyDuckDBDataChunk rubyDuckDBDataChunk;
 
-rubyDuckDBDataChunk *get_struct_data_chunk(VALUE obj);
-void rbduckdb_init_duckdb_data_chunk(void);
+rubyDuckDBDataChunk *rbduckdb_get_struct_data_chunk(VALUE obj);
+void rbduckdb_init_data_chunk(void);
 
 #endif

@@ -442,7 +442,7 @@ static VALUE appender__append_data_chunk(VALUE self, VALUE chunk) {
     rubyDuckDBDataChunk *chunk_ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-    chunk_ctx = get_struct_data_chunk(chunk);
+    chunk_ctx = rbduckdb_get_struct_data_chunk(chunk);
 
     return state_to_rbool(duckdb_append_data_chunk(ctx->appender, chunk_ctx->data_chunk));
 }
