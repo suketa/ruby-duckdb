@@ -378,7 +378,14 @@ static void update_callback(duckdb_function_info info,
     struct update_callback_arg arg;
 
     ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
-    if (ctx == NULL || ctx->update_proc == Qnil) {
+    if (ctx == NULL) {
+        return;
+    }
+    if (ctx->update_proc == Qnil) {
+        /* Reached only if _set_init was called directly (bypassing the Ruby
+         * wrapper) without setting an update proc. Raise rather than silently
+         * leaving state unchanged. */
+        duckdb_aggregate_function_set_error(info, "update callback invoked with no update proc set");
         return;
     }
 

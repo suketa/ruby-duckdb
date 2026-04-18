@@ -95,9 +95,9 @@ module DuckDB
         _set_update { |state, *| state } unless @update_set
         _set_combine { |s1, _s2| s1 } unless @combine_set
         _set_finalize { |x| x } unless @finalize_set
-        @init_set = true
       end
       _set_init(&)
+      @init_set = true
     end
 
     # Sets the block that accumulates one row into the state.
