@@ -130,7 +130,7 @@ static VALUE prepared_statement_execute(VALUE self) {
     VALUE msg;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-    ctxr = get_struct_result(result);
+    ctxr = rbduckdb_get_struct_result(result);
 
     prepared_statement_execute_nogvl_args args = {
         .prepared_statement = ctx->prepared_statement,

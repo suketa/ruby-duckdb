@@ -176,7 +176,7 @@ static VALUE connection__query_sql(VALUE self, VALUE str) {
     VALUE result = rbduckdb_create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
-    ctxr = get_struct_result(result);
+    ctxr = rbduckdb_get_struct_result(result);
 
     if (!(ctx->con)) {
         rb_raise(eDuckDBError, "Database connection closed");
