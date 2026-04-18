@@ -677,7 +677,7 @@
     }
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &amp;prepared_statement_data_type, ctx);
-    ctxcon = get_struct_connection(con);
+    ctxcon = rbduckdb_get_struct_connection(con);
 
     if (duckdb_prepare(ctxcon-&gt;con, StringValuePtr(query), &amp;(ctx-&gt;prepared_statement)) == DuckDBError) {
         const char *error = duckdb_prepare_error(ctx-&gt;prepared_statement);

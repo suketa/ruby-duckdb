@@ -831,7 +831,7 @@
             </details>
           </div>
           <div class="method-source-code" id="disconnect-source">
-            <pre class="c" data-language="c">static VALUE duckdb_connection_disconnect(VALUE self) {
+            <pre class="c" data-language="c">static VALUE connection_disconnect(VALUE self) {
     rubyDuckDBConnection *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &amp;connection_data_type, ctx);
@@ -1015,7 +1015,7 @@
             </details>
           </div>
           <div class="method-source-code" id="interrupt-source">
-            <pre class="c" data-language="c">static VALUE duckdb_connection_interrupt(VALUE self) {
+            <pre class="c" data-language="c">static VALUE connection_interrupt(VALUE self) {
     rubyDuckDBConnection *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBConnection, &amp;connection_data_type, ctx);
@@ -1202,7 +1202,7 @@
             <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 35</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">query_multi_sql</span>(<span class="ruby-identifier">sql</span>)
   <span class="ruby-identifier">stmts</span> = <span class="ruby-constant">ExtractedStatements</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">sql</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">query_sql</span>(<span class="ruby-identifier">sql</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">stmts</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">_query_sql</span>(<span class="ruby-identifier">sql</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">stmts</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
 
   <span class="ruby-identifier">result</span> = <span class="ruby-keyword">nil</span>
   <span class="ruby-identifier">stmts</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">stmt</span><span class="ruby-operator">|</span>
@@ -1251,7 +1251,7 @@
             </details>
           </div>
           <div class="method-source-code" id="query_progress-source">
-            <pre class="c" data-language="c">static VALUE duckdb_connection_query_progress(VALUE self) {
+            <pre class="c" data-language="c">static VALUE connection_query_progress(VALUE self) {
     rubyDuckDBConnection *ctx;
     duckdb_query_progress_type progress;
 

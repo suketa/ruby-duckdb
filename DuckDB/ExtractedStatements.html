@@ -782,7 +782,7 @@
     if (rb_obj_is_kind_of(con, cDuckDBConnection) != Qtrue) {
         rb_raise(rb_eTypeError, &quot;1st argument must be DuckDB::Connection&quot;);
     }
-    pcon = get_struct_connection(con);
+    pcon = rbduckdb_get_struct_connection(con);
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &amp;extract_statements_data_type, ctx);
 
     return rbduckdb_prepared_statement_new(pcon-&gt;con, ctx-&gt;extracted_statements, NUM2ULL(index));
