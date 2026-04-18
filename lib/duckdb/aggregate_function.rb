@@ -100,6 +100,7 @@ module DuckDB
     # The block receives the current state followed by the input column
     # value(s) for that row, and must return the updated state.
     # Default: +{ |state, *| state }+ (ignore inputs, keep state unchanged).
+    # May be called after +set_init+ to override the injected default.
     #
     # @return [DuckDB::AggregateFunction] self
     def set_update(&)
@@ -110,6 +111,7 @@ module DuckDB
     # Sets the block that merges two partial states during parallel execution.
     # The block receives the source and target states and must return the
     # merged state.
+    # May be called after +set_init+ to override the injected default.
     #
     # @note The default +{ |s1, _s2| s1 }+ is only correct for single-threaded
     #   execution. Supply an explicit combine block for parallel-safe aggregates.
@@ -124,6 +126,7 @@ module DuckDB
     # The block receives the accumulated state and must return a value
     # compatible with the declared +return_type+.
     # Default: +{ |x| x }+ (return the state as-is).
+    # May be called after +set_init+ to override the injected default.
     #
     # @return [DuckDB::AggregateFunction] self
     def set_finalize(&)

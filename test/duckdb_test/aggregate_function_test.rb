@@ -48,6 +48,70 @@ module DuckDBTest
       assert_equal 4950, result.first.first
     end
 
+    def test_set_combine_after_set_init_overrides_default
+      af = DuckDB::AggregateFunction.new
+      af.name = 'sum_combine_after_init'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      af.set_combine { |s1, s2| s1 + s2 }
+      @con.register_aggregate_function(af)
+      force_parallel_execution(@con)
+
+      result = @con.query('SELECT sum_combine_after_init(i) FROM range(100000) t(i)')
+
+      assert_equal 4_999_950_000, result.first.first
+    end
+
+    def test_set_finalize_after_set_init_overrides_default
+      af = DuckDB::AggregateFunction.new
+      af.name = 'sum_finalize_after_init'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      af.set_finalize { |state| state * 2 }
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT sum_finalize_after_init(i) FROM range(100) t(i)')
+
+      # sum(0..99) == 4950, doubled by finalize == 9900
+      assert_equal 9900, result.first.first
+    end
+
+    def test_set_init_called_twice_second_block_wins
+      af = DuckDB::AggregateFunction.new
+      af.name = 'init_twice'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 100 }
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT init_twice(i) FROM range(100) t(i)')
+
+      # initial state is 0 (second set_init wins), so sum == 4950
+      assert_equal 4950, result.first.first
+    end
+
+    def test_bypass_ruby_wrapper_raises_on_finalize
+      # Calling _set_init directly skips the Ruby wrapper's default injection,
+      # leaving finalize_proc as Qnil. The C nil-guard must surface a
+      # DuckDB::Error instead of crashing with SIGSEGV.
+      af = DuckDB::AggregateFunction.new
+      af.name = 'bypass_init_finalize'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.send(:_set_init) { 0 }
+      @con.register_aggregate_function(af)
+
+      assert_raises(DuckDB::Error) do
+        @con.query('SELECT bypass_init_finalize(i) FROM range(10) t(i)')
+      end
+    end
+
     def test_aggregate_update_sums_values
       register_aggregate('my_sum',
                          init: -> { 0 },

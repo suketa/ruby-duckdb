@@ -459,6 +459,12 @@ static void combine_callback(duckdb_function_info info,
     if (ctx == NULL) {
         return;
     }
+    if (ctx->combine_proc == Qnil) {
+        /* Reached only if _set_init was called directly (bypassing the Ruby
+         * wrapper) without setting a combine proc. Raise rather than SIGSEGV. */
+        duckdb_aggregate_function_set_error(info, "combine callback invoked with no combine proc set");
+        return;
+    }
 
     arg.ctx = ctx;
     arg.info = info;
@@ -558,6 +564,12 @@ static void finalize_callback(duckdb_function_info info,
 
     ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
     if (ctx == NULL) {
+        return;
+    }
+    if (ctx->finalize_proc == Qnil) {
+        /* Reached only if _set_init was called directly (bypassing the Ruby
+         * wrapper) without setting a finalize proc. Raise rather than SIGSEGV. */
+        duckdb_aggregate_function_set_error(info, "finalize callback invoked with no finalize proc set");
         return;
     }
 
