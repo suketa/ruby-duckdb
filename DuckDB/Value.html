@@ -488,6 +488,8 @@
 
         <li ><a href="#method-c-create_bool">create_bool</a></li>
 
+        <li ><a href="#method-c-create_decimal">create_decimal</a></li>
+
         <li ><a href="#method-c-create_double">create_double</a></li>
 
         <li ><a href="#method-c-create_float">create_float</a></li>
@@ -608,7 +610,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_blob-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 186</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 188</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_blob</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">String</span>)
   <span class="ruby-identifier">check_binary!</span>(<span class="ruby-identifier">value</span>)
@@ -657,7 +659,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_bool-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 16</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_bool</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, [<span class="ruby-constant">TrueClass</span>, <span class="ruby-constant">FalseClass</span>])
 
@@ -688,6 +690,59 @@
       </div>
 
 
+      <div id="method-c-create_decimal" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_decimal" title="Link to this method">
+                <span class="method-name">create_decimal</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_decimal-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 231</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_decimal</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">BigDecimal</span>)
+
+  <span class="ruby-identifier">width</span> = <span class="ruby-identifier">_decimal_width</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">width</span>, <span class="ruby-constant">RANGE_DECIMAL_WIDTH</span>, <span class="ruby-string">&#39;DECIMAL width&#39;</span>)
+
+  <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">decimal_to_hugeint</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">_create_decimal</span>(<span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>, <span class="ruby-identifier">width</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">scale</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of DECIMAL type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_decimal</span>(<span class="ruby-constant">BigDecimal</span>(<span class="ruby-string">&#39;12345.678&#39;</span>))
+</pre>
+
+<p>@param value [BigDecimal] the decimal value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a BigDecimal or its width is out of range (1..38).</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-c-create_double" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -707,7 +762,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_double-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 161</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 163</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_double</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, [<span class="ruby-constant">Integer</span>, <span class="ruby-constant">Float</span>])
   <span class="ruby-identifier">_create_double</span>(<span class="ruby-identifier">value</span>)
@@ -755,7 +810,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_float-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 149</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 151</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_float</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, [<span class="ruby-constant">Integer</span>, <span class="ruby-constant">Float</span>])
   <span class="ruby-identifier">_create_float</span>(<span class="ruby-identifier">value</span>)
@@ -803,7 +858,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_hugeint-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 199</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 201</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_hugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_HUGEINT</span>, <span class="ruby-string">&#39;HUGEINT&#39;</span>)
@@ -854,7 +909,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_int16-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 45</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 47</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_int16</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_INT16</span>, <span class="ruby-string">&#39;INT16&#39;</span>)
@@ -905,7 +960,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_int32-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 60</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 62</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_int32</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_INT32</span>, <span class="ruby-string">&#39;INT32&#39;</span>)
@@ -956,7 +1011,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_int64-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 75</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 77</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_int64</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_INT64</span>, <span class="ruby-string">&#39;INT64&#39;</span>)
@@ -1007,7 +1062,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_int8-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 30</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 32</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_int8</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_INT8</span>, <span class="ruby-string">&#39;INT8&#39;</span>)
@@ -1107,7 +1162,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_uhugeint-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 214</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 216</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uhugeint</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UHUGEINT</span>, <span class="ruby-string">&#39;UHUGEINT&#39;</span>)
@@ -1158,7 +1213,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_uint16-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 105</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 107</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint16</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT16</span>, <span class="ruby-string">&#39;UINT16&#39;</span>)
@@ -1209,7 +1264,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_uint32-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 120</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 122</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint32</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT32</span>, <span class="ruby-string">&#39;UINT32&#39;</span>)
@@ -1260,7 +1315,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_uint64-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 135</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 137</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint64</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT64</span>, <span class="ruby-string">&#39;UINT64&#39;</span>)
@@ -1311,7 +1366,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_uint8-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 90</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 92</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_uint8</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">Integer</span>)
   <span class="ruby-identifier">check_range!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">RANGE_UINT8</span>, <span class="ruby-string">&#39;UINT8&#39;</span>)
@@ -1362,7 +1417,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_varchar-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 173</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 175</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_varchar</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">String</span>)
   <span class="ruby-identifier">check_utf8_compatible!</span>(<span class="ruby-identifier">value</span>)

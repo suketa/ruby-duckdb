@@ -1072,7 +1072,7 @@
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">decimal</span> = <span class="ruby-identifier">_parse_deciaml</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">decimal_to_hugeint</span>(<span class="ruby-identifier">decimal</span>)
-  <span class="ruby-identifier">width</span> = <span class="ruby-identifier">decimal</span>.<span class="ruby-identifier">to_s</span>(<span class="ruby-string">&#39;F&#39;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/[^0-9]/</span>, <span class="ruby-string">&#39;&#39;</span>).<span class="ruby-identifier">length</span>
+  <span class="ruby-identifier">width</span> = <span class="ruby-identifier">_decimal_width</span>(<span class="ruby-identifier">decimal</span>)
   <span class="ruby-identifier">_bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>, <span class="ruby-identifier">width</span>, <span class="ruby-identifier">decimal</span>.<span class="ruby-identifier">scale</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
