@@ -682,7 +682,7 @@
             </details>
           </div>
           <div class="method-source-code" id="destroy-source">
-            <pre class="c" data-language="c">static VALUE duckdb_extracted_statements_destroy(VALUE self) {
+            <pre class="c" data-language="c">static VALUE extracted_statements_destroy(VALUE self) {
     rubyDuckDBExtractedStatements *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &amp;extract_statements_data_type, ctx);
@@ -775,7 +775,7 @@
             </details>
           </div>
           <div class="method-source-code" id="prepared_statement-source">
-            <pre class="c" data-language="c">static VALUE duckdb_extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index) {
+            <pre class="c" data-language="c">static VALUE extracted_statements_prepared_statement(VALUE self, VALUE con, VALUE index) {
     rubyDuckDBConnection *pcon;
     rubyDuckDBExtractedStatements *ctx;
 
@@ -825,7 +825,7 @@
             </details>
           </div>
           <div class="method-source-code" id="size-source">
-            <pre class="c" data-language="c">static VALUE duckdb_extracted_statements_size(VALUE self) {
+            <pre class="c" data-language="c">static VALUE extracted_statements_size(VALUE self) {
     rubyDuckDBExtractedStatements *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &amp;extract_statements_data_type, ctx);
