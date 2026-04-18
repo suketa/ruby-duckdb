@@ -7,7 +7,7 @@ struct _rubyDuckDBVector {
 
 typedef struct _rubyDuckDBVector rubyDuckDBVector;
 
-rubyDuckDBVector *get_struct_vector(VALUE obj);
-void rbduckdb_init_duckdb_vector(void);
+rubyDuckDBVector *rbduckdb_get_struct_vector(VALUE obj);
+void rbduckdb_init_vector(void);
 
 #endif

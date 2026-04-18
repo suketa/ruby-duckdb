@@ -166,7 +166,7 @@ static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx) {
 
     // Create Vector wrapper
     vector_obj = rb_class_new_instance(0, NULL, cDuckDBVector);
-    vector_ctx = get_struct_vector(vector_obj);
+    vector_ctx = rbduckdb_get_struct_vector(vector_obj);
     vector_ctx->vector = vector;
 
     return vector_obj;
