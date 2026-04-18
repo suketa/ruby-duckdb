@@ -549,7 +549,7 @@ static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-    val_ctx = get_struct_value(val);
+    val_ctx = rbduckdb_get_struct_value(val);
 
     if (duckdb_bind_value(ctx->prepared_statement, idx, val_ctx->value) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);

@@ -5,23 +5,23 @@ VALUE cDuckDBValue;
 static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_value_s__create_bool(VALUE klass, VALUE flag);
-static VALUE duckdb_value_s__create_int8(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_int32(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_int64(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_uint8(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_uint16(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_uint32(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_uint64(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_float(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_double(VALUE klass, VALUE val);
-static VALUE duckdb_value_s__create_varchar(VALUE klass, VALUE str);
-static VALUE duckdb_value_s__create_blob(VALUE klass, VALUE str);
-static VALUE duckdb_value_s__create_hugeint(VALUE klass, VALUE lower, VALUE upper);
-static VALUE duckdb_value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper);
-static VALUE duckdb_value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALUE width, VALUE scale);
-static VALUE duckdb_value_s_create_null(VALUE klass);
+static VALUE value_s__create_bool(VALUE klass, VALUE flag);
+static VALUE value_s__create_int8(VALUE klass, VALUE val);
+static VALUE value_s__create_int16(VALUE klass, VALUE val);
+static VALUE value_s__create_int32(VALUE klass, VALUE val);
+static VALUE value_s__create_int64(VALUE klass, VALUE val);
+static VALUE value_s__create_uint8(VALUE klass, VALUE val);
+static VALUE value_s__create_uint16(VALUE klass, VALUE val);
+static VALUE value_s__create_uint32(VALUE klass, VALUE val);
+static VALUE value_s__create_uint64(VALUE klass, VALUE val);
+static VALUE value_s__create_float(VALUE klass, VALUE val);
+static VALUE value_s__create_double(VALUE klass, VALUE val);
+static VALUE value_s__create_varchar(VALUE klass, VALUE str);
+static VALUE value_s__create_blob(VALUE klass, VALUE str);
+static VALUE value_s__create_hugeint(VALUE klass, VALUE lower, VALUE upper);
+static VALUE value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper);
+static VALUE value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALUE width, VALUE scale);
+static VALUE value_s_create_null(VALUE klass);
 
 static const rb_data_type_t value_data_type = {
     "DuckDB/Value",
@@ -45,76 +45,76 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBValue);
 }
 
-static VALUE duckdb_value_s__create_bool(VALUE klass, VALUE flag) {
+static VALUE value_s__create_bool(VALUE klass, VALUE flag) {
     duckdb_value value = duckdb_create_bool(RTEST(flag) ? true : false);
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_int8(VALUE klass, VALUE val) {
+static VALUE value_s__create_int8(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_int8((int8_t)NUM2INT(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_int16(VALUE klass, VALUE val) {
+static VALUE value_s__create_int16(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_int16((int16_t)NUM2INT(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_int32(VALUE klass, VALUE val) {
+static VALUE value_s__create_int32(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_int32(NUM2INT(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_int64(VALUE klass, VALUE val) {
+static VALUE value_s__create_int64(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_int64((int64_t)NUM2LL(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_uint8(VALUE klass, VALUE val) {
+static VALUE value_s__create_uint8(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_uint8((uint8_t)NUM2UINT(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_uint16(VALUE klass, VALUE val) {
+static VALUE value_s__create_uint16(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_uint16((uint16_t)NUM2UINT(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_uint32(VALUE klass, VALUE val) {
+static VALUE value_s__create_uint32(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_uint32((uint32_t)NUM2UINT(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_uint64(VALUE klass, VALUE val) {
+static VALUE value_s__create_uint64(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_uint64((uint64_t)RB_NUM2ULL(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_float(VALUE klass, VALUE val) {
+static VALUE value_s__create_float(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_float((float)NUM2DBL(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_double(VALUE klass, VALUE val) {
+static VALUE value_s__create_double(VALUE klass, VALUE val) {
     duckdb_value value = duckdb_create_double(NUM2DBL(val));
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_varchar(VALUE klass, VALUE str) {
+static VALUE value_s__create_varchar(VALUE klass, VALUE str) {
     const char *str_ptr = StringValuePtr(str);
     idx_t str_len = RSTRING_LEN(str);
     duckdb_value value = duckdb_create_varchar_length(str_ptr, str_len);
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_blob(VALUE klass, VALUE str) {
+static VALUE value_s__create_blob(VALUE klass, VALUE str) {
     const uint8_t *data_ptr = (const uint8_t *)StringValuePtr(str);
     idx_t data_len = RSTRING_LEN(str);
     duckdb_value value = duckdb_create_blob(data_ptr, data_len);
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_hugeint(VALUE klass, VALUE lower, VALUE upper) {
+static VALUE value_s__create_hugeint(VALUE klass, VALUE lower, VALUE upper) {
     duckdb_hugeint hugeint;
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
@@ -122,7 +122,7 @@ static VALUE duckdb_value_s__create_hugeint(VALUE klass, VALUE lower, VALUE uppe
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper) {
+static VALUE value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper) {
     duckdb_uhugeint uhugeint;
     uhugeint.lower = NUM2ULL(lower);
     uhugeint.upper = NUM2ULL(upper);
@@ -130,7 +130,7 @@ static VALUE duckdb_value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upp
     return rbduckdb_value_new(value);
 }
 
-static VALUE duckdb_value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
+static VALUE value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
     duckdb_decimal decimal;
     decimal.value.lower = NUM2ULL(lower);
     decimal.value.upper = NUM2LL(upper);
@@ -149,7 +149,7 @@ static VALUE duckdb_value_s__create_decimal(VALUE klass, VALUE lower, VALUE uppe
  *   require 'duckdb'
  *   value = DuckDB::Value.create_null
  */
-static VALUE duckdb_value_s_create_null(VALUE klass) {
+static VALUE value_s_create_null(VALUE klass) {
     duckdb_value value = duckdb_create_null_value();
     return rbduckdb_value_new(value);
 }
@@ -162,7 +162,7 @@ VALUE rbduckdb_value_new(duckdb_value value) {
     return obj;
 }
 
-rubyDuckDBValue *get_struct_value(VALUE obj) {
+rubyDuckDBValue *rbduckdb_get_struct_value(VALUE obj) {
     rubyDuckDBValue *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBValue, &value_data_type, ctx);
     return ctx;
@@ -263,29 +263,29 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
     return result;
 }
 
-void rbduckdb_init_duckdb_value(void) {
+void rbduckdb_init_value(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBValue = rb_define_class_under(mDuckDB, "Value", rb_cObject);
     rb_define_alloc_func(cDuckDBValue, allocate);
 
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_bool", duckdb_value_s__create_bool, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int8", duckdb_value_s__create_int8, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int16", duckdb_value_s__create_int16, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int32", duckdb_value_s__create_int32, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int64", duckdb_value_s__create_int64, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint8", duckdb_value_s__create_uint8, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint16", duckdb_value_s__create_uint16, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint32", duckdb_value_s__create_uint32, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint64", duckdb_value_s__create_uint64, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_float", duckdb_value_s__create_float, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_double", duckdb_value_s__create_double, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_varchar", duckdb_value_s__create_varchar, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_blob", duckdb_value_s__create_blob, 1);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_hugeint", duckdb_value_s__create_hugeint, 2);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uhugeint", duckdb_value_s__create_uhugeint, 2);
-    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_decimal", duckdb_value_s__create_decimal, 4);
-    rb_define_singleton_method(cDuckDBValue, "create_null", duckdb_value_s_create_null, 0);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_bool", value_s__create_bool, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int8", value_s__create_int8, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int16", value_s__create_int16, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int32", value_s__create_int32, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_int64", value_s__create_int64, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint8", value_s__create_uint8, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint16", value_s__create_uint16, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint32", value_s__create_uint32, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uint64", value_s__create_uint64, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_float", value_s__create_float, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_double", value_s__create_double, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_varchar", value_s__create_varchar, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_blob", value_s__create_blob, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_hugeint", value_s__create_hugeint, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uhugeint", value_s__create_uhugeint, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_decimal", value_s__create_decimal, 4);
+    rb_define_singleton_method(cDuckDBValue, "create_null", value_s_create_null, 0);
 }
 
