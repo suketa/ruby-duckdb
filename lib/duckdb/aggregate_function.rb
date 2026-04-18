@@ -31,12 +31,14 @@ module DuckDB
     end
 
     def set_init(&block)
+      _set_update { |state, *| state } unless @update_set
       _set_combine { |s1, _s2| s1 } unless @combine_set
       _set_finalize { |x| x } unless @finalize_set
       _set_init(&block)
     end
 
     def set_update(&block)
+      @update_set = true
       _set_update(&block)
     end
 

@@ -237,15 +237,6 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
     rbduckdb_function_executor_dispatch(execute_init_callback_protected, &arg);
 }
 
-/* No-op update: used when no update_proc has been supplied. */
-static void noop_update_callback(duckdb_function_info info,
-                                 duckdb_data_chunk input,
-                                 duckdb_aggregate_state *states) {
-    (void)info;
-    (void)input;
-    (void)states;
-}
-
 /* update callback dispatch argument */
 struct update_callback_arg {
     rubyDuckDBAggregateFunction *ctx;
@@ -618,8 +609,8 @@ static void destroy_callback(duckdb_aggregate_state *states, idx_t count) {
 /*
  * Wire up all 5 DuckDB aggregate callbacks on the underlying aggregate_function.
  * Called once init_proc has been supplied.  combine_proc and finalize_proc are
- * guaranteed non-nil by the Ruby wrapper (set_init sets defaults before calling
- * _set_init).
+ * guaranteed non-nil by the Ruby wrapper (set_init injects defaults for all
+ * three before calling _set_init).
  */
 static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
     if (p->init_proc == Qnil) {
@@ -630,7 +621,7 @@ static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
         p->aggregate_function,
         state_size_callback,
         state_init_callback,
-        (p->update_proc != Qnil) ? update_callback : noop_update_callback,
+        update_callback,
         combine_callback,
         finalize_callback);
     duckdb_aggregate_function_set_destructor(p->aggregate_function, destroy_callback);
