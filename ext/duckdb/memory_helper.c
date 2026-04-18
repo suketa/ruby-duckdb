@@ -14,7 +14,7 @@ static VALUE mDuckDBMemoryHelper;
  *   DuckDB::MemoryHelper.write_bigint(ptr, 0, 42)  # Write 42 at index 0
  *   DuckDB::MemoryHelper.write_bigint(ptr, 1, 84)  # Write 84 at index 1
  */
-static VALUE rbduckdb_memory_helper_write_bigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_bigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int64_t *data;
     idx_t idx;
     int64_t val;
@@ -41,7 +41,7 @@ static VALUE rbduckdb_memory_helper_write_bigint(VALUE self, VALUE ptr, VALUE in
  *   ptr = vector.get_data
  *   DuckDB::MemoryHelper.write_double(ptr, 0, 3.14)
  */
-static VALUE rbduckdb_memory_helper_write_double(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_double(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     double *data;
     idx_t idx;
     double val;
@@ -66,7 +66,7 @@ static VALUE rbduckdb_memory_helper_write_double(VALUE self, VALUE ptr, VALUE in
  *   ptr = vector.get_data
  *   DuckDB::MemoryHelper.write_integer(ptr, 0, 42)
  */
-static VALUE rbduckdb_memory_helper_write_integer(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_integer(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int32_t *data;
     idx_t idx;
     int32_t val;
@@ -88,7 +88,7 @@ static VALUE rbduckdb_memory_helper_write_integer(VALUE self, VALUE ptr, VALUE i
  *
  * Writes a boolean to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_boolean(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_boolean(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     bool *data;
     idx_t idx;
 
@@ -107,7 +107,7 @@ static VALUE rbduckdb_memory_helper_write_boolean(VALUE self, VALUE ptr, VALUE i
  *
  * Writes an 8-bit signed integer (TINYINT) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_tinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_tinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int8_t *data;
     idx_t idx;
 
@@ -126,7 +126,7 @@ static VALUE rbduckdb_memory_helper_write_tinyint(VALUE self, VALUE ptr, VALUE i
  *
  * Writes a 16-bit signed integer (SMALLINT) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_smallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_smallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     int16_t *data;
     idx_t idx;
 
@@ -145,7 +145,7 @@ static VALUE rbduckdb_memory_helper_write_smallint(VALUE self, VALUE ptr, VALUE 
  *
  * Writes an 8-bit unsigned integer (UTINYINT) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_utinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_utinyint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint8_t *data;
     idx_t idx;
 
@@ -164,7 +164,7 @@ static VALUE rbduckdb_memory_helper_write_utinyint(VALUE self, VALUE ptr, VALUE 
  *
  * Writes a 16-bit unsigned integer (USMALLINT) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_usmallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_usmallint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint16_t *data;
     idx_t idx;
 
@@ -183,7 +183,7 @@ static VALUE rbduckdb_memory_helper_write_usmallint(VALUE self, VALUE ptr, VALUE
  *
  * Writes a 32-bit unsigned integer (UINTEGER) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_uinteger(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_uinteger(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint32_t *data;
     idx_t idx;
 
@@ -202,7 +202,7 @@ static VALUE rbduckdb_memory_helper_write_uinteger(VALUE self, VALUE ptr, VALUE 
  *
  * Writes a 64-bit unsigned integer (UBIGINT) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_ubigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_ubigint(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     uint64_t *data;
     idx_t idx;
 
@@ -221,7 +221,7 @@ static VALUE rbduckdb_memory_helper_write_ubigint(VALUE self, VALUE ptr, VALUE i
  *
  * Writes a 32-bit floating point number (FLOAT) to raw memory.
  */
-static VALUE rbduckdb_memory_helper_write_float(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_float(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     float *data;
     idx_t idx;
 
@@ -244,7 +244,7 @@ static VALUE rbduckdb_memory_helper_write_float(VALUE self, VALUE ptr, VALUE ind
  *   ptr = vector.get_data
  *   DuckDB::MemoryHelper.write_timestamp(ptr, 0, Time.new(2024, 3, 15, 10, 30, 45))
  */
-static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_timestamp(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     duckdb_timestamp *data;
     idx_t idx;
 
@@ -273,7 +273,7 @@ static VALUE rbduckdb_memory_helper_write_timestamp(VALUE self, VALUE ptr, VALUE
  *   ptr = vector.get_data
  *   DuckDB::MemoryHelper.write_timestamp_tz(ptr, 0, Time.new(2024, 3, 15, 10, 30, 45, '+00:00'))
  */
-static VALUE rbduckdb_memory_helper_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     duckdb_time_tz *data;
     idx_t idx;
     int64_t secs;
@@ -295,7 +295,7 @@ static VALUE rbduckdb_memory_helper_write_timestamp_tz(VALUE self, VALUE ptr, VA
     return Qnil;
 }
 
-static VALUE rbduckdb_memory_helper_write_date(VALUE self, VALUE ptr, VALUE index, VALUE value) {
+static VALUE memory_helper_s_write_date(VALUE self, VALUE ptr, VALUE index, VALUE value) {
     duckdb_date *data;
     idx_t idx;
 
@@ -314,18 +314,18 @@ static VALUE rbduckdb_memory_helper_write_date(VALUE self, VALUE ptr, VALUE inde
 void rbduckdb_init_memory_helper(void) {
     mDuckDBMemoryHelper = rb_define_module_under(mDuckDB, "MemoryHelper");
 
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_bigint", rbduckdb_memory_helper_write_bigint, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_double", rbduckdb_memory_helper_write_double, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_integer", rbduckdb_memory_helper_write_integer, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_boolean", rbduckdb_memory_helper_write_boolean, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_tinyint", rbduckdb_memory_helper_write_tinyint, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_smallint", rbduckdb_memory_helper_write_smallint, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_utinyint", rbduckdb_memory_helper_write_utinyint, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_usmallint", rbduckdb_memory_helper_write_usmallint, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_uinteger", rbduckdb_memory_helper_write_uinteger, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_ubigint", rbduckdb_memory_helper_write_ubigint, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_float", rbduckdb_memory_helper_write_float, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp", rbduckdb_memory_helper_write_timestamp, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp_tz", rbduckdb_memory_helper_write_timestamp_tz, 3);
-    rb_define_singleton_method(mDuckDBMemoryHelper, "write_date", rbduckdb_memory_helper_write_date, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_bigint", memory_helper_s_write_bigint, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_double", memory_helper_s_write_double, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_integer", memory_helper_s_write_integer, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_boolean", memory_helper_s_write_boolean, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_tinyint", memory_helper_s_write_tinyint, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_smallint", memory_helper_s_write_smallint, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_utinyint", memory_helper_s_write_utinyint, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_usmallint", memory_helper_s_write_usmallint, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_uinteger", memory_helper_s_write_uinteger, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_ubigint", memory_helper_s_write_ubigint, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_float", memory_helper_s_write_float, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp", memory_helper_s_write_timestamp, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_timestamp_tz", memory_helper_s_write_timestamp_tz, 3);
+    rb_define_singleton_method(mDuckDBMemoryHelper, "write_date", memory_helper_s_write_date, 3);
 }
