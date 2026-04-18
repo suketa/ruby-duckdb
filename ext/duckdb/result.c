@@ -10,19 +10,19 @@ static VALUE cDuckDBResult;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE duckdb_result_column_count(VALUE oDuckDBResult);
-static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult);
-static VALUE duckdb_result_columns(VALUE oDuckDBResult);
+static VALUE result_column_count(VALUE oDuckDBResult);
+static VALUE result_rows_changed(VALUE oDuckDBResult);
+static VALUE result_columns(VALUE oDuckDBResult);
 static VALUE destroy_data_chunk(VALUE arg);
 
-static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult);
+static VALUE result__chunk_stream(VALUE oDuckDBResult);
 static VALUE yield_rows(VALUE arg);
-static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE duckdb_result__return_type(VALUE oDuckDBResult);
-static VALUE duckdb_result__statement_type(VALUE oDuckDBResult);
-static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
+static VALUE result__column_type(VALUE oDuckDBResult, VALUE col_idx);
+static VALUE result__return_type(VALUE oDuckDBResult);
+static VALUE result__statement_type(VALUE oDuckDBResult);
+static VALUE result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
+static VALUE result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
+static VALUE result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
 
 static VALUE vector_date(void *vector_data, idx_t row_idx);
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
@@ -72,7 +72,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBResult);
 }
 
-rubyDuckDBResult *get_struct_result(VALUE obj) {
+rubyDuckDBResult *rbduckdb_get_struct_result(VALUE obj) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBResult, &result_data_type, ctx);
     return ctx;
@@ -100,7 +100,7 @@ rubyDuckDBResult *get_struct_result(VALUE obj) {
  *    end
  *
  */
-static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
+static VALUE result_rows_changed(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_rows_changed(&(ctx->result)));
@@ -124,7 +124,7 @@ static VALUE duckdb_result_rows_changed(VALUE oDuckDBResult) {
  *    end
  *
  */
-static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
+static VALUE result_column_count(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_column_count(&(ctx->result)));
@@ -137,7 +137,7 @@ static VALUE duckdb_result_column_count(VALUE oDuckDBResult) {
  *  Returns the column class Lists.
  *
  */
-static VALUE duckdb_result_columns(VALUE oDuckDBResult) {
+static VALUE result_columns(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
 
@@ -159,7 +159,7 @@ static VALUE destroy_data_chunk(VALUE arg) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__chunk_stream(VALUE oDuckDBResult) {
+static VALUE result__chunk_stream(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     struct chunk_arg arg;
 
@@ -199,28 +199,28 @@ static VALUE yield_rows(VALUE arg) {
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
+static VALUE result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return LL2NUM(duckdb_column_type(&(ctx->result), NUM2LL(col_idx)));
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__return_type(VALUE oDuckDBResult) {
+static VALUE result__return_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_return_type(ctx->result));
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__statement_type(VALUE oDuckDBResult) {
+static VALUE result__statement_type(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
     TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
     return INT2FIX(duckdb_result_statement_type(ctx->result));
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
+static VALUE result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     VALUE type = Qnil;
     duckdb_logical_type logical_type;
@@ -235,7 +235,7 @@ static VALUE duckdb_result__enum_internal_type(VALUE oDuckDBResult, VALUE col_id
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx) {
+static VALUE result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx) {
     rubyDuckDBResult *ctx;
     VALUE size = Qnil;
     duckdb_logical_type logical_type;
@@ -250,7 +250,7 @@ static VALUE duckdb_result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_
 }
 
 /* :nodoc: */
-static VALUE duckdb_result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx) {
+static VALUE result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx) {
     rubyDuckDBResult *ctx;
     VALUE value = Qnil;
     duckdb_logical_type logical_type;
@@ -706,7 +706,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
     return obj;
 }
 
-void rbduckdb_init_duckdb_result(void) {
+void rbduckdb_init_result(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
@@ -714,15 +714,15 @@ void rbduckdb_init_duckdb_result(void) {
 
     rb_define_alloc_func(cDuckDBResult, allocate);
 
-    rb_define_method(cDuckDBResult, "column_count", duckdb_result_column_count, 0);
-    rb_define_method(cDuckDBResult, "rows_changed", duckdb_result_rows_changed, 0);
-    rb_define_method(cDuckDBResult, "columns", duckdb_result_columns, 0);
-    rb_define_private_method(cDuckDBResult, "_chunk_stream", duckdb_result__chunk_stream, 0);
-    rb_define_private_method(cDuckDBResult, "_column_type", duckdb_result__column_type, 1);
-    rb_define_private_method(cDuckDBResult, "_return_type", duckdb_result__return_type, 0);
-    rb_define_private_method(cDuckDBResult, "_statement_type", duckdb_result__statement_type, 0);
+    rb_define_method(cDuckDBResult, "column_count", result_column_count, 0);
+    rb_define_method(cDuckDBResult, "rows_changed", result_rows_changed, 0);
+    rb_define_method(cDuckDBResult, "columns", result_columns, 0);
+    rb_define_private_method(cDuckDBResult, "_chunk_stream", result__chunk_stream, 0);
+    rb_define_private_method(cDuckDBResult, "_column_type", result__column_type, 1);
+    rb_define_private_method(cDuckDBResult, "_return_type", result__return_type, 0);
+    rb_define_private_method(cDuckDBResult, "_statement_type", result__statement_type, 0);
 
-    rb_define_private_method(cDuckDBResult, "_enum_internal_type", duckdb_result__enum_internal_type, 1);
-    rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", duckdb_result__enum_dictionary_size, 1);
-    rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", duckdb_result__enum_dictionary_value, 2);
+    rb_define_private_method(cDuckDBResult, "_enum_internal_type", result__enum_internal_type, 1);
+    rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", result__enum_dictionary_size, 1);
+    rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", result__enum_dictionary_value, 2);
 }

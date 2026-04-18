@@ -100,7 +100,7 @@ static VALUE pending_result_execute_pending(VALUE self) {
     VALUE result = rbduckdb_create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
-    ctxr = get_struct_result(result);
+    ctxr = rbduckdb_get_struct_result(result);
     if (duckdb_execute_pending(ctx->pending_result, &(ctxr->result)) == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
     }

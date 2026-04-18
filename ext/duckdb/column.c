@@ -40,7 +40,7 @@ VALUE column__type(VALUE oDuckDBColumn) {
     TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
 
     result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
-    ctxresult = get_struct_result(result);
+    ctxresult = rbduckdb_get_struct_result(result);
     type = duckdb_column_type(&(ctxresult->result), ctx->col);
 
     return INT2FIX(type);
@@ -63,7 +63,7 @@ VALUE column_logical_type(VALUE oDuckDBColumn) {
     TypedData_Get_Struct(oDuckDBColumn, rubyDuckDBColumn, &column_data_type, ctx);
 
     result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
-    ctxresult = get_struct_result(result);
+    ctxresult = rbduckdb_get_struct_result(result);
     _logical_type = duckdb_column_logical_type(&(ctxresult->result), ctx->col);
 
     if (_logical_type) {
@@ -89,7 +89,7 @@ VALUE column_name(VALUE oDuckDBColumn) {
 
     result = rb_ivar_get(oDuckDBColumn, rb_intern("result"));
 
-    ctxresult = get_struct_result(result);
+    ctxresult = rbduckdb_get_struct_result(result);
 
     return rb_utf8_str_new_cstr(duckdb_column_name(&(ctxresult->result), ctx->col));
 }
