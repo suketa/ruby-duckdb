@@ -30,6 +30,26 @@ module DuckDB
       _add_parameter(logical_type)
     end
 
+    def set_init(&block)
+      _set_combine { |s1, _s2| s1 } unless @combine_set
+      _set_finalize { |x| x } unless @finalize_set
+      _set_init(&block)
+    end
+
+    def set_update(&block)
+      _set_update(&block)
+    end
+
+    def set_combine(&block)
+      @combine_set = true
+      _set_combine(&block)
+    end
+
+    def set_finalize(&block)
+      @finalize_set = true
+      _set_finalize(&block)
+    end
+
     # Sets special NULL handling for the aggregate function.
     # By default DuckDB skips rows with NULL input values.  Calling this
     # method disables that behaviour so the update callback is invoked even

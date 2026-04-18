@@ -24,6 +24,25 @@ module DuckDBTest
       assert_equal 42, result.first.first
     end
 
+    def test_default_finalize_returns_state_as_is
+      register_aggregate('my_agg_default_finalize',
+                         init: -> { 42 })
+
+      result = @con.query('SELECT my_agg_default_finalize(i) FROM range(100) t(i)')
+
+      assert_equal 42, result.first.first
+    end
+
+    def test_default_combine_copies_source_to_target
+      register_aggregate('my_agg_default_combine',
+                         init: -> { 0 },
+                         update: ->(state, value) { state + value })
+
+      result = @con.query('SELECT my_agg_default_combine(i) FROM range(100) t(i)')
+
+      assert_equal 4950, result.first.first
+    end
+
     def test_aggregate_update_sums_values
       register_aggregate('my_sum',
                          init: -> { 0 },
@@ -310,7 +329,7 @@ module DuckDBTest
       func.set_init(&callbacks[:init])
       func.set_update(&callbacks[:update]) if callbacks[:update]
       func.set_combine(&callbacks[:combine]) if callbacks[:combine]
-      func.set_finalize(&callbacks[:finalize])
+      func.set_finalize(&callbacks[:finalize]) if callbacks[:finalize]
     end
   end
 end
