@@ -27,6 +27,7 @@ Metrics/ClassLength:
     - 'lib/duckdb/prepared_statement.rb'
     - 'lib/duckdb/appender.rb'
     - 'lib/duckdb/connection.rb'
+    - 'lib/duckdb/value.rb'
 
 Metrics/MethodLength:
   Exclude:

@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Appender#clear_columns`.
 - add `DuckDB::Appender#add_column`.
 - add `DuckDB::Appender#clear` to discard all unflushed data from the appender without writing it to the table (requires DuckDB >= 1.5.0).
+- add `DuckDB::Value.create_decimal`.
 
 # 1.5.2.0 - 2026-04-16
 

@@ -2,8 +2,6 @@
 
 module DuckDB
   class LogicalType # rubocop:disable Metrics/ClassLength
-    RANGE_DECIMAL_WIDTH = 1..38
-
     alias :alias get_alias
     alias :alias= set_alias
 
@@ -171,7 +169,7 @@ module DuckDB
       #   decimal_type.width #=> 18
       #   decimal_type.scale #=> 3
       def create_decimal(width, scale)
-        raise DuckDB::Error, 'width must be between 1 and 38' unless RANGE_DECIMAL_WIDTH.cover?(width)
+        raise DuckDB::Error, 'width must be between 1 and 38' unless Converter::RANGE_DECIMAL_WIDTH.cover?(width)
         raise DuckDB::Error, "scale must be between 0 and width(#{width})" unless (0..width).cover?(scale)
 
         _create_decimal_type(width, scale)

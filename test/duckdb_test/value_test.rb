@@ -558,6 +558,60 @@ module DuckDBTest
       end
     end
 
+    def test_create_decimal_with_positive
+      value = DuckDB::Value.create_decimal(BigDecimal('12345.678'))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_decimal_with_negative
+      value = DuckDB::Value.create_decimal(BigDecimal('-12345.678'))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_decimal_with_zero
+      value = DuckDB::Value.create_decimal(BigDecimal('0'))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_decimal_with_leading_fractional_zeros
+      value = DuckDB::Value.create_decimal(BigDecimal('0.0012'))
+
+      assert_instance_of(DuckDB::Value, value)
+    end
+
+    def test_create_decimal_with_string_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_decimal('not decimal')
+      end
+    end
+
+    def test_create_decimal_with_integer_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_decimal(123)
+      end
+    end
+
+    def test_create_decimal_with_float_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_decimal(1.23)
+      end
+    end
+
+    def test_create_decimal_with_nil_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_decimal(nil)
+      end
+    end
+
+    def test_create_decimal_with_width_over_38_raises_argument_error
+      assert_raises(ArgumentError) do
+        DuckDB::Value.create_decimal(BigDecimal('1' * 39))
+      end
+    end
+
     def test_create_int32_bind_value
       @con.query('CREATE TABLE e2e_int32 (id INTEGER, val INTEGER)')
       stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_int32 VALUES (1, ?)')
@@ -689,6 +743,36 @@ module DuckDBTest
       result = @con.query('SELECT val FROM e2e_uhugeint WHERE id = 1')
 
       assert_equal(340_282_366_920_938_463_463_374_607_431_768_211_455, result.first[0])
+    end
+
+    def test_create_decimal_bind_value
+      @con.query('CREATE TABLE e2e_decimal (id INTEGER, val DECIMAL(8, 3))')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_decimal VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_decimal(BigDecimal('12345.678')))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_decimal WHERE id = 1')
+
+      assert_equal(BigDecimal('12345.678'), result.first[0])
+    end
+
+    def test_create_decimal_bind_value_negative
+      @con.query('CREATE TABLE e2e_decimal_neg (id INTEGER, val DECIMAL(6, 3))')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_decimal_neg VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_decimal(BigDecimal('-987.654')))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_decimal_neg WHERE id = 1')
+
+      assert_equal(BigDecimal('-987.654'), result.first[0])
+    end
+
+    def test_create_decimal_bind_value_leading_fractional_zeros
+      @con.query('CREATE TABLE e2e_decimal_frac (id INTEGER, val DECIMAL(5, 4))')
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO e2e_decimal_frac VALUES (1, ?)')
+      stmt.bind_value(1, DuckDB::Value.create_decimal(BigDecimal('0.0012')))
+      stmt.execute
+      result = @con.query('SELECT val FROM e2e_decimal_frac WHERE id = 1')
+
+      assert_equal(BigDecimal('0.0012'), result.first[0])
     end
   end
 end
