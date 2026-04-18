@@ -2,6 +2,7 @@
 
 require 'test_helper'
 require 'tempfile'
+require 'securerandom'
 
 module DuckDBTest
   class DatabaseTest < Minitest::Test
@@ -10,6 +11,9 @@ module DuckDBTest
     end
 
     def teardown
+      @con&.close
+      @db&.close
+
       FileUtils.rm_f(@path)
       walf = "#{@path}.wal"
       FileUtils.rm_f(walf)
@@ -20,10 +24,9 @@ module DuckDBTest
     end
 
     def test_s_open_argument
-      db = DuckDB::Database.open(@path)
+      @db = DuckDB::Database.open(@path)
 
-      assert_instance_of(DuckDB::Database, db)
-      db.close
+      assert_instance_of(DuckDB::Database, @db)
     end
 
     def test_s_open_type_errors
@@ -38,18 +41,22 @@ module DuckDBTest
 
     def test_s_open_with_config
       config = DuckDB::Config.new
-      db = DuckDB::Database.open(config: config)
-      conn = db.connect
-      r = conn.execute("SELECT current_setting('access_mode') AS access_mode;")
+      DuckDB::Database.open(config: config) do |db|
+        db.connect do |con|
+          r = con.execute("SELECT current_setting('access_mode') AS access_mode;")
 
-      assert_equal('automatic', r.first.first)
+          assert_equal('automatic', r.first.first)
+        end
+      end
 
       config['access_mode'] = 'read_write'
-      db = DuckDB::Database.open(config: config)
-      conn = db.connect
-      r = conn.execute("SELECT current_setting('access_mode') AS access_mode;")
+      DuckDB::Database.open(config: config) do |db|
+        db.connect do |con|
+          r = con.execute("SELECT current_setting('access_mode') AS access_mode;")
 
-      assert_equal('read_write', r.first.first)
+          assert_equal('read_write', r.first.first)
+        end
+      end
     end
 
     def test_s_open_block
@@ -80,21 +87,22 @@ module DuckDBTest
     end
 
     def test_s_open_with_path_file
-      db = DuckDB::Database.open(@path)
+      DuckDB::Database.open(@path) do |db|
+        assert_instance_of(DuckDB::Database, db)
 
-      assert_instance_of(DuckDB::Database, db)
+        db.connect do |con|
+          con.query('CREATE TABLE t (id INTEGER)')
+          con.query('INSERT INTO t VALUES (1)')
+        end
+      end
 
-      con = db.connect
-      con.query('CREATE TABLE t (id INTEGER)')
-      con.query('INSERT INTO t VALUES (1)')
-      con.disconnect
-      db.close
+      DuckDB::Database.open(@path) do |db|
+        db.connect do |con|
+          result = con.query('SELECT * FROM t')
 
-      db2 = DuckDB::Database.open(@path)
-      result = db2.connect.query('SELECT * FROM t')
-
-      assert_equal([[1]], result.to_a)
-      db2.close
+          assert_equal([[1]], result.to_a)
+        end
+      end
     end
 
     def test_s_open_with_block
@@ -169,7 +177,7 @@ module DuckDBTest
     private
 
     def create_path
-      "#{Time.now.strftime('%Y%m%d%H%M%S')}-#{Process.pid}-#{rand(100..999)}"
+      "#{Time.now.strftime('%Y%m%d%H%M%S')}-#{Process.pid}-#{SecureRandom.hex(8)}"
     end
   end
 end
