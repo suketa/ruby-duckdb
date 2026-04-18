@@ -14,14 +14,106 @@ module DuckDBTest
       @db&.close
     end
 
-    def test_minimal_aggregate_returns_initial_state
-      register_aggregate('my_agg',
-                         init: -> { 42 },
-                         finalize: ->(state) { state })
+    def test_default_finalize_returns_state_as_is
+      register_aggregate('my_agg_default_finalize',
+                         init: -> { 42 })
 
-      result = @con.query('SELECT my_agg(i) FROM range(100) t(i)')
+      result = @con.query('SELECT my_agg_default_finalize(i) FROM range(100) t(i)')
 
       assert_equal 42, result.first.first
+    end
+
+    def test_default_combine_single_threaded_correctness
+      # Runs single-threaded so DuckDB uses one partition and never calls
+      # combine. The default combine { |s1, _s2| s1 } is lossy under parallel
+      # execution (discards the target partition), so correctness can only be
+      # asserted in the single-partition case.
+      register_aggregate('my_agg_default_combine',
+                         init: -> { 0 },
+                         update: ->(state, value) { state + value })
+
+      result = @con.query('SELECT my_agg_default_combine(i) FROM range(100) t(i)')
+
+      assert_equal 4950, result.first.first
+    end
+
+    def test_set_update_after_set_init_overrides_default
+      af = DuckDB::AggregateFunction.new
+      af.name = 'sum_update_after_init'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT sum_update_after_init(i) FROM range(100) t(i)')
+
+      # default update would ignore inputs and return 0; real update sums them
+      assert_equal 4950, result.first.first
+    end
+
+    def test_set_combine_after_set_init_overrides_default
+      af = DuckDB::AggregateFunction.new
+      af.name = 'sum_combine_after_init'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      af.set_combine { |s1, s2| s1 + s2 }
+      @con.register_aggregate_function(af)
+      force_parallel_execution(@con)
+
+      result = @con.query('SELECT sum_combine_after_init(i) FROM range(100000) t(i)')
+
+      assert_equal 4_999_950_000, result.first.first
+    end
+
+    def test_set_finalize_after_set_init_overrides_default
+      af = DuckDB::AggregateFunction.new
+      af.name = 'sum_finalize_after_init'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      af.set_finalize { |state| state * 2 }
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT sum_finalize_after_init(i) FROM range(100) t(i)')
+
+      # sum(0..99) == 4950, doubled by finalize == 9900
+      assert_equal 9900, result.first.first
+    end
+
+    def test_set_init_called_twice_second_block_wins
+      af = DuckDB::AggregateFunction.new
+      af.name = 'init_twice'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.set_init { 100 }
+      af.set_init { 0 }
+      af.set_update { |state, value| state + value }
+      @con.register_aggregate_function(af)
+
+      result = @con.query('SELECT init_twice(i) FROM range(100) t(i)')
+
+      # initial state is 0 (second set_init wins), so sum == 4950
+      assert_equal 4950, result.first.first
+    end
+
+    def test_bypass_ruby_wrapper_raises_on_finalize
+      # Calling _set_init directly skips the Ruby wrapper's default injection,
+      # leaving finalize_proc as Qnil. The C nil-guard must surface a
+      # DuckDB::Error instead of crashing with SIGSEGV.
+      af = DuckDB::AggregateFunction.new
+      af.name = 'bypass_init_finalize'
+      af.return_type = DuckDB::LogicalType::BIGINT
+      af.add_parameter(DuckDB::LogicalType::BIGINT)
+      af.send(:_set_init) { 0 }
+      @con.register_aggregate_function(af)
+
+      assert_raises(DuckDB::Error) do
+        @con.query('SELECT bypass_init_finalize(i) FROM range(10) t(i)')
+      end
     end
 
     def test_aggregate_update_sums_values
@@ -310,7 +402,7 @@ module DuckDBTest
       func.set_init(&callbacks[:init])
       func.set_update(&callbacks[:update]) if callbacks[:update]
       func.set_combine(&callbacks[:combine]) if callbacks[:combine]
-      func.set_finalize(&callbacks[:finalize])
+      func.set_finalize(&callbacks[:finalize]) if callbacks[:finalize]
     end
   end
 end
