@@ -615,7 +615,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE duckdb_pending_result_initialize(int argc, VALUE *argv, VALUE self) {
+            <pre class="c" data-language="c">static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
     VALUE oDuckDBPreparedStatement;
     VALUE streaming_p = Qfalse;
     duckdb_state state;
@@ -629,7 +629,7 @@
         rb_raise(rb_eTypeError, &quot;1st argument must be DuckDB::PreparedStatement&quot;);
     }
 
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     rubyDuckDBPreparedStatement *stmt = get_struct_prepared_statement(oDuckDBPreparedStatement);
 
     state = duckdb_pending_prepared(stmt-&gt;prepared_statement, &amp;(ctx-&gt;pending_result));
@@ -742,7 +742,7 @@
             </details>
           </div>
           <div class="method-source-code" id="execute_pending-source">
-            <pre class="c" data-language="c">static VALUE duckdb_pending_result_execute_pending(VALUE self) {
+            <pre class="c" data-language="c">static VALUE pending_result_execute_pending(VALUE self) {
     rubyDuckDBPendingResult *ctx;
     rubyDuckDBResult *ctxr;
     VALUE result = rbduckdb_create_result();
@@ -802,8 +802,8 @@
             </details>
           </div>
           <div class="method-source-code" id="execute_task-source">
-            <pre class="c" data-language="c">static VALUE duckdb_pending_result_execute_task(VALUE self) {
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+            <pre class="c" data-language="c">static VALUE pending_result_execute_task(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     ctx-&gt;state = duckdb_pending_execute_task(ctx-&gt;pending_result);
     return Qnil;
 }</pre>
@@ -851,8 +851,8 @@
             </details>
           </div>
           <div class="method-source-code" id="execution_finished-3F-source">
-            <pre class="c" data-language="c">static VALUE duckdb_pending_result_execution_finished_p(VALUE self) {
-    rubyDuckDBPendingResult *ctx = get_struct_pending_result(self);
+            <pre class="c" data-language="c">static VALUE pending_result_execution_finished_p(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
     return duckdb_pending_execution_is_finished(ctx-&gt;state) ? Qtrue : Qfalse;
 }</pre>
           </div>
