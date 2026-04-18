@@ -23,7 +23,11 @@ module DuckDBTest
       assert_equal 42, result.first.first
     end
 
-    def test_default_combine_copies_source_to_target
+    def test_default_combine_single_threaded_correctness
+      # Runs single-threaded so DuckDB uses one partition and never calls
+      # combine. The default combine { |s1, _s2| s1 } is lossy under parallel
+      # execution (discards the target partition), so correctness can only be
+      # asserted in the single-partition case.
       register_aggregate('my_agg_default_combine',
                          init: -> { 0 },
                          update: ->(state, value) { state + value })

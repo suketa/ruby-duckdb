@@ -85,6 +85,10 @@ module DuckDB
     # +set_combine+, and +set_finalize+ are injected automatically on the
     # first call if those methods have not been called explicitly.
     #
+    # @note The injected default for +set_combine+ is +{ |s1, _s2| s1 }+, which
+    #   is only correct for single-threaded execution. Always call +set_combine+
+    #   explicitly when the aggregate must be parallel-safe.
+    #
     # @return [DuckDB::AggregateFunction] self
     def set_init(&)
       unless @init_set
