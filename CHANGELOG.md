@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+- add `DuckDB::AggregateFunction.create`.
 - add `DuckDB::Appender#clear_columns`.
 - add `DuckDB::Appender#add_column`.
 - add `DuckDB::Appender#clear` to discard all unflushed data from the appender without writing it to the table (requires DuckDB >= 1.5.0).

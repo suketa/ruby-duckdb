@@ -14,6 +14,21 @@ module DuckDBTest
       @db&.close
     end
 
+    def test_s_create
+      af = DuckDB::AggregateFunction.create(
+        name: 'my_sum',
+        return_type: :bigint,
+        params: [:bigint],
+        init: -> { 0 },
+        update: ->(state, value) { state + value },
+        combine: ->(state, other_state) { state + other_state }
+      )
+      @con.register_aggregate_function(af)
+      result = @con.query('SELECT my_sum(i) FROM range(100) t(i)')
+
+      assert_equal 4950, result.first.first
+    end
+
     def test_default_finalize_returns_state_as_is
       register_aggregate('my_agg_default_finalize',
                          init: -> { 42 })
@@ -35,6 +50,49 @@ module DuckDBTest
       result = @con.query('SELECT my_agg_default_combine(i) FROM range(100) t(i)')
 
       assert_equal 4950, result.first.first
+    end
+
+    def test_s_create_zero_param_aggregate
+      af = DuckDB::AggregateFunction.create(
+        name: 'my_count',
+        return_type: :bigint,
+        init: -> { 0 },
+        update: ->(state, *) { state + 1 },
+        combine: ->(state, other_state) { state + other_state }
+      )
+      @con.register_aggregate_function(af)
+      result = @con.query('SELECT my_count() FROM range(5) t(i)')
+
+      assert_equal 5, result.first.first
+    end
+
+    def test_s_create_null_handling_true
+      af = DuckDB::AggregateFunction.create(
+        name: 'count_with_nulls',
+        return_type: :bigint,
+        params: [:bigint],
+        init: -> { 0 },
+        update: ->(state, _value) { state + 1 },
+        combine: ->(state, other_state) { state + other_state },
+        null_handling: true
+      )
+      @con.register_aggregate_function(af)
+      @con.query('CREATE TABLE null_handling_test (i BIGINT)')
+      @con.query('INSERT INTO null_handling_test VALUES (1), (NULL), (3), (NULL), (5)')
+
+      result = @con.query('SELECT count_with_nulls(i) FROM null_handling_test')
+
+      assert_equal 5, result.first.first
+    end
+
+    def test_s_create_raises_argument_error_for_non_callable_init
+      assert_raises(ArgumentError) do
+        DuckDB::AggregateFunction.create(
+          name: 'bad_init',
+          return_type: :bigint,
+          init: 0
+        )
+      end
     end
 
     def test_set_update_after_set_init_overrides_default

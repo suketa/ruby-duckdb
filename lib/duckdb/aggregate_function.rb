@@ -57,6 +57,97 @@ module DuckDB
   class AggregateFunction
     include FunctionTypeValidation
 
+    class << self
+      # Creates a new AggregateFunction in a single call.
+      #
+      # This is a convenience factory that builds and configures an
+      # AggregateFunction without requiring you to set each attribute
+      # separately.
+      #
+      # @param name [String] the SQL function name
+      # @param return_type [DuckDB::LogicalType | Symbol] the SQL return type
+      # @param params [Array<DuckDB::LogicalType | Symbol>] input parameter types
+      #   (empty array for a zero-argument aggregate)
+      # @param init [#call] callable that returns the initial per-group state
+      # @param update [#call] callable that folds one row into the state;
+      #   receives +state, *inputs+ and must return the updated state.
+      #   Default: +->( state, *) { state }+ (ignore inputs)
+      # @param combine [#call] callable that merges two partial states;
+      #   receives +source_state, target_state+ and must return the merged
+      #   state. Default: +->(state, _other) { state }+ (keep source only —
+      #   only correct for single-threaded execution)
+      # @param finalize [#call] callable that converts the final state into the
+      #   SQL result value; receives +state+ and must return a value compatible
+      #   with +return_type+.
+      #   Default: +->(state) { state }+ (return state as-is)
+      # @param null_handling [Boolean] when +true+, enables special NULL
+      #   handling so that rows with NULL inputs are passed to +update+ as
+      #   +nil+ instead of being skipped (default: +false+)
+      # @return [DuckDB::AggregateFunction] the configured aggregate function,
+      #   ready to be passed to +Connection#register_aggregate_function+
+      # @raise [ArgumentError] if any of +init+, +update+, +combine+, or
+      #   +finalize+ does not respond to +call+
+      #
+      # == Example: custom SUM
+      #
+      #   af = DuckDB::AggregateFunction.create(
+      #     name:        'my_sum',
+      #     return_type: :bigint,
+      #     params:      [:bigint],
+      #     init:        -> { 0 },
+      #     update:      ->(state, value) { state + value },
+      #     combine:     ->(state, other) { state + other }
+      #   )
+      #   con.register_aggregate_function(af)
+      #   con.query('SELECT my_sum(i) FROM range(100) t(i)').first.first  # => 4950
+      #
+      # == Example: count including NULL values
+      #
+      #   af = DuckDB::AggregateFunction.create(
+      #     name:         'count_with_nulls',
+      #     return_type:  :bigint,
+      #     params:       [:bigint],
+      #     init:         -> { 0 },
+      #     update:       ->(state, _value) { state + 1 },
+      #     combine:      ->(state, other) { state + other },
+      #     null_handling: true
+      #   )
+      def create( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists, Metrics/AbcSize
+        name:,
+        return_type:,
+        params: [], # rubocop:disable Style/KeywordParametersOrder
+        init:,
+        update: ->(state, *_inputs) { state },
+        combine: ->(state, _other_state) { state },
+        finalize: ->(state) { state },
+        null_handling: false
+      )
+        callable!(:init, init)
+        callable!(:update, update)
+        callable!(:combine, combine)
+        callable!(:finalize, finalize)
+
+        af = AggregateFunction.new
+        af.name = name
+        af.return_type = return_type
+        params.each do |param|
+          af.add_parameter(param)
+        end
+        af.set_init { init.call }
+        af.set_update { |state, *inputs| update.call(state, *inputs) }
+        af.set_combine { |state, other_state| combine.call(state, other_state) }
+        af.set_finalize { |state| finalize.call(state) }
+        af.set_special_handling if null_handling
+        af
+      end
+
+      private
+
+      def callable!(name, arg)
+        raise ArgumentError, "#{name} must respond to `call`" unless arg.respond_to?(:call)
+      end
+    end
+
     # Sets the return type for the aggregate function.
     #
     # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type
