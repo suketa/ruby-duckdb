@@ -112,7 +112,7 @@ module DuckDB
       #     combine:      ->(state, other) { state + other },
       #     null_handling: true
       #   )
-      def create( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
+      def create( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists, Metrics/AbcSize
         name:,
         return_type:,
         params: [], # rubocop:disable Style/KeywordParametersOrder
