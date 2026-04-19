@@ -68,10 +68,10 @@ module DuckDB
         finalize: ->(state) { state },
         null_handling: false
       )
-        check_proc!(:init, init)
-        check_proc!(:update, update)
-        check_proc!(:combine, combine)
-        check_proc!(:finalize, finalize)
+        callable!(:init, init)
+        callable!(:update, update)
+        callable!(:combine, combine)
+        callable!(:finalize, finalize)
 
         af = AggregateFunction.new
         af.name = name
@@ -89,8 +89,8 @@ module DuckDB
 
       private
 
-      def check_proc!(name, arg)
-        raise ArgumentError, "#{name} must be Proc" unless arg.is_a?(Proc)
+      def callable!(name, arg)
+        raise ArgumentError, "#{name} must be Proc" unless arg.respond_to?(:call)
       end
     end
 
