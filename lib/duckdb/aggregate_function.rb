@@ -61,12 +61,18 @@ module DuckDB
       def create( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
         name:,
         return_type:,
-        init:, params: [],
-        update: ->(state, _value) { state },
+        params: [], # rubocop:disable Style/KeywordParametersOrder
+        init:,
+        update: ->(state, *_inputs) { state },
         combine: ->(state, _other_state) { state },
         finalize: ->(state) { state },
         null_handling: false
       )
+        check_proc!(:init, init)
+        check_proc!(:update, update)
+        check_proc!(:combine, combine)
+        check_proc!(:finalize, finalize)
+
         af = AggregateFunction.new
         af.name = name
         af.return_type = return_type
@@ -79,6 +85,12 @@ module DuckDB
         af.set_finalize(&finalize)
         af.set_special_handling if null_handling
         af
+      end
+
+      private
+
+      def check_proc!(name, arg)
+        raise ArgumentError, "#{name} must be Proc" unless arg.is_a?(Proc)
       end
     end
 
