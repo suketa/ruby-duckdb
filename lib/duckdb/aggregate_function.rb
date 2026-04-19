@@ -133,10 +133,10 @@ module DuckDB
         params.each do |param|
           af.add_parameter(param)
         end
-        af.set_init(&init)
-        af.set_update(&update)
-        af.set_combine(&combine)
-        af.set_finalize(&finalize)
+        af.set_init { init.call }
+        af.set_update { |state, *inputs| update.call(state, *inputs) }
+        af.set_combine { |state, other_state| combine.call(state, other_state) }
+        af.set_finalize { |state| finalize.call(state) }
         af.set_special_handling if null_handling
         af
       end
