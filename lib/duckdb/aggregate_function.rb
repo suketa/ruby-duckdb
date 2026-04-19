@@ -90,7 +90,7 @@ module DuckDB
       private
 
       def callable!(name, arg)
-        raise ArgumentError, "#{name} must be Proc" unless arg.respond_to?(:call)
+        raise ArgumentError, "#{name} must respond to `call`" unless arg.respond_to?(:call)
       end
     end
 
