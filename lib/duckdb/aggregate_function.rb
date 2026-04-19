@@ -57,6 +57,31 @@ module DuckDB
   class AggregateFunction
     include FunctionTypeValidation
 
+    class << self
+      def create( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
+        name:,
+        return_type:,
+        init:, params: [],
+        update: ->(state, _value) { state },
+        combine: ->(state, _other_state) { state },
+        finalize: ->(state) { state },
+        null_handling: false
+      )
+        af = AggregateFunction.new
+        af.name = name
+        af.return_type = return_type
+        params.each do |param|
+          af.add_parameter(param)
+        end
+        af.set_init(&init)
+        af.set_update(&update)
+        af.set_combine(&combine)
+        af.set_finalize(&finalize)
+        af.set_special_handling if null_handling
+        af
+      end
+    end
+
     # Sets the return type for the aggregate function.
     #
     # @param logical_type [DuckDB::LogicalType | :logical_type_symbol] the return type

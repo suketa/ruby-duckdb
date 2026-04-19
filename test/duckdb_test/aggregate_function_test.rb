@@ -14,6 +14,21 @@ module DuckDBTest
       @db&.close
     end
 
+    def test_s_create
+      af = DuckDB::AggregateFunction.create(
+        name: 'my_sum',
+        return_type: :bigint,
+        params: [:bigint],
+        init: -> { 0 },
+        update: ->(state, value) { state + value },
+        combine: ->(state, other_state) { state + other_state }
+      )
+      @con.register_aggregate_function(af)
+      result = @con.query('SELECT my_sum(i) FROM range(100) t(i)')
+
+      assert_equal 4950, result.first.first
+    end
+
     def test_default_finalize_returns_state_as_is
       register_aggregate('my_agg_default_finalize',
                          init: -> { 42 })
