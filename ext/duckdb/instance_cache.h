@@ -7,6 +7,6 @@ struct _rubyDuckDBInstanceCache {
 
 typedef struct _rubyDuckDBInstanceCache rubyDuckDBInstanceCache;
 
-void rbduckdb_init_duckdb_instance_cache(void);
+void rbduckdb_init_instance_cache(void);
 
 #endif
