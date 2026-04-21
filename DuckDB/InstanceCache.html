@@ -601,7 +601,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE duckdb_instance_cache_initialize(VALUE self) {
+            <pre class="c" data-language="c">static VALUE instance_cache_initialize(VALUE self) {
     rubyDuckDBInstanceCache *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &amp;instance_cache_data_type, ctx);
@@ -665,7 +665,7 @@
             </details>
           </div>
           <div class="method-source-code" id="destroy-source">
-            <pre class="c" data-language="c">static VALUE duckdb_instance_cache_destroy(VALUE self) {
+            <pre class="c" data-language="c">static VALUE instance_cache_destroy(VALUE self) {
     rubyDuckDBInstanceCache *ctx;
     TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &amp;instance_cache_data_type, ctx);
 
