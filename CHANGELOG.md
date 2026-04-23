@@ -4,11 +4,14 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 
+# 1.5.2.1 - 2026-04-24
+
 - add `DuckDB::AggregateFunction.create`.
 - add `DuckDB::Appender#clear_columns`.
 - add `DuckDB::Appender#add_column`.
 - add `DuckDB::Appender#clear` to discard all unflushed data from the appender without writing it to the table (requires DuckDB >= 1.5.0).
 - add `DuckDB::Value.create_decimal`.
+- fix gemspec to use `git ls-files`, preventing precompiled x86_64 `.so` from being bundled into the gem and breaking non-x86 platforms.
 
 # 1.5.2.0 - 2026-04-16
 
