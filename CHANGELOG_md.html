@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. AggregateFunction."
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased # 1."
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. AggregateFunction.">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. AggregateFunction.">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
 
 
 
@@ -463,6 +463,8 @@
 <p>All notable changes to this project will be documented in this file.</p>
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
+
+<h1 id="label-1.5.2.1+-+2026-04-24"><a href="#label-1.5.2.1+-+2026-04-24">1.5.2.1 - 2026-04-24</a></h1>
 <ul><li>
 <p>add <a href="DuckDB/AggregateFunction.html#method-c-create"><code>DuckDB::AggregateFunction.create</code></a>.</p>
 </li><li>
@@ -473,6 +475,8 @@
 <p>add <a href="DuckDB/Appender.html#method-i-clear"><code>DuckDB::Appender#clear</code></a> to discard all unflushed data from the appender without writing it to the table (requires <a href="DuckDB.html"><code>DuckDB</code></a> &gt;= 1.5.0).</p>
 </li><li>
 <p>add <a href="DuckDB/Value.html#method-c-create_decimal"><code>DuckDB::Value.create_decimal</code></a>.</p>
+</li><li>
+<p>fix gemspec to use <code>git ls-files</code>, preventing precompiled x86_64 <code>.so</code> from being bundled into the gem and breaking non-x86 platforms.</p>
 </li></ul>
 
 <h1 id="label-1.5.2.0+-+2026-04-16"><a href="#label-1.5.2.0+-+2026-04-16">1.5.2.0 - 2026-04-16</a></h1>
