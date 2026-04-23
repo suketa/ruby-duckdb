@@ -1,20 +1,20 @@
 PATH
   remote: .
   specs:
-    duckdb (1.5.2.0)
+    duckdb (1.5.2.1)
       bigdecimal (>= 3.1.4)
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.3)
-    bigdecimal (4.1.1)
+    bigdecimal (4.1.2)
     csv (3.3.5)
     drb (2.2.3)
-    json (2.19.3)
+    json (2.19.4)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
-    minitest (6.0.4)
+    minitest (6.0.5)
       drb (~> 2.0)
       prism (~> 1.5)
     parallel (1.28.0)
