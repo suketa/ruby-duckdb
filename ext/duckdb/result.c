@@ -17,7 +17,6 @@ static VALUE destroy_data_chunk(VALUE arg);
 
 static VALUE result__chunk_stream(VALUE oDuckDBResult);
 static VALUE yield_rows(VALUE arg);
-static VALUE result__column_type(VALUE oDuckDBResult, VALUE col_idx);
 static VALUE result__return_type(VALUE oDuckDBResult);
 static VALUE result__statement_type(VALUE oDuckDBResult);
 static VALUE result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
@@ -196,13 +195,6 @@ static VALUE yield_rows(VALUE arg) {
         rb_yield(row);
     }
     return Qnil;
-}
-
-/* :nodoc: */
-static VALUE result__column_type(VALUE oDuckDBResult, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    return LL2NUM(duckdb_column_type(&(ctx->result), NUM2LL(col_idx)));
 }
 
 /* :nodoc: */
@@ -718,7 +710,6 @@ void rbduckdb_init_result(void) {
     rb_define_method(cDuckDBResult, "rows_changed", result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", result_columns, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_stream", result__chunk_stream, 0);
-    rb_define_private_method(cDuckDBResult, "_column_type", result__column_type, 1);
     rb_define_private_method(cDuckDBResult, "_return_type", result__return_type, 0);
     rb_define_private_method(cDuckDBResult, "_statement_type", result__statement_type, 0);
 

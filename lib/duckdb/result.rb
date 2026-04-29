@@ -87,5 +87,13 @@ module DuckDB
       end
       values
     end
+
+    private
+
+    def _column_type(idx)
+      warn(":_column_type is deprecated. use columns[#{idx}].send(:_type) instead.")
+
+      columns[idx].send(:_type)
+    end
   end
 end
