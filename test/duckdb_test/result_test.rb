@@ -194,14 +194,6 @@ module DuckDBTest
       assert_equal(:select, @result.statement_type)
     end
 
-    # rubocop:disable Minitest/TestMethodName
-    def xtest__to_hugeint
-      assert_only_without_chunk_each do
-        assert_equal(expected_hugeint, @result.send(:_to_hugeint, 0, 4))
-      end
-    end
-    # rubocop:enable Minitest/TestMethodName
-
     private
 
     def create_data
