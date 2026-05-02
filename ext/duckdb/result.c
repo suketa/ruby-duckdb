@@ -20,8 +20,6 @@ static VALUE yield_rows(VALUE arg);
 static VALUE result__return_type(VALUE oDuckDBResult);
 static VALUE result__statement_type(VALUE oDuckDBResult);
 static VALUE result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx);
-static VALUE result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx);
 
 static VALUE vector_date(void *vector_data, idx_t row_idx);
 static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
@@ -226,45 +224,9 @@ static VALUE result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx) {
     return type;
 }
 
-/* :nodoc: */
-static VALUE result__enum_dictionary_size(VALUE oDuckDBResult, VALUE col_idx) {
-    rubyDuckDBResult *ctx;
-    VALUE size = Qnil;
-    duckdb_logical_type logical_type;
-
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
-    if (logical_type) {
-        size = UINT2NUM(duckdb_enum_dictionary_size(logical_type));
-    }
-    duckdb_destroy_logical_type(&logical_type);
-    return size;
-}
-
-/* :nodoc: */
-static VALUE result__enum_dictionary_value(VALUE oDuckDBResult, VALUE col_idx, VALUE idx) {
-    rubyDuckDBResult *ctx;
-    VALUE value = Qnil;
-    duckdb_logical_type logical_type;
-    char *p;
-
-    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
-    logical_type = duckdb_column_logical_type(&(ctx->result), NUM2LL(col_idx));
-    if (logical_type) {
-        p = duckdb_enum_dictionary_value(logical_type, NUM2LL(idx));
-        if (p) {
-            value = rb_utf8_str_new_cstr(p);
-            duckdb_free(p);
-        }
-    }
-    duckdb_destroy_logical_type(&logical_type);
-    return value;
-}
-
 VALUE rbduckdb_create_result(void) {
     return allocate(cDuckDBResult);
 }
-
 
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
     return rbduckdb_date_to_ruby(((duckdb_date *)vector_data)[row_idx]);
@@ -277,7 +239,6 @@ static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
 static VALUE vector_time(void* vector_data, idx_t row_idx) {
     return rbduckdb_time_to_ruby(((duckdb_time *)vector_data)[row_idx]);
 }
-
 
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
     return rbduckdb_interval_to_ruby(((duckdb_interval *)vector_data)[row_idx]);
@@ -714,6 +675,4 @@ void rbduckdb_init_result(void) {
     rb_define_private_method(cDuckDBResult, "_statement_type", result__statement_type, 0);
 
     rb_define_private_method(cDuckDBResult, "_enum_internal_type", result__enum_internal_type, 1);
-    rb_define_private_method(cDuckDBResult, "_enum_dictionary_size", result__enum_dictionary_size, 1);
-    rb_define_private_method(cDuckDBResult, "_enum_dictionary_value", result__enum_dictionary_value, 2);
 }

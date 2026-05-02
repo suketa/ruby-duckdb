@@ -81,14 +81,43 @@ module DuckDB
     #   result = con.query('SELECT * FROM enums')
     #   result.enum_dictionary_values(1) # => ['sad', 'ok', 'happy', '𝘾𝝾օɭ 😎']
     def enum_dictionary_values(col_index)
+      column = columns[col_index]
+
+      raise ArgumentError, "Invalid index: #{col_index}" if column.nil? || col_index.negative?
+
+      lt = column.logical_type
+
+      raise DuckDB::Error, "Column[#{col_index}] type is not enum" if lt.type != :enum
+
       values = []
-      _enum_dictionary_size(col_index).times do |i|
-        values << _enum_dictionary_value(col_index, i)
+      lt.dictionary_size.times do |i|
+        values << lt.dictionary_value_at(i)
       end
       values
     end
 
     private
+
+    def _enum_dictionary_size(idx)
+      warn(":_enum_dictionary_size is deprecated. use columns[#{idx}].logical_type.dictionary_size instead.")
+
+      raise ArgumentError, "Invalid index: #{idx}" if idx.negative?
+
+      columns[idx]&.logical_type&.dictionary_size
+    end
+
+    def _enum_dictionary_value(col_index, idx)
+      warn(":_enum_dictionary_value is deprecated.\
+           use columns[#{col_index}].logical_type.dictionary_value_at(#{idx}) instead.")
+
+      raise ArgumentError, "Invalid index: #{col_index}" if col_index.negative?
+
+      lt = columns[col_index]&.logical_type
+
+      raise DuckDB::Error, "Column[#{col_index}] type is not enum" if lt&.type != :enum
+
+      lt.dictionary_value_at(idx)
+    end
 
     def _column_type(idx)
       warn(":_column_type is deprecated. use columns[#{idx}].send(:_type) instead.")
