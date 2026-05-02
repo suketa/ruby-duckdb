@@ -101,14 +101,14 @@ module DuckDB
     def _enum_dictionary_size(idx)
       warn(":_enum_dictionary_size is deprecated. use columns[#{idx}].logical_type.dictionary_size instead.")
 
-      column[idx]&.logical_type&.dictionary_size
+      columns[idx]&.logical_type&.dictionary_size
     end
 
     def _enum_dictionary_value(col_index, idx)
       warn(":_enum_dictionary_value is deprecated.\
            use columns[#{col_index}].logical_type.dictionary_value_at(#{idx}) instead.")
 
-      columns[col_index]&.logical_type&.dictionary_alue_at(idx)
+      columns[col_index]&.logical_type&.dictionary_value_at(idx)
     end
 
     def _column_type(idx)
