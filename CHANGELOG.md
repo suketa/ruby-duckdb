@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 ## Breaking Changes
 - deprecate `DuckDB::Result#_column_type(i)` private method. use `columns[i].send(:_type)` instead.
-- DuckDB::Result#enum_dictionary_values checks invalid column index.
+- `DuckDB::Result#enum_dictionary_values` checks invalid column index.
+- deprecate `DuckDB::Result#_enum_dictionary_size` private method.
+- deprecate `DuckDB::Result#_enum_dictionary_value` private method.
 
 # 1.5.2.1 - 2026-04-24
 
