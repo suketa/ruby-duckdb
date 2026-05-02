@@ -467,6 +467,12 @@
 <h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 <ul><li>
 <p>deprecate <code>DuckDB::Result#_column_type(i)</code> private method. use <code>columns[i].send(:_type)</code> instead.</p>
+</li><li>
+<p><a href="DuckDB/Result.html#method-i-enum_dictionary_values"><code>DuckDB::Result#enum_dictionary_values</code></a> checks invalid column index.</p>
+</li><li>
+<p>deprecate <code>DuckDB::Result#_enum_dictionary_size</code> private method.</p>
+</li><li>
+<p>deprecate <code>DuckDB::Result#_enum_dictionary_value</code> private method.</p>
 </li></ul>
 
 <h1 id="label-1.5.2.1+-+2026-04-24"><a href="#label-1.5.2.1+-+2026-04-24">1.5.2.1 - 2026-04-24</a></h1>
