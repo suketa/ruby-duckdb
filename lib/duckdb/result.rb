@@ -114,7 +114,7 @@ module DuckDB
 
       lt = columns[col_index]&.logical_type
 
-      raise DuckDB::Error, "Column[#{col_index}] type is not enum" if lt.type != :enum
+      raise DuckDB::Error, "Column[#{col_index}] type is not enum" if lt&.type != :enum
 
       lt.dictionary_value_at(idx)
     end
