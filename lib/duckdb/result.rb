@@ -81,9 +81,17 @@ module DuckDB
     #   result = con.query('SELECT * FROM enums')
     #   result.enum_dictionary_values(1) # => ['sad', 'ok', 'happy', '𝘾𝝾օɭ 😎']
     def enum_dictionary_values(col_index)
+      column = columns[col_index]
+
+      raise ArgumentError, "Invalid index: #{col_index}" if column.nil?
+
+      lt = column.logical_type
+
+      raise DuckDB::Error, "Column[#{col_index}] type is not enum" if lt.type != :enum
+
       values = []
-      _enum_dictionary_size(col_index).times do |i|
-        values << _enum_dictionary_value(col_index, i)
+      lt.dictionary_size.times do |i|
+        values << lt.dictionary_value_at(i)
       end
       values
     end

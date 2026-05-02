@@ -42,11 +42,15 @@ module DuckDBTest
     end
 
     def test_result_enum_dictionary_values_with_invalid_index
-      assert_equal([], @result.enum_dictionary_values(0))
+      assert_raises(DuckDB::Error) do
+        @result.enum_dictionary_values(0)
+      end
     end
 
     def test_result_enum_dictionary_values_with_out_of_range_index
-      assert_equal([], @result.enum_dictionary_values(2))
+      assert_raises(ArgumentError) do
+        @result.enum_dictionary_values(2)
+      end
     end
   end
 end
