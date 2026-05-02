@@ -101,6 +101,8 @@ module DuckDB
     def _enum_dictionary_size(idx)
       warn(":_enum_dictionary_size is deprecated. use columns[#{idx}].logical_type.dictionary_size instead.")
 
+      raise ArgumentError, "Invalid index: #{idx}" if idx.negative?
+
       columns[idx]&.logical_type&.dictionary_size
     end
 
@@ -108,7 +110,13 @@ module DuckDB
       warn(":_enum_dictionary_value is deprecated.\
            use columns[#{col_index}].logical_type.dictionary_value_at(#{idx}) instead.")
 
-      columns[col_index]&.logical_type&.dictionary_value_at(idx)
+      raise ArgumentError, "Invalid index: #{col_index}" if col_index.negative?
+
+      lt = columns[col_index]&.logical_type
+
+      raise DuckDB::Error, "Column[#{col_index}] type is not enum" if lt.type != :enum
+
+      lt.dictionary_value_at(idx)
     end
 
     def _column_type(idx)

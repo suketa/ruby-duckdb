@@ -228,7 +228,6 @@ VALUE rbduckdb_create_result(void) {
     return allocate(cDuckDBResult);
 }
 
-
 static VALUE vector_date(void *vector_data, idx_t row_idx) {
     return rbduckdb_date_to_ruby(((duckdb_date *)vector_data)[row_idx]);
 }
@@ -240,7 +239,6 @@ static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
 static VALUE vector_time(void* vector_data, idx_t row_idx) {
     return rbduckdb_time_to_ruby(((duckdb_time *)vector_data)[row_idx]);
 }
-
 
 static VALUE vector_interval(void* vector_data, idx_t row_idx) {
     return rbduckdb_interval_to_ruby(((duckdb_interval *)vector_data)[row_idx]);
