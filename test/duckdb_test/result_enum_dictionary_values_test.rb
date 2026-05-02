@@ -52,5 +52,11 @@ module DuckDBTest
         @result.enum_dictionary_values(2)
       end
     end
+
+    def test_result_enum_dictionary_values_with_negative_index
+      assert_raises(ArgumentError) do
+        @result.enum_dictionary_values(-1)
+      end
+    end
   end
 end

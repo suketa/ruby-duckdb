@@ -83,7 +83,7 @@ module DuckDB
     def enum_dictionary_values(col_index)
       column = columns[col_index]
 
-      raise ArgumentError, "Invalid index: #{col_index}" if column.nil?
+      raise ArgumentError, "Invalid index: #{col_index}" if column.nil? || col_index.negative?
 
       lt = column.logical_type
 
