@@ -391,13 +391,6 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_uint64(1, -1) }
     end
 
-    def test__bind_hugeint
-      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
-      stmt.send(:_bind_hugeint, 1, 18_446_744_073_709_551_615, 9_223_372_036_854_775_807)
-
-      assert_equal(expected_row, stmt.execute.each.first)
-    end
-
     def test__bind_hugeint_internal
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_hugeint = $1')
       stmt.bind_hugeint_internal(1, 170_141_183_460_469_231_731_687_303_715_884_105_727)
@@ -493,13 +486,6 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_double = $1')
 
       assert_raises(TypeError) { stmt.bind_double(1, 'invalid_double_val') }
-    end
-
-    def test__bind_decimal
-      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
-      stmt.send(:_bind_decimal, 1, 987_654_321, 0, 9, 4)
-
-      assert_equal(expected_row, stmt.execute.each.first)
     end
 
     def test_bind_decimal
@@ -706,16 +692,6 @@ module DuckDBTest
       assert_match(/Cannot parse `#<DuckDBTest::PreparedStatementTest::Foo/, e.message)
     end
 
-    def test__bind_date
-      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_date = $1')
-
-      today = PreparedStatementTest.today
-      stmt.send(:_bind_date, 1, today.year, today.month, today.day)
-      result = stmt.execute
-
-      assert_equal(1, result.each.first[0])
-    end
-
     def test_bind_time
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_time = $1')
 
@@ -750,43 +726,10 @@ module DuckDBTest
       assert_match(/Cannot parse `#<DuckDBTest::PreparedStatementTest::Foo/, e.message)
     end
 
-    def test__bind_time
-      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_time = $1')
-
-      stmt.send(:_bind_time, 1, 12, 34, 56, 1)
-
-      result = stmt.execute
-
-      # fix for using duckdb_fetch_chunk in Result#chunk_each
-      result = result.to_a
-
-      assert_instance_of(Array, result.each.first)
-      assert_equal(1, result.each.first[0])
-    end
-
-    def test__bind_timestamp
-      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
-
-      stmt.send(:_bind_timestamp, 1, 2019, 11, 9, 12, 34, 56, 0)
-      result = stmt.execute
-
-      assert_equal(1, result.each.first[0])
-    end
-
     def test_bind_timestamp
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind_timestamp(1, Time.new(2019, 11, 9, 12, 34, 56))
-      result = stmt.execute
-
-      assert_equal(1, result.each.first[0])
-    end
-
-    def test__bind_itnerval
-      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_interval = $1')
-
-      micros = (((12 * 3600) + (34 * 60) + 56) * 1_000_000) + 987_654
-      stmt.send(:_bind_interval, 1, 14, 3, micros)
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])
