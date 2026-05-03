@@ -36,6 +36,7 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_value(VALUE self, VALUE val);
 static VALUE appender__append_data_chunk(VALUE self, VALUE chunk);
+static VALUE appender__append_default_to_chunk(VALUE self, VALUE chunk, VALUE col, VALUE row);
 static VALUE appender__flush(VALUE self);
 
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
@@ -448,6 +449,17 @@ static VALUE appender__append_data_chunk(VALUE self, VALUE chunk) {
 }
 
 /* :nodoc: */
+static VALUE appender__append_default_to_chunk(VALUE self, VALUE chunk, VALUE col, VALUE row) {
+    rubyDuckDBAppender *ctx;
+    rubyDuckDBDataChunk *chunk_ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+    chunk_ctx = rbduckdb_get_struct_data_chunk(chunk);
+
+    return state_to_rbool(duckdb_append_default_to_chunk(ctx->appender, chunk_ctx->data_chunk, NUM2ULL(col), NUM2ULL(row)));
+}
+
+/* :nodoc: */
 static VALUE appender__flush(VALUE self) {
     rubyDuckDBAppender *ctx;
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -540,4 +552,5 @@ void rbduckdb_init_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_append_uhugeint", appender__append_uhugeint, 2);
     rb_define_private_method(cDuckDBAppender, "_append_value", appender__append_value, 1);
     rb_define_private_method(cDuckDBAppender, "_append_data_chunk", appender__append_data_chunk, 1);
+    rb_define_private_method(cDuckDBAppender, "_append_default_to_chunk", appender__append_default_to_chunk, 3);
 }

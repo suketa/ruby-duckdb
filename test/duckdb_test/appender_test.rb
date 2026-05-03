@@ -270,6 +270,24 @@ module DuckDBTest
       assert_equal([[42, 'Alice'], [84, 'Bob']], @con.query("SELECT * FROM #{table} ORDER BY id").to_a)
     end
 
+    def test_append_default_to_chunk
+      create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
+      appender = DuckDB::Appender.new(@con, '', table)
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+
+      appender.append_default_to_chunk(chunk, 1, 0)
+      appender.append_default_to_chunk(chunk, 1, 1)
+
+      chunk.set_value(0, 0, 'Alice')
+      chunk.set_value(0, 1, 'Bob')
+      chunk.size = 2
+
+      appender.append_data_chunk(chunk)
+      appender.close
+
+      assert_equal([['Alice', true], ['Bob', true]], @con.query("SELECT * FROM #{table} ORDER BY name").to_a)
+    end
+
     def test_append_uint32
       assert_duckdb_appender(4_294_967_295, 'BIGINT') { |a| a.append_uint32(4_294_967_295) }
     end
