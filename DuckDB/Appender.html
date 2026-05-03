@@ -517,6 +517,8 @@
 
         <li ><a href="#method-i-append_default">append_default</a></li>
 
+        <li ><a href="#method-i-append_default_to_chunk">append_default_to_chunk</a></li>
+
         <li ><a href="#method-i-append_double">append_double</a></li>
 
         <li ><a href="#method-i-append_float">append_float</a></li>
@@ -942,7 +944,7 @@
             </details>
           </div>
           <div class="method-source-code" id="append-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 683</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 725</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
@@ -1135,7 +1137,7 @@
             </details>
           </div>
           <div class="method-source-code" id="append_data_chunk-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 664</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 678</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_data_chunk</span>(<span class="ruby-identifier">chunk</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected DuckDB::DataChunk, got #{chunk.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">DataChunk</span>)
 
@@ -1150,7 +1152,20 @@
         <div class="method-description">
 
 
-          
+          <p>Appends a pre-filled <a href="DataChunk.html"><code>DuckDB::DataChunk</code></a> to the appender.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR)&#39;</span>)
+<span class="ruby-identifier">appender</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender</span>(<span class="ruby-string">&#39;users&#39;</span>)
+<span class="ruby-identifier">chunk</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">DataChunk</span>.<span class="ruby-identifier">new</span>([<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>])
+<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">0</span>, <span class="ruby-value">1</span>)
+<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">1</span>, <span class="ruby-value">0</span>, <span class="ruby-string">&#39;Alice&#39;</span>)
+<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">1</span>
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append_data_chunk</span>(<span class="ruby-identifier">chunk</span>)
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
+</pre>
 
 
         </div>
@@ -1270,6 +1285,70 @@
   .<span class="ruby-identifier">append_default</span>
   .<span class="ruby-identifier">end_row</span>
   .<span class="ruby-identifier">flush</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-append_default_to_chunk" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-append_default_to_chunk" title="Link to this method">
+                  <span class="method-callseq">
+                    append_default_to_chunk(chunk, col, row) &rarr; self
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="append_default_to_chunk-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 706</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_default_to_chunk</span>(<span class="ruby-identifier">chunk</span>, <span class="ruby-identifier">col</span>, <span class="ruby-identifier">row</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected DuckDB::DataChunk, got #{chunk.class}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">DataChunk</span>)
+
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">_append_default_to_chunk</span>(<span class="ruby-identifier">chunk</span>, <span class="ruby-identifier">col</span>, <span class="ruby-identifier">row</span>)
+
+  <span class="ruby-identifier">raise_appender_error</span>(<span class="ruby-string">&#39;failed to append_default_to_chunk&#39;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Appends the DEFAULT value for the column at <code>col</code> and <code>row</code> in <code>chunk</code>. If no DEFAULT is defined for the column, NULL is used. Call this before appending the chunk via <a href="Appender.html#method-i-append_data_chunk"><code>append_data_chunk</code></a>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (name VARCHAR, enabled BOOLEAN DEFAULT TRUE)&#39;</span>)
+<span class="ruby-identifier">appender</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender</span>(<span class="ruby-string">&#39;users&#39;</span>)
+<span class="ruby-identifier">chunk</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">DataChunk</span>.<span class="ruby-identifier">new</span>([<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">VARCHAR</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BOOLEAN</span>])
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append_default_to_chunk</span>(<span class="ruby-identifier">chunk</span>, <span class="ruby-value">1</span>, <span class="ruby-value">0</span>)  <span class="ruby-comment"># enabled DEFAULT for row 0</span>
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append_default_to_chunk</span>(<span class="ruby-identifier">chunk</span>, <span class="ruby-value">1</span>, <span class="ruby-value">1</span>)  <span class="ruby-comment"># enabled DEFAULT for row 1</span>
+<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">0</span>, <span class="ruby-string">&#39;Alice&#39;</span>)
+<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">1</span>, <span class="ruby-string">&#39;Bob&#39;</span>)
+<span class="ruby-identifier">chunk</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">2</span>
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">append_data_chunk</span>(<span class="ruby-identifier">chunk</span>)
+<span class="ruby-identifier">appender</span>.<span class="ruby-identifier">flush</span>
 </pre>
 
 
@@ -1831,7 +1910,7 @@
             </details>
           </div>
           <div class="method-source-code" id="append_row-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 716</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 758</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)
