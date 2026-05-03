@@ -339,19 +339,19 @@ module DuckDBTest
       appender = DuckDB::Appender.new(@con, '', table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
 
-      appender.append_default_to_chunk(chunk, 0, 0)  # no error here
+      appender.append_default_to_chunk(chunk, 0, 0) # no error here
       appender.append_default_to_chunk(chunk, 1, 0)
       chunk.size = 1
-      appender.append_data_chunk(chunk)               # no error here
+      appender.append_data_chunk(chunk) # no error here
 
       assert_raises(DuckDB::Error) do
-        appender.close                                 # error raised here
+        appender.close # error raised here
       end
     end
 
     def test_append_default_to_chunk_with_non_foldable_default
       # random() is non-foldable, so DuckDB::Error is raised
-      @con.execute("CREATE SEQUENCE seq START 1")
+      @con.execute('CREATE SEQUENCE seq START 1')
       create_table("name VARCHAR, seq_val INTEGER DEFAULT nextval('seq')")
       appender = DuckDB::Appender.new(@con, '', table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::INTEGER])
