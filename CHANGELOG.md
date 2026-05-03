@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB::Appender#append_default_to_chunk`.
 ## Breaking Changes
 - deprecate `DuckDB::Result#_column_type(i)` private method. use `columns[i].send(:_type)` instead.
 - `DuckDB::Result#enum_dictionary_values` checks invalid column index.
