@@ -661,12 +661,54 @@ module DuckDB
 
     # call-seq:
     #   appender.append_data_chunk(chunk) -> self
+    #
+    # Appends a pre-filled DuckDB::DataChunk to the appender.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #   appender = con.appender('users')
+    #   chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR])
+    #   chunk.set_value(0, 0, 1)
+    #   chunk.set_value(1, 0, 'Alice')
+    #   chunk.size = 1
+    #   appender.append_data_chunk(chunk)
+    #   appender.flush
     def append_data_chunk(chunk)
       raise ArgumentError, "expected DuckDB::DataChunk, got #{chunk.class}" unless chunk.is_a?(DuckDB::DataChunk)
 
       return self if _append_data_chunk(chunk)
 
       raise_appender_error('failed to append_data_chunk')
+    end
+
+    # call-seq:
+    #   appender.append_default_to_chunk(chunk, col, row) -> self
+    #
+    # Appends the DEFAULT value for the column at +col+ and +row+ in +chunk+.
+    # If no DEFAULT is defined for the column, NULL is used.
+    # Call this before appending the chunk via #append_data_chunk.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (name VARCHAR, enabled BOOLEAN DEFAULT TRUE)')
+    #   appender = con.appender('users')
+    #   chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+    #   appender.append_default_to_chunk(chunk, 1, 0)  # enabled DEFAULT for row 0
+    #   appender.append_default_to_chunk(chunk, 1, 1)  # enabled DEFAULT for row 1
+    #   chunk.set_value(0, 0, 'Alice')
+    #   chunk.set_value(0, 1, 'Bob')
+    #   chunk.size = 2
+    #   appender.append_data_chunk(chunk)
+    #   appender.flush
+    def append_default_to_chunk(chunk, col, row)
+      raise ArgumentError, "expected DuckDB::DataChunk, got #{chunk.class}" unless chunk.is_a?(DuckDB::DataChunk)
+
+      return self if _append_default_to_chunk(chunk, col, row)
+
+      raise_appender_error('failed to append_default_to_chunk')
     end
 
     # appends value.
