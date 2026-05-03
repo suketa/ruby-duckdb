@@ -288,6 +288,91 @@ module DuckDBTest
       assert_equal([['Alice', true], ['Bob', true]], @con.query("SELECT * FROM #{table} ORDER BY name").to_a)
     end
 
+    def test_append_default_to_chunk_with_invalid_chunk
+      create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
+      appender = DuckDB::Appender.new(@con, '', table)
+
+      assert_raises(ArgumentError) do
+        appender.append_default_to_chunk('not a chunk', 1, 0)
+      end
+    end
+
+    def test_append_default_to_chunk_with_col_out_of_bounds
+      create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
+      appender = DuckDB::Appender.new(@con, '', table)
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+
+      assert_raises(DuckDB::Error) do
+        appender.append_default_to_chunk(chunk, 2, 0)
+      end
+    end
+
+    def test_append_default_to_chunk_with_row_out_of_bounds
+      create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
+      appender = DuckDB::Appender.new(@con, '', table)
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+
+      assert_raises(DuckDB::Error) do
+        appender.append_default_to_chunk(chunk, 1, DuckDB.vector_size)
+      end
+    end
+
+    def test_append_default_to_chunk_without_default
+      # col 0 (name VARCHAR) has no DEFAULT - appends NULL, no error
+      create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
+      appender = DuckDB::Appender.new(@con, '', table)
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+
+      appender.append_default_to_chunk(chunk, 0, 0)
+      appender.append_default_to_chunk(chunk, 1, 0)
+      chunk.size = 1
+      appender.append_data_chunk(chunk)
+      appender.close
+
+      assert_equal([[nil, true]], @con.query("SELECT * FROM #{table}").to_a)
+    end
+
+    def test_append_default_to_chunk_not_null_without_default
+      # NOT NULL column with no DEFAULT: append_default_to_chunk appends NULL without error,
+      # but DuckDB::Error is raised at close (flush) time
+      create_table('name VARCHAR NOT NULL, enabled BOOLEAN DEFAULT TRUE')
+      appender = DuckDB::Appender.new(@con, '', table)
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+
+      appender.append_default_to_chunk(chunk, 0, 0)  # no error here
+      appender.append_default_to_chunk(chunk, 1, 0)
+      chunk.size = 1
+      appender.append_data_chunk(chunk)               # no error here
+
+      assert_raises(DuckDB::Error) do
+        appender.close                                 # error raised here
+      end
+    end
+
+    def test_append_default_to_chunk_with_non_foldable_default
+      # random() is non-foldable, so DuckDB::Error is raised
+      @con.execute("CREATE SEQUENCE seq START 1")
+      create_table("name VARCHAR, seq_val INTEGER DEFAULT nextval('seq')")
+      appender = DuckDB::Appender.new(@con, '', table)
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::INTEGER])
+
+      assert_raises(DuckDB::Error) do
+        appender.append_default_to_chunk(chunk, 1, 0)
+      end
+    end
+
+    def test_append_default_to_chunk_with_query_appender
+      create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
+      query = "INSERT INTO #{table} SELECT name, enabled FROM my_data"
+      types = [DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN]
+      appender = DuckDB::Appender.create_query(@con, query, types, 'my_data', %w[name enabled])
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
+
+      assert_raises(DuckDB::Error) do
+        appender.append_default_to_chunk(chunk, 1, 0)
+      end
+    end
+
     def test_append_uint32
       assert_duckdb_appender(4_294_967_295, 'BIGINT') { |a| a.append_uint32(4_294_967_295) }
     end
