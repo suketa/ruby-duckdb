@@ -1269,5 +1269,15 @@ module DuckDBTest
 
       assert_equal([[4, 15, 30], [4, nil, 50]], r.each.to_a)
     end
+
+    def test_s_new_with_keyword_catalog_and_schema
+      @con.query("ATTACH ':memory:' AS ext_cat")
+      @con.query('CREATE TABLE ext_cat.main.t_cat (id INT)')
+      appender = DuckDB::Appender.new(@con, 't_cat', schema: 'main', catalog: 'ext_cat')
+
+      assert_instance_of(DuckDB::Appender, appender)
+    ensure
+      @con.query('DETACH ext_cat')
+    end
   end
 end
