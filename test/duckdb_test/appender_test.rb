@@ -1285,5 +1285,12 @@ module DuckDBTest
     ensure
       @con.query('DETACH ext_cat')
     end
+
+    def test_appender_dot_string_is_not_split
+      create_table('id INT')   # creates table 't' in default schema
+      # 'main.t' passed literally — after fix should raise because table named "main.t" doesn't exist
+      # Currently this PASSES (incorrectly) because create_appender splits on '.'
+      assert_raises(DuckDB::Error) { @con.appender('main.t') }
+    end
   end
 end
