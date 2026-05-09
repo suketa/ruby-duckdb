@@ -1286,16 +1286,19 @@ module DuckDBTest
       @con.query('DETACH ext_cat')
     end
 
-    def test_appender_dot_string_is_not_split
-      create_table('id INT')   # creates table 't' in default schema
-      # 'main.t' passed literally — after fix should raise because table named "main.t" doesn't exist
-      # Currently this PASSES (incorrectly) because create_appender splits on '.'
-      assert_raises(DuckDB::Error) { @con.appender('main.t') }
+    def test_appender_dot_notation_is_deprecated
+      create_table('id INT')
+      warnings = []
+      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super(msg, **kw) } }
+      Warning.singleton_class.prepend(mod)
+      appender = @con.appender('main.t')
+      assert_instance_of(DuckDB::Appender, appender)
+      assert(warnings.any? { |w| w.include?('deprecated') })
     end
 
     def test_s_new_3arg_emits_deprecation_warning
       warnings = []
-      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super } }
+      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super(msg, **kw) } }
       Warning.singleton_class.prepend(mod)
       create_table('id INT')
       DuckDB::Appender.new(@con, nil, table)
@@ -1304,7 +1307,7 @@ module DuckDBTest
 
     def test_appender_dot_notation_emits_deprecation_warning
       warnings = []
-      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super } }
+      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super(msg, **kw) } }
       Warning.singleton_class.prepend(mod)
       create_table('id INT')
       # 'main.t' with dot — should warn AND succeed (backward compat restored)

@@ -137,8 +137,24 @@ module DuckDB
     #   con.appender('users') do |a|
     #     a.append_row(1, 'Alice')
     #   end
-    def appender(table, &)
-      run_appender_block(Appender.new(self, table), &)
+    def appender(table, schema: nil, catalog: nil, &)
+      parts = table.include?('.') ? table.split('.') : nil
+      if parts
+        Warning.warn(
+          "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
+          "Use con.appender(table, schema: schema) instead.\n"
+        )
+        case parts.length
+        when 2
+          schema ||= parts[0]
+          table = parts[1]
+        when 3
+          catalog ||= parts[0]
+          schema ||= parts[1]
+          table = parts[2]
+        end
+      end
+      run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
     if Appender.respond_to?(:create_query)

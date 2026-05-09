@@ -22,6 +22,10 @@ module DuckDB
 
     def initialize(con, table_or_schema, table = nil, schema: nil, catalog: nil)
       if table
+        Warning.warn(
+          "DuckDB::Appender.new(con, schema, table) is deprecated. " \
+          "Use DuckDB::Appender.new(con, table, schema: schema) instead.\n"
+        )
         _initialize(con, table_or_schema, table)
       elsif catalog
         _initialize_ext(con, catalog, schema, table_or_schema)
