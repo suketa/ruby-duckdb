@@ -393,7 +393,8 @@ module DuckDB
     def warn_dot_notation_deprecated(table)
       warn(
         "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
-        'Use con.appender(table, schema: schema) instead.',
+        "If '#{table}' is a schema-qualified table, use con.appender(table, schema: schema) instead. " \
+        "If '#{table}' is a literal table name containing a dot, use con.appender('\"#{table}\"') instead.",
         category: :deprecated
       )
     end
