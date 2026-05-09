@@ -162,7 +162,11 @@ module DuckDB
     # *Deprecated:* passing a dot-notation string such as <tt>'schema.table'</tt> is deprecated.
     # Use the +schema:+ keyword argument instead.
     def appender(table, schema: nil, catalog: nil, &)
-      table, schema, catalog = apply_dot_notation(table, schema, catalog) if table.include?('.')
+      if table.start_with?('"') && table.end_with?('"')
+        table = unquote_table_name(table)
+      elsif table.include?('.')
+        table, schema, catalog = apply_dot_notation(table, schema, catalog)
+      end
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
@@ -353,6 +357,10 @@ module DuckDB
       yield appender
       appender.flush
       appender.close
+    end
+
+    def unquote_table_name(name)
+      name[1..-2]
     end
 
     def apply_dot_notation(table, schema, catalog)
