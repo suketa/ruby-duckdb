@@ -629,9 +629,13 @@
             </details>
           </div>
           <div class="method-source-code" id="appender-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 164</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 174</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">appender</span>(<span class="ruby-identifier">table</span>, <span class="ruby-value">schema:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">catalog:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>)
-  <span class="ruby-identifier">table</span>, <span class="ruby-identifier">schema</span>, <span class="ruby-identifier">catalog</span> = <span class="ruby-identifier">apply_dot_notation</span>(<span class="ruby-identifier">table</span>, <span class="ruby-identifier">schema</span>, <span class="ruby-identifier">catalog</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">table</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&#39;.&#39;</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">quoted_table_name?</span>(<span class="ruby-identifier">table</span>)
+    <span class="ruby-identifier">table</span> = <span class="ruby-identifier">unquote_table_name</span>(<span class="ruby-identifier">table</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">table</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&#39;.&#39;</span>)
+    <span class="ruby-identifier">table</span>, <span class="ruby-identifier">schema</span>, <span class="ruby-identifier">catalog</span> = <span class="ruby-identifier">apply_dot_notation</span>(<span class="ruby-identifier">table</span>, <span class="ruby-identifier">schema</span>, <span class="ruby-identifier">catalog</span>)
+  <span class="ruby-keyword">end</span>
   <span class="ruby-identifier">run_appender_block</span>(<span class="ruby-constant">Appender</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">table</span>, <span class="ruby-value">schema:</span> <span class="ruby-identifier">schema</span>, <span class="ruby-value">catalog:</span> <span class="ruby-identifier">catalog</span>), <span class="ruby-operator">&amp;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -647,7 +651,15 @@
 
 <p>Raises <a href="Error.html"><code>DuckDB::Error</code></a> if the table (or schema/catalog) does not exist.</p>
 
-<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<p>If the table name contains a dot (e.g. a table literally named <code>a.b</code>), surround it with double or single quotes — mirroring SQL identifier quoting — to prevent the name from being interpreted as <code>schema.table</code> dot-notation:</p>
+
+<pre class="ruby"><span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE &quot;a.b&quot; (id INTEGER)&#39;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender</span>(<span class="ruby-string">&#39;&quot;a.b&quot;&#39;</span>)   <span class="ruby-comment"># table name is literally a.b</span>
+
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;CREATE TABLE &#39;a.b&#39; (id INTEGER)&quot;</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">appender</span>(<span class="ruby-string">&quot;&#39;a.b&#39;&quot;</span>)   <span class="ruby-comment"># table name is literally a.b</span>
+
+<span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
 <span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
 <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR)&#39;</span>)
@@ -703,7 +715,7 @@
             </details>
           </div>
           <div class="method-source-code" id="appender_from_query-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 188</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 202</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">appender_from_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-identifier">table_name</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">column_names</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span>)
   <span class="ruby-identifier">appender</span> = <span class="ruby-constant">Appender</span>.<span class="ruby-identifier">create_query</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">query</span>, <span class="ruby-identifier">types</span>, <span class="ruby-identifier">table_name</span>, <span class="ruby-identifier">column_names</span>)
   <span class="ruby-identifier">run_appender_block</span>(<span class="ruby-identifier">appender</span>, <span class="ruby-operator">&amp;</span>)
@@ -923,7 +935,7 @@
             </details>
           </div>
           <div class="method-source-code" id="expose_as_table-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 340</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 354</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">expose_as_table</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
@@ -1350,7 +1362,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_aggregate_function-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 291</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 305</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_aggregate_function</span>(<span class="ruby-identifier">aggregate_function</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">AggregateFunction</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{aggregate_function.class} is not a DuckDB::AggregateFunction&quot;</span>
@@ -1398,7 +1410,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_logical_type-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 208</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 222</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_logical_type</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{logical_type.class} is not a DuckDB::LogicalType&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">logical_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">LogicalType</span>)
 
@@ -1452,7 +1464,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_scalar_function-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 252</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 266</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_scalar_function</span>(<span class="ruby-identifier">scalar_function</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-operator">**</span><span class="ruby-identifier">kwargs</span>, <span class="ruby-operator">&amp;</span>)
   <span class="ruby-comment"># Validate: can&#39;t pass both object and inline arguments</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">scalar_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ScalarFunction</span>)
@@ -1546,7 +1558,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_scalar_function_set-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 278</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 292</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_scalar_function_set</span>(<span class="ruby-identifier">scalar_function_set</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">scalar_function_set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ScalarFunctionSet</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{scalar_function_set.class} is not a DuckDB::ScalarFunctionSet&quot;</span>
@@ -1603,7 +1615,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_table_function-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 308</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 322</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
 
