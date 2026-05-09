@@ -56,6 +56,12 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { appender = DuckDB::Appender.new(@con, 'b', 'b') }
     end
 
+    def test_s_new_with_keyword_schema
+      @con.execute('CREATE SCHEMA s_kw; CREATE TABLE s_kw.t_kw (id INT);')
+      appender = DuckDB::Appender.new(@con, 't_kw', schema: 's_kw')
+      assert_instance_of(DuckDB::Appender, appender)
+    end
+
     def test_s_create_query
       query = 'INSERT OR REPLACE INTO t SELECT i, val FROM my_appended_data'
       types = [DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR]
