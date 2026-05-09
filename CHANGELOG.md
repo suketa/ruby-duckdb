@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - add `DuckDB::Appender#append_default_to_chunk`.
 ## Breaking Changes
+- `DuckDB::Connection#appender`: table names surrounded by double or single quotes (e.g. `'"a.b"'` or `"'a.b'"`) are now treated as literal table names — the quotes are stripped and no dot-splitting is performed. This mirrors SQL identifier quoting and allows appending to tables whose names contain dots.
 - add `DuckDB::Appender.new(con, table, schema: nil, catalog: nil)` keyword argument form.
 - add `DuckDB::Connection#appender(table, schema: nil, catalog: nil)` keyword argument form.
   - `schema.table` dot-notation form is still supported but deprecated. Use `con.appender(table, schema: schema)` instead.

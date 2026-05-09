@@ -138,6 +138,16 @@ module DuckDB
     #
     # Raises DuckDB::Error if the table (or schema/catalog) does not exist.
     #
+    # If the table name contains a dot (e.g. a table literally named <tt>a.b</tt>), surround
+    # it with double or single quotes — mirroring SQL identifier quoting — to prevent the name
+    # from being interpreted as <tt>schema.table</tt> dot-notation:
+    #
+    #   con.query('CREATE TABLE "a.b" (id INTEGER)')
+    #   con.appender('"a.b"')   # table name is literally a.b
+    #
+    #   con.query("CREATE TABLE 'a.b' (id INTEGER)")
+    #   con.appender("'a.b'")   # table name is literally a.b
+    #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
     #   con = db.connect
@@ -162,7 +172,11 @@ module DuckDB
     # *Deprecated:* passing a dot-notation string such as <tt>'schema.table'</tt> is deprecated.
     # Use the +schema:+ keyword argument instead.
     def appender(table, schema: nil, catalog: nil, &)
-      table, schema, catalog = apply_dot_notation(table, schema, catalog) if table.include?('.')
+      if quoted_table_name?(table)
+        table = unquote_table_name(table)
+      elsif table.include?('.')
+        table, schema, catalog = apply_dot_notation(table, schema, catalog)
+      end
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
@@ -355,6 +369,14 @@ module DuckDB
       appender.close
     end
 
+    def quoted_table_name?(name)
+      name.match?(/\A(["']).*\1\z/)
+    end
+
+    def unquote_table_name(name)
+      name[1..-2]
+    end
+
     def apply_dot_notation(table, schema, catalog)
       parts = table.split('.')
       raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
@@ -371,7 +393,8 @@ module DuckDB
     def warn_dot_notation_deprecated(table)
       warn(
         "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
-        'Use con.appender(table, schema: schema) instead.',
+        "If '#{table}' is a schema-qualified table, use con.appender(table, schema: schema) instead. " \
+        "If '#{table}' is a literal table name containing a dot, use con.appender('\"#{table}\"') instead.",
         category: :deprecated
       )
     end
