@@ -83,7 +83,7 @@ module DuckDBTest
         assert_instance_of DuckDB::LogicalType, double_type
 
         # Check types match (using Symbol comparison)
-        assert_equal :varchar, bigint_type.type
+        assert_equal :bigint, bigint_type.type
         assert_equal :varchar, varchar_type.type
         assert_equal :double, double_type.type
 
