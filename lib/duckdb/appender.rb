@@ -20,6 +20,16 @@ module DuckDB
       alias from_query create_query
     end
 
+    def initialize(con, table_or_schema, table = nil, schema: nil, catalog: nil)
+      if table
+        _initialize(con, table_or_schema, table)
+      elsif catalog
+        _initialize_ext(con, catalog, schema, table_or_schema)
+      else
+        _initialize(con, schema, table_or_schema)
+      end
+    end
+
     # :call-seq:
     #   appender.begin_row -> self
     # A nop method, provided for backwards compatibility reasons.
