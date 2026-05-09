@@ -20,6 +20,17 @@ module DuckDB
       alias from_query create_query
     end
 
+    def initialize(con, table_or_schema, table = nil, schema: nil, catalog: nil)
+      if table
+        warn_deprecated_3arg
+        _initialize(con, table_or_schema, table)
+      elsif catalog
+        _initialize_ext(con, catalog, schema, table_or_schema)
+      else
+        _initialize(con, schema, table_or_schema)
+      end
+    end
+
     # :call-seq:
     #   appender.begin_row -> self
     # A nop method, provided for backwards compatibility reasons.
@@ -763,6 +774,14 @@ module DuckDB
     end
 
     private
+
+    def warn_deprecated_3arg # :nodoc:
+      warn(
+        'DuckDB::Appender.new(con, schema, table) is deprecated. ' \
+        'Use DuckDB::Appender.new(con, table, schema: schema) instead.',
+        category: :deprecated
+      )
+    end
 
     def raise_appender_error(default_message) # :nodoc:
       message = error_message

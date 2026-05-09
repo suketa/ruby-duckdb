@@ -127,11 +127,43 @@ module DuckDB
       PreparedStatement.prepare(self, str, &)
     end
 
-    # returns Appender object.
-    # The first argument is table name
-    def appender(table, &)
-      appender = create_appender(table)
-      run_appender_block(appender, &)
+    # :call-seq:
+    #   connection.appender(table, schema: nil, catalog: nil) -> DuckDB::Appender
+    #   connection.appender(table, schema: nil, catalog: nil) { |appender| ... } -> self
+    #
+    # Returns a DuckDB::Appender for bulk-inserting rows into +table+.
+    # If a block is given, the appender is flushed and closed automatically after the block.
+    #
+    # +schema:+ and +catalog:+ optionally qualify the table.
+    #
+    # Raises DuckDB::Error if the table (or schema/catalog) does not exist.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #
+    #   # block form (recommended) — flushes and closes automatically
+    #   con.appender('users') do |a|
+    #     a.append_row(1, 'Alice')
+    #     a.append_row(2, 'Bob')
+    #   end
+    #
+    #   # with schema
+    #   con.appender('users', schema: 'main') do |a|
+    #     a.append_row(3, 'Carol')
+    #   end
+    #
+    #   # manual form
+    #   appender = con.appender('users')
+    #   appender.append_row(4, 'Dave')
+    #   appender.close
+    #
+    # *Deprecated:* passing a dot-notation string such as <tt>'schema.table'</tt> is deprecated.
+    # Use the +schema:+ keyword argument instead.
+    def appender(table, schema: nil, catalog: nil, &)
+      table, schema, catalog = apply_dot_notation(table, schema, catalog) if table.include?('.')
+      run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
     if Appender.respond_to?(:create_query)
@@ -323,9 +355,25 @@ module DuckDB
       appender.close
     end
 
-    def create_appender(table)
-      t1, t2 = table.split('.')
-      t2 ? Appender.new(self, t1, t2) : Appender.new(self, t2, t1)
+    def apply_dot_notation(table, schema, catalog)
+      parts = table.split('.')
+      raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
+
+      warn_dot_notation_deprecated(table)
+      # Explicit schema:/catalog: keyword args take precedence over dot-notation parts.
+      case parts.length
+      when 2 then [parts[1], schema || parts[0], catalog]
+      when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
+      else raise ArgumentError, "Unexpected segment count in '#{table}'"
+      end
+    end
+
+    def warn_dot_notation_deprecated(table)
+      warn(
+        "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
+        'Use con.appender(table, schema: schema) instead.',
+        category: :deprecated
+      )
     end
 
     alias execute query
