@@ -138,6 +138,16 @@ module DuckDB
     #
     # Raises DuckDB::Error if the table (or schema/catalog) does not exist.
     #
+    # If the table name contains a dot (e.g. a table literally named <tt>a.b</tt>), surround
+    # it with double or single quotes — mirroring SQL identifier quoting — to prevent the name
+    # from being interpreted as <tt>schema.table</tt> dot-notation:
+    #
+    #   con.query('CREATE TABLE "a.b" (id INTEGER)')
+    #   con.appender('"a.b"')   # table name is literally a.b
+    #
+    #   con.query("CREATE TABLE 'a.b' (id INTEGER)")
+    #   con.appender("'a.b'")   # table name is literally a.b
+    #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
     #   con = db.connect
