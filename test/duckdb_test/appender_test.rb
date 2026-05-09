@@ -1292,5 +1292,25 @@ module DuckDBTest
       # Currently this PASSES (incorrectly) because create_appender splits on '.'
       assert_raises(DuckDB::Error) { @con.appender('main.t') }
     end
+
+    def test_s_new_3arg_emits_deprecation_warning
+      warnings = []
+      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super } }
+      Warning.singleton_class.prepend(mod)
+      create_table('id INT')
+      DuckDB::Appender.new(@con, nil, table)
+      assert(warnings.any? { |w| w.include?('deprecated') }, "Expected deprecation warning, got: #{warnings.inspect}")
+    end
+
+    def test_appender_dot_notation_emits_deprecation_warning
+      warnings = []
+      mod = Module.new { define_method(:warn) { |msg, **kw| warnings << msg; super } }
+      Warning.singleton_class.prepend(mod)
+      create_table('id INT')
+      # 'main.t' with dot — should warn AND succeed (backward compat restored)
+      appender = @con.appender('main.t')
+      assert_instance_of(DuckDB::Appender, appender)
+      assert(warnings.any? { |w| w.include?('deprecated') }, "Expected deprecation warning, got: #{warnings.inspect}")
+    end
   end
 end
