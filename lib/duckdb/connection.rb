@@ -360,9 +360,11 @@ module DuckDB
       raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
 
       warn_dot_notation_deprecated(table)
+      # Explicit schema:/catalog: keyword args take precedence over dot-notation parts.
       case parts.length
       when 2 then [parts[1], schema || parts[0], catalog]
       when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
+      else raise ArgumentError, "Unexpected segment count in '#{table}'"
       end
     end
 
