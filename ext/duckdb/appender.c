@@ -9,7 +9,7 @@ static size_t memsize(const void *p);
 
 static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE types, VALUE table, VALUE columns);
 
-static VALUE appender_initialize(VALUE klass, VALUE con, VALUE schema, VALUE table);
+static VALUE appender__initialize(VALUE self, VALUE con, VALUE schema, VALUE table);
 static VALUE appender__initialize_ext(VALUE self, VALUE con, VALUE catalog, VALUE schema, VALUE table);
 static VALUE appender_error_message(VALUE self);
 static VALUE appender__append_bool(VALUE self, VALUE val);
@@ -132,14 +132,14 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
     return appender;
 }
 
-static VALUE appender_initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
+static VALUE appender__initialize(VALUE self, VALUE con, VALUE schema, VALUE table) {
 
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBAppender *ctx;
     char *pschema = 0;
 
     if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
-        rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
+        rb_raise(rb_eTypeError, "1st argument should be instance of DuckDB::Connection");
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -162,7 +162,7 @@ static VALUE appender__initialize_ext(VALUE self, VALUE con, VALUE catalog, VALU
     char *pschema = 0;
 
     if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
-        rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
+        rb_raise(rb_eTypeError, "1st argument should be instance of DuckDB::Connection");
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
@@ -543,7 +543,7 @@ void rbduckdb_init_appender(void) {
     cDuckDBAppender = rb_define_class_under(mDuckDB, "Appender", rb_cObject);
     rb_define_alloc_func(cDuckDBAppender, allocate);
     rb_define_singleton_method(cDuckDBAppender, "create_query", appender_s_create_query, 5);
-    rb_define_private_method(cDuckDBAppender, "_initialize", appender_initialize, 3);
+    rb_define_private_method(cDuckDBAppender, "_initialize", appender__initialize, 3);
     rb_define_private_method(cDuckDBAppender, "_initialize_ext", appender__initialize_ext, 4);
     rb_define_method(cDuckDBAppender, "error_message", appender_error_message, 0);
     rb_define_private_method(cDuckDBAppender, "_end_row", appender__end_row, 0);
