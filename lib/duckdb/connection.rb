@@ -127,16 +127,40 @@ module DuckDB
       PreparedStatement.prepare(self, str, &)
     end
 
-    # Returns an Appender object for the given table name.
-    # If a block is given, the appender is flushed and closed after the block.
+    # :call-seq:
+    #   connection.appender(table, schema: nil, catalog: nil) -> DuckDB::Appender
+    #   connection.appender(table, schema: nil, catalog: nil) { |appender| ... } -> self
+    #
+    # Returns a DuckDB::Appender for bulk-inserting rows into +table+.
+    # If a block is given, the appender is flushed and closed automatically after the block.
+    #
+    # +schema:+ and +catalog:+ optionally qualify the table.
+    #
+    # Raises DuckDB::Error if the table (or schema/catalog) does not exist.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
     #   con = db.connect
     #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #
+    #   # block form (recommended) — flushes and closes automatically
     #   con.appender('users') do |a|
     #     a.append_row(1, 'Alice')
+    #     a.append_row(2, 'Bob')
     #   end
+    #
+    #   # with schema
+    #   con.appender('users', schema: 'main') do |a|
+    #     a.append_row(3, 'Carol')
+    #   end
+    #
+    #   # manual form
+    #   appender = con.appender('users')
+    #   appender.append_row(4, 'Dave')
+    #   appender.close
+    #
+    # *Deprecated:* passing a dot-notation string such as <tt>'schema.table'</tt> is deprecated.
+    # Use the +schema:+ keyword argument instead.
     def appender(table, schema: nil, catalog: nil, &)
       table, schema, catalog = apply_dot_notation(table, schema, catalog) if table.include?('.')
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
