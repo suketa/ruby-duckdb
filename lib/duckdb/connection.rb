@@ -127,11 +127,18 @@ module DuckDB
       PreparedStatement.prepare(self, str, &)
     end
 
-    # returns Appender object.
-    # The first argument is table name
+    # Returns an Appender object for the given table name.
+    # If a block is given, the appender is flushed and closed after the block.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE users (id INTEGER, name VARCHAR)')
+    #   con.appender('users') do |a|
+    #     a.append_row(1, 'Alice')
+    #   end
     def appender(table, &)
-      appender = create_appender(table)
-      run_appender_block(appender, &)
+      run_appender_block(Appender.new(self, table), &)
     end
 
     if Appender.respond_to?(:create_query)
@@ -321,11 +328,6 @@ module DuckDB
       yield appender
       appender.flush
       appender.close
-    end
-
-    def create_appender(table)
-      t1, t2 = table.split('.')
-      t2 ? Appender.new(self, t1, t2) : Appender.new(self, t2, t1)
     end
 
     alias execute query
