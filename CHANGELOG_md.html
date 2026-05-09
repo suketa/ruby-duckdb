@@ -468,6 +468,12 @@
 
 <h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 </li><li>
+<p>add <code>DuckDB::Appender.new(con, table, schema: nil, catalog: nil)</code> keyword argument form.</p>
+</li><li>
+<p>add <code>DuckDB::Connection#appender(table, schema: nil, catalog: nil)</code> keyword argument form.</p>
+</li><li>
+<p><code>schema.table</code> dot-notation form is still supported but deprecated. Use <code>con.appender(table, schema: schema)</code> instead.</p>
+</li><li>
 <p>deprecate <code>DuckDB::Result#_column_type(i)</code> private method. use <code>columns[i].send(:_type)</code> instead.</p>
 </li><li>
 <p><a href="DuckDB/Result.html#method-i-enum_dictionary_values"><code>DuckDB::Result#enum_dictionary_values</code></a> checks invalid column index.</p>
@@ -475,6 +481,12 @@
 <p>deprecate <code>DuckDB::Result#_enum_dictionary_size</code> private method.</p>
 </li><li>
 <p>deprecate <code>DuckDB::Result#_enum_dictionary_value</code> private method.</p>
+
+<h2 id="label-Deprecations"><a href="#label-Deprecations">Deprecations</a></h2>
+</li><li>
+<p>deprecate <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new(con, schema, table)</code></a> 3-positional-argument form. Use <code>DuckDB::Appender.new(con, table, schema: schema)</code> instead.</p>
+</li><li>
+<p>deprecate passing dot-notation string (e.g. <code>&#39;schema.table&#39;</code>) to <a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>. Use <code>con.appender(table, schema: schema)</code> instead.</p>
 </li></ul>
 
 <h1 id="label-1.5.2.1+-+2026-04-24"><a href="#label-1.5.2.1+-+2026-04-24">1.5.2.1 - 2026-04-24</a></h1>
