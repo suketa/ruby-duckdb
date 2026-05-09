@@ -778,7 +778,8 @@ module DuckDB
     def warn_deprecated_3arg # :nodoc:
       Warning.warn(
         'DuckDB::Appender.new(con, schema, table) is deprecated. ' \
-        "Use DuckDB::Appender.new(con, table, schema: schema) instead.\n"
+        "Use DuckDB::Appender.new(con, table, schema: schema) instead.\n",
+        category: :deprecated
       )
     end
 
