@@ -138,22 +138,7 @@ module DuckDB
     #     a.append_row(1, 'Alice')
     #   end
     def appender(table, schema: nil, catalog: nil, &)
-      parts = table.include?('.') ? table.split('.') : nil
-      if parts
-        Warning.warn(
-          "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
-          "Use con.appender(table, schema: schema) instead.\n"
-        )
-        case parts.length
-        when 2
-          schema ||= parts[0]
-          table = parts[1]
-        when 3
-          catalog ||= parts[0]
-          schema ||= parts[1]
-          table = parts[2]
-        end
-      end
+      table, schema, catalog = apply_dot_notation(table, schema, catalog) if table.include?('.')
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
@@ -344,6 +329,24 @@ module DuckDB
       yield appender
       appender.flush
       appender.close
+    end
+
+    def apply_dot_notation(table, schema, catalog)
+      parts = table.split('.')
+      raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
+
+      warn_dot_notation_deprecated(table)
+      case parts.length
+      when 2 then [parts[1], schema || parts[0], catalog]
+      when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
+      end
+    end
+
+    def warn_dot_notation_deprecated(table)
+      Warning.warn(
+        "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
+        "Use con.appender(table, schema: schema) instead.\n"
+      )
     end
 
     alias execute query
