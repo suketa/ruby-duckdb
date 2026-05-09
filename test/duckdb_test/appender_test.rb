@@ -37,16 +37,6 @@ module DuckDBTest
       @appender = DuckDB::Appender.new(@con, table)
     end
 
-    def capture_warnings
-      warnings = []
-      original = Warning.method(:warn)
-      Warning.define_singleton_method(:warn) { |msg, **kw| warnings << msg }
-      yield
-      warnings
-    ensure
-      Warning.define_singleton_method(:warn, original)
-    end
-
     def test_s_new
       create_table('id INT')
       appender = DuckDB::Appender.new(@con, table)
@@ -73,6 +63,7 @@ module DuckDBTest
     def test_s_new_with_keyword_schema
       @con.execute('CREATE SCHEMA s_kw; CREATE TABLE s_kw.t_kw (id INT);')
       appender = DuckDB::Appender.new(@con, 't_kw', schema: 's_kw')
+
       assert_instance_of(DuckDB::Appender, appender)
     end
 
@@ -1302,37 +1293,39 @@ module DuckDBTest
 
     def test_s_new_3arg_emits_deprecation_warning
       create_table('id INT')
-      warnings = capture_warnings { DuckDB::Appender.new(@con, nil, table) }
-      assert(warnings.any? { |w| w.include?('deprecated') }, "Expected deprecation warning, got: #{warnings.inspect}")
+      _, err = capture_io { DuckDB::Appender.new(@con, nil, table) }
+
+      assert_includes(err, 'deprecated')
     end
 
     def test_appender_dot_notation_emits_deprecation_warning
       create_table('id INT')
-      # 'main.t' with dot — should warn AND succeed (backward compat restored)
       appender = nil
-      warnings = capture_warnings { appender = @con.appender('main.t') }
+      _, err = capture_io { appender = @con.appender('main.t') }
+
       assert_instance_of(DuckDB::Appender, appender)
-      assert(warnings.any? { |w| w.include?('deprecated') }, "Expected deprecation warning, got: #{warnings.inspect}")
+      assert_includes(err, 'deprecated')
     end
 
     def test_appender_3segment_dot_notation_emits_deprecation_warning
       @con.query("ATTACH ':memory:' AS ext_dot")
       @con.query('CREATE TABLE ext_dot.main.t_dot (id INT)')
       appender = nil
-      warnings = capture_warnings { appender = @con.appender('ext_dot.main.t_dot') }
+      _, err = capture_io { appender = @con.appender('ext_dot.main.t_dot') }
+
       assert_instance_of(DuckDB::Appender, appender)
-      assert(warnings.any? { |w| w.include?('deprecated') }, "Expected deprecation warning, got: #{warnings.inspect}")
+      assert_includes(err, 'deprecated')
     ensure
       @con.query('DETACH ext_dot')
     end
 
     def test_appender_dot_notation_schema_keyword_overrides_dot_schema
       @con.query('CREATE SCHEMA s_override; CREATE TABLE s_override.t_ovr (id INT)')
-      # explicit schema: 's_override' wins over dot-notation schema 'wrong'
       appender = nil
-      warnings = capture_warnings { appender = @con.appender('wrong.t_ovr', schema: 's_override') }
+      _, err = capture_io { appender = @con.appender('wrong.t_ovr', schema: 's_override') }
+
       assert_instance_of(DuckDB::Appender, appender)
-      assert(warnings.any? { |w| w.include?('deprecated') })
+      assert_includes(err, 'deprecated')
     end
   end
 end
