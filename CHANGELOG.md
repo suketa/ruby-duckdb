@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - add `DuckDB::Appender#append_default_to_chunk`.
+## Breaking Changes
 - add `DuckDB::Appender.new(con, table, schema: nil, catalog: nil)` keyword argument form.
 - add `DuckDB::Connection#appender(table, schema: nil, catalog: nil)` keyword argument form.
-## Breaking Changes
+  - `schema.table` dot-notation form is still supported but deprecated. Use `con.appender(table, schema: schema)` instead.
 - deprecate `DuckDB::Result#_column_type(i)` private method. use `columns[i].send(:_type)` instead.
 - `DuckDB::Result#enum_dictionary_values` checks invalid column index.
 - deprecate `DuckDB::Result#_enum_dictionary_size` private method.
