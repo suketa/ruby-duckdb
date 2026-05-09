@@ -267,6 +267,13 @@ module DuckDBTest
       assert_instance_of(DuckDB::Appender, appender)
     end
 
+    def test_appender_with_single_quoted_table_name
+      @con.execute("CREATE TABLE 'a.b' (col1 INTEGER, col2 STRING)")
+      appender = @con.appender("'a.b'")
+
+      assert_instance_of(DuckDB::Appender, appender)
+    end
+
     def test_appender_with_block
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
       @con.appender('t') do |appender|
