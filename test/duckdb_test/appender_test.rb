@@ -11,9 +11,7 @@ module DuckDBTest
     end
 
     def safe_drop_table
-      @con.execute("DROP TABLE #{table};")
-    rescue DuckDB::Error
-      # ignore DuckDB::Error
+      @con.execute("DROP TABLE IF EXISTS #{table};")
     end
 
     def teardown
