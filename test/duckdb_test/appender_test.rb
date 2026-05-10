@@ -15,11 +15,8 @@ module DuckDBTest
     end
 
     def teardown
-      safe_drop_table
       @con.close
       @db.close
-    rescue DuckDB::Error
-      # ignore DuckDB::Error
     end
 
     def table
