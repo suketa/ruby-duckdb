@@ -1293,25 +1293,23 @@ module DuckDBTest
       assert_includes(err, 'deprecated')
     end
 
-    def test_appender_dot_notation_emits_deprecation_warning
+    def test_appender_dot_notation_parses_schema_and_table
       create_table('id INT')
       appender = nil
       _, err = capture_io { appender = @con.appender('main.t') }
 
       assert_instance_of(DuckDB::Appender, appender)
-      assert_includes(err, 'Connection#appender')
-      refute_includes(err, 'DuckDB::Appender.new')
+      assert_empty(err)
     end
 
-    def test_appender_3segment_dot_notation_emits_deprecation_warning
+    def test_appender_3segment_dot_notation_parses_catalog_schema_table
       @con.query("ATTACH ':memory:' AS ext_dot")
       @con.query('CREATE TABLE ext_dot.main.t_dot (id INT)')
       appender = nil
       _, err = capture_io { appender = @con.appender('ext_dot.main.t_dot') }
 
       assert_instance_of(DuckDB::Appender, appender)
-      assert_includes(err, 'Connection#appender')
-      refute_includes(err, 'DuckDB::Appender.new')
+      assert_empty(err)
     ensure
       @con.query('DETACH ext_dot')
     end
@@ -1322,8 +1320,7 @@ module DuckDBTest
       _, err = capture_io { appender = @con.appender('wrong.t_ovr', schema: 's_override') }
 
       assert_instance_of(DuckDB::Appender, appender)
-      assert_includes(err, 'Connection#appender')
-      refute_includes(err, 'DuckDB::Appender.new')
+      assert_empty(err)
     end
 
     def test_s_new_with_dot_notation_parses_schema_and_table

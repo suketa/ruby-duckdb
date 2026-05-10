@@ -357,20 +357,14 @@ module DuckDB
       appender.close
     end
 
-    # Pre-parses dot-notation in Connection#appender with a Connection-specific
-    # warning, so Appender.new receives clean values and does not emit a
-    # misleading "DuckDB::Appender.new" deprecation message.
-    # Quoted table names are passed through unchanged for Appender.new to handle.
+    # Silently pre-parses dot-notation so Appender.new receives clean values
+    # and does not emit a misleading "DuckDB::Appender.new" warning.
+    # con.appender('a.b') has always split on dot — no warning needed.
+    # Quoted table names pass through unchanged for Appender.new to handle.
     def parse_connection_appender_table(table, schema, catalog)
       return [table, schema, catalog] if quoted_table_name?(table)
       return [table, schema, catalog] unless table.include?('.')
 
-      warn(
-        "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
-        "If '#{table}' is a schema-qualified table, use con.appender(table, schema: schema) instead. " \
-        "If '#{table}' is a literal table name containing a dot, use con.appender('\"#{table}\"') instead.",
-        category: :deprecated
-      )
       dot_notation_split(table, schema, catalog)
     end
 
