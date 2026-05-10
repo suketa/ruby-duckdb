@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - add `DuckDB::Appender#append_default_to_chunk`.
+- add `DuckDB::TableNameParser` module with shared table name parsing logic (quoting and dot-notation), included by `DuckDB::Appender` and `DuckDB::TableDescription`.
 ## Breaking Changes
+- `DuckDB::TableDescription.new`: the 2nd argument now parses dot-notation and quoting:
+  - `'schema.table'` is interpreted as schema-qualified (deprecated; use `schema:` keyword instead).
+  - `'"schema.table"'` or `"'schema.table'"` — quotes are stripped and the name is treated as a literal table name containing a dot.
 - `DuckDB::Appender.new`: the 2nd argument now parses dot-notation and quoting (previously only `Connection#appender` did this):
   - `'schema.table'` is interpreted as schema-qualified (deprecated; use `schema:` keyword instead).
   - `'"schema.table"'` or `"'schema.table'"` — quotes are stripped and the name is treated as a literal table name containing a dot.

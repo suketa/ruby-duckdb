@@ -20,6 +20,7 @@ module DuckDB
   #   appender.append_row(1, 'Alice')
   class Appender
     include DuckDB::Converter
+    include DuckDB::TableNameParser
 
     class << self
       alias from_query create_query
@@ -787,45 +788,12 @@ module DuckDB
     end
 
     def initialize_with_parsed_table(con, table_name, schema:, catalog:) # :nodoc:
-      if quoted_table_name?(table_name)
-        table_name = unquote_table_name(table_name)
-      elsif table_name.include?('.')
-        table_name, schema, catalog = apply_dot_notation(table_name, schema, catalog)
-      end
+      table_name, schema, catalog = parse_table_name(table_name, schema, catalog)
       if catalog
         _initialize_ext(con, catalog, schema, table_name)
       else
         _initialize(con, schema, table_name)
       end
-    end
-
-    def quoted_table_name?(name) # :nodoc:
-      name.match?(/\A(["']).*\1\z/)
-    end
-
-    def unquote_table_name(name) # :nodoc:
-      name[1..-2]
-    end
-
-    def apply_dot_notation(table, schema, catalog) # :nodoc:
-      parts = table.split('.')
-      raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
-
-      warn_dot_notation_deprecated(table)
-      case parts.length
-      when 2 then [parts[1], schema || parts[0], catalog]
-      when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
-      else raise ArgumentError, "Unexpected segment count in '#{table}'"
-      end
-    end
-
-    def warn_dot_notation_deprecated(table) # :nodoc:
-      warn(
-        "Passing dot-notation '#{table}' to DuckDB::Appender.new is deprecated. " \
-        "If '#{table}' is a schema-qualified table, use Appender.new(con, table, schema: schema) instead. " \
-        "If '#{table}' is a literal table name containing a dot, use Appender.new(con, '\"#{table}\"') instead.",
-        category: :deprecated
-      )
     end
 
     def raise_appender_error(default_message) # :nodoc:
