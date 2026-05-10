@@ -1300,6 +1300,8 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
+      assert_includes(err, 'Connection#appender')
+      refute_includes(err, 'DuckDB::Appender.new')
     end
 
     def test_appender_3segment_dot_notation_emits_deprecation_warning
@@ -1310,6 +1312,8 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
+      assert_includes(err, 'Connection#appender')
+      refute_includes(err, 'DuckDB::Appender.new')
     ensure
       @con.query('DETACH ext_dot')
     end
@@ -1321,6 +1325,8 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
+      assert_includes(err, 'Connection#appender')
+      refute_includes(err, 'DuckDB::Appender.new')
     end
 
     def test_s_new_with_dot_notation_parses_schema_and_table
@@ -1330,6 +1336,7 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
+      assert_includes(err, 'DuckDB::Appender.new')
     end
 
     def test_s_new_with_3segment_dot_notation_parses_catalog_schema_table
@@ -1340,6 +1347,7 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
+      assert_includes(err, 'DuckDB::Appender.new')
     end
 
     def test_s_new_with_double_quoted_table_name_is_treated_as_literal
@@ -1363,6 +1371,7 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
+      assert_includes(err, 'DuckDB::Appender.new')
     end
   end
 end

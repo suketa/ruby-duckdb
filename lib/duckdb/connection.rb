@@ -8,6 +8,8 @@ module DuckDB
   #   con = db.connect
   #   con.query(sql)
   class Connection
+    include DuckDB::TableNameParser
+
     # executes sql with args.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
@@ -162,6 +164,7 @@ module DuckDB
     #   appender.append_row(4, 'Dave')
     #   appender.close
     def appender(table, schema: nil, catalog: nil, &)
+      table, schema, catalog = parse_connection_appender_table(table, schema, catalog)
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
@@ -352,6 +355,23 @@ module DuckDB
       yield appender
       appender.flush
       appender.close
+    end
+
+    # Pre-parses dot-notation in Connection#appender with a Connection-specific
+    # warning, so Appender.new receives clean values and does not emit a
+    # misleading "DuckDB::Appender.new" deprecation message.
+    # Quoted table names are passed through unchanged for Appender.new to handle.
+    def parse_connection_appender_table(table, schema, catalog)
+      return [table, schema, catalog] if quoted_table_name?(table)
+      return [table, schema, catalog] unless table.include?('.')
+
+      warn(
+        "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
+        "If '#{table}' is a schema-qualified table, use con.appender(table, schema: schema) instead. " \
+        "If '#{table}' is a literal table name containing a dot, use con.appender('\"#{table}\"') instead.",
+        category: :deprecated
+      )
+      dot_notation_split(table, schema, catalog)
     end
 
     alias execute query

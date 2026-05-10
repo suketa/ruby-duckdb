@@ -16,7 +16,8 @@ module DuckDB
       if quoted_table_name?(table)
         [unquote_table_name(table), schema, catalog]
       elsif table.include?('.')
-        apply_dot_notation(table, schema, catalog)
+        warn_dot_notation_deprecated(table)
+        dot_notation_split(table, schema, catalog)
       else
         [table, schema, catalog]
       end
@@ -30,11 +31,12 @@ module DuckDB
       name[1..-2]
     end
 
-    def apply_dot_notation(table, schema, catalog) # :nodoc:
+    # Splits a dot-notation string into [table, schema, catalog].
+    # Explicit keyword args take precedence over dot-notation parts.
+    def dot_notation_split(table, schema, catalog) # :nodoc:
       parts = table.split('.')
       raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
 
-      warn_dot_notation_deprecated(table)
       case parts.length
       when 2 then [parts[1], schema || parts[0], catalog]
       when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
