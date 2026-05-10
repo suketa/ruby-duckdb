@@ -7,6 +7,11 @@ require_relative 'converter'
 module DuckDB
   # The DuckDB::Appender encapsulates DuckDB Appender.
   #
+  # The +table+ argument (2nd positional argument) supports dot-notation and quoting:
+  #
+  # - <tt>'schema.table'</tt> — interpreted as schema-qualified (deprecated; use +schema:+ instead)
+  # - <tt>'"schema.table"'</tt> or <tt>"'schema.table'"</tt> — treated as a literal table name containing a dot
+  #
   #   require 'duckdb'
   #   db = DuckDB::Database.open
   #   con = db.connect
@@ -24,10 +29,8 @@ module DuckDB
       if table
         warn_deprecated_3arg
         _initialize(con, table_or_schema, table)
-      elsif catalog
-        _initialize_ext(con, catalog, schema, table_or_schema)
       else
-        _initialize(con, schema, table_or_schema)
+        initialize_with_parsed_table(con, table_or_schema, schema: schema, catalog: catalog)
       end
     end
 
@@ -779,6 +782,48 @@ module DuckDB
       warn(
         'DuckDB::Appender.new(con, schema, table) is deprecated. ' \
         'Use DuckDB::Appender.new(con, table, schema: schema) instead.',
+        category: :deprecated
+      )
+    end
+
+    def initialize_with_parsed_table(con, table_name, schema:, catalog:) # :nodoc:
+      if quoted_table_name?(table_name)
+        table_name = unquote_table_name(table_name)
+      elsif table_name.include?('.')
+        table_name, schema, catalog = apply_dot_notation(table_name, schema, catalog)
+      end
+      if catalog
+        _initialize_ext(con, catalog, schema, table_name)
+      else
+        _initialize(con, schema, table_name)
+      end
+    end
+
+    def quoted_table_name?(name) # :nodoc:
+      name.match?(/\A(["']).*\1\z/)
+    end
+
+    def unquote_table_name(name) # :nodoc:
+      name[1..-2]
+    end
+
+    def apply_dot_notation(table, schema, catalog) # :nodoc:
+      parts = table.split('.')
+      raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
+
+      warn_dot_notation_deprecated(table)
+      case parts.length
+      when 2 then [parts[1], schema || parts[0], catalog]
+      when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
+      else raise ArgumentError, "Unexpected segment count in '#{table}'"
+      end
+    end
+
+    def warn_dot_notation_deprecated(table) # :nodoc:
+      warn(
+        "Passing dot-notation '#{table}' to DuckDB::Appender.new is deprecated. " \
+        "If '#{table}' is a schema-qualified table, use Appender.new(con, table, schema: schema) instead. " \
+        "If '#{table}' is a literal table name containing a dot, use Appender.new(con, '\"#{table}\"') instead.",
         category: :deprecated
       )
     end
