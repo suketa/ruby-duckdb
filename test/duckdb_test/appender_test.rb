@@ -6,7 +6,7 @@ require 'time'
 module DuckDBTest
   class AppenderTest < Minitest::Test
     def setup
-      @db = DuckDB::Database.open # FIXME
+      @db = DuckDB::Database.open
       @con = @db.connect
     end
 
