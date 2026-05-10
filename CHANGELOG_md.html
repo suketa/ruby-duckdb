@@ -468,6 +468,14 @@
 
 <h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 </li><li>
+<p><a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new</code></a>: the 2nd argument now parses dot-notation and quoting (previously only <code>Connection#appender</code> did this):</p>
+</li><li>
+<p><code>&#39;schema.table&#39;</code> is interpreted as schema-qualified (deprecated; use <code>schema:</code> keyword instead).</p>
+</li><li>
+<p><code>&#39;&quot;schema.table&quot;&#39;</code> or <code>&quot;&#39;schema.table&#39;&quot;</code> — quotes are stripped and the name is treated as a literal table name containing a dot.</p>
+</li><li>
+<p><a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>: table name parsing (dot-notation, quoting) is now delegated entirely to <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new</code></a>. <code>Connection#appender</code> no longer performs any parsing itself.</p>
+</li><li>
 <p><a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>: table names surrounded by double or single quotes (e.g. <code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code>) are now treated as literal table names — the quotes are stripped and no dot-splitting is performed. This mirrors SQL identifier quoting and allows appending to tables whose names contain dots.</p>
 </li><li>
 <p>add <code>DuckDB::Appender.new(con, table, schema: nil, catalog: nil)</code> keyword argument form.</p>
