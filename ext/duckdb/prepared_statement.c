@@ -34,6 +34,7 @@ static VALUE prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val);
 static VALUE prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day);
 static VALUE prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+static VALUE prepared_statement__bind_timestamp_tz(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
 static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
 static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
@@ -472,6 +473,21 @@ static VALUE prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE ye
 }
 
 /* :nodoc: */
+static VALUE prepared_statement__bind_timestamp_tz(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
+    duckdb_timestamp timestamp_tz;
+    rubyDuckDBPreparedStatement *ctx;
+    idx_t idx = check_index(vidx);
+
+    timestamp_tz = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    if (duckdb_bind_timestamp_tz(ctx->prepared_statement, idx, timestamp_tz) == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+
+/* :nodoc: */
 static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
     rubyDuckDBPreparedStatement *ctx;
@@ -597,6 +613,7 @@ void rbduckdb_init_prepared_statement(void) {
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", prepared_statement__bind_date, 4);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_time", prepared_statement__bind_time, 5);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp", prepared_statement__bind_timestamp, 8);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp_tz", prepared_statement__bind_timestamp_tz, 8);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_interval", prepared_statement__bind_interval, 4);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_hugeint", prepared_statement__bind_hugeint, 3);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_uhugeint", prepared_statement__bind_uhugeint, 3);

@@ -250,6 +250,24 @@ module DuckDB
       _bind_timestamp(index, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
     end
 
+    # binds i-th parameter of TIMESTAMP WITH TIME ZONE (TIMESTAMPTZ) type with SQL prepared statement.
+    # The first argument is index of parameter.
+    # The index of first parameter is 1 not 0.
+    # The second argument value is to expected time value.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open('duckdb_database')
+    #   con = db.connect
+    #   sql ='SELECT name FROM users WHERE created_at = ?'
+    #   stmt = PreparedStatement.new(con, sql)
+    #   stmt.bind_timestamp_tz(1, Time.now)
+    #   #  or you can specify timestamp string.
+    #   # stmt.bind_timestamp_tz(1, '2022-02-23 07:39:45+00')
+    def bind_timestamp_tz(index, value)
+      time = _parse_time(value).utc
+      _bind_timestamp_tz(index, time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.
