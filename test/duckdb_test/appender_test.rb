@@ -1345,8 +1345,6 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
       assert_includes(err, 'deprecated')
-    ensure
-      @con.query('DETACH ext_new_dot')
     end
 
     def test_s_new_with_double_quoted_table_name_is_treated_as_literal
