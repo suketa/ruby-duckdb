@@ -21,10 +21,16 @@ module DuckDB
     #   # id: integer, default=false
     #   # name: varchar, default=true
     class TableDescription
+      include DuckDB::TableNameParser
+
       # Creates a new TableDescription for the given table.
       #
       # +con+ must be a DuckDB::Connection. +table+ is the table name (String).
       # Optionally pass +schema:+ and/or +catalog:+ to qualify the table.
+      #
+      # The +table+ argument supports dot-notation and quoting:
+      # - <tt>'schema.table'</tt> — interpreted as schema-qualified (deprecated; use +schema:+ instead)
+      # - <tt>'"a.b"'</tt> or <tt>"'a.b'"</tt> — treated as a literal table name containing a dot
       #
       # Raises DuckDB::Error if the connection is invalid, the table name is nil,
       # or the table (or schema/catalog) does not exist.
@@ -40,6 +46,7 @@ module DuckDB
         raise DuckDB::Error, '1st argument must be DuckDB::Connection object.' unless con.is_a?(DuckDB::Connection)
         raise DuckDB::Error, '2nd argument must be table name.' if table.nil?
 
+        table, schema, catalog = parse_table_name(table, schema, catalog)
         raise DuckDB::Error, error_message unless _initialize(con, catalog, schema, table)
       end
 
