@@ -5,17 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>class DuckDB::InstanceCache - RDoc Documentation</title>
+<title>module DuckDB::TableNameParser - RDoc Documentation</title>
 
 
   <meta
     name="keywords"
-    content="ruby,class,DuckDB::InstanceCache"
+    content="ruby,module,DuckDB::TableNameParser"
   >
 
     <meta
       name="description"
-      content="class DuckDB::InstanceCache: program (re)opens multiple databases to the same file within the same statement. InstanceCache."
+      content="module DuckDB::TableNameParser: TableDescription. tt&gt;&#39;schema."
     >
 
 
@@ -24,11 +24,11 @@
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="class DuckDB::InstanceCache - RDoc Documentation">
+<meta property="og:title" content="module DuckDB::TableNameParser - RDoc Documentation">
 
 
 
-    <meta property="og:description" content="program (re)opens multiple databases to the same file within the same statement. InstanceCache.">
+    <meta property="og:description" content="TableDescription. tt&gt;&#39;schema.">
 
 
 
@@ -36,11 +36,11 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class DuckDB::InstanceCache - RDoc Documentation">
+<meta name="twitter:title" content="module DuckDB::TableNameParser - RDoc Documentation">
 
 
 
-    <meta name="twitter:description" content="program (re)opens multiple databases to the same file within the same statement. InstanceCache.">
+    <meta name="twitter:description" content="TableDescription. tt&gt;&#39;schema.">
 
 
 
@@ -91,7 +91,7 @@
 
 
 
-<body role="document" class="class has-toc">
+<body role="document" class="module has-toc">
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <!-- Chevron (right arrow) - used for expand/collapse -->
   <symbol
@@ -444,68 +444,13 @@
   
 
   
-<div id="parent-class-section" class="nav-section">
-  <details class="nav-section-collapsible" open>
-    <summary class="nav-section-header">
-      <span class="nav-section-icon">
-        <svg><use href="#icon-ancestors"></use></svg>
-      </span>
-      <span class="nav-section-title">Ancestors</span>
-      <span class="nav-section-chevron">
-        <svg><use href="#icon-chevron"></use></svg>
-      </span>
-    </summary>
-    <ul><li><a href="../Object.html">Object</a><ul><li>BasicObject</li></ul></li></ul>
-  </details>
-</div>
-
 
   
 
   
 
   
-  <div class="nav-section">
-    <details class="nav-section-collapsible" open>
-      <summary class="nav-section-header">
-        <span class="nav-section-icon">
-          <svg><use href="#icon-class-methods"></use></svg>
-        </span>
-        <span class="nav-section-title">Class Methods</span>
-        <span class="nav-section-chevron">
-          <svg><use href="#icon-chevron"></use></svg>
-        </span>
-      </summary>
-      <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-c-new">new</a></li>
-
-      </ul>
-    </details>
-  </div>
-
-
-
-  <div class="nav-section">
-    <details class="nav-section-collapsible" open>
-      <summary class="nav-section-header">
-        <span class="nav-section-icon">
-          <svg><use href="#icon-instance-methods"></use></svg>
-        </span>
-        <span class="nav-section-title">Instance Methods</span>
-        <span class="nav-section-chevron">
-          <svg><use href="#icon-chevron"></use></svg>
-        </span>
-      </summary>
-      <ul class="nav-list" role="directory">
-
-        <li ><a href="#method-i-destroy">destroy</a></li>
-
-        <li ><a href="#method-i-get">get</a></li>
-
-      </ul>
-    </details>
-  </div>
 
 
   <div id="classindex-section" class="nav-section">
@@ -526,7 +471,7 @@
 
 </nav>
 
-<main role="main" aria-labelledby="class-DuckDB::InstanceCache">
+<main role="main" aria-labelledby="module-DuckDB::TableNameParser">
   
   
     <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
@@ -539,26 +484,27 @@
       
       <li>
         
-        <span>InstanceCache</span>
+        <span>TableNameParser</span>
         
       </li>
       
     </ol>
   
 
-  <h1 id="class-DuckDB::InstanceCache" class="anchor-link class">
-    class DuckDB::InstanceCache
+  <h1 id="module-DuckDB::TableNameParser" class="anchor-link module">
+    module DuckDB::TableNameParser
   </h1>
 
   <section class="description">
     
-<p>The <a href="InstanceCache.html"><code>DuckDB::InstanceCache</code></a> is necessary if a client/program (re)opens multiple databases to the same file within the same statement.</p>
+<p><a href="TableNameParser.html"><code>DuckDB::TableNameParser</code></a> provides shared table name parsing for classes that accept a table name argument, such as <a href="Appender.html"><code>DuckDB::Appender</code></a> and <a href="TableDescription.html"><code>DuckDB::TableDescription</code></a>.</p>
 
-<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
-<span class="ruby-identifier">cache</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">InstanceCache</span>.<span class="ruby-identifier">new</span>
-<span class="ruby-identifier">db1</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
-<span class="ruby-identifier">db2</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
-</pre>
+<p>It handles:</p>
+<ul><li>
+<p>Dot-notation: <code>&#39;schema.table&#39;</code> is split into schema and table (deprecated).</p>
+</li><li>
+<p>Quoting: <code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code> strips the quotes and treats the name literally.</p>
+</li></ul>
 
   </section>
 
@@ -576,175 +522,11 @@
 
 
 
-     <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
-       <header>
-         <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
-       </header>
 
 
-      <div id="method-c-new" class="method-detail anchor-link ">
-        <div class="method-header">
 
-            <div class="method-heading">
-              <a href="#method-c-new" title="Link to this method">
-                <span class="method-name">new</span>
-                <span class="method-args">()</span>
-              </a>
-            </div>
 
-        </div>
 
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE instance_cache_initialize(VALUE self) {
-    rubyDuckDBInstanceCache *ctx;
-
-    TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &amp;instance_cache_data_type, ctx);
-
-    ctx-&gt;instance_cache = duckdb_create_instance_cache();
-    if (ctx-&gt;instance_cache == NULL) {
-        rb_raise(eDuckDBError, &quot;Failed to create instance cache&quot;);
-    }
-
-    return self;
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-    </section>
-
-
-
-
-
-
-
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
-       <header>
-         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
-       </header>
-
-
-      <div id="method-i-destroy" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-i-destroy" title="Link to this method">
-                <span class="method-name">destroy</span>
-                <span class="method-args">()</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="destroy-source">
-            <pre class="c" data-language="c">static VALUE instance_cache_destroy(VALUE self) {
-    rubyDuckDBInstanceCache *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBInstanceCache, &amp;instance_cache_data_type, ctx);
-
-    if (ctx-&gt;instance_cache) {
-        duckdb_destroy_instance_cache(&amp;(ctx-&gt;instance_cache));
-        ctx-&gt;instance_cache = NULL;
-    }
-
-    return Qnil;
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-get" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-get" title="Link to this method">
-                  <span class="method-callseq">
-                    get(path:, config:) &rarr; self
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="get-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/instance_cache.rb, line 18</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">get</span>(<span class="ruby-value">path:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>)
-  <span class="ruby-identifier">get_or_create</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Returns a <a href="Database.html"><code>DuckDB::Database</code></a> object for the given path and config.</p>
-
-<pre class="ruby"><span class="ruby-identifier">db1</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
-<span class="ruby-identifier">db2</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-value">path:</span> <span class="ruby-string">&#39;db.duckdb&#39;</span>)
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-    </section>
 
 
 
