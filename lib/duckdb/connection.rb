@@ -138,15 +138,8 @@ module DuckDB
     #
     # Raises DuckDB::Error if the table (or schema/catalog) does not exist.
     #
-    # If the table name contains a dot (e.g. a table literally named <tt>a.b</tt>), surround
-    # it with double or single quotes — mirroring SQL identifier quoting — to prevent the name
-    # from being interpreted as <tt>schema.table</tt> dot-notation:
-    #
-    #   con.query('CREATE TABLE "a.b" (id INTEGER)')
-    #   con.appender('"a.b"')   # table name is literally a.b
-    #
-    #   con.query("CREATE TABLE 'a.b' (id INTEGER)")
-    #   con.appender("'a.b'")   # table name is literally a.b
+    # Table name parsing (quoting, dot-notation) is handled by DuckDB::Appender.new.
+    # See DuckDB::Appender.new for details on quoting and dot-notation.
     #
     #   require 'duckdb'
     #   db = DuckDB::Database.open
@@ -168,15 +161,7 @@ module DuckDB
     #   appender = con.appender('users')
     #   appender.append_row(4, 'Dave')
     #   appender.close
-    #
-    # *Deprecated:* passing a dot-notation string such as <tt>'schema.table'</tt> is deprecated.
-    # Use the +schema:+ keyword argument instead.
     def appender(table, schema: nil, catalog: nil, &)
-      if quoted_table_name?(table)
-        table = unquote_table_name(table)
-      elsif table.include?('.')
-        table, schema, catalog = apply_dot_notation(table, schema, catalog)
-      end
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
@@ -367,36 +352,6 @@ module DuckDB
       yield appender
       appender.flush
       appender.close
-    end
-
-    def quoted_table_name?(name)
-      name.match?(/\A(["']).*\1\z/)
-    end
-
-    def unquote_table_name(name)
-      name[1..-2]
-    end
-
-    def apply_dot_notation(table, schema, catalog)
-      parts = table.split('.')
-      raise ArgumentError, "Too many dot-separated segments in '#{table}'" if parts.length > 3
-
-      warn_dot_notation_deprecated(table)
-      # Explicit schema:/catalog: keyword args take precedence over dot-notation parts.
-      case parts.length
-      when 2 then [parts[1], schema || parts[0], catalog]
-      when 3 then [parts[2], schema || parts[1], catalog || parts[0]]
-      else raise ArgumentError, "Unexpected segment count in '#{table}'"
-      end
-    end
-
-    def warn_dot_notation_deprecated(table)
-      warn(
-        "Passing dot-notation '#{table}' to Connection#appender is deprecated. " \
-        "If '#{table}' is a schema-qualified table, use con.appender(table, schema: schema) instead. " \
-        "If '#{table}' is a literal table name containing a dot, use con.appender('\"#{table}\"') instead.",
-        category: :deprecated
-      )
     end
 
     alias execute query
