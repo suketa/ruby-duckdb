@@ -41,6 +41,7 @@ module DuckDBTest
         col_varchar VARCHAR,
         col_date DATE,
         col_timestamp TIMESTAMP,
+        col_timestamp_tz TIMESTAMPTZ,
         col_time TIME,
         col_blob BLOB,
         col_interval INTERVAL
@@ -55,7 +56,8 @@ module DuckDBTest
         1, True, 127, 32767, 2147483647, 9223372036854775807,
         170141183460469231731687303715884105727,
         12345.375, 12345.6789, 98765.4321, 'str', '#{datestr}',
-        '2019-11-09 12:34:56', '12:34:56.000001', 'blob data',
+        '2019-11-09 12:34:56', '2024-06-15 03:00:00+00:00',
+        '12:34:56.000001', 'blob data',
         '1 year 2 months 3 days 12:34:56.987654'
       );
       SQL
@@ -67,6 +69,7 @@ module DuckDBTest
         170_141_183_460_469_231_731_687_303_715_884_105_727,
         12_345.375, 12_345.6789, 98_765.4321, 'str',
         self.class.today, Time.parse('2019-11-09 12:34:56'),
+        Time.utc(2024, 6, 15, 3, 0, 0),
         Time.local(self.class.now.year, self.class.now.month, self.class.now.day, 12, 34, 56, 1),
         'blob data',
         DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 45_296_987_654)
@@ -730,6 +733,42 @@ module DuckDBTest
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp = $1')
 
       stmt.bind_timestamp(1, Time.new(2019, 11, 9, 12, 34, 56))
+      result = stmt.execute
+
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_timestamp_tz
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp_tz = $1')
+
+      stmt.bind_timestamp_tz(1, Time.utc(2024, 6, 15, 3, 0, 0))
+      result = stmt.execute
+
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_timestamp_tz_with_string
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp_tz = $1')
+
+      stmt.bind_timestamp_tz(1, '2024-06-15 03:00:00 UTC')
+      result = stmt.execute
+
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_timestamp_tz_with_non_utc_time
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp_tz = $1')
+
+      stmt.bind_timestamp_tz(1, Time.new(2024, 6, 15, 12, 0, 0, '+09:00'))
+      result = stmt.execute
+
+      assert_equal(1, result.each.first[0])
+    end
+
+    def test_bind_timestamp_tz_with_non_utc_string
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_timestamp_tz = $1')
+
+      stmt.bind_timestamp_tz(1, '2024-06-15 12:00:00 +09:00')
       result = stmt.execute
 
       assert_equal(1, result.each.first[0])

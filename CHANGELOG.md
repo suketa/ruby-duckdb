@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - add `DuckDB::Appender#append_default_to_chunk`.
 - add `DuckDB::TableNameParser` module with shared table name parsing logic (quoting and dot-notation), included by `DuckDB::Appender` and `DuckDB::TableDescription`.
+- add `DuckDB::PreparedStatement#bind_timestamp_tz` to bind a `TIMESTAMP WITH TIME ZONE` (TIMESTAMPTZ) parameter from a `Time` or timestamp string.
 ## Breaking Changes
 - `DuckDB::TableDescription.new`: the 2nd argument now parses dot-notation and quoting:
   - `'schema.table'` is interpreted as schema-qualified (deprecated; use `schema:` keyword instead).
