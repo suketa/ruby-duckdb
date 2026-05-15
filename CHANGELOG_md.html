@@ -484,15 +484,15 @@
 </li><li>
 <p><code>&#39;&quot;schema.table&quot;&#39;</code> or <code>&quot;&#39;schema.table&#39;&quot;</code> — quotes are stripped and the name is treated as a literal table name containing a dot.</p>
 </li><li>
-<p><a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>: table name parsing (dot-notation, quoting) is now delegated entirely to <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new</code></a>. <code>Connection#appender</code> no longer performs any parsing itself.</p>
+<p><a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>: table name parsing (dot-notation, quoting) is now delegated to <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new</code></a> internally. Behavior is unchanged — <code>&#39;schema.table&#39;</code> has always split on dot in <code>Connection#appender</code>. No deprecation warning is emitted.</p>
 </li><li>
-<p><a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>: table names surrounded by double or single quotes (e.g. <code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code>) are now treated as literal table names — the quotes are stripped and no dot-splitting is performed. This mirrors SQL identifier quoting and allows appending to tables whose names contain dots.</p>
+<p><a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>: table names surrounded by double or single quotes (e.g. <code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code>) are treated as literal table names — the quotes are stripped and no dot-splitting is performed.</p>
+</li><li>
+<p>fix: <code>Connection#appender(&#39;a.b&#39;)</code> no longer emits a misleading deprecation warning (the behavior was not deprecated — it was already the correct behavior).</p>
 </li><li>
 <p>add <code>DuckDB::Appender.new(con, table, schema: nil, catalog: nil)</code> keyword argument form.</p>
 </li><li>
 <p>add <code>DuckDB::Connection#appender(table, schema: nil, catalog: nil)</code> keyword argument form.</p>
-</li><li>
-<p><code>schema.table</code> dot-notation form is still supported but deprecated. Use <code>con.appender(table, schema: schema)</code> instead.</p>
 </li><li>
 <p>deprecate <code>DuckDB::Result#_column_type(i)</code> private method. use <code>columns[i].send(:_type)</code> instead.</p>
 </li><li>
@@ -506,7 +506,7 @@
 </li><li>
 <p>deprecate <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new(con, schema, table)</code></a> 3-positional-argument form. Use <code>DuckDB::Appender.new(con, table, schema: schema)</code> instead.</p>
 </li><li>
-<p>deprecate passing dot-notation string (e.g. <code>&#39;schema.table&#39;</code>) to <a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a>. Use <code>con.appender(table, schema: schema)</code> instead.</p>
+<p>deprecate passing dot-notation string (e.g. <code>&#39;schema.table&#39;</code>) directly to <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new</code></a>. Use <code>DuckDB::Appender.new(con, table, schema: schema)</code> instead.</p>
 </li></ul>
 
 <h1 id="label-1.5.2.1+-+2026-04-24"><a href="#label-1.5.2.1+-+2026-04-24">1.5.2.1 - 2026-04-24</a></h1>
