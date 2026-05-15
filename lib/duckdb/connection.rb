@@ -8,6 +8,8 @@ module DuckDB
   #   con = db.connect
   #   con.query(sql)
   class Connection
+    include DuckDB::TableNameParser
+
     # executes sql with args.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.
@@ -162,6 +164,7 @@ module DuckDB
     #   appender.append_row(4, 'Dave')
     #   appender.close
     def appender(table, schema: nil, catalog: nil, &)
+      table, schema, catalog = parse_connection_appender_table(table, schema, catalog)
       run_appender_block(Appender.new(self, table, schema: schema, catalog: catalog), &)
     end
 
@@ -352,6 +355,17 @@ module DuckDB
       yield appender
       appender.flush
       appender.close
+    end
+
+    # Silently pre-parses dot-notation so Appender.new receives clean values
+    # and does not emit a misleading "DuckDB::Appender.new" warning.
+    # con.appender('a.b') has always split on dot — no warning needed.
+    # Quoted table names pass through unchanged for Appender.new to handle.
+    def parse_connection_appender_table(table, schema, catalog)
+      return [table, schema, catalog] if quoted_table_name?(table)
+      return [table, schema, catalog] unless table.include?('.')
+
+      dot_notation_split(table, schema, catalog)
     end
 
     alias execute query

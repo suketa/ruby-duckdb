@@ -13,18 +13,18 @@ All notable changes to this project will be documented in this file.
 - `DuckDB::Appender.new`: the 2nd argument now parses dot-notation and quoting (previously only `Connection#appender` did this):
   - `'schema.table'` is interpreted as schema-qualified (deprecated; use `schema:` keyword instead).
   - `'"schema.table"'` or `"'schema.table'"` — quotes are stripped and the name is treated as a literal table name containing a dot.
-- `DuckDB::Connection#appender`: table name parsing (dot-notation, quoting) is now delegated entirely to `DuckDB::Appender.new`. `Connection#appender` no longer performs any parsing itself.
-- `DuckDB::Connection#appender`: table names surrounded by double or single quotes (e.g. `'"a.b"'` or `"'a.b'"`) are now treated as literal table names — the quotes are stripped and no dot-splitting is performed. This mirrors SQL identifier quoting and allows appending to tables whose names contain dots.
+- `DuckDB::Connection#appender`: table name parsing (dot-notation, quoting) is now delegated to `DuckDB::Appender.new` internally. Behavior is unchanged — `'schema.table'` has always split on dot in `Connection#appender`. No deprecation warning is emitted.
+- `DuckDB::Connection#appender`: table names surrounded by double or single quotes (e.g. `'"a.b"'` or `"'a.b'"`) are treated as literal table names — the quotes are stripped and no dot-splitting is performed.
+- fix: `Connection#appender('a.b')` no longer emits a misleading deprecation warning (the behavior was not deprecated — it was already the correct behavior).
 - add `DuckDB::Appender.new(con, table, schema: nil, catalog: nil)` keyword argument form.
 - add `DuckDB::Connection#appender(table, schema: nil, catalog: nil)` keyword argument form.
-  - `schema.table` dot-notation form is still supported but deprecated. Use `con.appender(table, schema: schema)` instead.
 - deprecate `DuckDB::Result#_column_type(i)` private method. use `columns[i].send(:_type)` instead.
 - `DuckDB::Result#enum_dictionary_values` checks invalid column index.
 - deprecate `DuckDB::Result#_enum_dictionary_size` private method.
 - deprecate `DuckDB::Result#_enum_dictionary_value` private method.
 ## Deprecations
 - deprecate `DuckDB::Appender.new(con, schema, table)` 3-positional-argument form. Use `DuckDB::Appender.new(con, table, schema: schema)` instead.
-- deprecate passing dot-notation string (e.g. `'schema.table'`) to `DuckDB::Connection#appender`. Use `con.appender(table, schema: schema)` instead.
+- deprecate passing dot-notation string (e.g. `'schema.table'`) directly to `DuckDB::Appender.new`. Use `DuckDB::Appender.new(con, table, schema: schema)` instead.
 
 # 1.5.2.1 - 2026-04-24
 
