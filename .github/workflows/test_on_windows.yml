@@ -24,8 +24,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['3.2.9', '3.3.10', '3.4.8', '4.0.1', 'ucrt', 'mingw', 'mswin', 'head']
+        ruby: ['3.2.9', '3.3.10', '3.4.8', '4.0.3', 'ucrt', 'mingw', 'mswin', 'head']
         duckdb: ['1.4.4', '1.5.2']
+    env:
+      # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
+      # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.
+      BUNDLER_VERSION: ${{ (matrix.ruby == 'head' || matrix.ruby == 'ucrt' || matrix.ruby == 'mswin') && '0' || '' }}
 
     steps:
     - uses: actions/checkout@v4
