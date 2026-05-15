@@ -29,7 +29,7 @@ jobs:
     env:
       # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
       # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.
-      BUNDLER_VERSION: ${{ matrix.ruby == 'head' && '0' || '' }}
+      BUNDLER_VERSION: ${{ (matrix.ruby == 'head' || matrix.ruby == 'ucrt' || matrix.ruby == 'mswin') && '0' || '' }}
 
     steps:
     - uses: actions/checkout@v4
