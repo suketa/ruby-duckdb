@@ -44,7 +44,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBAggregateFunctionSet);
 }
 
-rubyDuckDBAggregateFunctionSet *get_struct_aggregate_function_set(VALUE obj) {
+rubyDuckDBAggregateFunctionSet *rbduckdb_get_struct_aggregate_function_set(VALUE obj) {
     rubyDuckDBAggregateFunctionSet *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBAggregateFunctionSet, &aggregate_function_set_data_type, ctx);
     return ctx;

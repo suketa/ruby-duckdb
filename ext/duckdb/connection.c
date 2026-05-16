@@ -294,7 +294,7 @@ static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggre
     duckdb_state state;
 
     ctxcon = rbduckdb_get_struct_connection(self);
-    ctxafs = get_struct_aggregate_function_set(aggregate_function_set);
+    ctxafs = rbduckdb_get_struct_aggregate_function_set(aggregate_function_set);
 
     state = duckdb_register_aggregate_function_set(ctxcon->con, ctxafs->aggregate_function_set);
 
