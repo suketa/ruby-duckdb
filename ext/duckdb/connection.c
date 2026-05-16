@@ -15,6 +15,7 @@ static VALUE connection__register_logical_type(VALUE self, VALUE logical_type);
 static VALUE connection__register_scalar_function(VALUE self, VALUE scalar_function);
 static VALUE connection__register_scalar_function_set(VALUE self, VALUE scalar_function_set);
 static VALUE connection__register_aggregate_function(VALUE self, VALUE aggregate_function);
+static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggregate_function_set);
 static VALUE connection__register_table_function(VALUE self, VALUE table_function);
 
 static const rb_data_type_t connection_data_type = {
@@ -286,6 +287,27 @@ static VALUE connection__register_aggregate_function(VALUE self, VALUE aggregate
     return self;
 }
 
+/* :nodoc: */
+static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggregate_function_set) {
+    rubyDuckDBConnection *ctxcon;
+    rubyDuckDBAggregateFunctionSet *ctxafs;
+    duckdb_state state;
+
+    ctxcon = rbduckdb_get_struct_connection(self);
+    ctxafs = get_struct_aggregate_function_set(aggregate_function_set);
+
+    state = duckdb_register_aggregate_function_set(ctxcon->con, ctxafs->aggregate_function_set);
+
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "Failed to register aggregate function set");
+    }
+
+    /* Keep reference to prevent GC while connection is alive */
+    rb_ary_push(ctxcon->registered_functions, aggregate_function_set);
+
+    return self;
+}
+
 static VALUE connection__register_table_function(VALUE self, VALUE table_function) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBTableFunction *ctxtf;
@@ -320,6 +342,7 @@ void rbduckdb_init_connection(void) {
     rb_define_private_method(cDuckDBConnection, "_register_scalar_function", connection__register_scalar_function, 1);
     rb_define_private_method(cDuckDBConnection, "_register_scalar_function_set", connection__register_scalar_function_set, 1);
     rb_define_private_method(cDuckDBConnection, "_register_aggregate_function", connection__register_aggregate_function, 1);
+    rb_define_private_method(cDuckDBConnection, "_register_aggregate_function_set", connection__register_aggregate_function_set, 1);
     rb_define_private_method(cDuckDBConnection, "_register_table_function", connection__register_table_function, 1);
     rb_define_private_method(cDuckDBConnection, "_connect", connection__connect, 1);
     rb_define_private_method(cDuckDBConnection, "_query_sql", connection__query_sql, 1);
