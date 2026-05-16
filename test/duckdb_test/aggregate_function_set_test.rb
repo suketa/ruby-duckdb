@@ -79,5 +79,43 @@ module DuckDBTest
       assert_same set, set.add(af_bigint)
       assert_same set, set.add(af_double)
     end
+
+    # --- register_aggregate_function_set ------------------------------------
+
+    def test_register_aggregate_function_set_raises_with_non_aggregate_function_set
+      assert_raises(TypeError) { @con.register_aggregate_function_set('not a set') }
+    end
+
+    def test_register_aggregate_function_set_with_single_bigint_overload
+      af = make_af(:bigint)
+      set = DuckDB::AggregateFunctionSet.new('agg_sum_bigint')
+      set.add(af)
+
+      @con.register_aggregate_function_set(set)
+      result = @con.query(
+        "SELECT agg_sum_bigint(v) FROM (VALUES (1::BIGINT), (2::BIGINT), (3::BIGINT)) t(v)"
+      ).first.first
+
+      assert_equal 6, result
+    end
+
+    def test_register_aggregate_function_set_with_multiple_overloads
+      af_bigint = make_af(:bigint)
+      af_double = make_af(:double)
+      set = DuckDB::AggregateFunctionSet.new('agg_sum_poly')
+      set.add(af_bigint).add(af_double)
+
+      @con.register_aggregate_function_set(set)
+
+      bigint_result = @con.query(
+        "SELECT agg_sum_poly(v) FROM (VALUES (10::BIGINT), (20::BIGINT), (30::BIGINT)) t(v)"
+      ).first.first
+      double_result = @con.query(
+        "SELECT agg_sum_poly(v) FROM (VALUES (1.5::DOUBLE), (2.5::DOUBLE)) t(v)"
+      ).first.first
+
+      assert_equal 60, bigint_result
+      assert_in_delta 4.0, double_result
+    end
   end
 end
