@@ -8,6 +8,7 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static void compact(void *);
 static VALUE rbduckdb_aggregate_function_set__initialize(VALUE self, VALUE name);
+static VALUE rbduckdb_aggregate_function_set__add(VALUE self, VALUE aggregate_function);
 
 static const rb_data_type_t aggregate_function_set_data_type = {
     "DuckDB/AggregateFunctionSet",
@@ -58,6 +59,22 @@ static VALUE rbduckdb_aggregate_function_set__initialize(VALUE self, VALUE name)
     return self;
 }
 
+/* :nodoc: */
+static VALUE rbduckdb_aggregate_function_set__add(VALUE self, VALUE aggregate_function) {
+    rubyDuckDBAggregateFunctionSet *p;
+    rubyDuckDBAggregateFunction *af;
+
+    TypedData_Get_Struct(self, rubyDuckDBAggregateFunctionSet, &aggregate_function_set_data_type, p);
+    af = rbduckdb_get_struct_aggregate_function(aggregate_function);
+
+    if (duckdb_add_aggregate_function_to_set(p->aggregate_function_set, af->aggregate_function) == DuckDBError) {
+        rb_raise(eDuckDBError, "failed to add aggregate function to set (duplicate overload?)");
+    }
+
+    rb_ary_push(p->functions, aggregate_function);
+    return self;
+}
+
 void rbduckdb_init_duckdb_aggregate_function_set(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -65,4 +82,5 @@ void rbduckdb_init_duckdb_aggregate_function_set(void) {
     cDuckDBAggregateFunctionSet = rb_define_class_under(mDuckDB, "AggregateFunctionSet", rb_cObject);
     rb_define_alloc_func(cDuckDBAggregateFunctionSet, allocate);
     rb_define_private_method(cDuckDBAggregateFunctionSet, "_initialize", rbduckdb_aggregate_function_set__initialize, 1);
+    rb_define_private_method(cDuckDBAggregateFunctionSet, "_add", rbduckdb_aggregate_function_set__add, 1);
 }
