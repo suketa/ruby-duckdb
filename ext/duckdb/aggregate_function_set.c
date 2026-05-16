@@ -7,8 +7,8 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static void compact(void *);
-static VALUE rbduckdb_aggregate_function_set__initialize(VALUE self, VALUE name);
-static VALUE rbduckdb_aggregate_function_set__add(VALUE self, VALUE aggregate_function);
+static VALUE aggregate_function_set__initialize(VALUE self, VALUE name);
+static VALUE aggregate_function_set__add(VALUE self, VALUE aggregate_function);
 
 static const rb_data_type_t aggregate_function_set_data_type = {
     "DuckDB/AggregateFunctionSet",
@@ -51,7 +51,7 @@ rubyDuckDBAggregateFunctionSet *rbduckdb_get_struct_aggregate_function_set(VALUE
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function_set__initialize(VALUE self, VALUE name) {
+static VALUE aggregate_function_set__initialize(VALUE self, VALUE name) {
     rubyDuckDBAggregateFunctionSet *p;
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunctionSet, &aggregate_function_set_data_type, p);
@@ -60,7 +60,7 @@ static VALUE rbduckdb_aggregate_function_set__initialize(VALUE self, VALUE name)
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_aggregate_function_set__add(VALUE self, VALUE aggregate_function) {
+static VALUE aggregate_function_set__add(VALUE self, VALUE aggregate_function) {
     rubyDuckDBAggregateFunctionSet *p;
     rubyDuckDBAggregateFunction *af;
 
@@ -81,6 +81,6 @@ void rbduckdb_init_duckdb_aggregate_function_set(void) {
 #endif
     cDuckDBAggregateFunctionSet = rb_define_class_under(mDuckDB, "AggregateFunctionSet", rb_cObject);
     rb_define_alloc_func(cDuckDBAggregateFunctionSet, allocate);
-    rb_define_private_method(cDuckDBAggregateFunctionSet, "_initialize", rbduckdb_aggregate_function_set__initialize, 1);
-    rb_define_private_method(cDuckDBAggregateFunctionSet, "_add", rbduckdb_aggregate_function_set__add, 1);
+    rb_define_private_method(cDuckDBAggregateFunctionSet, "_initialize", aggregate_function_set__initialize, 1);
+    rb_define_private_method(cDuckDBAggregateFunctionSet, "_add", aggregate_function_set__add, 1);
 }
