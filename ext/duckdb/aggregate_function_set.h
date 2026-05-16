@@ -8,7 +8,7 @@ struct _rubyDuckDBAggregateFunctionSet {
 
 typedef struct _rubyDuckDBAggregateFunctionSet rubyDuckDBAggregateFunctionSet;
 
-void rbduckdb_init_duckdb_aggregate_function_set(void);
+void rbduckdb_init_aggregate_function_set(void);
 rubyDuckDBAggregateFunctionSet *rbduckdb_get_struct_aggregate_function_set(VALUE obj);
 
 #endif

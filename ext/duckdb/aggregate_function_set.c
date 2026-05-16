@@ -75,7 +75,7 @@ static VALUE aggregate_function_set__add(VALUE self, VALUE aggregate_function) {
     return self;
 }
 
-void rbduckdb_init_duckdb_aggregate_function_set(void) {
+void rbduckdb_init_aggregate_function_set(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
