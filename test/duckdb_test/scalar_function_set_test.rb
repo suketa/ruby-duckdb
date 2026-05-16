@@ -41,13 +41,7 @@ module DuckDBTest
       assert_same set, set.add(sf)
     end
 
-    def test_add_does_not_override_function_name
-      sf = DuckDB::ScalarFunction.create(name: 'my_func', return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
-      set = DuckDB::ScalarFunctionSet.new('other_name')
-      set.add(sf)
 
-      assert_equal 'my_func', sf.name
-    end
 
     def test_add_raises_with_non_scalar_function
       set = DuckDB::ScalarFunctionSet.new(:add)

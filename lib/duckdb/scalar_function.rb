@@ -7,8 +7,7 @@ module DuckDB
   class ScalarFunction
     # Create and configure a scalar function in one call
     #
-    # @param name [String, Symbol, nil] the function name; use +nil+ when creating overloads
-    #   intended for use in a +DuckDB::ScalarFunctionSet+ (the set provides the name)
+    # @param name [String, Symbol] the function name
     # @param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type
     # @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single fixed parameter type
     # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple fixed parameter types
@@ -88,17 +87,6 @@ module DuckDB
     end
 
     include FunctionTypeValidation
-
-    # Returns the name most recently assigned to this scalar function.
-    # @return [String, nil]
-    attr_reader :name
-
-    # Sets the name of the scalar function, propagating it to the underlying DuckDB object.
-    # @param value [String, Symbol, nil] the function name
-    def name=(value)
-      @name = value&.to_s
-      set_name(@name) if @name
-    end
 
     # Adds a parameter to the scalar function.
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT,

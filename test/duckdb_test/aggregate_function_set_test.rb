@@ -49,15 +49,6 @@ module DuckDBTest
 
     # --- add ---------------------------------------------------------------
 
-    def test_add_does_not_override_function_name
-      af = make_af(:bigint)
-      af.name = 'my_agg'
-      set = DuckDB::AggregateFunctionSet.new('other_name')
-      set.add(af)
-
-      assert_equal 'my_agg', af.name
-    end
-
     def test_add_returns_self
       af  = make_af(:bigint)
       set = DuckDB::AggregateFunctionSet.new('test_agg')
