@@ -58,7 +58,7 @@ module DuckDB
     include FunctionTypeValidation
 
     # Alias the C-level name= setter so we can wrap it in Ruby.
-    alias_method :_set_name, :name=
+    alias _set_name name=
 
     # Returns the name most recently assigned to this aggregate function.
     # @return [String, nil]
