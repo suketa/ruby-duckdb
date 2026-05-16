@@ -268,7 +268,7 @@ module DuckDB
     # allowing DuckDB to dispatch to the correct implementation based on argument types.
     #
     # @param scalar_function_set [DuckDB::ScalarFunctionSet] the function set to register
-    # @return [void]
+    # @return [self]
     # @raise [TypeError] if argument is not a DuckDB::ScalarFunctionSet
     #
     # @example Register multiple overloads under one name
@@ -283,6 +283,42 @@ module DuckDB
       end
 
       _register_scalar_function_set(scalar_function_set)
+    end
+
+    # Registers an aggregate function set with the connection.
+    # An aggregate function set groups multiple overloads of an aggregate function under one name,
+    # allowing DuckDB to dispatch to the correct implementation based on argument types.
+    #
+    # @param aggregate_function_set [DuckDB::AggregateFunctionSet] the function set to register
+    # @return [self]
+    # @raise [TypeError] if argument is not a DuckDB::AggregateFunctionSet
+    #
+    # @example Register multiple overloads under one name
+    #   af_bigint = DuckDB::AggregateFunction.new
+    #   af_bigint.name = 'my_sum'
+    #   af_bigint.return_type = DuckDB::LogicalType::BIGINT
+    #   af_bigint.add_parameter(DuckDB::LogicalType::BIGINT)
+    #   af_bigint.set_init   { 0 }
+    #   af_bigint.set_update  { |state, val| state + val }
+    #   af_bigint.set_combine { |s1, s2| s1 + s2 }
+    #
+    #   af_double = DuckDB::AggregateFunction.new
+    #   af_double.name = 'my_sum'
+    #   af_double.return_type = DuckDB::LogicalType::DOUBLE
+    #   af_double.add_parameter(DuckDB::LogicalType::DOUBLE)
+    #   af_double.set_init   { 0.0 }
+    #   af_double.set_update  { |state, val| state + val }
+    #   af_double.set_combine { |s1, s2| s1 + s2 }
+    #
+    #   set = DuckDB::AggregateFunctionSet.new(:my_sum)
+    #   set.add(af_bigint).add(af_double)
+    #   con.register_aggregate_function_set(set)
+    def register_aggregate_function_set(aggregate_function_set)
+      unless aggregate_function_set.is_a?(AggregateFunctionSet)
+        raise TypeError, "#{aggregate_function_set.class} is not a DuckDB::AggregateFunctionSet"
+      end
+
+      _register_aggregate_function_set(aggregate_function_set)
     end
 
     # Registers an aggregate function with the connection.
