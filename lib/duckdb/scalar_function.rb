@@ -89,6 +89,17 @@ module DuckDB
 
     include FunctionTypeValidation
 
+    # Returns the name most recently assigned to this scalar function.
+    # @return [String, nil]
+    attr_reader :name
+
+    # Sets the name of the scalar function, propagating it to the underlying DuckDB object.
+    # @param value [String, Symbol, nil] the function name
+    def name=(value)
+      @name = value.nil? ? nil : value.to_s
+      set_name(@name) if @name
+    end
+
     # Adds a parameter to the scalar function.
     # Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT,
     # TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT,
