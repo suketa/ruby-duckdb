@@ -5,17 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>class DuckDB::Vector - RDoc Documentation</title>
+<title>class DuckDB::AggregateFunctionSet - RDoc Documentation</title>
 
 
   <meta
     name="keywords"
-    content="ruby,class,DuckDB::Vector"
+    content="ruby,class,DuckDB::AggregateFunctionSet"
   >
 
     <meta
       name="description"
-      content="class DuckDB::Vector: Vector represents a column vector in a data chunk. Vectors store the actual data for table function output."
+      content="class DuckDB::AggregateFunctionSet: AggregateFunctionSet encapsulates DuckDB&#39;s aggregate function set, which allows registering multiple overloads of an aggregate function under one name"
     >
 
 
@@ -24,11 +24,11 @@
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="class DuckDB::Vector - RDoc Documentation">
+<meta property="og:title" content="class DuckDB::AggregateFunctionSet - RDoc Documentation">
 
 
 
-    <meta property="og:description" content="Vector represents a column vector in a data chunk. Vectors store the actual data for table function output.">
+    <meta property="og:description" content="AggregateFunctionSet encapsulates DuckDB&#39;s aggregate function set, which allows registering multiple overloads of an aggregate function under one name">
 
 
 
@@ -36,11 +36,11 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class DuckDB::Vector - RDoc Documentation">
+<meta name="twitter:title" content="class DuckDB::AggregateFunctionSet - RDoc Documentation">
 
 
 
-    <meta name="twitter:description" content="Vector represents a column vector in a data chunk. Vectors store the actual data for table function output.">
+    <meta name="twitter:description" content="AggregateFunctionSet encapsulates DuckDB&#39;s aggregate function set, which allows registering multiple overloads of an aggregate function under one name">
 
 
 
@@ -465,6 +465,25 @@
   
 
   
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-new">new</a></li>
+
+      </ul>
+    </details>
+  </div>
+
 
 
   <div class="nav-section">
@@ -480,17 +499,7 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-i-assign_string_element">assign_string_element</a></li>
-
-        <li ><a href="#method-i-assign_string_element_len">assign_string_element_len</a></li>
-
-        <li ><a href="#method-i-get_data">get_data</a></li>
-
-        <li ><a href="#method-i-get_validity">get_validity</a></li>
-
-        <li ><a href="#method-i-logical_type">logical_type</a></li>
-
-        <li ><a href="#method-i-set_validity">set_validity</a></li>
+        <li ><a href="#method-i-add">add</a></li>
 
       </ul>
     </details>
@@ -515,7 +524,7 @@
 
 </nav>
 
-<main role="main" aria-labelledby="class-DuckDB::Vector">
+<main role="main" aria-labelledby="class-DuckDB::AggregateFunctionSet">
   
   
     <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
@@ -528,31 +537,22 @@
       
       <li>
         
-        <span>Vector</span>
+        <span>AggregateFunctionSet</span>
         
       </li>
       
     </ol>
   
 
-  <h1 id="class-DuckDB::Vector" class="anchor-link class">
-    class DuckDB::Vector
+  <h1 id="class-DuckDB::AggregateFunctionSet" class="anchor-link class">
+    class DuckDB::AggregateFunctionSet
   </h1>
 
   <section class="description">
     
-<p>The <a href="Vector.html"><code>DuckDB::Vector</code></a> represents a column vector in a data chunk.</p>
+<p><a href="AggregateFunctionSet.html"><code>DuckDB::AggregateFunctionSet</code></a> encapsulates DuckDB’s aggregate function set, which allows registering multiple overloads of an aggregate function under one name.</p>
 
-<p>Vectors store the actual data for table function output.</p>
-
-<p>Example:</p>
-
-<pre class="ruby"><span class="ruby-identifier">vector</span> = <span class="ruby-identifier">output</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
-<span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-value">0</span>, <span class="ruby-string">&#39;hello&#39;</span>)
-<span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-value">1</span>, <span class="ruby-string">&#39;world&#39;</span>)
-</pre>
-
-<p>rubocop:disable Lint/EmptyClass</p>
+<p>@note <a href="AggregateFunctionSet.html"><code>DuckDB::AggregateFunctionSet</code></a> is experimental.</p>
 
   </section>
 
@@ -570,6 +570,59 @@
 
 
 
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
+       </header>
+
+
+      <div id="method-c-new" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-new" title="Link to this method">
+                <span class="method-name">new</span>
+                <span class="method-args">(name)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="new-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function_set.rb, line 11</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{name.class} is not a String or Symbol&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
+
+  <span class="ruby-ivar">@name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+  <span class="ruby-identifier">_initialize</span>(<span class="ruby-ivar">@name</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>@param name [String, Symbol] the function set name shared by all overloads @raise [TypeError] if name is not a String or Symbol</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
+
 
 
 
@@ -582,18 +635,15 @@
        </header>
 
 
-      <div id="method-i-assign_string_element" class="method-detail anchor-link ">
+      <div id="method-i-add" class="method-detail anchor-link ">
         <div class="method-header">
 
-
-              <div class="method-heading">
-                <a href="#method-i-assign_string_element" title="Link to this method">
-                  <span class="method-callseq">
-                    assign_string_element(index, str) &rarr; self
-                  </span>
-                </a>
-              </div>
-
+            <div class="method-heading">
+              <a href="#method-i-add" title="Link to this method">
+                <span class="method-name">add</span>
+                <span class="method-args">(aggregate_function)</span>
+              </a>
+            </div>
 
         </div>
 
@@ -603,21 +653,16 @@
               <summary>Source</summary>
             </details>
           </div>
-          <div class="method-source-code" id="assign_string_element-source">
-            <pre class="c" data-language="c">static VALUE vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
-    rubyDuckDBVector *ctx;
-    idx_t idx;
-    const char *string_val;
+          <div class="method-source-code" id="add-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function_set.rb, line 22</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add</span>(<span class="ruby-identifier">aggregate_function</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunction</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{aggregate_function.class} is not a DuckDB::AggregateFunction&quot;</span>
+  <span class="ruby-keyword">end</span>
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
-
-    idx = NUM2ULL(index);
-    string_val = StringValueCStr(str);
-
-    duckdb_vector_assign_string_element(ctx-&gt;vector, idx, string_val);
-
-    return self;
-}</pre>
+  <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">name</span> = <span class="ruby-ivar">@name</span>
+  <span class="ruby-identifier">_add</span>(<span class="ruby-identifier">aggregate_function</span>)
+<span class="ruby-keyword">end</span></pre>
           </div>
 
 
@@ -625,306 +670,7 @@
         <div class="method-description">
 
 
-          <p>Assigns a string value at the specified index.</p>
-
-<pre class="ruby"><span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-value">0</span>, <span class="ruby-string">&#39;hello&#39;</span>)
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-assign_string_element_len" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-assign_string_element_len" title="Link to this method">
-                  <span class="method-callseq">
-                    assign_string_element_len(index, str) &rarr; self
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="assign_string_element_len-source">
-            <pre class="c" data-language="c">static VALUE vector_assign_string_element_len(VALUE self, VALUE index, VALUE str) {
-    rubyDuckDBVector *ctx;
-    idx_t idx;
-    const char *string_val;
-    idx_t str_len;
-
-    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
-
-    idx = NUM2ULL(index);
-    string_val = StringValuePtr(str);
-    str_len = RSTRING_LEN(str);
-
-    duckdb_vector_assign_string_element_len(ctx-&gt;vector, idx, string_val, str_len);
-
-    return self;
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Assigns a string/blob value at the specified index with explicit length. Supports strings containing null bytes (for BLOB columns).</p>
-
-<pre class="ruby"><span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element_len</span>(<span class="ruby-value">0</span>, <span class="ruby-string">&quot;\x00\x01\x02\x03&quot;</span>)
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-get_data" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-get_data" title="Link to this method">
-                  <span class="method-callseq">
-                    get_data &rarr; Integer (pointer address)
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="get_data-source">
-            <pre class="c" data-language="c">static VALUE vector_get_data(VALUE self) {
-    rubyDuckDBVector *ctx;
-    void *data;
-
-    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
-
-    data = duckdb_vector_get_data(ctx-&gt;vector);
-
-    return ULL2NUM((uintptr_t)data);
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Gets the raw data pointer for the vector. Returns the memory address as an integer.</p>
-
-<pre class="ruby"><span class="ruby-identifier">ptr</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-get_validity" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-get_validity" title="Link to this method">
-                  <span class="method-callseq">
-                    get_validity &rarr; Integer or nil (pointer address)
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="get_validity-source">
-            <pre class="c" data-language="c">static VALUE vector_get_validity(VALUE self) {
-    rubyDuckDBVector *ctx;
-    uint64_t *validity;
-
-    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
-
-    validity = duckdb_vector_get_validity(ctx-&gt;vector);
-
-    if (!validity) {
-        return Qnil;
-    }
-
-    return ULL2NUM((uintptr_t)validity);
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Gets the validity mask pointer for the vector. Returns nil if all values are valid.</p>
-
-<pre class="ruby"><span class="ruby-identifier">validity</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_validity</span>
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-logical_type" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-logical_type" title="Link to this method">
-                  <span class="method-callseq">
-                    logical_type &rarr; DuckDB::LogicalType
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="logical_type-source">
-            <pre class="c" data-language="c">static VALUE vector_logical_type(VALUE self) {
-    rubyDuckDBVector *ctx;
-    duckdb_logical_type logical_type;
-
-    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
-
-    logical_type = duckdb_vector_get_column_type(ctx-&gt;vector);
-
-    return rbduckdb_create_logical_type(logical_type);
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Gets the logical type of the vector.</p>
-
-<pre class="ruby"><span class="ruby-identifier">vector</span> = <span class="ruby-identifier">output</span>.<span class="ruby-identifier">get_vector</span>(<span class="ruby-value">0</span>)
-<span class="ruby-identifier">type</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">logical_type</span>
-<span class="ruby-identifier">type</span>.<span class="ruby-identifier">id</span>  <span class="ruby-comment">#=&gt; DuckDB::Type::BIGINT</span>
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-set_validity" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-set_validity" title="Link to this method">
-                  <span class="method-callseq">
-                    set_validity(index, valid) &rarr; self
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="set_validity-source">
-            <pre class="c" data-language="c">static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid) {
-    rubyDuckDBVector *ctx;
-    idx_t idx;
-    uint64_t *validity;
-
-    TypedData_Get_Struct(self, rubyDuckDBVector, &amp;vector_data_type, ctx);
-
-    idx = NUM2ULL(index);
-
-    if (RTEST(valid)) {
-        // Setting to valid - ensure validity mask exists and set bit
-        duckdb_vector_ensure_validity_writable(ctx-&gt;vector);
-        validity = duckdb_vector_get_validity(ctx-&gt;vector);
-        duckdb_validity_set_row_valid(validity, idx);
-    } else {
-        // Setting to invalid (NULL)
-        duckdb_vector_ensure_validity_writable(ctx-&gt;vector);
-        validity = duckdb_vector_get_validity(ctx-&gt;vector);
-        duckdb_validity_set_row_invalid(validity, idx);
-    }
-
-    return self;
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Sets the validity of a value at the specified index.</p>
-
-<pre class="ruby"><span class="ruby-identifier">vector</span>.<span class="ruby-identifier">set_validity</span>(<span class="ruby-value">0</span>, <span class="ruby-keyword">false</span>)  <span class="ruby-comment"># Mark row 0 as NULL</span>
-<span class="ruby-identifier">vector</span>.<span class="ruby-identifier">set_validity</span>(<span class="ruby-value">1</span>, <span class="ruby-keyword">true</span>)   <span class="ruby-comment"># Mark row 1 as valid</span>
-</pre>
+          <p>@param <a href="../lib/duckdb/aggregate_function_rb.html">aggregate_function</a> [DuckDB::AggregateFunction] the overload to add @return [self] @raise [TypeError] if <a href="../lib/duckdb/aggregate_function_rb.html">aggregate_function</a> is not a <a href="AggregateFunction.html"><code>DuckDB::AggregateFunction</code></a> @raise [DuckDB::Error] if the overload already exists in the set</p>
 
 
         </div>

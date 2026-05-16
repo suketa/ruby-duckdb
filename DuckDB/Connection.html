@@ -528,6 +528,8 @@
 
         <li ><a href="#method-i-register_aggregate_function">register_aggregate_function</a></li>
 
+        <li ><a href="#method-i-register_aggregate_function_set">register_aggregate_function_set</a></li>
+
         <li ><a href="#method-i-register_logical_type">register_logical_type</a></li>
 
         <li ><a href="#method-i-register_scalar_function">register_scalar_function</a></li>
@@ -553,7 +555,7 @@
       </span>
     </summary>
 
-    <ul class="link-list nav-list"><li><code><a href="../CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="../DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="../DuckDB/Appender.html">Appender</a></code></li><li><code><a href="../DuckDB/Blob.html">Blob</a></code></li><li><code><a href="../DuckDB/Casting.html">Casting</a></code></li><li><code><a href="../DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="../DuckDB/Column.html">Column</a></code></li><li><code><a href="../DuckDB/Config.html">Config</a></code></li><li><code><a href="../DuckDB/Connection.html">Connection</a></code></li><li><code><a href="../DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="../DuckDB/Database.html">Database</a></code></li><li><code><a href="../DuckDB/Error.html">Error</a></code></li><li><code><a href="../DuckDB/Expression.html">Expression</a></code></li><li><code><a href="../DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="../DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="../DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="../DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="../DuckDB/Interval.html">Interval</a></code></li><li><code><a href="../DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="../DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="../DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="../DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="../DuckDB/Result.html">Result</a></code></li><li><code><a href="../DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="../DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="../DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="../DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="../DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="../DuckDB/TableNameParser.html">TableNameParser</a></code></li><li><code><a href="../DuckDB/Value.html">Value</a></code></li><li><code><a href="../DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="../Object.html">Object</a></code></li><li><code><a href="../PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
+    <ul class="link-list nav-list"><li><code><a href="../CSVTableAdapter.html">CSVTableAdapter</a></code></li><li><details><summary><code><a href="../DuckDB.html">DuckDB</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/AggregateFunction.html">AggregateFunction</a></code></li><li><code><a href="../DuckDB/AggregateFunctionSet.html">AggregateFunctionSet</a></code></li><li><code><a href="../DuckDB/Appender.html">Appender</a></code></li><li><code><a href="../DuckDB/Blob.html">Blob</a></code></li><li><code><a href="../DuckDB/Casting.html">Casting</a></code></li><li><code><a href="../DuckDB/ClientContext.html">ClientContext</a></code></li><li><code><a href="../DuckDB/Column.html">Column</a></code></li><li><code><a href="../DuckDB/Config.html">Config</a></code></li><li><code><a href="../DuckDB/Connection.html">Connection</a></code></li><li><code><a href="../DuckDB/DataChunk.html">DataChunk</a></code></li><li><code><a href="../DuckDB/Database.html">Database</a></code></li><li><code><a href="../DuckDB/Error.html">Error</a></code></li><li><code><a href="../DuckDB/Expression.html">Expression</a></code></li><li><code><a href="../DuckDB/ExtractedStatements.html">ExtractedStatements</a></code></li><li><code><a href="../DuckDB/FunctionTypeValidation.html">FunctionTypeValidation</a></code></li><li><code><a href="../DuckDB/Infinity.html">Infinity</a></code></li><li><code><a href="../DuckDB/InstanceCache.html">InstanceCache</a></code></li><li><code><a href="../DuckDB/Interval.html">Interval</a></code></li><li><code><a href="../DuckDB/LogicalType.html">LogicalType</a></code></li><li><code><a href="../DuckDB/MemoryHelper.html">MemoryHelper</a></code></li><li><code><a href="../DuckDB/PendingResult.html">PendingResult</a></code></li><li><code><a href="../DuckDB/PreparedStatement.html">PreparedStatement</a></code></li><li><code><a href="../DuckDB/Result.html">Result</a></code></li><li><code><a href="../DuckDB/ScalarFunction.html">ScalarFunction</a></code></li><li><code><a href="../DuckDB/ScalarFunctionSet.html">ScalarFunctionSet</a></code></li><li><code><a href="../DuckDB/TableDescription.html">TableDescription</a></code></li><li><details><summary><code><a href="../DuckDB/TableFunction.html">TableFunction</a></code></summary><ul class="link-list nav-list"><li><code><a href="../DuckDB/TableFunction/FunctionInfo.html">FunctionInfo</a></code></li><li><code><a href="../DuckDB/TableFunction/InitInfo.html">InitInfo</a></code></li></ul></details></li><li><code><a href="../DuckDB/TableNameParser.html">TableNameParser</a></code></li><li><code><a href="../DuckDB/Value.html">Value</a></code></li><li><code><a href="../DuckDB/Vector.html">Vector</a></code></li></ul></details></li><li><code><a href="../Object.html">Object</a></code></li><li><code><a href="../PolarsDataFrameBatchTableAdapter.html">PolarsDataFrameBatchTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameOptimizedTableAdapter.html">PolarsDataFrameOptimizedTableAdapter</a></code></li><li><code><a href="../PolarsDataFrameTableAdapter.html">PolarsDataFrameTableAdapter</a></code></li></ul>
   </details>
 </div>
 
@@ -945,7 +947,7 @@
             </details>
           </div>
           <div class="method-source-code" id="expose_as_table-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 342</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 378</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">expose_as_table</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">name</span>, <span class="ruby-value">columns:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">adapter</span> = <span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">table_adapter_for</span>(<span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;No table adapter registered for #{object.class}&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span>.<span class="ruby-identifier">nil?</span>
@@ -1372,7 +1374,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_aggregate_function-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 293</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 329</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_aggregate_function</span>(<span class="ruby-identifier">aggregate_function</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">AggregateFunction</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{aggregate_function.class} is not a DuckDB::AggregateFunction&quot;</span>
@@ -1390,6 +1392,77 @@
           <p>Registers an aggregate function with the connection.</p>
 
 <p>@param <a href="../lib/duckdb/aggregate_function_rb.html">aggregate_function</a> [DuckDB::AggregateFunction] the aggregate function to register @raise [TypeError] if argument is not a <a href="AggregateFunction.html"><code>DuckDB::AggregateFunction</code></a> @return [self]</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-register_aggregate_function_set" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-register_aggregate_function_set" title="Link to this method">
+                <span class="method-name">register_aggregate_function_set</span>
+                <span class="method-args">(aggregate_function_set)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="register_aggregate_function_set-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 316</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_aggregate_function_set</span>(<span class="ruby-identifier">aggregate_function_set</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aggregate_function_set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">AggregateFunctionSet</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{aggregate_function_set.class} is not a DuckDB::AggregateFunctionSet&quot;</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">_register_aggregate_function_set</span>(<span class="ruby-identifier">aggregate_function_set</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Registers an aggregate function set with the connection. An aggregate function set groups multiple overloads of an aggregate function under one name, allowing <a href="../DuckDB.html"><code>DuckDB</code></a> to dispatch to the correct implementation based on argument types.</p>
+
+<p>@param <a href="../lib/duckdb/aggregate_function_set_rb.html">aggregate_function_set</a> [DuckDB::AggregateFunctionSet] the function set to register @return [self] @raise [TypeError] if argument is not a <a href="AggregateFunctionSet.html"><code>DuckDB::AggregateFunctionSet</code></a></p>
+
+<p>@example Register multiple overloads under one name</p>
+
+<pre class="ruby"><span class="ruby-identifier">af_bigint</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunction</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-identifier">af_bigint</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&#39;my_sum&#39;</span>
+<span class="ruby-identifier">af_bigint</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>
+<span class="ruby-identifier">af_bigint</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
+<span class="ruby-identifier">af_bigint</span>.<span class="ruby-identifier">set_init</span>   { <span class="ruby-value">0</span> }
+<span class="ruby-identifier">af_bigint</span>.<span class="ruby-identifier">set_update</span>  { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">val</span> }
+<span class="ruby-identifier">af_bigint</span>.<span class="ruby-identifier">set_combine</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s1</span>, <span class="ruby-identifier">s2</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s1</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">s2</span> }
+
+<span class="ruby-identifier">af_double</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunction</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-identifier">af_double</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&#39;my_sum&#39;</span>
+<span class="ruby-identifier">af_double</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">DOUBLE</span>
+<span class="ruby-identifier">af_double</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">DOUBLE</span>)
+<span class="ruby-identifier">af_double</span>.<span class="ruby-identifier">set_init</span>   { <span class="ruby-value">0.0</span> }
+<span class="ruby-identifier">af_double</span>.<span class="ruby-identifier">set_update</span>  { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span> <span class="ruby-identifier">state</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">val</span> }
+<span class="ruby-identifier">af_double</span>.<span class="ruby-identifier">set_combine</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s1</span>, <span class="ruby-identifier">s2</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s1</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">s2</span> }
+
+<span class="ruby-identifier">set</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunctionSet</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:my_sum</span>)
+<span class="ruby-identifier">set</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">af_bigint</span>).<span class="ruby-identifier">add</span>(<span class="ruby-identifier">af_double</span>)
+<span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_aggregate_function_set</span>(<span class="ruby-identifier">set</span>)
+</pre>
 
 
         </div>
@@ -1585,7 +1658,7 @@
 
           <p>Registers a scalar function set with the connection. A scalar function set groups multiple overloads of a function under one name, allowing <a href="../DuckDB.html"><code>DuckDB</code></a> to dispatch to the correct implementation based on argument types.</p>
 
-<p>@param <a href="../lib/duckdb/scalar_function_set_rb.html">scalar_function_set</a> [DuckDB::ScalarFunctionSet] the function set to register @return [void] @raise [TypeError] if argument is not a <a href="ScalarFunctionSet.html"><code>DuckDB::ScalarFunctionSet</code></a></p>
+<p>@param <a href="../lib/duckdb/scalar_function_set_rb.html">scalar_function_set</a> [DuckDB::ScalarFunctionSet] the function set to register @return [self] @raise [TypeError] if argument is not a <a href="ScalarFunctionSet.html"><code>DuckDB::ScalarFunctionSet</code></a></p>
 
 <p>@example Register multiple overloads under one name</p>
 
@@ -1625,7 +1698,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_table_function-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 310</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/connection.rb, line 346</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_table_function</span>(<span class="ruby-identifier">table_function</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;table_function must be a TableFunction&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">table_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">TableFunction</span>)
 
