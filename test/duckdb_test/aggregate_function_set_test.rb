@@ -41,7 +41,7 @@ module DuckDBTest
       af.name = 'test_agg'
       af.return_type = DuckDB::LogicalType.const_get(type.to_s.upcase)
       af.add_parameter(DuckDB::LogicalType.const_get(type.to_s.upcase))
-      af.set_init   { 0 }
+      af.set_init { 0 }
       af.set_update  { |state, val| state + val }
       af.set_combine { |s1, s2| s1 + s2 }
       af
@@ -93,7 +93,7 @@ module DuckDBTest
 
       @con.register_aggregate_function_set(set)
       result = @con.query(
-        "SELECT agg_sum_bigint(v) FROM (VALUES (1::BIGINT), (2::BIGINT), (3::BIGINT)) t(v)"
+        'SELECT agg_sum_bigint(v) FROM (VALUES (1::BIGINT), (2::BIGINT), (3::BIGINT)) t(v)'
       ).first.first
 
       assert_equal 6, result
@@ -108,10 +108,10 @@ module DuckDBTest
       @con.register_aggregate_function_set(set)
 
       bigint_result = @con.query(
-        "SELECT agg_sum_poly(v) FROM (VALUES (10::BIGINT), (20::BIGINT), (30::BIGINT)) t(v)"
+        'SELECT agg_sum_poly(v) FROM (VALUES (10::BIGINT), (20::BIGINT), (30::BIGINT)) t(v)'
       ).first.first
       double_result = @con.query(
-        "SELECT agg_sum_poly(v) FROM (VALUES (1.5::DOUBLE), (2.5::DOUBLE)) t(v)"
+        'SELECT agg_sum_poly(v) FROM (VALUES (1.5::DOUBLE), (2.5::DOUBLE)) t(v)'
       ).first.first
 
       assert_equal 60, bigint_result
