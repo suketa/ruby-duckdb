@@ -96,7 +96,7 @@ module DuckDB
     # Sets the name of the scalar function, propagating it to the underlying DuckDB object.
     # @param value [String, Symbol, nil] the function name
     def name=(value)
-      @name = value.nil? ? nil : value.to_s
+      @name = value&.to_s
       set_name(@name) if @name
     end
 
