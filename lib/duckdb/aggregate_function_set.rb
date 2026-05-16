@@ -24,7 +24,6 @@ module DuckDB
         raise TypeError, "#{aggregate_function.class} is not a DuckDB::AggregateFunction"
       end
 
-      aggregate_function.name = @name
       _add(aggregate_function)
     end
   end
