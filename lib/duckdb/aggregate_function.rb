@@ -57,6 +57,21 @@ module DuckDB
   class AggregateFunction
     include FunctionTypeValidation
 
+    # Alias the C-level name= setter so we can wrap it in Ruby.
+    alias_method :_set_name, :name=
+
+    # Returns the name most recently assigned to this aggregate function.
+    # @return [String, nil]
+    attr_reader :name
+
+    # Sets the name of the aggregate function, propagating it to the
+    # underlying DuckDB object and caching the value for #name.
+    # @param value [String, Symbol, nil] the function name
+    def name=(value)
+      @name = value&.to_s
+      _set_name(@name) if @name
+    end
+
     class << self
       # Creates a new AggregateFunction in a single call.
       #
