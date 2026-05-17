@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::TableNameParser` module with shared table name parsing logic (quoting and dot-notation), included by `DuckDB::Appender` and `DuckDB::TableDescription`.
 - add `DuckDB::PreparedStatement#bind_timestamp_tz` to bind a `TIMESTAMP WITH TIME ZONE` (TIMESTAMPTZ) parameter from a `Time` or timestamp string.
 ## Breaking Changes
+- `DuckDB::ScalarFunction.create`: `name:` is now a required keyword argument (previously optional with `nil` default). Parameter order changed to `name:, return_type:, ...`.
+- `DuckDB::ScalarFunctionSet#add`: no longer overrides the scalar function's name with the set's name. The individual function must have its own name set before being added to the set.
 - `DuckDB::TableDescription.new`: the 2nd argument now parses dot-notation and quoting:
   - `'schema.table'` is interpreted as schema-qualified (deprecated; use `schema:` keyword instead).
   - `'"schema.table"'` or `"'schema.table'"` — quotes are stripped and the name is treated as a literal table name containing a dot.
