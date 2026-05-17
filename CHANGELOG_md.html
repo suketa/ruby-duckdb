@@ -474,6 +474,10 @@
 
 <h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 </li><li>
+<p><a href="DuckDB/ScalarFunction.html#method-c-create"><code>DuckDB::ScalarFunction.create</code></a>: <code>name:</code> is now a required keyword argument (previously optional with <code>nil</code> default). Parameter order changed to <code>name:, return_type:, ...</code>.</p>
+</li><li>
+<p><a href="DuckDB/ScalarFunctionSet.html#method-i-add"><code>DuckDB::ScalarFunctionSet#add</code></a>: no longer overrides the scalar function’s name with the set’s name. The individual function must have its own name set before being added to the set.</p>
+</li><li>
 <p><a href="DuckDB/TableDescription.html#method-c-new"><code>DuckDB::TableDescription.new</code></a>: the 2nd argument now parses dot-notation and quoting:</p>
 </li><li>
 <p><code>&#39;schema.table&#39;</code> is interpreted as schema-qualified (deprecated; use <code>schema:</code> keyword instead).</p>
@@ -870,7 +874,7 @@
 </li><li>
 <p>add <a href="DuckDB/ScalarFunction.html"><code>DuckDB::ScalarFunction</code></a> class. This class is under construction.</p>
 </li><li>
-<p>add <a href="DuckDB/ScalarFunction.html#method-i-set_name"><code>DuckDB::ScalarFunction#set_name</code></a>.</p>
+<p>add <code>DuckDB::ScalarFunction#set_name</code>.</p>
 </li><li>
 <p>add <a href="DuckDB/LogicalType.html#method-c-new"><code>DuckDB::LogicalType.new(type_id)</code></a> to create a logical type from a type ID.</p>
 </li></ul>
