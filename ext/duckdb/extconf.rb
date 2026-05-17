@@ -4,13 +4,34 @@ require 'mkmf'
 
 DUCKDB_REQUIRED_VERSION = '1.4.0'
 
+def brew_prefix(formula = nil)
+  cmd = formula ? "brew --prefix #{formula} 2>/dev/null" : 'brew --prefix 2>/dev/null'
+  prefix = `#{cmd}`.chomp
+  prefix.empty? ? nil : prefix
+end
+
+FALLBACK_PREFIXES = %w[/opt/homebrew /opt/homebrew/opt/duckdb /opt/local].freeze
+
+def brew_dirs(subdir)
+  dirs = []
+  dirs << "#{brew_prefix('duckdb')}/#{subdir}" if brew_prefix('duckdb')
+  if (prefix = brew_prefix)
+    dirs << "#{prefix}/#{subdir}"
+    dirs << "#{prefix}/opt/duckdb/#{subdir}"
+  end
+  dirs
+end
+
+def homebrew_include_dirs
+  (brew_dirs('include') + FALLBACK_PREFIXES.map { |p| "#{p}/include" }).uniq
+end
+
+def homebrew_lib_dirs
+  (brew_dirs('lib') + FALLBACK_PREFIXES.map { |p| "#{p}/lib" }).uniq
+end
+
 def check_duckdb_header(header, version)
-  found = find_header(
-    header,
-    '/opt/homebrew/include',
-    '/opt/homebrew/opt/duckdb/include',
-    '/opt/local/include'
-  )
+  found = find_header(header, *homebrew_include_dirs)
   return if found
 
   msg = "#{header} is not found. Install #{header} of duckdb >= #{version}."
@@ -19,13 +40,7 @@ def check_duckdb_header(header, version)
 end
 
 def check_duckdb_library(library, func, version)
-  found = find_library(
-    library,
-    func,
-    '/opt/homebrew/lib',
-    '/opt/homebrew/opt/duckdb/lib',
-    '/opt/local/lib'
-  )
+  found = find_library(library, func, *homebrew_lib_dirs)
   have_func(func, 'duckdb.h')
   return if found
 
