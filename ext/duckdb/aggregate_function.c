@@ -736,6 +736,7 @@ void rbduckdb_init_aggregate_function(void) {
     cDuckDBAggregateFunction = rb_define_class_under(mDuckDB, "AggregateFunction", rb_cObject);
     rb_define_alloc_func(cDuckDBAggregateFunction, allocate);
     rb_define_method(cDuckDBAggregateFunction, "initialize", aggregate_function_initialize, 0);
+    rb_define_method(cDuckDBAggregateFunction, "set_name", aggregate_function_set_name, 1);
     rb_define_method(cDuckDBAggregateFunction, "name=", aggregate_function_set_name, 1);
     rb_define_private_method(cDuckDBAggregateFunction, "_set_return_type", aggregate_function__set_return_type, 1);
     rb_define_private_method(cDuckDBAggregateFunction, "_add_parameter", aggregate_function__add_parameter, 1);
