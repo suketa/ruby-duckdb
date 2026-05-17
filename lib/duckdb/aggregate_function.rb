@@ -57,6 +57,12 @@ module DuckDB
   class AggregateFunction
     include FunctionTypeValidation
 
+    def name=(value)
+      set_name(value.to_s)
+    end
+
+    private :set_name
+
     class << self
       # Creates a new AggregateFunction in a single call.
       #
@@ -64,7 +70,7 @@ module DuckDB
       # AggregateFunction without requiring you to set each attribute
       # separately.
       #
-      # @param name [String] the SQL function name
+      # @param name [String, Symbol] the SQL function name
       # @param return_type [DuckDB::LogicalType | Symbol] the SQL return type
       # @param params [Array<DuckDB::LogicalType | Symbol>] input parameter types
       #   (empty array for a zero-argument aggregate)

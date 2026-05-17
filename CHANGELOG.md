@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Appender#append_default_to_chunk`.
 - add `DuckDB::TableNameParser` module with shared table name parsing logic (quoting and dot-notation), included by `DuckDB::Appender` and `DuckDB::TableDescription`.
 - add `DuckDB::PreparedStatement#bind_timestamp_tz` to bind a `TIMESTAMP WITH TIME ZONE` (TIMESTAMPTZ) parameter from a `Time` or timestamp string.
+- `DuckDB::AggregateFunction#name=` and `DuckDB::ScalarFunction#name=` now accept Symbol arguments (coerced to String).
 ## Breaking Changes
 - `DuckDB::ScalarFunction.create`: `name:` is now a required keyword argument (previously optional with `nil` default). Parameter order changed to `name:, return_type:, ...`.
 - `DuckDB::ScalarFunctionSet#add`: no longer overrides the scalar function's name with the set's name. The individual function must have its own name set before being added to the set.
