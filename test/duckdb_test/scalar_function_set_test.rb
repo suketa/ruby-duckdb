@@ -47,18 +47,6 @@ module DuckDBTest
       assert_raises(TypeError) { set.add('not a scalar function') }
     end
 
-    def test_add_raises_with_nameless_scalar_function
-      # ScalarFunction built manually without setting a name → C-level name is empty string
-      sf = DuckDB::ScalarFunction.new
-      sf.add_parameter(:integer)
-      sf.add_parameter(:integer)
-      sf.return_type = :integer
-      sf.set_function { |a, b| a + b }
-      set = DuckDB::ScalarFunctionSet.new('set_name')
-
-      assert_raises(ArgumentError) { set.add(sf) }
-    end
-
     def test_add_accepts_duplicate_overload
       sf1 = DuckDB::ScalarFunction.create(name: :add, return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
       sf2 = DuckDB::ScalarFunction.create(name: :add, return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a * b }

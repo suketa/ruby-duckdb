@@ -24,10 +24,6 @@ module DuckDB
         raise TypeError, "#{scalar_function.class} is not a DuckDB::ScalarFunction"
       end
 
-      if scalar_function.name.to_s.empty?
-        raise ArgumentError, 'ScalarFunction must have a name before being added to a ScalarFunctionSet'
-      end
-
       _add(scalar_function)
     end
   end

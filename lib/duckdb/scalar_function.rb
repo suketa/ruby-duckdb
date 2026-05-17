@@ -86,15 +86,9 @@ module DuckDB
       sf
     end
 
-    # Overrides the C-level name= to also cache the name in a Ruby ivar,
-    # enabling ScalarFunctionSet#add to verify the function has a name.
     def name=(value)
-      @name = value.to_s
-      set_name(@name)
+      set_name(value.to_s)
     end
-
-    # @return [String, nil] the function name, or nil if not set
-    attr_reader :name
 
     private :set_name
 
