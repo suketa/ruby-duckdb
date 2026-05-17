@@ -41,8 +41,6 @@ module DuckDBTest
       assert_same set, set.add(sf)
     end
 
-
-
     def test_add_raises_with_non_scalar_function
       set = DuckDB::ScalarFunctionSet.new(:add)
 
@@ -90,7 +88,7 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_set_with_single_integer_overload
-      sf = DuckDB::ScalarFunction.create(name: 'add_set', return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
       set = DuckDB::ScalarFunctionSet.new(:add_set)
       set.add(sf)
 
@@ -101,9 +99,9 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_set_with_multiple_overloads
-      sf_int = DuckDB::ScalarFunction.create(name: 'poly_add', return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
-      sf_dbl = DuckDB::ScalarFunction.create(name: 'poly_add', return_type: :double, parameter_types: %i[double double]) { |a, b| a + b }
-      sf_str = DuckDB::ScalarFunction.create(name: 'poly_add', return_type: :varchar, parameter_types: %i[varchar varchar]) { |a, b| "#{a}#{b}" }
+      sf_int = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      sf_dbl = DuckDB::ScalarFunction.create(return_type: :double, parameter_types: %i[double double]) { |a, b| a + b }
+      sf_str = DuckDB::ScalarFunction.create(return_type: :varchar, parameter_types: %i[varchar varchar]) { |a, b| "#{a}#{b}" }
 
       set = DuckDB::ScalarFunctionSet.new(:poly_add)
       set.add(sf_int).add(sf_dbl).add(sf_str)
@@ -115,7 +113,7 @@ module DuckDBTest
     end
 
     def test_register_scalar_function_set_gc_safety
-      sf = DuckDB::ScalarFunction.create(name: 'tenx', return_type: :integer, parameter_types: [:integer]) { |a| a * 10 }
+      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: [:integer]) { |a| a * 10 }
       set = DuckDB::ScalarFunctionSet.new(:tenx)
       set.add(sf)
       @con.register_scalar_function_set(set)

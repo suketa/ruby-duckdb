@@ -7,7 +7,8 @@ module DuckDB
   class ScalarFunction
     # Create and configure a scalar function in one call
     #
-    # @param name [String, Symbol] the function name
+    # @param name [String, Symbol, nil] the function name; use +nil+ when creating overloads
+    #   intended for use in a +DuckDB::ScalarFunctionSet+ (the set provides the name)
     # @param return_type [DuckDB::LogicalType|:logical_type_symbol] the return type
     # @param parameter_type [DuckDB::LogicalType|:logical_type_symbol, nil] single fixed parameter type
     # @param parameter_types [Array<DuckDB::LogicalType|:logical_type_symbol>, nil] multiple fixed parameter types

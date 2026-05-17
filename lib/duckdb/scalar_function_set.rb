@@ -24,6 +24,7 @@ module DuckDB
         raise TypeError, "#{scalar_function.class} is not a DuckDB::ScalarFunction"
       end
 
+      scalar_function.name = @name
       _add(scalar_function)
     end
   end
