@@ -422,6 +422,13 @@ module DuckDBTest
       assert_equal 44, result.first.first
     end
 
+    def test_name_setter_accepts_symbol
+      af = DuckDB::AggregateFunction.new
+      result = af.name = :my_agg
+      assert_instance_of DuckDB::AggregateFunction, af
+      assert_equal 'my_agg', result.to_s
+    end
+
     private
 
     # Force DuckDB to actually parallelise aggregation so the combine callback
