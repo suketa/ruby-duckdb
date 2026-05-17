@@ -599,8 +599,7 @@
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">name</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{name.class} is not a String or Symbol&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
 
-  <span class="ruby-ivar">@name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
-  <span class="ruby-identifier">_initialize</span>(<span class="ruby-ivar">@name</span>)
+  <span class="ruby-identifier">_initialize</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
 
@@ -654,13 +653,12 @@
             </details>
           </div>
           <div class="method-source-code" id="add-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function_set.rb, line 22</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function_set.rb, line 21</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add</span>(<span class="ruby-identifier">aggregate_function</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">AggregateFunction</span>)
     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;#{aggregate_function.class} is not a DuckDB::AggregateFunction&quot;</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-identifier">aggregate_function</span>.<span class="ruby-identifier">name</span> = <span class="ruby-ivar">@name</span>
   <span class="ruby-identifier">_add</span>(<span class="ruby-identifier">aggregate_function</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
