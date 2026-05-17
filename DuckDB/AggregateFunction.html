@@ -738,7 +738,7 @@ aggregate must be parallel-safe.</pre>
             </details>
           </div>
           <div class="method-source-code" id="create-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 115</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 121</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span>( <span class="ruby-comment"># rubocop:disable Metrics/MethodLength, Metrics/ParameterLists, Metrics/AbcSize</span>
   <span class="ruby-value">name:</span>,
   <span class="ruby-value">return_type:</span>,
@@ -778,7 +778,7 @@ aggregate must be parallel-safe.</pre>
 
 <p>This is a convenience factory that builds and configures an <a href="AggregateFunction.html"><code>AggregateFunction</code></a> without requiring you to set each attribute separately.</p>
 
-<p>@param name [String] the SQL function name @param return_type [DuckDB::LogicalType | Symbol] the SQL return type @param params [Array&lt;DuckDB::LogicalType | Symbol&gt;] input parameter types</p>
+<p>@param name [String, Symbol] the SQL function name @param return_type [DuckDB::LogicalType | Symbol] the SQL return type @param params [Array&lt;DuckDB::LogicalType | Symbol&gt;] input parameter types</p>
 
 <pre>(empty array for a zero-argument aggregate)</pre>
 
@@ -932,7 +932,7 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
             </details>
           </div>
           <div class="method-source-code" id="add_parameter-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 167</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 173</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">add_parameter</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -959,7 +959,7 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
       </div>
 
 
-      <div id="method-i-name-3D" class="method-detail anchor-link ">
+      <div id="method-i-name-3D" class="method-detail anchor-link method-alias">
         <div class="method-header">
 
             <div class="method-heading">
@@ -971,23 +971,6 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
 
         </div>
 
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="name-3D-source">
-            <pre class="c" data-language="c">static VALUE aggregate_function_set_name(VALUE self, VALUE name) {
-    rubyDuckDBAggregateFunction *p;
-    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &amp;aggregate_function_data_type, p);
-
-    const char *str = StringValuePtr(name);
-    duckdb_aggregate_function_set_name(p-&gt;aggregate_function, str);
-
-    return self;
-}</pre>
-          </div>
 
 
 
@@ -1002,6 +985,10 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
 
 
 
+
+        <div class="aliases">
+          Alias for: <a href="AggregateFunction.html#method-i-set_name">set_name</a>
+        </div>
 
       </div>
 
@@ -1025,7 +1012,7 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
             </details>
           </div>
           <div class="method-source-code" id="return_type-3D-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 156</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 162</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">return_type=</span>(<span class="ruby-identifier">logical_type</span>)
   <span class="ruby-identifier">logical_type</span> = <span class="ruby-identifier">check_supported_type!</span>(<span class="ruby-identifier">logical_type</span>)
 
@@ -1071,7 +1058,7 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
             </details>
           </div>
           <div class="method-source-code" id="set_combine-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 215</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 221</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_combine</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-ivar">@combine_set</span> = <span class="ruby-keyword">true</span>
   <span class="ruby-identifier">_set_combine</span>(<span class="ruby-operator">&amp;</span>)
@@ -1120,7 +1107,7 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
             </details>
           </div>
           <div class="method-source-code" id="set_finalize-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 227</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 233</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_finalize</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-ivar">@finalize_set</span> = <span class="ruby-keyword">true</span>
   <span class="ruby-identifier">_set_finalize</span>(<span class="ruby-operator">&amp;</span>)
@@ -1165,7 +1152,7 @@ Default: +-&gt;(state) { state }+ (return state as-is)</pre>
             </details>
           </div>
           <div class="method-source-code" id="set_init-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 184</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 190</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_init</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@init_set</span>
     <span class="ruby-identifier">_set_update</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">state</span>, <span class="ruby-operator">*</span><span class="ruby-operator">|</span> <span class="ruby-identifier">state</span> } <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@update_set</span>
@@ -1220,7 +1207,7 @@ explicitly when the aggregate must be parallel-safe.</pre>
             </details>
           </div>
           <div class="method-source-code" id="set_special_handling-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 242</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 248</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_special_handling</span>
   <span class="ruby-identifier">_set_special_handling</span>
 <span class="ruby-keyword">end</span></pre>
@@ -1266,7 +1253,7 @@ explicitly when the aggregate must be parallel-safe.</pre>
             </details>
           </div>
           <div class="method-source-code" id="set_update-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 201</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/aggregate_function.rb, line 207</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_update</span>(<span class="ruby-operator">&amp;</span>)
   <span class="ruby-ivar">@update_set</span> = <span class="ruby-keyword">true</span>
   <span class="ruby-identifier">_set_update</span>(<span class="ruby-operator">&amp;</span>)

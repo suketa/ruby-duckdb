@@ -471,6 +471,8 @@
 <p>add <a href="DuckDB/TableNameParser.html"><code>DuckDB::TableNameParser</code></a> module with shared table name parsing logic (quoting and dot-notation), included by <a href="DuckDB/Appender.html"><code>DuckDB::Appender</code></a> and <a href="DuckDB/TableDescription.html"><code>DuckDB::TableDescription</code></a>.</p>
 </li><li>
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_timestamp_tz"><code>DuckDB::PreparedStatement#bind_timestamp_tz</code></a> to bind a <code>TIMESTAMP WITH TIME ZONE</code> (TIMESTAMPTZ) parameter from a <code>Time</code> or timestamp string.</p>
+</li><li>
+<p><a href="DuckDB/AggregateFunction.html#method-i-name-3D"><code>DuckDB::AggregateFunction#name=</code></a> and <a href="DuckDB/ScalarFunction.html#method-i-name-3D"><code>DuckDB::ScalarFunction#name=</code></a> now accept Symbol arguments (coerced to String).</p>
 
 <h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
 </li><li>
