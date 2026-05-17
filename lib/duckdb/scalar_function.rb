@@ -78,7 +78,7 @@ module DuckDB
                end
 
       sf = new
-      sf.name = name.to_s if name
+      sf.name = name if name
       sf.return_type = return_type
       params.each { |type| sf.add_parameter(type) }
       sf.varargs_type = varargs_type if varargs_type
@@ -86,6 +86,18 @@ module DuckDB
       sf.set_function(&)
       sf
     end
+
+    # Overrides the C-level name= to also cache the name in a Ruby ivar,
+    # enabling ScalarFunctionSet#add to verify the function has a name.
+    def name=(value)
+      @name = value.to_s
+      set_name(@name)
+    end
+
+    # @return [String, nil] the function name, or nil if not set
+    attr_reader :name
+
+    private :set_name
 
     include FunctionTypeValidation
 
