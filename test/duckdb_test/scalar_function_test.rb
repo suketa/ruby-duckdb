@@ -630,6 +630,12 @@ module DuckDBTest
       assert_match(/cannot specify both/i, error.message)
     end
 
+    def test_create_requires_name
+      assert_raises(ArgumentError) do
+        DuckDB::ScalarFunction.create(return_type: :integer) { 1 }
+      end
+    end
+
     def test_create_accepts_symbol_for_name
       sf = DuckDB::ScalarFunction.create(
         name: :symbol_name,
