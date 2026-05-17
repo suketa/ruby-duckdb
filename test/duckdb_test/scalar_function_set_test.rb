@@ -48,8 +48,12 @@ module DuckDBTest
     end
 
     def test_add_raises_with_nameless_scalar_function
-      # ScalarFunction created without name: → C-level name is empty string
-      sf = DuckDB::ScalarFunction.create(return_type: :integer, parameter_types: %i[integer integer]) { |a, b| a + b }
+      # ScalarFunction built manually without setting a name → C-level name is empty string
+      sf = DuckDB::ScalarFunction.new
+      sf.add_parameter(:integer)
+      sf.add_parameter(:integer)
+      sf.return_type = :integer
+      sf.set_function { |a, b| a + b }
       set = DuckDB::ScalarFunctionSet.new('set_name')
 
       assert_raises(ArgumentError) { set.add(sf) }
