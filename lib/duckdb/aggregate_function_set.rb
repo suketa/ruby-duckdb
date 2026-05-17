@@ -11,8 +11,7 @@ module DuckDB
     def initialize(name)
       raise TypeError, "#{name.class} is not a String or Symbol" unless name.is_a?(String) || name.is_a?(Symbol)
 
-      @name = name.to_s
-      _initialize(@name)
+      _initialize(name.to_s)
     end
 
     # @param aggregate_function [DuckDB::AggregateFunction] the overload to add
