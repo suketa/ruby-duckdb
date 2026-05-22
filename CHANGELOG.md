@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- bump up DuckDB 1.5.3 on CI.
 - add `DuckDB::AggregateFunctionSet` class and `DuckDB::Connection#register_aggregate_function_set` to register multiple overloads of a custom aggregate function under one SQL name.
 - add `DuckDB::Appender#append_default_to_chunk`.
 - add `DuckDB::TableNameParser` module with shared table name parsing logic (quoting and dot-notation), included by `DuckDB::Appender` and `DuckDB::TableDescription`.
