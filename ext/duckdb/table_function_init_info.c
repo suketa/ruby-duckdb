@@ -6,6 +6,7 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error);
+static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads);
 
 static const rb_data_type_t init_info_data_type = {
     "DuckDB/TableFunctionInitInfo",
@@ -54,6 +55,27 @@ static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error) {
     return self;
 }
 
+/*
+ * call-seq:
+ *   init_info.set_max_threads(max_threads) -> self
+ *   init_info.max_threads = max_threads
+ *
+ * Sets the maximum number of threads that can execute the table function concurrently.
+ * This is a hint to DuckDB's scheduler; the actual number of threads is also bounded
+ * by the configured worker pool size (e.g., +SET threads+).
+ *
+ *   init_info.max_threads = 4
+ */
+static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+
+    duckdb_init_set_max_threads(ctx->info, NUM2ULL(max_threads));
+
+    return self;
+}
+
 void rbduckdb_init_duckdb_table_function_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -62,4 +84,6 @@ void rbduckdb_init_duckdb_table_function_init_info(void) {
     rb_define_alloc_func(cDuckDBTableFunctionInitInfo, allocate);
 
     rb_define_method(cDuckDBTableFunctionInitInfo, "set_error", rbduckdb_init_info_set_error, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "set_max_threads", rbduckdb_init_info_set_max_threads, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "max_threads=", rbduckdb_init_info_set_max_threads, 1);
 }
