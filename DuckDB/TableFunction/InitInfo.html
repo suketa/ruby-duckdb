@@ -480,7 +480,11 @@
       </summary>
       <ul class="nav-list" role="directory">
 
+        <li ><a href="#method-i-max_threads-3D">max_threads=</a></li>
+
         <li ><a href="#method-i-set_error">set_error</a></li>
+
+        <li ><a href="#method-i-set_max_threads">set_max_threads</a></li>
 
       </ul>
     </details>
@@ -580,6 +584,46 @@
        </header>
 
 
+      <div id="method-i-max_threads-3D" class="method-detail anchor-link method-alias">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-max_threads-3D" title="Link to this method">
+                  <span class="method-callseq">
+                    max_threads = max_threads
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets the maximum number of threads that can execute the table function concurrently. This is a hint to DuckDB’s scheduler; the actual number of threads is also bounded by the configured worker pool size (e.g., +SET threads+).</p>
+
+<pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">max_threads</span> = <span class="ruby-value">4</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+        <div class="aliases">
+          Alias for: <a href="InitInfo.html#method-i-set_max_threads">set_max_threads</a>
+        </div>
+
+      </div>
+
+
       <div id="method-i-set_error" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -629,6 +673,71 @@
         </div>
 
 
+
+
+
+      </div>
+
+
+      <div id="method-i-set_max_threads" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-set_max_threads" title="Link to this method">
+                  <span class="method-callseq">
+                    set_max_threads(max_threads) &rarr; self
+                  </span>
+                </a>
+              </div>
+
+              <div class="method-heading">
+                <a href="#method-i-set_max_threads" title="Link to this method">
+                  <span class="method-callseq">
+                    max_threads = max_threads
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="set_max_threads-source">
+            <pre class="c" data-language="c">static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+
+    duckdb_init_set_max_threads(ctx-&gt;info, NUM2ULL(max_threads));
+
+    return self;
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets the maximum number of threads that can execute the table function concurrently. This is a hint to DuckDB’s scheduler; the actual number of threads is also bounded by the configured worker pool size (e.g., +SET threads+).</p>
+
+<pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">max_threads</span> = <span class="ruby-value">4</span>
+</pre>
+
+
+        </div>
+
+
+
+        <div class="aliases">
+          Also aliased as: <a href="InitInfo.html#method-i-max_threads-3D">max_threads=</a>
+        </div>
 
 
 
