@@ -54,6 +54,28 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
+    def test_init_info_set_max_threads
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_max_threads'
+
+      result = table_function.init do |init_info|
+        init_info.set_max_threads(4)
+      end
+
+      assert_equal table_function, result
+    end
+
+    def test_init_info_max_threads_setter
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_max_threads_setter'
+
+      result = table_function.init do |init_info|
+        init_info.max_threads = 4
+      end
+
+      assert_equal table_function, result
+    end
+
     def test_init_info_alias
       assert_same DuckDB::TableFunction::InitInfo, DuckDB::InitInfo
     end
