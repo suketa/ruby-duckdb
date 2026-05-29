@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- remove Ruby 3.2 (EOL) from CI.
 - add `DuckDB::TableFunction::InitInfo#max_threads=` (and `#set_max_threads`) to hint DuckDB how many worker threads can execute a custom table function concurrently.
 
 # 1.5.3.0 - 2026-05-24
