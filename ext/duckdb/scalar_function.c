@@ -17,6 +17,14 @@ static VALUE rbduckdb_scalar_function_set_function(VALUE self);
 static VALUE rbduckdb_scalar_function__set_bind(VALUE self);
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output);
 static void scalar_function_bind_callback(duckdb_bind_info info);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+/*
+ * Thread detection functions (available since Ruby 2.3).
+ * Used to skip the proxy on Ruby threads.
+ */
+extern int ruby_native_thread_p(void);
+static void scalar_function_init_callback(duckdb_init_info info);
+#endif
 
 
 struct callback_arg {
@@ -191,6 +199,7 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     rubyDuckDBScalarFunction *ctx;
     idx_t i;
     struct callback_arg arg;
+    struct worker_proxy *proxy = NULL;
 
     ctx = (rubyDuckDBScalarFunction *)duckdb_scalar_function_get_extra_info(info);
 
@@ -218,7 +227,11 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     arg.row_count = duckdb_data_chunk_get_size(input);
     arg.col_count = duckdb_data_chunk_get_column_count(input);
 
-    rbduckdb_function_executor_dispatch(execute_callback_protected, &arg);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+    /* On DuckDB >= 1.5.0 each worker thread carries its own proxy (see init). */
+    proxy = (struct worker_proxy *)duckdb_scalar_function_get_state(info);
+#endif
+    rbduckdb_function_executor_dispatch_via_proxy(execute_callback_protected, &arg, proxy);
 }
 
 static VALUE process_no_param_rows(VALUE varg) {
@@ -294,6 +307,58 @@ static VALUE cleanup_callback(VALUE varg) {
     return Qnil;
 }
 
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+/*
+ * Per-worker init for the execute path (DuckDB >= 1.5.0).
+ *
+ * DuckDB calls this once on each worker thread that will run the execute
+ * callback. We create a per-worker proxy (allocating its Ruby thread under the
+ * GVL via the global executor, since this runs on a non-Ruby thread) and store
+ * it as per-worker state. The execute callback then dispatches through it
+ * instead of the shared global executor, so workers run callbacks concurrently.
+ * DuckDB invokes rbduckdb_worker_proxy_destroy when the state is freed.
+ */
+struct create_proxy_callback_arg {
+    struct worker_proxy *proxy;
+};
+
+static VALUE create_proxy_callback(VALUE varg) {
+    struct create_proxy_callback_arg *arg = (struct create_proxy_callback_arg *)varg;
+    arg->proxy = rbduckdb_worker_proxy_create();
+    return Qnil;
+}
+
+/*
+ * rbduckdb_worker_proxy_create may raise (NoMemError, Thread.new failure),
+ * and the executor runs callbacks unprotected — a raise would longjmp past
+ * its done-signaling and block the waiting DuckDB worker forever. Swallow
+ * the exception instead: the proxy stays NULL, init sets no state, and the
+ * execute callback falls back to the global executor.
+ */
+static void create_proxy_callback_protected(void *user_data) {
+    int exception_state;
+
+    rb_protect(create_proxy_callback, (VALUE)user_data, &exception_state);
+    if (exception_state) {
+        rb_set_errinfo(Qnil);
+    }
+}
+
+static void scalar_function_init_callback(duckdb_init_info info) {
+    struct create_proxy_callback_arg arg;
+
+    /* A Ruby calling thread runs the callback inline (Case 1/2); no proxy needed. */
+    if (ruby_native_thread_p()) return;
+
+    arg.proxy = NULL;
+    rbduckdb_function_executor_dispatch(create_proxy_callback_protected, &arg);
+
+    if (arg.proxy != NULL) {
+        duckdb_scalar_function_init_set_state(info, arg.proxy, rbduckdb_worker_proxy_destroy);
+    }
+}
+#endif
+
 rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj) {
     rubyDuckDBScalarFunction *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBScalarFunction, &scalar_function_data_type, ctx);
@@ -314,6 +379,10 @@ static VALUE rbduckdb_scalar_function_set_function(VALUE self) {
 
     duckdb_scalar_function_set_extra_info(p->scalar_function, p, NULL);
     duckdb_scalar_function_set_function(p->scalar_function, scalar_function_callback);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+    /* Per-worker proxy threads for the execute path (DuckDB >= 1.5.0). */
+    duckdb_scalar_function_set_init(p->scalar_function, scalar_function_init_callback);
+#endif
 
     /*
      * Mark as volatile to prevent constant folding during query optimization.

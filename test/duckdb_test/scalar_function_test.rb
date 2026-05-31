@@ -697,6 +697,47 @@ module DuckDBTest
       assert_equal 149_985_000, result.first.first
     end
 
+    # Per-worker proxy: exercises the init -> proxy -> destroy lifecycle under
+    # real multi-threaded execution (SET threads=4) and asserts the proxy path
+    # actually fired: callbacks must run on more than two distinct Ruby
+    # threads. Without per-worker proxies that count can never exceed two (the
+    # calling thread plus the single global executor), so this fails on the
+    # old implementation. A large base table is used so the morsel-driven scan
+    # actually spreads execution over worker threads (a small range() stays
+    # single pipeline and never fires the proxy). Simultaneity assertions
+    # (max concurrency) are avoided as scheduler-dependent; throughput is
+    # demonstrated by sample/issue1136.rb instead. Requires DuckDB >= 1.5.0
+    # (duckdb_scalar_function_set_init).
+    def test_scalar_function_runs_on_per_worker_proxy_threads
+      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+        skip 'per-worker proxy requires DuckDB >= 1.5.0'
+      end
+
+      rows = 500_000
+      @con.execute('SET threads=4')
+      @con.execute("CREATE TABLE large_parallel AS SELECT range::INTEGER AS value FROM range(#{rows})")
+
+      threads_seen = {}
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'triple'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::BIGINT
+      sf.set_function do |v|
+        threads_seen[Thread.current] = true
+        v * 3
+      end
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT SUM(triple(value)) FROM large_parallel')
+
+      # SUM(0..rows-1) * 3
+      expected = (rows - 1) * rows / 2 * 3
+
+      assert_equal expected, result.first.first
+      assert_operator threads_seen.size, :>, 2,
+                      'expected callbacks on per-worker proxy threads, not just caller + global executor'
+    end
+
     def test_scalar_function_with_symbol_return_type_and_params
       @con.execute('CREATE TABLE large_test AS SELECT range::INTEGER AS value FROM range(10000)')
 
