@@ -65,6 +65,11 @@ struct worker_proxy;
  * Create a per-worker proxy thread. Must be called with the GVL held
  * (typically by dispatching this through the global executor from a per-worker
  * init callback, which itself runs on a non-Ruby thread).
+ *
+ * May raise (NoMemError, Thread.new failure). The executor runs callbacks
+ * unprotected, so a wrapper dispatched to it must rb_protect this call —
+ * otherwise a raise longjmps past the executor's done-signaling and the
+ * waiting DuckDB worker blocks forever.
  */
 struct worker_proxy *rbduckdb_worker_proxy_create(void);
 
@@ -74,5 +79,12 @@ struct worker_proxy *rbduckdb_worker_proxy_create(void);
  * touches only OS primitives and frees memory allocated with calloc.
  */
 void rbduckdb_worker_proxy_destroy(void *proxy);
+
+/*
+ * Like rbduckdb_function_executor_dispatch, but on the non-Ruby-thread path
+ * (Case 3) it routes through the given per-worker proxy when non-NULL, falling
+ * back to the global executor when NULL. Cases 1 and 2 are unchanged.
+ */
+void rbduckdb_function_executor_dispatch_via_proxy(rbduckdb_function_callback_t cb, void *user_data, struct worker_proxy *proxy);
 
 #endif

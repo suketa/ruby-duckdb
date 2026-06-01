@@ -440,6 +440,42 @@ struct worker_proxy *rbduckdb_worker_proxy_create(void) {
     return proxy;
 }
 
+/*
+ * Hand a callback to a proxy and block until it completes.
+ * Called from the DuckDB worker thread (non-Ruby thread) that owns this proxy.
+ */
+static void dispatch_callback_to_proxy(struct worker_proxy *proxy, rbduckdb_function_callback_t cb, void *user_data) {
+#ifdef _MSC_VER
+    EnterCriticalSection(&proxy->lock);
+    proxy->cb = cb;
+    proxy->user_data = user_data;
+    proxy->request_done = 0;
+    proxy->has_request = 1;
+    WakeConditionVariable(&proxy->request_cond);
+    LeaveCriticalSection(&proxy->lock);
+
+    EnterCriticalSection(&proxy->lock);
+    while (!proxy->request_done) {
+        SleepConditionVariableCS(&proxy->request_done_cond, &proxy->lock, INFINITE);
+    }
+    LeaveCriticalSection(&proxy->lock);
+#else
+    pthread_mutex_lock(&proxy->lock);
+    proxy->cb = cb;
+    proxy->user_data = user_data;
+    proxy->request_done = 0;
+    proxy->has_request = 1;
+    pthread_cond_signal(&proxy->request_cond);
+    pthread_mutex_unlock(&proxy->lock);
+
+    pthread_mutex_lock(&proxy->lock);
+    while (!proxy->request_done) {
+        pthread_cond_wait(&proxy->request_done_cond, &proxy->lock);
+    }
+    pthread_mutex_unlock(&proxy->lock);
+#endif
+}
+
 /* Blocks until the proxy thread has fully exited. Runs without the GVL. */
 static void *proxy_join_func(void *data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
@@ -505,7 +541,7 @@ void rbduckdb_worker_proxy_destroy(void *data) {
     free(proxy);
 }
 
-void rbduckdb_function_executor_dispatch(rbduckdb_function_callback_t cb, void *user_data) {
+void rbduckdb_function_executor_dispatch_via_proxy(rbduckdb_function_callback_t cb, void *user_data, struct worker_proxy *proxy) {
     if (ruby_native_thread_p()) {
         if (ruby_thread_has_gvl_p()) {
             /* Case 1: Ruby thread with GVL - call directly */
@@ -517,8 +553,15 @@ void rbduckdb_function_executor_dispatch(rbduckdb_function_callback_t cb, void *
             arg.user_data = user_data;
             rb_thread_call_with_gvl(callback_with_gvl, &arg);
         }
+    } else if (proxy != NULL) {
+        /* Case 3a: Non-Ruby thread with a per-worker proxy */
+        dispatch_callback_to_proxy(proxy, cb, user_data);
     } else {
-        /* Case 3: Non-Ruby thread - dispatch to executor */
+        /* Case 3b: Non-Ruby thread - dispatch to the global executor */
         dispatch_callback_to_executor(cb, user_data);
     }
+}
+
+void rbduckdb_function_executor_dispatch(rbduckdb_function_callback_t cb, void *user_data) {
+    rbduckdb_function_executor_dispatch_via_proxy(cb, user_data, NULL);
 }
