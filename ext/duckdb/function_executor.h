@@ -43,4 +43,36 @@ void rbduckdb_function_executor_ensure_started(void);
  */
 void rbduckdb_function_executor_dispatch(rbduckdb_function_callback_t cb, void *user_data);
 
+/*
+ * ============================================================================
+ * Per-worker proxy threads (DuckDB >= 1.5.0)
+ * ============================================================================
+ *
+ * The global executor above serializes every non-Ruby-thread callback through
+ * a single Ruby thread. A per-worker proxy instead gives each DuckDB worker
+ * thread its own dedicated Ruby thread, so callbacks from different workers can
+ * run concurrently — they compete for the GVL in round-robin fashion, which
+ * helps when callbacks release the GVL (e.g. on I/O).
+ *
+ * Proxies are created lazily from DuckDB's per-worker init hook and stored in
+ * DuckDB's thread-local state; the global executor remains the fallback.
+ */
+
+/* Opaque per-worker proxy handle. */
+struct worker_proxy;
+
+/*
+ * Create a per-worker proxy thread. Must be called with the GVL held
+ * (typically by dispatching this through the global executor from a per-worker
+ * init callback, which itself runs on a non-Ruby thread).
+ */
+struct worker_proxy *rbduckdb_worker_proxy_create(void);
+
+/*
+ * Destroy a per-worker proxy. The signature matches duckdb_delete_callback_t so
+ * it can be handed directly to DuckDB. Safe to call from a non-Ruby thread: it
+ * touches only OS primitives and frees memory allocated with calloc.
+ */
+void rbduckdb_worker_proxy_destroy(void *proxy);
+
 #endif
