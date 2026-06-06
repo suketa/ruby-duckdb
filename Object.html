@@ -486,11 +486,17 @@
       </summary>
       <ul class="nav-list" role="directory">
 
+        <li ><a href="#method-i-measure">measure</a></li>
+
         <li ><a href="#method-i-new_table">new_table</a></li>
 
         <li ><a href="#method-i-query_via_parquet">query_via_parquet</a></li>
 
         <li ><a href="#method-i-register_as_table_with_create_table">register_as_table_with_create_table</a></li>
+
+        <li ><a href="#method-i-register_slow_triple">register_slow_triple</a></li>
+
+        <li ><a href="#method-i-timed_sum">timed_sum</a></li>
 
         <li ><a href="#method-i-with_appender">with_appender</a></li>
 
@@ -574,6 +580,22 @@
         </dd>
 
 
+        <dt id="SLEEP_EVERY">SLEEP_EVERY</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="SLEEP_SEC">SLEEP_SEC</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
         <dt id="TYPES">TYPES</dt>
 
         <dd>
@@ -602,6 +624,57 @@
        <header>
          <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
        </header>
+
+
+      <div id="method-i-measure" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-measure" title="Link to this method">
+                <span class="method-name">measure</span>
+                <span class="method-args">(threads)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="measure-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 41</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">measure</span>(<span class="ruby-identifier">threads</span>)
+  <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+  <span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;SET threads=#{threads}&quot;</span>)
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;CREATE TABLE t AS SELECT range::INTEGER AS value FROM range(#{ROWS})&quot;</span>)
+  <span class="ruby-identifier">threads_seen</span> = {}
+  <span class="ruby-identifier">register_slow_triple</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">threads_seen</span>)
+  <span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">timed_sum</span>(<span class="ruby-identifier">con</span>)
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">close</span>
+  <span class="ruby-identifier">db</span>.<span class="ruby-identifier">close</span>
+  [<span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">threads_seen</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">sum</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
 
 
       <div id="method-i-new_table" class="method-detail anchor-link ">
@@ -719,6 +792,101 @@
     <span class="ruby-identifier">values</span> = <span class="ruby-identifier">row</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">cell</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;&#39;#{cell[1]}&#39;&quot;</span> }.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;, &#39;</span>)
     <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;INSERT INTO #{name} VALUES (#{values})&quot;</span>)
   <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-register_slow_triple" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-register_slow_triple" title="Link to this method">
+                <span class="method-name">register_slow_triple</span>
+                <span class="method-args">(con, threads_seen)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="register_slow_triple-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 22</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_slow_triple</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">threads_seen</span>)
+  <span class="ruby-identifier">sf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&#39;slow_triple&#39;</span>
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">add_parameter</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">INTEGER</span>)
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">return_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>
+  <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">set_function</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">threads_seen</span>[<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>] = <span class="ruby-keyword">true</span>
+    <span class="ruby-identifier">sleep</span>(<span class="ruby-constant">SLEEP_SEC</span>) <span class="ruby-keyword">if</span> (<span class="ruby-identifier">v</span> <span class="ruby-operator">%</span> <span class="ruby-constant">SLEEP_EVERY</span>).<span class="ruby-identifier">zero?</span>
+    <span class="ruby-identifier">v</span> <span class="ruby-operator">*</span> <span class="ruby-value">3</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_scalar_function</span>(<span class="ruby-identifier">sf</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-timed_sum" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-timed_sum" title="Link to this method">
+                <span class="method-name">timed_sum</span>
+                <span class="method-args">(con)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="timed_sum-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 35</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">timed_sum</span>(<span class="ruby-identifier">con</span>)
+  <span class="ruby-identifier">started</span> = <span class="ruby-constant">Process</span>.<span class="ruby-identifier">clock_gettime</span>(<span class="ruby-constant">Process</span><span class="ruby-operator">::</span><span class="ruby-constant">CLOCK_MONOTONIC</span>)
+  <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SELECT SUM(slow_triple(value)) FROM t&#39;</span>).<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span>
+  [<span class="ruby-constant">Process</span>.<span class="ruby-identifier">clock_gettime</span>(<span class="ruby-constant">Process</span><span class="ruby-operator">::</span><span class="ruby-constant">CLOCK_MONOTONIC</span>) <span class="ruby-operator">-</span> <span class="ruby-identifier">started</span>, <span class="ruby-identifier">sum</span>]
 <span class="ruby-keyword">end</span></pre>
           </div>
 
