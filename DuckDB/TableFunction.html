@@ -1176,6 +1176,10 @@
 
     ctx-&gt;execute_proc = rb_block_proc();
     duckdb_table_function_set_function(ctx-&gt;table_function, table_function_execute_callback);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+    /* Per-worker proxy threads for the execute path (DuckDB &gt;= 1.5.0). */
+    duckdb_table_function_set_local_init(ctx-&gt;table_function, table_function_local_init_callback);
+#endif
 
     rbduckdb_function_executor_ensure_started();
 

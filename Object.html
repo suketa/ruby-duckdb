@@ -486,7 +486,15 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-i-measure">measure</a></li>
+        <li ><a href="#method-i-emit_chunk">emit_chunk</a></li>
+
+        <li ><a href="#method-i-emitter_bind_block">emitter_bind_block</a></li>
+
+        <li ><a href="#method-i-emitter_execute_block">emitter_execute_block</a></li>
+
+        <li ><a href="#method-i-measure_scalar">measure_scalar</a></li>
+
+        <li ><a href="#method-i-measure_table">measure_table</a></li>
 
         <li ><a href="#method-i-new_table">new_table</a></li>
 
@@ -494,7 +502,11 @@
 
         <li ><a href="#method-i-register_as_table_with_create_table">register_as_table_with_create_table</a></li>
 
+        <li ><a href="#method-i-register_slow_emitter">register_slow_emitter</a></li>
+
         <li ><a href="#method-i-register_slow_triple">register_slow_triple</a></li>
+
+        <li ><a href="#method-i-report">report</a></li>
 
         <li ><a href="#method-i-timed_sum">timed_sum</a></li>
 
@@ -548,7 +560,23 @@
       </header>
       <dl>
 
+        <dt id="CHUNKS">CHUNKS</dt>
+
+        <dd>
+
+          <p>— table UDF ————————————————————–</p>
+        </dd>
+
+
         <dt id="CHUNK_SIZE">CHUNK_SIZE</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="CHUNK_SLEEP_SEC">CHUNK_SLEEP_SEC</dt>
 
         <dd>
 
@@ -573,6 +601,14 @@
 
 
         <dt id="ROWS">ROWS</dt>
+
+        <dd>
+
+          <p>— scalar UDF ————————————————————-</p>
+        </dd>
+
+
+        <dt id="ROWS_PER_CHUNK">ROWS_PER_CHUNK</dt>
 
         <dd>
 
@@ -626,12 +662,150 @@
        </header>
 
 
-      <div id="method-i-measure" class="method-detail anchor-link ">
+      <div id="method-i-emit_chunk" class="method-detail anchor-link ">
         <div class="method-header">
 
             <div class="method-heading">
-              <a href="#method-i-measure" title="Link to this method">
-                <span class="method-name">measure</span>
+              <a href="#method-i-emit_chunk" title="Link to this method">
+                <span class="method-name">emit_chunk</span>
+                <span class="method-args">(output)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="emit_chunk-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 65</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">emit_chunk</span>(<span class="ruby-identifier">output</span>)
+  <span class="ruby-constant">ROWS_PER_CHUNK</span>.<span class="ruby-identifier">times</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-identifier">i</span>, <span class="ruby-value">1</span>) }
+  <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-constant">ROWS_PER_CHUNK</span>
+  <span class="ruby-identifier">sleep</span>(<span class="ruby-constant">CHUNK_SLEEP_SEC</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-emitter_bind_block" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-emitter_bind_block" title="Link to this method">
+                <span class="method-name">emitter_bind_block</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="emitter_bind_block-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 71</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">emitter_bind_block</span>
+  <span class="ruby-identifier">proc</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">add_result_column</span>(<span class="ruby-string">&#39;v&#39;</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span><span class="ruby-operator">::</span><span class="ruby-constant">BIGINT</span>)
+    <span class="ruby-comment"># Tell the planner there is real work so it distributes across workers.</span>
+    <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">set_cardinality</span>(<span class="ruby-constant">CHUNKS</span> <span class="ruby-operator">*</span> <span class="ruby-constant">ROWS_PER_CHUNK</span>, <span class="ruby-keyword">false</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-emitter_execute_block" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-emitter_execute_block" title="Link to this method">
+                <span class="method-name">emitter_execute_block</span>
+                <span class="method-args">(threads_seen)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="emitter_execute_block-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 79</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">emitter_execute_block</span>(<span class="ruby-identifier">threads_seen</span>)
+  <span class="ruby-identifier">remaining</span> = <span class="ruby-constant">CHUNKS</span>
+  <span class="ruby-identifier">mutex</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">proc</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_info</span>, <span class="ruby-identifier">output</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">threads_seen</span>[<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>] = <span class="ruby-keyword">true</span>
+    <span class="ruby-identifier">has_work</span> = <span class="ruby-identifier">mutex</span>.<span class="ruby-identifier">synchronize</span> { (<span class="ruby-identifier">remaining</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span>) <span class="ruby-operator">&gt;=</span> <span class="ruby-value">0</span> }
+    <span class="ruby-identifier">has_work</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">emit_chunk</span>(<span class="ruby-identifier">output</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">output</span>.<span class="ruby-identifier">size</span> = <span class="ruby-value">0</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-measure_scalar" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-measure_scalar" title="Link to this method">
+                <span class="method-name">measure_scalar</span>
                 <span class="method-args">(threads)</span>
               </a>
             </div>
@@ -644,16 +818,66 @@
               <summary>Source</summary>
             </details>
           </div>
-          <div class="method-source-code" id="measure-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 41</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">measure</span>(<span class="ruby-identifier">threads</span>)
+          <div class="method-source-code" id="measure_scalar-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 46</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">measure_scalar</span>(<span class="ruby-identifier">threads</span>)
   <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
   <span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
   <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;SET threads=#{threads}&quot;</span>)
   <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;CREATE TABLE t AS SELECT range::INTEGER AS value FROM range(#{ROWS})&quot;</span>)
   <span class="ruby-identifier">threads_seen</span> = {}
   <span class="ruby-identifier">register_slow_triple</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">threads_seen</span>)
-  <span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">timed_sum</span>(<span class="ruby-identifier">con</span>)
+  <span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">timed_sum</span>(<span class="ruby-identifier">con</span>, <span class="ruby-string">&#39;SELECT SUM(slow_triple(value)) FROM t&#39;</span>)
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">close</span>
+  <span class="ruby-identifier">db</span>.<span class="ruby-identifier">close</span>
+  [<span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">threads_seen</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">sum</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-measure_table" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-measure_table" title="Link to this method">
+                <span class="method-name">measure_table</span>
+                <span class="method-args">(threads)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="measure_table-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 99</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">measure_table</span>(<span class="ruby-identifier">threads</span>)
+  <span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+  <span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;SET threads=#{threads}&quot;</span>)
+  <span class="ruby-identifier">threads_seen</span> = {}
+  <span class="ruby-identifier">register_slow_emitter</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">threads_seen</span>)
+  <span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">timed_sum</span>(<span class="ruby-identifier">con</span>, <span class="ruby-string">&#39;SELECT SUM(v) FROM slow_emitter()&#39;</span>)
   <span class="ruby-identifier">con</span>.<span class="ruby-identifier">close</span>
   <span class="ruby-identifier">db</span>.<span class="ruby-identifier">close</span>
   [<span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">threads_seen</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">sum</span>]
@@ -812,6 +1036,54 @@
       </div>
 
 
+      <div id="method-i-register_slow_emitter" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-register_slow_emitter" title="Link to this method">
+                <span class="method-name">register_slow_emitter</span>
+                <span class="method-args">(con, threads_seen)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="register_slow_emitter-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 89</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_slow_emitter</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">threads_seen</span>)
+  <span class="ruby-identifier">tf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">TableFunction</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&#39;slow_emitter&#39;</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">emitter_bind_block</span>)
+  <span class="ruby-comment"># Without max_threads DuckDB assigns a single worker and the proxy never fires.</span>
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">init</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">init_info</span><span class="ruby-operator">|</span> <span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">max_threads</span> = <span class="ruby-value">4</span> }
+  <span class="ruby-identifier">tf</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">emitter_execute_block</span>(<span class="ruby-identifier">threads_seen</span>))
+  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">register_table_function</span>(<span class="ruby-identifier">tf</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-i-register_slow_triple" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -831,7 +1103,7 @@
             </details>
           </div>
           <div class="method-source-code" id="register_slow_triple-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 22</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 27</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">register_slow_triple</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">threads_seen</span>)
   <span class="ruby-identifier">sf</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">ScalarFunction</span>.<span class="ruby-identifier">new</span>
   <span class="ruby-identifier">sf</span>.<span class="ruby-identifier">name</span> = <span class="ruby-string">&#39;slow_triple&#39;</span>
@@ -863,13 +1135,61 @@
       </div>
 
 
+      <div id="method-i-report" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-report" title="Link to this method">
+                <span class="method-name">report</span>
+                <span class="method-args">(label, expected) { |threads| ... }</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="report-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 113</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">report</span>(<span class="ruby-identifier">label</span>, <span class="ruby-identifier">expected</span>)
+  <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;#{label}:&quot;</span>
+  [<span class="ruby-value">1</span>, <span class="ruby-value">4</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">threads</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">elapsed</span>, <span class="ruby-identifier">distinct</span>, <span class="ruby-identifier">sum</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">threads</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;wrong result: #{sum} (expected #{expected})&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">sum</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">expected</span>
+
+    <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;  SET threads=#{threads}: #{elapsed.round(3)}s, callbacks ran on #{distinct} distinct Ruby thread(s)&quot;</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>— run both —————————————————————</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-i-timed_sum" class="method-detail anchor-link ">
         <div class="method-header">
 
             <div class="method-heading">
               <a href="#method-i-timed_sum" title="Link to this method">
                 <span class="method-name">timed_sum</span>
-                <span class="method-args">(con)</span>
+                <span class="method-args">(con, query)</span>
               </a>
             </div>
 
@@ -882,10 +1202,10 @@
             </details>
           </div>
           <div class="method-source-code" id="timed_sum-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 35</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">timed_sum</span>(<span class="ruby-identifier">con</span>)
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue1136.rb, line 40</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">timed_sum</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">query</span>)
   <span class="ruby-identifier">started</span> = <span class="ruby-constant">Process</span>.<span class="ruby-identifier">clock_gettime</span>(<span class="ruby-constant">Process</span><span class="ruby-operator">::</span><span class="ruby-constant">CLOCK_MONOTONIC</span>)
-  <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-string">&#39;SELECT SUM(slow_triple(value)) FROM t&#39;</span>).<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span>
+  <span class="ruby-identifier">sum</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-identifier">query</span>).<span class="ruby-identifier">first</span>.<span class="ruby-identifier">first</span>
   [<span class="ruby-constant">Process</span>.<span class="ruby-identifier">clock_gettime</span>(<span class="ruby-constant">Process</span><span class="ruby-operator">::</span><span class="ruby-constant">CLOCK_MONOTONIC</span>) <span class="ruby-operator">-</span> <span class="ruby-identifier">started</span>, <span class="ruby-identifier">sum</span>]
 <span class="ruby-keyword">end</span></pre>
           </div>
