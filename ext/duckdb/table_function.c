@@ -21,6 +21,11 @@ static VALUE rbduckdb_table_function_set_init(VALUE self);
 static void table_function_init_callback(duckdb_init_info info);
 static VALUE rbduckdb_table_function_set_execute(VALUE self);
 static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+/* Thread detection (declared in function_executor.c); used to skip the proxy on Ruby threads. */
+extern int ruby_native_thread_p(void);
+static void table_function_local_init_callback(duckdb_init_info info);
+#endif
 
 static const rb_data_type_t table_function_data_type = {
     "DuckDB/TableFunction",
@@ -358,6 +363,10 @@ static VALUE rbduckdb_table_function_set_execute(VALUE self) {
 
     ctx->execute_proc = rb_block_proc();
     duckdb_table_function_set_function(ctx->table_function, table_function_execute_callback);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+    /* Per-worker proxy threads for the execute path (DuckDB >= 1.5.0). */
+    duckdb_table_function_set_local_init(ctx->table_function, table_function_local_init_callback);
+#endif
 
     rbduckdb_function_executor_ensure_started();
 
@@ -405,6 +414,7 @@ static void execute_execute_callback_protected(void *user_data) {
 static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output) {
     rubyDuckDBTableFunction *ctx;
     struct execute_dispatch_arg darg;
+    struct worker_proxy *proxy = NULL;
 
     ctx = (rubyDuckDBTableFunction *)duckdb_function_get_extra_info(info);
     if (!ctx || ctx->execute_proc == Qnil) return;
@@ -413,8 +423,64 @@ static void table_function_execute_callback(duckdb_function_info info, duckdb_da
     darg.info = info;
     darg.output = output;
 
-    rbduckdb_function_executor_dispatch(execute_execute_callback_protected, &darg);
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+    /* On DuckDB >= 1.5.0 each worker thread carries its own proxy (see local_init). */
+    proxy = (struct worker_proxy *)duckdb_function_get_local_init_data(info);
+#endif
+    rbduckdb_function_executor_dispatch_via_proxy(execute_execute_callback_protected, &darg, proxy);
 }
+
+#ifdef HAVE_DUCKDB_H_GE_V1_5_0
+/*
+ * Per-worker init for the execute path (DuckDB >= 1.5.0).
+ *
+ * DuckDB calls this once on each worker thread that will run the execute
+ * callback. We create a per-worker proxy (allocating its Ruby thread under the
+ * GVL via the global executor, since this runs on a non-Ruby thread) and store
+ * it as thread-local init data. The execute callback then dispatches through it
+ * instead of the shared global executor, so workers run callbacks concurrently.
+ * DuckDB invokes rbduckdb_worker_proxy_destroy when the local state is freed.
+ */
+struct create_proxy_callback_arg {
+    struct worker_proxy *proxy;
+};
+
+static VALUE create_proxy_callback(VALUE varg) {
+    struct create_proxy_callback_arg *arg = (struct create_proxy_callback_arg *)varg;
+    arg->proxy = rbduckdb_worker_proxy_create();
+    return Qnil;
+}
+
+/*
+ * rbduckdb_worker_proxy_create may raise (NoMemError, Thread.new failure),
+ * and the executor runs callbacks unprotected — a raise would longjmp past
+ * its done-signaling and block the waiting DuckDB worker forever. Swallow
+ * the exception instead: the proxy stays NULL, local_init sets no state, and
+ * the execute callback falls back to the global executor.
+ */
+static void create_proxy_callback_protected(void *user_data) {
+    int exception_state;
+
+    rb_protect(create_proxy_callback, (VALUE)user_data, &exception_state);
+    if (exception_state) {
+        rb_set_errinfo(Qnil);
+    }
+}
+
+static void table_function_local_init_callback(duckdb_init_info info) {
+    struct create_proxy_callback_arg arg;
+
+    /* A Ruby calling thread runs the callback inline (Case 1/2); no proxy needed. */
+    if (ruby_native_thread_p()) return;
+
+    arg.proxy = NULL;
+    rbduckdb_function_executor_dispatch(create_proxy_callback_protected, &arg);
+
+    if (arg.proxy != NULL) {
+        duckdb_init_set_init_data(info, arg.proxy, rbduckdb_worker_proxy_destroy);
+    }
+}
+#endif
 
 rubyDuckDBTableFunction *get_struct_table_function(VALUE self) {
     rubyDuckDBTableFunction *ctx;

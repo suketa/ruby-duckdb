@@ -199,6 +199,71 @@ module DuckDBTest
       db.close
     end
 
+    # Per-worker proxy: exercises the local_init -> proxy -> destroy lifecycle
+    # under real multi-threaded execution (SET threads=4) and asserts the
+    # proxy path actually fired: execute callbacks must run on more than two
+    # distinct Ruby threads. Without per-worker proxies that count can never
+    # exceed two (the calling thread plus the single global executor), so this
+    # fails on the old implementation. Simultaneity assertions (max
+    # concurrency) are avoided as scheduler-dependent; sample/issue1136.rb
+    # demonstrates the throughput win for the scalar twin of this mechanism.
+    # Requires DuckDB >= 1.5.0 (duckdb_table_function_set_local_init).
+    def test_execute_runs_on_per_worker_proxy_threads
+      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+        skip 'per-worker proxy requires DuckDB >= 1.5.0'
+      end
+
+      chunks = 64
+      rows_per_chunk = 100
+      remaining = chunks
+      mutex = Mutex.new
+      threads_seen = {}
+
+      db = DuckDB::Database.open
+      conn = db.connect
+      conn.execute('SET threads=4')
+
+      tf = DuckDB::TableFunction.new
+      tf.name = 'parallel_emitter'
+      tf.bind do |bind_info|
+        bind_info.add_result_column('v', DuckDB::LogicalType::BIGINT)
+        # Tell the planner there is real work so it distributes across workers.
+        bind_info.set_cardinality(chunks * rows_per_chunk, false)
+      end
+      tf.init do |init_info|
+        # Without this DuckDB assigns a single worker and the proxy never fires.
+        init_info.max_threads = 4
+      end
+      tf.execute do |_info, output|
+        threads_seen[Thread.current] = true
+        has_work = mutex.synchronize do
+          next false if remaining.zero?
+
+          remaining -= 1
+          true
+        end
+
+        unless has_work
+          output.size = 0
+          next
+        end
+
+        rows_per_chunk.times { |i| output.set_value(0, i, 1) }
+        output.size = rows_per_chunk
+        sleep 0.001 # release the GVL so workers can overlap
+      end
+
+      conn.register_table_function(tf)
+      result = conn.query('SELECT COUNT(*), SUM(v) FROM parallel_emitter()').each.to_a
+
+      assert_equal [chunks * rows_per_chunk, chunks * rows_per_chunk], result.first
+      assert_operator threads_seen.size, :>, 2,
+                      'expected callbacks on per-worker proxy threads, not just caller + global executor'
+
+      conn.disconnect
+      db.close
+    end
+
     private
 
     def setup_incomplete_function
