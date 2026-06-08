@@ -272,7 +272,7 @@ static VALUE process_rows(VALUE varg) {
         }
 
         /* Call the Ruby block with the arguments */
-        result = rb_funcallv(arg->ctx->function_proc, rb_intern("call"), arg->col_count, arg->args);
+        result = rb_funcallv(arg->ctx->function_proc, rb_intern("call"), (int)arg->col_count, arg->args);
 
         /* Write result to output using helper function */
         rbduckdb_vector_set_value_at(arg->output, arg->output_type, i, result);
