@@ -2,7 +2,7 @@
 
 VALUE cDuckDBBlob;
 
-void rbduckdb_init_duckdb_blob(void) {
+void rbduckdb_init_blob(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif

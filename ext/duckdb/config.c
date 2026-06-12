@@ -79,7 +79,7 @@ static VALUE config_set_config(VALUE self, VALUE key, VALUE value) {
     return self;
 }
 
-void rbduckdb_init_duckdb_config(void) {
+void rbduckdb_init_config(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
