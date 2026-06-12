@@ -776,7 +776,7 @@
             </details>
           </div>
           <div class="method-source-code" id="error_message-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_description_error_message(VALUE self) {
+            <pre class="c" data-language="c">static VALUE table_description_error_message(VALUE self) {
     rubyDuckDBTableDescription *ctx = get_struct_table_description(self);
     const char *p = duckdb_table_description_error(ctx-&gt;table_description);
     return p ? rb_str_new2(p) : Qnil;

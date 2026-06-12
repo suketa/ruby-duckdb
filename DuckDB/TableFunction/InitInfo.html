@@ -699,7 +699,7 @@
             </details>
           </div>
           <div class="method-source-code" id="set_error-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error) {
+            <pre class="c" data-language="c">static VALUE table_function_init_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBInitInfo *ctx;
     const char *error_msg;
 
@@ -762,7 +762,7 @@
             </details>
           </div>
           <div class="method-source-code" id="set_max_threads-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads) {
+            <pre class="c" data-language="c">static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_threads) {
     rubyDuckDBInitInfo *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);

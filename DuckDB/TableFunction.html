@@ -847,7 +847,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE duckdb_table_function_initialize(VALUE self) {
+            <pre class="c" data-language="c">static VALUE table_function_initialize(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
@@ -976,7 +976,7 @@
             </details>
           </div>
           <div class="method-source-code" id="add_named_parameter-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type) {
+            <pre class="c" data-language="c">static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type) {
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *param_name;
@@ -1037,7 +1037,7 @@
             </details>
           </div>
           <div class="method-source-code" id="add_parameter-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_type) {
+            <pre class="c" data-language="c">static VALUE table_function_add_parameter(VALUE self, VALUE logical_type) {
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
 
@@ -1097,7 +1097,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_function_set_bind(VALUE self) {
+            <pre class="c" data-language="c">static VALUE table_function_bind(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -1165,7 +1165,7 @@
             </details>
           </div>
           <div class="method-source-code" id="execute-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_function_set_execute(VALUE self) {
+            <pre class="c" data-language="c">static VALUE table_function_execute(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -1233,7 +1233,7 @@
             </details>
           </div>
           <div class="method-source-code" id="init-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_function_set_init(VALUE self) {
+            <pre class="c" data-language="c">static VALUE table_function_init(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -1339,7 +1339,7 @@
             </details>
           </div>
           <div class="method-source-code" id="set_name-source">
-            <pre class="c" data-language="c">static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name) {
+            <pre class="c" data-language="c">static VALUE table_function_set_name(VALUE self, VALUE name) {
     rubyDuckDBTableFunction *ctx;
     const char *func_name;
 
