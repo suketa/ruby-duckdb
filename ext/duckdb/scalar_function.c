@@ -7,14 +7,14 @@ static void deallocate(void *);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static void compact(void *);
-static VALUE duckdb_scalar_function_initialize(VALUE self);
-static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name);
-static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical_type);
-static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_type);
-static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type);
-static VALUE rbduckdb_scalar_function__set_special_handling(VALUE self);
-static VALUE rbduckdb_scalar_function_set_function(VALUE self);
-static VALUE rbduckdb_scalar_function__set_bind(VALUE self);
+static VALUE scalar_function_initialize(VALUE self);
+static VALUE scalar_function_set_name(VALUE self, VALUE name);
+static VALUE scalar_function__set_return_type(VALUE self, VALUE logical_type);
+static VALUE scalar_function__set_varargs(VALUE self, VALUE logical_type);
+static VALUE scalar_function__add_parameter(VALUE self, VALUE logical_type);
+static VALUE scalar_function__set_special_handling(VALUE self);
+static VALUE scalar_function_set_function(VALUE self);
+static VALUE scalar_function__set_bind(VALUE self);
 static void scalar_function_callback(duckdb_function_info info, duckdb_data_chunk input, duckdb_vector output);
 static void scalar_function_bind_callback(duckdb_bind_info info);
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
@@ -123,7 +123,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBScalarFunction);
 }
 
-static VALUE duckdb_scalar_function_initialize(VALUE self) {
+static VALUE scalar_function_initialize(VALUE self) {
     rubyDuckDBScalarFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
     p->scalar_function = duckdb_create_scalar_function();
@@ -132,7 +132,7 @@ static VALUE duckdb_scalar_function_initialize(VALUE self) {
     return self;
 }
 
-static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name) {
+static VALUE scalar_function_set_name(VALUE self, VALUE name) {
     rubyDuckDBScalarFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
 
@@ -142,7 +142,7 @@ static VALUE rbduckdb_scalar_function_set_name(VALUE self, VALUE name) {
     return self;
 }
 
-static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical_type) {
+static VALUE scalar_function__set_return_type(VALUE self, VALUE logical_type) {
     rubyDuckDBScalarFunction *p;
     rubyDuckDBLogicalType *lt;
 
@@ -154,7 +154,7 @@ static VALUE rbduckdb_scalar_function__set_return_type(VALUE self, VALUE logical
     return self;
 }
 
-static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_type) {
+static VALUE scalar_function__set_varargs(VALUE self, VALUE logical_type) {
     rubyDuckDBScalarFunction *p;
     rubyDuckDBLogicalType *lt;
 
@@ -166,7 +166,7 @@ static VALUE rbduckdb_scalar_function__set_varargs(VALUE self, VALUE logical_typ
     return self;
 }
 
-static VALUE rbduckdb_scalar_function__set_special_handling(VALUE self) {
+static VALUE scalar_function__set_special_handling(VALUE self) {
     rubyDuckDBScalarFunction *p;
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
@@ -175,7 +175,7 @@ static VALUE rbduckdb_scalar_function__set_special_handling(VALUE self) {
     return self;
 }
 
-static VALUE rbduckdb_scalar_function_add_parameter(VALUE self, VALUE logical_type) {
+static VALUE scalar_function__add_parameter(VALUE self, VALUE logical_type) {
     rubyDuckDBScalarFunction *p;
     rubyDuckDBLogicalType *lt;
 
@@ -359,14 +359,14 @@ static void scalar_function_init_callback(duckdb_init_info info) {
 }
 #endif
 
-rubyDuckDBScalarFunction *get_struct_scalar_function(VALUE obj) {
+rubyDuckDBScalarFunction *rbduckdb_get_struct_scalar_function(VALUE obj) {
     rubyDuckDBScalarFunction *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBScalarFunction, &scalar_function_data_type, ctx);
     return ctx;
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_scalar_function_set_function(VALUE self) {
+static VALUE scalar_function_set_function(VALUE self) {
     rubyDuckDBScalarFunction *p;
 
     if (!rb_block_given_p()) {
@@ -397,7 +397,7 @@ static VALUE rbduckdb_scalar_function_set_function(VALUE self) {
 }
 
 /* :nodoc: */
-static VALUE rbduckdb_scalar_function__set_bind(VALUE self) {
+static VALUE scalar_function__set_bind(VALUE self) {
     rubyDuckDBScalarFunction *p;
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
@@ -475,19 +475,19 @@ static void scalar_function_bind_callback(duckdb_bind_info info) {
 }
 
 
-void rbduckdb_init_duckdb_scalar_function(void) {
+void rbduckdb_init_scalar_function(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBScalarFunction = rb_define_class_under(mDuckDB, "ScalarFunction", rb_cObject);
     rb_define_alloc_func(cDuckDBScalarFunction, allocate);
-    rb_define_method(cDuckDBScalarFunction, "initialize", duckdb_scalar_function_initialize, 0);
-    rb_define_method(cDuckDBScalarFunction, "set_name", rbduckdb_scalar_function_set_name, 1);
-    rb_define_method(cDuckDBScalarFunction, "name=", rbduckdb_scalar_function_set_name, 1);
-    rb_define_private_method(cDuckDBScalarFunction, "_set_return_type", rbduckdb_scalar_function__set_return_type, 1);
-    rb_define_private_method(cDuckDBScalarFunction, "_set_varargs", rbduckdb_scalar_function__set_varargs, 1);
-    rb_define_private_method(cDuckDBScalarFunction, "_set_special_handling", rbduckdb_scalar_function__set_special_handling, 0);
-    rb_define_private_method(cDuckDBScalarFunction, "_add_parameter", rbduckdb_scalar_function_add_parameter, 1);
-    rb_define_method(cDuckDBScalarFunction, "set_function", rbduckdb_scalar_function_set_function, 0);
-    rb_define_private_method(cDuckDBScalarFunction, "_set_bind", rbduckdb_scalar_function__set_bind, 0);
+    rb_define_method(cDuckDBScalarFunction, "initialize", scalar_function_initialize, 0);
+    rb_define_method(cDuckDBScalarFunction, "set_name", scalar_function_set_name, 1);
+    rb_define_method(cDuckDBScalarFunction, "name=", scalar_function_set_name, 1);
+    rb_define_private_method(cDuckDBScalarFunction, "_set_return_type", scalar_function__set_return_type, 1);
+    rb_define_private_method(cDuckDBScalarFunction, "_set_varargs", scalar_function__set_varargs, 1);
+    rb_define_private_method(cDuckDBScalarFunction, "_set_special_handling", scalar_function__set_special_handling, 0);
+    rb_define_private_method(cDuckDBScalarFunction, "_add_parameter", scalar_function__add_parameter, 1);
+    rb_define_method(cDuckDBScalarFunction, "set_function", scalar_function_set_function, 0);
+    rb_define_private_method(cDuckDBScalarFunction, "_set_bind", scalar_function__set_bind, 0);
 }

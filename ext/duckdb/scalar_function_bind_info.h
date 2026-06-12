@@ -7,7 +7,7 @@ struct _rubyDuckDBScalarFunctionBindInfo {
 
 typedef struct _rubyDuckDBScalarFunctionBindInfo rubyDuckDBScalarFunctionBindInfo;
 
-void rbduckdb_init_duckdb_scalar_function_bind_info(void);
+void rbduckdb_init_scalar_function_bind_info(void);
 VALUE rbduckdb_scalar_function_bind_info_new(duckdb_bind_info bind_info);
 
 #endif

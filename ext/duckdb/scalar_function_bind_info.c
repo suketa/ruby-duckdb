@@ -5,10 +5,10 @@ VALUE cDuckDBScalarFunctionBindInfo;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE rbduckdb_scalar_function_bind_info_argument_count(VALUE self);
-static VALUE rbduckdb_scalar_function_bind_info_set_error(VALUE self, VALUE error);
-static VALUE rbduckdb_scalar_function_bind_info_get_argument(VALUE self, VALUE index);
-static VALUE rbduckdb_scalar_function_bind_info_client_context(VALUE self);
+static VALUE scalar_function_bind_info_argument_count(VALUE self);
+static VALUE scalar_function_bind_info_set_error(VALUE self, VALUE error);
+static VALUE scalar_function_bind_info__get_argument(VALUE self, VALUE index);
+static VALUE scalar_function_bind_info_client_context(VALUE self);
 
 static const rb_data_type_t scalar_function_bind_info_data_type = {
     "DuckDB/ScalarFunction/BindInfo",
@@ -46,7 +46,7 @@ VALUE rbduckdb_scalar_function_bind_info_new(duckdb_bind_info bind_info) {
  *
  *   bind_info.argument_count  # => 2
  */
-static VALUE rbduckdb_scalar_function_bind_info_argument_count(VALUE self) {
+static VALUE scalar_function_bind_info_argument_count(VALUE self) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
     return ULL2NUM(duckdb_scalar_function_bind_get_argument_count(ctx->bind_info));
@@ -61,7 +61,7 @@ static VALUE rbduckdb_scalar_function_bind_info_argument_count(VALUE self) {
  *
  *   bind_info.set_error('invalid argument')
  */
-static VALUE rbduckdb_scalar_function_bind_info_set_error(VALUE self, VALUE error) {
+static VALUE scalar_function_bind_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
     duckdb_scalar_function_bind_set_error(ctx->bind_info, StringValueCStr(error));
@@ -75,7 +75,7 @@ static VALUE rbduckdb_scalar_function_bind_info_set_error(VALUE self, VALUE erro
  * Returns the expression at the given argument index.
  * Called internally by +get_argument+ after index validation.
  */
-static VALUE rbduckdb_scalar_function_bind_info_get_argument(VALUE self, VALUE index) {
+static VALUE scalar_function_bind_info__get_argument(VALUE self, VALUE index) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
     duckdb_expression expr = duckdb_scalar_function_bind_get_argument(ctx->bind_info, (idx_t)NUM2ULL(index));
@@ -88,7 +88,7 @@ static VALUE rbduckdb_scalar_function_bind_info_get_argument(VALUE self, VALUE i
  *
  * Returns the client context associated with the bind phase of the scalar function.
  */
-static VALUE rbduckdb_scalar_function_bind_info_client_context(VALUE self) {
+static VALUE scalar_function_bind_info_client_context(VALUE self) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
     duckdb_client_context client_context;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
@@ -96,14 +96,14 @@ static VALUE rbduckdb_scalar_function_bind_info_client_context(VALUE self) {
     return rbduckdb_client_context_new(client_context);
 }
 
-void rbduckdb_init_duckdb_scalar_function_bind_info(void) {
+void rbduckdb_init_scalar_function_bind_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBScalarFunctionBindInfo = rb_define_class_under(cDuckDBScalarFunction, "BindInfo", rb_cObject);
     rb_define_alloc_func(cDuckDBScalarFunctionBindInfo, allocate);
-    rb_define_method(cDuckDBScalarFunctionBindInfo, "argument_count", rbduckdb_scalar_function_bind_info_argument_count, 0);
-    rb_define_method(cDuckDBScalarFunctionBindInfo, "set_error", rbduckdb_scalar_function_bind_info_set_error, 1);
-    rb_define_private_method(cDuckDBScalarFunctionBindInfo, "_get_argument", rbduckdb_scalar_function_bind_info_get_argument, 1);
-    rb_define_method(cDuckDBScalarFunctionBindInfo, "client_context", rbduckdb_scalar_function_bind_info_client_context, 0);
+    rb_define_method(cDuckDBScalarFunctionBindInfo, "argument_count", scalar_function_bind_info_argument_count, 0);
+    rb_define_method(cDuckDBScalarFunctionBindInfo, "set_error", scalar_function_bind_info_set_error, 1);
+    rb_define_private_method(cDuckDBScalarFunctionBindInfo, "_get_argument", scalar_function_bind_info__get_argument, 1);
+    rb_define_method(cDuckDBScalarFunctionBindInfo, "client_context", scalar_function_bind_info_client_context, 0);
 }

@@ -231,7 +231,7 @@ static VALUE connection__register_scalar_function(VALUE self, VALUE scalar_funct
     duckdb_state state;
 
     ctxcon = rbduckdb_get_struct_connection(self);
-    ctxsf = get_struct_scalar_function(scalar_function);
+    ctxsf = rbduckdb_get_struct_scalar_function(scalar_function);
 
     state = duckdb_register_scalar_function(ctxcon->con, ctxsf->scalar_function);
 
@@ -252,7 +252,7 @@ static VALUE connection__register_scalar_function_set(VALUE self, VALUE scalar_f
     duckdb_state state;
 
     ctxcon = rbduckdb_get_struct_connection(self);
-    ctxsfs = get_struct_scalar_function_set(scalar_function_set);
+    ctxsfs = rbduckdb_get_struct_scalar_function_set(scalar_function_set);
 
     state = duckdb_register_scalar_function_set(ctxcon->con, ctxsfs->scalar_function_set);
 
