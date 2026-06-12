@@ -7,6 +7,7 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error);
 static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads);
+static VALUE table_function_init_info_column_count(VALUE self);
 
 static const rb_data_type_t init_info_data_type = {
     "DuckDB/TableFunctionInitInfo",
@@ -76,6 +77,24 @@ static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads) {
     return self;
 }
 
+/*
+ * call-seq:
+ *   init_info.column_count -> Integer
+ *
+ * Returns the number of projected result columns for this scan.
+ * Without projection pushdown this equals the number of result columns
+ * added in the bind callback.
+ *
+ *   init_info.column_count # => 2
+ */
+static VALUE table_function_init_info_column_count(VALUE self) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+
+    return ULL2NUM(duckdb_init_get_column_count(ctx->info));
+}
+
 void rbduckdb_init_duckdb_table_function_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -86,4 +105,5 @@ void rbduckdb_init_duckdb_table_function_init_info(void) {
     rb_define_method(cDuckDBTableFunctionInitInfo, "set_error", rbduckdb_init_info_set_error, 1);
     rb_define_method(cDuckDBTableFunctionInitInfo, "set_max_threads", rbduckdb_init_info_set_max_threads, 1);
     rb_define_method(cDuckDBTableFunctionInitInfo, "max_threads=", rbduckdb_init_info_set_max_threads, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "column_count", table_function_init_info_column_count, 0);
 }
