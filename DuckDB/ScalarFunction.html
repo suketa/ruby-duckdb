@@ -759,7 +759,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE duckdb_scalar_function_initialize(VALUE self) {
+            <pre class="c" data-language="c">static VALUE scalar_function_initialize(VALUE self) {
     rubyDuckDBScalarFunction *p;
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &amp;scalar_function_data_type, p);
     p-&gt;scalar_function = duckdb_create_scalar_function();
