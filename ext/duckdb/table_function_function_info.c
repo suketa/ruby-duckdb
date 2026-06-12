@@ -5,7 +5,7 @@ VALUE cDuckDBTableFunctionFunctionInfo;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE rbduckdb_function_info_set_error(VALUE self, VALUE error);
+static VALUE table_function_function_info_set_error(VALUE self, VALUE error);
 
 static const rb_data_type_t function_info_data_type = {
     "DuckDB/TableFunctionFunctionInfo",
@@ -27,7 +27,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBFunctionInfo);
 }
 
-rubyDuckDBFunctionInfo *get_struct_function_info(VALUE obj) {
+rubyDuckDBFunctionInfo *rbduckdb_get_struct_function_info(VALUE obj) {
     rubyDuckDBFunctionInfo *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
     return ctx;
@@ -42,7 +42,7 @@ rubyDuckDBFunctionInfo *get_struct_function_info(VALUE obj) {
  *
  *   function_info.set_error('Invalid parameter value')
  */
-static VALUE rbduckdb_function_info_set_error(VALUE self, VALUE error) {
+static VALUE table_function_function_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBFunctionInfo *ctx;
     const char *error_msg;
 
@@ -54,12 +54,12 @@ static VALUE rbduckdb_function_info_set_error(VALUE self, VALUE error) {
     return self;
 }
 
-void rbduckdb_init_duckdb_table_function_function_info(void) {
+void rbduckdb_init_table_function_function_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBTableFunctionFunctionInfo = rb_define_class_under(cDuckDBTableFunction, "FunctionInfo", rb_cObject);
     rb_define_alloc_func(cDuckDBTableFunctionFunctionInfo, allocate);
 
-    rb_define_method(cDuckDBTableFunctionFunctionInfo, "set_error", rbduckdb_function_info_set_error, 1);
+    rb_define_method(cDuckDBTableFunctionFunctionInfo, "set_error", table_function_function_info_set_error, 1);
 }

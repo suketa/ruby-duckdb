@@ -8,13 +8,13 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static rubyDuckDBTableDescription *get_struct_table_description(VALUE obj);
-static VALUE rbduckdb_table_description_error_message(VALUE self);
-static VALUE duckdb_table_description__initialize(VALUE self, VALUE conn, VALUE catalog, VALUE schema, VALUE table);
+static VALUE table_description_error_message(VALUE self);
+static VALUE table_description__initialize(VALUE self, VALUE conn, VALUE catalog, VALUE schema, VALUE table);
 
-static VALUE duckdb_table_description__column_count(VALUE self);
-static VALUE duckdb_table_description__column_name(VALUE self, VALUE idx);
-static VALUE duckdb_table_description__column_logical_type(VALUE self, VALUE idx);
-static VALUE duckdb_table_description__column_has_default(VALUE self, VALUE idx);
+static VALUE table_description__column_count(VALUE self);
+static VALUE table_description__column_name(VALUE self, VALUE idx);
+static VALUE table_description__column_logical_type(VALUE self, VALUE idx);
+static VALUE table_description__column_has_default(VALUE self, VALUE idx);
 
 static const rb_data_type_t table_description_data_type = {
     "DuckDB/TableDescription",
@@ -46,14 +46,14 @@ static rubyDuckDBTableDescription *get_struct_table_description(VALUE obj) {
     return ctx;
 }
 
-static VALUE rbduckdb_table_description_error_message(VALUE self) {
+static VALUE table_description_error_message(VALUE self) {
     rubyDuckDBTableDescription *ctx = get_struct_table_description(self);
     const char *p = duckdb_table_description_error(ctx->table_description);
     return p ? rb_str_new2(p) : Qnil;
 }
 
 /* nodoc */
-static VALUE duckdb_table_description__initialize(VALUE self, VALUE con, VALUE catalog, VALUE schema, VALUE table) {
+static VALUE table_description__initialize(VALUE self, VALUE con, VALUE catalog, VALUE schema, VALUE table) {
     char *pcatalog = NULL;
     char *pschema = NULL;
     char *ptable = NULL;
@@ -89,14 +89,14 @@ static VALUE duckdb_table_description__initialize(VALUE self, VALUE con, VALUE c
 }
 
 /* nodoc */
-static VALUE duckdb_table_description__column_count(VALUE self) {
+static VALUE table_description__column_count(VALUE self) {
     rubyDuckDBTableDescription *ctx;
     ctx = get_struct_table_description(self);
     return ULL2NUM(duckdb_table_description_get_column_count(ctx->table_description));
 }
 
 /* nodoc */
-static VALUE duckdb_table_description__column_name(VALUE self, VALUE idx) {
+static VALUE table_description__column_name(VALUE self, VALUE idx) {
     VALUE name = Qnil;
     rubyDuckDBTableDescription *ctx;
     ctx = get_struct_table_description(self);
@@ -109,7 +109,7 @@ static VALUE duckdb_table_description__column_name(VALUE self, VALUE idx) {
 }
 
 /* nodoc */
-static VALUE duckdb_table_description__column_logical_type(VALUE self, VALUE idx) {
+static VALUE table_description__column_logical_type(VALUE self, VALUE idx) {
     rubyDuckDBTableDescription *ctx;
     duckdb_logical_type lt;
     ctx = get_struct_table_description(self);
@@ -117,7 +117,7 @@ static VALUE duckdb_table_description__column_logical_type(VALUE self, VALUE idx
     return rbduckdb_create_logical_type(lt);
 }
 
-static VALUE duckdb_table_description__column_has_default(VALUE self, VALUE idx) {
+static VALUE table_description__column_has_default(VALUE self, VALUE idx) {
     rubyDuckDBTableDescription *ctx;
     bool has_default;
     ctx = get_struct_table_description(self);
@@ -128,17 +128,17 @@ static VALUE duckdb_table_description__column_has_default(VALUE self, VALUE idx)
     return has_default ? Qtrue : Qfalse;
 }
 
-void rbduckdb_init_duckdb_table_description(void) {
+void rbduckdb_init_table_description(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBTableDescription = rb_define_class_under(mDuckDB, "TableDescription", rb_cObject);
     rb_define_alloc_func(cDuckDBTableDescription, allocate);
-    rb_define_method(cDuckDBTableDescription, "error_message", rbduckdb_table_description_error_message, 0);
-    rb_define_private_method(cDuckDBTableDescription, "_initialize", duckdb_table_description__initialize, 4);
-    rb_define_private_method(cDuckDBTableDescription, "_column_count", duckdb_table_description__column_count, 0);
-    rb_define_private_method(cDuckDBTableDescription, "_column_name", duckdb_table_description__column_name, 1);
-    rb_define_private_method(cDuckDBTableDescription, "_column_logical_type", duckdb_table_description__column_logical_type, 1);
-    rb_define_private_method(cDuckDBTableDescription, "_column_has_default", duckdb_table_description__column_has_default, 1);
+    rb_define_method(cDuckDBTableDescription, "error_message", table_description_error_message, 0);
+    rb_define_private_method(cDuckDBTableDescription, "_initialize", table_description__initialize, 4);
+    rb_define_private_method(cDuckDBTableDescription, "_column_count", table_description__column_count, 0);
+    rb_define_private_method(cDuckDBTableDescription, "_column_name", table_description__column_name, 1);
+    rb_define_private_method(cDuckDBTableDescription, "_column_logical_type", table_description__column_logical_type, 1);
+    rb_define_private_method(cDuckDBTableDescription, "_column_has_default", table_description__column_has_default, 1);
 }
 #endif

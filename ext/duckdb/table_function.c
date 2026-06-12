@@ -11,15 +11,15 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static void compact(void *ctx);
-static VALUE duckdb_table_function_initialize(VALUE self);
-static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name);
-static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_type);
-static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type);
-static VALUE rbduckdb_table_function_set_bind(VALUE self);
+static VALUE table_function_initialize(VALUE self);
+static VALUE table_function_set_name(VALUE self, VALUE name);
+static VALUE table_function_add_parameter(VALUE self, VALUE logical_type);
+static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type);
+static VALUE table_function_bind(VALUE self);
 static void table_function_bind_callback(duckdb_bind_info info);
-static VALUE rbduckdb_table_function_set_init(VALUE self);
+static VALUE table_function_init(VALUE self);
 static void table_function_init_callback(duckdb_init_info info);
-static VALUE rbduckdb_table_function_set_execute(VALUE self);
+static VALUE table_function_execute(VALUE self);
 static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output);
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
 /* Thread detection (declared in function_executor.c); used to skip the proxy on Ruby threads. */
@@ -89,7 +89,7 @@ static size_t memsize(const void *p) {
  *   tf.name = "my_function"
  *   # ... configure tf ...
  */
-static VALUE duckdb_table_function_initialize(VALUE self) {
+static VALUE table_function_initialize(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
@@ -118,7 +118,7 @@ static VALUE duckdb_table_function_initialize(VALUE self) {
  *
  *   tf.name = "my_function"
  */
-static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name) {
+static VALUE table_function_set_name(VALUE self, VALUE name) {
     rubyDuckDBTableFunction *ctx;
     const char *func_name;
 
@@ -143,7 +143,7 @@ static VALUE rbduckdb_table_function_set_name(VALUE self, VALUE name) {
  *   tf.add_parameter(DuckDB::LogicalType::BIGINT)
  *   tf.add_parameter(DuckDB::LogicalType::VARCHAR)
  */
-static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_type) {
+static VALUE table_function_add_parameter(VALUE self, VALUE logical_type) {
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
 
@@ -167,7 +167,7 @@ static VALUE rbduckdb_table_function_add_parameter(VALUE self, VALUE logical_typ
  *
  *   tf.add_named_parameter("limit", DuckDB::LogicalType::BIGINT)
  */
-static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type) {
+static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type) {
     rubyDuckDBTableFunction *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *param_name;
@@ -197,7 +197,7 @@ static VALUE rbduckdb_table_function_add_named_parameter(VALUE self, VALUE name,
  *     bind_info.add_result_column('name', DuckDB::LogicalType::VARCHAR)
  *   end
  */
-static VALUE rbduckdb_table_function_set_bind(VALUE self) {
+static VALUE table_function_bind(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -236,7 +236,7 @@ static void execute_bind_callback_protected(void *user_data) {
     int state = 0;
 
     bind_info_obj = rb_class_new_instance(0, NULL, cDuckDBTableFunctionBindInfo);
-    bind_info_ctx = get_struct_bind_info(bind_info_obj);
+    bind_info_ctx = rbduckdb_get_struct_bind_info(bind_info_obj);
     bind_info_ctx->bind_info = darg->info;
 
     VALUE call_args[2] = { darg->ctx->bind_proc, bind_info_obj };
@@ -274,7 +274,7 @@ static void table_function_bind_callback(duckdb_bind_info info) {
  *     # Initialize execution state
  *   end
  */
-static VALUE rbduckdb_table_function_set_init(VALUE self) {
+static VALUE table_function_init(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -312,7 +312,7 @@ static void execute_init_callback_protected(void *user_data) {
     int state = 0;
 
     init_info_obj = rb_class_new_instance(0, NULL, cDuckDBTableFunctionInitInfo);
-    init_info_ctx = get_struct_init_info(init_info_obj);
+    init_info_ctx = rbduckdb_get_struct_init_info(init_info_obj);
     init_info_ctx->info = darg->info;
 
     VALUE call_args[2] = { darg->ctx->init_proc, init_info_obj };
@@ -352,7 +352,7 @@ static void table_function_init_callback(duckdb_init_info info) {
  *     # Write data...
  *   end
  */
-static VALUE rbduckdb_table_function_set_execute(VALUE self) {
+static VALUE table_function_execute(VALUE self) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -393,7 +393,7 @@ static void execute_execute_callback_protected(void *user_data) {
     int state = 0;
 
     func_info_obj = rb_class_new_instance(0, NULL, cDuckDBTableFunctionFunctionInfo);
-    func_info_ctx = get_struct_function_info(func_info_obj);
+    func_info_ctx = rbduckdb_get_struct_function_info(func_info_obj);
     func_info_ctx->info = darg->info;
 
     data_chunk_obj = rb_class_new_instance(0, NULL, cDuckDBDataChunk);
@@ -482,25 +482,25 @@ static void table_function_local_init_callback(duckdb_init_info info) {
 }
 #endif
 
-rubyDuckDBTableFunction *get_struct_table_function(VALUE self) {
+rubyDuckDBTableFunction *rbduckdb_get_struct_table_function(VALUE self) {
     rubyDuckDBTableFunction *ctx;
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
     return ctx;
 }
 
-void rbduckdb_init_duckdb_table_function(void) {
+void rbduckdb_init_table_function(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBTableFunction = rb_define_class_under(mDuckDB, "TableFunction", rb_cObject);
     rb_define_alloc_func(cDuckDBTableFunction, allocate);
 
-    rb_define_method(cDuckDBTableFunction, "initialize", duckdb_table_function_initialize, 0);
-    rb_define_method(cDuckDBTableFunction, "set_name", rbduckdb_table_function_set_name, 1);
-    rb_define_method(cDuckDBTableFunction, "name=", rbduckdb_table_function_set_name, 1);
-    rb_define_method(cDuckDBTableFunction, "add_parameter", rbduckdb_table_function_add_parameter, 1);
-    rb_define_method(cDuckDBTableFunction, "add_named_parameter", rbduckdb_table_function_add_named_parameter, 2);
-    rb_define_method(cDuckDBTableFunction, "bind", rbduckdb_table_function_set_bind, 0);
-    rb_define_method(cDuckDBTableFunction, "init", rbduckdb_table_function_set_init, 0);
-    rb_define_method(cDuckDBTableFunction, "execute", rbduckdb_table_function_set_execute, 0);
+    rb_define_method(cDuckDBTableFunction, "initialize", table_function_initialize, 0);
+    rb_define_method(cDuckDBTableFunction, "set_name", table_function_set_name, 1);
+    rb_define_method(cDuckDBTableFunction, "name=", table_function_set_name, 1);
+    rb_define_method(cDuckDBTableFunction, "add_parameter", table_function_add_parameter, 1);
+    rb_define_method(cDuckDBTableFunction, "add_named_parameter", table_function_add_named_parameter, 2);
+    rb_define_method(cDuckDBTableFunction, "bind", table_function_bind, 0);
+    rb_define_method(cDuckDBTableFunction, "init", table_function_init, 0);
+    rb_define_method(cDuckDBTableFunction, "execute", table_function_execute, 0);
 }

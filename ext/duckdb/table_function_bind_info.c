@@ -5,12 +5,12 @@ VALUE cDuckDBTableFunctionBindInfo;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE rbduckdb_bind_info_parameter_count(VALUE self);
-static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index);
-static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name);
-static VALUE rbduckdb_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type);
-static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, VALUE is_exact);
-static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error);
+static VALUE table_function_bind_info_parameter_count(VALUE self);
+static VALUE table_function_bind_info_get_parameter(VALUE self, VALUE index);
+static VALUE table_function_bind_info_get_named_parameter(VALUE self, VALUE name);
+static VALUE table_function_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type);
+static VALUE table_function_bind_info_set_cardinality(VALUE self, VALUE cardinality, VALUE is_exact);
+static VALUE table_function_bind_info_set_error(VALUE self, VALUE error);
 
 static const rb_data_type_t bind_info_data_type = {
     "DuckDB/TableFunctionBindInfo",
@@ -32,7 +32,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBBindInfo);
 }
 
-rubyDuckDBBindInfo *get_struct_bind_info(VALUE obj) {
+rubyDuckDBBindInfo *rbduckdb_get_struct_bind_info(VALUE obj) {
     rubyDuckDBBindInfo *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
     return ctx;
@@ -52,7 +52,7 @@ rubyDuckDBBindInfo *get_struct_bind_info(VALUE obj) {
  *
  *   bind_info.parameter_count  # => 2
  */
-static VALUE rbduckdb_bind_info_parameter_count(VALUE self) {
+static VALUE table_function_bind_info_parameter_count(VALUE self) {
     rubyDuckDBBindInfo *ctx;
     idx_t count;
 
@@ -71,7 +71,7 @@ static VALUE rbduckdb_bind_info_parameter_count(VALUE self) {
  *
  *   param = bind_info.get_parameter(0)
  */
-static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index) {
+static VALUE table_function_bind_info_get_parameter(VALUE self, VALUE index) {
     rubyDuckDBBindInfo *ctx;
     idx_t idx;
     duckdb_value param_value;
@@ -97,7 +97,7 @@ static VALUE rbduckdb_bind_info_get_parameter(VALUE self, VALUE index) {
  *
  *   param = bind_info.get_named_parameter('limit')
  */
-static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name) {
+static VALUE table_function_bind_info_get_named_parameter(VALUE self, VALUE name) {
     rubyDuckDBBindInfo *ctx;
     const char *param_name;
     duckdb_value param_value;
@@ -129,7 +129,7 @@ static VALUE rbduckdb_bind_info_get_named_parameter(VALUE self, VALUE name) {
  *   bind_info.add_result_column('id', DuckDB::LogicalType::BIGINT)
  *   bind_info.add_result_column('name', DuckDB::LogicalType::VARCHAR)
  */
-static VALUE rbduckdb_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type) {
+static VALUE table_function_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type) {
     rubyDuckDBBindInfo *ctx;
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *col_name;
@@ -152,7 +152,7 @@ static VALUE rbduckdb_bind_info__add_result_column(VALUE self, VALUE column_name
  *   bind_info.set_cardinality(100, true)  # Exactly 100 rows
  *   bind_info.set_cardinality(1000, false)  # Approximately 1000 rows
  */
-static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, VALUE is_exact) {
+static VALUE table_function_bind_info_set_cardinality(VALUE self, VALUE cardinality, VALUE is_exact) {
     rubyDuckDBBindInfo *ctx;
     idx_t card;
     bool exact;
@@ -175,7 +175,7 @@ static VALUE rbduckdb_bind_info_set_cardinality(VALUE self, VALUE cardinality, V
  *
  *   bind_info.set_error('Invalid parameter value')
  */
-static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error) {
+static VALUE table_function_bind_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBBindInfo *ctx;
     const char *error_msg;
 
@@ -187,18 +187,18 @@ static VALUE rbduckdb_bind_info_set_error(VALUE self, VALUE error) {
     return self;
 }
 
-void rbduckdb_init_duckdb_table_function_bind_info(void) {
+void rbduckdb_init_table_function_bind_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBTableFunctionBindInfo = rb_define_class_under(cDuckDBTableFunction, "BindInfo", rb_cObject);
     rb_define_alloc_func(cDuckDBTableFunctionBindInfo, allocate);
 
-    rb_define_method(cDuckDBTableFunctionBindInfo, "parameter_count", rbduckdb_bind_info_parameter_count, 0);
-    rb_define_method(cDuckDBTableFunctionBindInfo, "get_parameter", rbduckdb_bind_info_get_parameter, 1);
-    rb_define_method(cDuckDBTableFunctionBindInfo, "get_named_parameter", rbduckdb_bind_info_get_named_parameter, 1);
-    rb_define_method(cDuckDBTableFunctionBindInfo, "set_cardinality", rbduckdb_bind_info_set_cardinality, 2);
-    rb_define_method(cDuckDBTableFunctionBindInfo, "set_error", rbduckdb_bind_info_set_error, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "parameter_count", table_function_bind_info_parameter_count, 0);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "get_parameter", table_function_bind_info_get_parameter, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "get_named_parameter", table_function_bind_info_get_named_parameter, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "set_cardinality", table_function_bind_info_set_cardinality, 2);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "set_error", table_function_bind_info_set_error, 1);
 
-    rb_define_private_method(cDuckDBTableFunctionBindInfo, "_add_result_column", rbduckdb_bind_info__add_result_column, 2);
+    rb_define_private_method(cDuckDBTableFunctionBindInfo, "_add_result_column", table_function_bind_info__add_result_column, 2);
 }

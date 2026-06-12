@@ -314,7 +314,7 @@ static VALUE connection__register_table_function(VALUE self, VALUE table_functio
     duckdb_state state;
 
     ctxcon = rbduckdb_get_struct_connection(self);
-    ctxtf = get_struct_table_function(table_function);
+    ctxtf = rbduckdb_get_struct_table_function(table_function);
 
     state = duckdb_register_table_function(ctxcon->con, ctxtf->table_function);
 

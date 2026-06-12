@@ -8,7 +8,7 @@ struct _rubyDuckDBBindInfo {
 typedef struct _rubyDuckDBBindInfo rubyDuckDBBindInfo;
 
 extern VALUE cDuckDBTableFunctionBindInfo;
-rubyDuckDBBindInfo *get_struct_bind_info(VALUE obj);
-void rbduckdb_init_duckdb_table_function_bind_info(void);
+rubyDuckDBBindInfo *rbduckdb_get_struct_bind_info(VALUE obj);
+void rbduckdb_init_table_function_bind_info(void);
 
 #endif

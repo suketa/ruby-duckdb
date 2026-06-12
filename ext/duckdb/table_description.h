@@ -9,7 +9,7 @@ struct _rubyDuckDBTableDescription {
 
 typedef struct _rubyDuckDBTableDescription rubyDuckDBTableDescription;
 
-void rbduckdb_init_duckdb_table_description(void);
+void rbduckdb_init_table_description(void);
 
 #endif /* HAVE_DUCKDB_H_GE_V1_5_0 */
 
