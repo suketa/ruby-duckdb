@@ -7,7 +7,7 @@ struct _rubyDuckDBFunctionInfo {
 
 typedef struct _rubyDuckDBFunctionInfo rubyDuckDBFunctionInfo;
 
-rubyDuckDBFunctionInfo *get_struct_function_info(VALUE obj);
-void rbduckdb_init_duckdb_table_function_function_info(void);
+rubyDuckDBFunctionInfo *rbduckdb_get_struct_function_info(VALUE obj);
+void rbduckdb_init_table_function_function_info(void);
 
 #endif

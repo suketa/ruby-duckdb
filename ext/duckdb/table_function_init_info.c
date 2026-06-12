@@ -5,8 +5,8 @@ VALUE cDuckDBTableFunctionInitInfo;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error);
-static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads);
+static VALUE table_function_init_info_set_error(VALUE self, VALUE error);
+static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_threads);
 static VALUE table_function_init_info_column_count(VALUE self);
 
 static const rb_data_type_t init_info_data_type = {
@@ -29,7 +29,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBInitInfo);
 }
 
-rubyDuckDBInitInfo *get_struct_init_info(VALUE obj) {
+rubyDuckDBInitInfo *rbduckdb_get_struct_init_info(VALUE obj) {
     rubyDuckDBInitInfo *ctx;
     TypedData_Get_Struct(obj, rubyDuckDBInitInfo, &init_info_data_type, ctx);
     return ctx;
@@ -44,7 +44,7 @@ rubyDuckDBInitInfo *get_struct_init_info(VALUE obj) {
  *
  *   init_info.set_error('Invalid initialization')
  */
-static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error) {
+static VALUE table_function_init_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBInitInfo *ctx;
     const char *error_msg;
 
@@ -67,7 +67,7 @@ static VALUE rbduckdb_init_info_set_error(VALUE self, VALUE error) {
  *
  *   init_info.max_threads = 4
  */
-static VALUE rbduckdb_init_info_set_max_threads(VALUE self, VALUE max_threads) {
+static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_threads) {
     rubyDuckDBInitInfo *ctx;
 
     TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
@@ -95,15 +95,15 @@ static VALUE table_function_init_info_column_count(VALUE self) {
     return ULL2NUM(duckdb_init_get_column_count(ctx->info));
 }
 
-void rbduckdb_init_duckdb_table_function_init_info(void) {
+void rbduckdb_init_table_function_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
 #endif
     cDuckDBTableFunctionInitInfo = rb_define_class_under(cDuckDBTableFunction, "InitInfo", rb_cObject);
     rb_define_alloc_func(cDuckDBTableFunctionInitInfo, allocate);
 
-    rb_define_method(cDuckDBTableFunctionInitInfo, "set_error", rbduckdb_init_info_set_error, 1);
-    rb_define_method(cDuckDBTableFunctionInitInfo, "set_max_threads", rbduckdb_init_info_set_max_threads, 1);
-    rb_define_method(cDuckDBTableFunctionInitInfo, "max_threads=", rbduckdb_init_info_set_max_threads, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "set_error", table_function_init_info_set_error, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "set_max_threads", table_function_init_info_set_max_threads, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "max_threads=", table_function_init_info_set_max_threads, 1);
     rb_define_method(cDuckDBTableFunctionInitInfo, "column_count", table_function_init_info_column_count, 0);
 }

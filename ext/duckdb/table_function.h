@@ -11,7 +11,7 @@ struct _rubyDuckDBTableFunction {
 typedef struct _rubyDuckDBTableFunction rubyDuckDBTableFunction;
 
 extern VALUE cDuckDBTableFunction;
-rubyDuckDBTableFunction *get_struct_table_function(VALUE self);
-void rbduckdb_init_duckdb_table_function(void);
+rubyDuckDBTableFunction *rbduckdb_get_struct_table_function(VALUE self);
+void rbduckdb_init_table_function(void);
 
 #endif

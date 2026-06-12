@@ -66,11 +66,11 @@ Init_duckdb_native(void) {
     rbduckdb_init_vector();
     rbduckdb_init_data_chunk();
     rbduckdb_init_memory_helper();
-    rbduckdb_init_duckdb_table_function();
-    rbduckdb_init_duckdb_table_function_bind_info();
-    rbduckdb_init_duckdb_table_function_init_info();
-    rbduckdb_init_duckdb_table_function_function_info();
+    rbduckdb_init_table_function();
+    rbduckdb_init_table_function_bind_info();
+    rbduckdb_init_table_function_init_info();
+    rbduckdb_init_table_function_function_info();
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
-    rbduckdb_init_duckdb_table_description();
+    rbduckdb_init_table_description();
 #endif
 }
