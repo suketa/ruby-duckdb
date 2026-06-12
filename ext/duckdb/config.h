@@ -9,6 +9,6 @@ typedef struct _rubyDuckDBConfig rubyDuckDBConfig;
 
 rubyDuckDBConfig *get_struct_config(VALUE obj);
 
-void rbduckdb_init_duckdb_config(void);
+void rbduckdb_init_config(void);
 
 #endif

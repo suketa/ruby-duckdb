@@ -41,7 +41,7 @@ Init_duckdb_native(void) {
     rb_define_singleton_method(mDuckDB, "library_version", duckdb_s_library_version, 0);
     rb_define_singleton_method(mDuckDB, "vector_size", duckdb_s_vector_size, 0);
 
-    rbduckdb_init_duckdb_error();
+    rbduckdb_init_error();
     rbduckdb_init_database();
     rbduckdb_init_connection();
     rbduckdb_init_result();
@@ -49,9 +49,9 @@ Init_duckdb_native(void) {
     rbduckdb_init_logical_type();
     rbduckdb_init_prepared_statement();
     rbduckdb_init_pending_result();
-    rbduckdb_init_duckdb_blob();
+    rbduckdb_init_blob();
     rbduckdb_init_appender();
-    rbduckdb_init_duckdb_config();
+    rbduckdb_init_config();
     rbduckdb_init_converter();
     rbduckdb_init_extracted_statements();
     rbduckdb_init_instance_cache();
