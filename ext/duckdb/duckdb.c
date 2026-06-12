@@ -56,13 +56,13 @@ Init_duckdb_native(void) {
     rbduckdb_init_extracted_statements();
     rbduckdb_init_instance_cache();
     rbduckdb_init_value();
-    rbduckdb_init_duckdb_scalar_function();
-    rbduckdb_init_duckdb_scalar_function_set();
+    rbduckdb_init_scalar_function();
+    rbduckdb_init_scalar_function_set();
     rbduckdb_init_aggregate_function();
     rbduckdb_init_aggregate_function_set();
     rbduckdb_init_expression();
     rbduckdb_init_client_context();
-    rbduckdb_init_duckdb_scalar_function_bind_info();
+    rbduckdb_init_scalar_function_bind_info();
     rbduckdb_init_vector();
     rbduckdb_init_data_chunk();
     rbduckdb_init_memory_helper();
