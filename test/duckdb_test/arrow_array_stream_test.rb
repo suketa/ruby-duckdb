@@ -119,6 +119,17 @@ module DuckDBTest
       release_arrow_struct(array, 64)
     end
 
+    # Regression test: sweeping an unconsumed stream runs its release callback
+    # during GC, which must not call any Ruby GC API (crashed on ruby-head).
+    def test_unconsumed_streams_can_be_garbage_collected
+      streams = 5.times.map { @conn.query('SELECT * FROM users').arrow_c_stream }
+      GC.start
+      streams.clear
+      GC.start
+
+      assert_empty streams
+    end
+
     def test_stream_release_callback_marks_stream_released
       stream = @conn.query('SELECT * FROM users').arrow_c_stream
       ptr = Fiddle::Pointer.new(stream.to_i)

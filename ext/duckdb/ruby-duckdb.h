@@ -6,6 +6,7 @@
 
 #include "ruby.h"
 #include "ruby/thread.h"
+#include "ruby/atomic.h"
 #include <duckdb.h>
 
 #ifdef HAVE_DUCKDB_UNSAFE_VECTOR_ASSIGN_STRING_ELEMENT_LEN

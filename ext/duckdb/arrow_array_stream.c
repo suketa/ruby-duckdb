@@ -11,12 +11,13 @@ typedef struct {
  * Heap-allocated context referenced by stream.private_data. Consumers may
  * move the stream struct contents out and keep using the callbacks after
  * the Ruby DuckDB::ArrowArrayStream object is gone, so this context is
- * freed only by the stream release callback, and it pins the Result object
- * via rb_gc_register_address until then.
+ * freed only by the stream release callback, and it holds a reference on
+ * the result struct (rbduckdb_result_ref) until then. The release callback
+ * must not call any Ruby API: it can run during GC sweep (via deallocate
+ * of an unconsumed stream) or from a non-Ruby thread.
  */
 typedef struct {
-    VALUE result;
-    duckdb_result *presult;
+    rubyDuckDBResult *presult_ctx;
     duckdb_arrow_options arrow_options;
     char *last_error;
 } arrowArrayStreamContext;
@@ -90,7 +91,7 @@ static int stream_get_schema(struct ArrowArrayStream *stream, struct ArrowSchema
     idx_t column_count;
     idx_t i;
 
-    column_count = duckdb_column_count(ctx->presult);
+    column_count = duckdb_column_count(&(ctx->presult_ctx->result));
     types = calloc((size_t)column_count, sizeof(duckdb_logical_type));
     names = calloc((size_t)column_count, sizeof(const char *));
     if (column_count > 0 && (types == NULL || names == NULL)) {
@@ -100,8 +101,8 @@ static int stream_get_schema(struct ArrowArrayStream *stream, struct ArrowSchema
         return ENOMEM;
     }
     for (i = 0; i < column_count; i++) {
-        types[i] = duckdb_column_logical_type(ctx->presult, i);
-        names[i] = duckdb_column_name(ctx->presult, i);
+        types[i] = duckdb_column_logical_type(&(ctx->presult_ctx->result), i);
+        names[i] = duckdb_column_name(&(ctx->presult_ctx->result), i);
     }
 
     error_data = duckdb_to_arrow_schema(ctx->arrow_options, types, names, column_count, out);
@@ -119,7 +120,7 @@ static int stream_get_next(struct ArrowArrayStream *stream, struct ArrowArray *o
     duckdb_data_chunk chunk;
     duckdb_error_data error_data;
 
-    chunk = duckdb_fetch_chunk(*(ctx->presult));
+    chunk = duckdb_fetch_chunk(ctx->presult_ctx->result);
     if (chunk == NULL) {
         /* End of stream: a released (release == NULL) array. */
         memset(out, 0, sizeof(struct ArrowArray));
@@ -146,7 +147,7 @@ static void stream_release(struct ArrowArrayStream *stream) {
     }
     ctx = (arrowArrayStreamContext *)stream->private_data;
     if (ctx != NULL) {
-        rb_gc_unregister_address(&(ctx->result));
+        rbduckdb_result_unref(ctx->presult_ctx);
         if (ctx->arrow_options != NULL) {
             duckdb_destroy_arrow_options(&(ctx->arrow_options));
         }
@@ -172,9 +173,8 @@ VALUE rbduckdb_create_arrow_array_stream(VALUE oDuckDBResult) {
         rb_raise(rb_eNoMemError, "failed to allocate ArrowArrayStream context");
     }
 
-    ctx->result = oDuckDBResult;
-    rb_gc_register_address(&(ctx->result));
-    ctx->presult = &(presult_ctx->result);
+    rbduckdb_result_ref(presult_ctx);
+    ctx->presult_ctx = presult_ctx;
     ctx->arrow_options = duckdb_result_get_arrow_options(&(presult_ctx->result));
 
     p->stream.get_schema = stream_get_schema;

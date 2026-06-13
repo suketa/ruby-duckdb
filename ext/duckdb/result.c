@@ -57,13 +57,28 @@ static const rb_data_type_t result_data_type = {
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
 
-    duckdb_destroy_result(&(p->result));
-    xfree(p);
+    rbduckdb_result_unref(p);
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBResult *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBResult));
+    rubyDuckDBResult *ctx = calloc((size_t)1, sizeof(rubyDuckDBResult));
+
+    if (ctx == NULL) {
+        rb_raise(rb_eNoMemError, "failed to allocate DuckDB::Result");
+    }
+    ctx->refcount = 1;
     return TypedData_Wrap_Struct(klass, &result_data_type, ctx);
+}
+
+void rbduckdb_result_ref(rubyDuckDBResult *ctx) {
+    RUBY_ATOMIC_FETCH_ADD(ctx->refcount, 1);
+}
+
+void rbduckdb_result_unref(rubyDuckDBResult *ctx) {
+    if (RUBY_ATOMIC_FETCH_SUB(ctx->refcount, 1) == 1) {
+        duckdb_destroy_result(&(ctx->result));
+        free(ctx);
+    }
 }
 
 static size_t memsize(const void *p) {
