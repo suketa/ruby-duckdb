@@ -49,6 +49,13 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { @conn.append_arrow('bad', producer) }
     end
 
+    def test_append_arrow_raises_on_column_count_mismatch
+      @conn.query('CREATE TABLE narrow (id INTEGER)') # source has two columns
+      producer = @conn.query('SELECT * FROM source')
+
+      assert_raises(DuckDB::Error) { @conn.append_arrow('narrow', producer) }
+    end
+
     def test_append_arrow_appends_nothing_for_an_empty_producer
       producer = @conn.query('SELECT * FROM source WHERE id > 100')
 

@@ -79,6 +79,9 @@ static VALUE connection__arrow_converted_schema(VALUE self, VALUE address) {
 
     ctx = rbduckdb_get_struct_connection(self);
     stream = stream_from_address(address);
+    if (stream == NULL) {
+        rb_raise(eDuckDBError, "Arrow producer returned a NULL stream");
+    }
 
     memset(&schema, 0, sizeof(schema));
     rc = stream->get_schema(stream, &schema);
