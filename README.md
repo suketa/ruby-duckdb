@@ -292,7 +292,23 @@ reader = Arrow::RecordBatchReader.import(result.arrow_c_stream.to_i)
 The consumer takes ownership of the stream's contents, so a result can be
 exported only once; exporting the same result again raises `DuckDB::Error`.
 
-This feature is **experimental**: it is built on DuckDB's unstable Arrow
+In the other direction, `DuckDB::Connection#append_arrow` imports an Arrow
+producer into an existing table. Any object responding to `#arrow_c_stream`
+works as the producer — for example a Polars `DataFrame`, or another
+`DuckDB::Result`:
+
+```ruby
+con.query('CREATE TABLE users (id BIGINT, name VARCHAR)')
+rows = con.append_arrow('users', polars_df) # => number of rows appended
+con.query('SELECT * FROM users').to_a
+```
+
+The producer's columns must line up with the table's columns by count and
+position. DuckDB casts compatible column types (e.g. INTEGER into a BIGINT
+column); a type that cannot be cast raises `DuckDB::Error`. `append_arrow` is
+not transactional — wrap it in your own transaction if you need all-or-nothing.
+
+These features are **experimental**: they are built on DuckDB's unstable Arrow
 C API and may change in any minor release.
 
 Note: [red-arrow-format](https://github.com/apache/arrow/tree/main/ruby/red-arrow-format)

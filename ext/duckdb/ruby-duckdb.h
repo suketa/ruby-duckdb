@@ -52,6 +52,7 @@
 #include "./table_function.h"
 #include "./table_description.h"
 #include "./arrow_array_stream.h"
+#include "./arrow_import.h"
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;

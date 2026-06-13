@@ -74,4 +74,5 @@ Init_duckdb_native(void) {
     rbduckdb_init_table_description();
 #endif
     rbduckdb_init_arrow_array_stream();
+    rbduckdb_init_arrow_import();
 }

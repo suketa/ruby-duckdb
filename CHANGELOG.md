@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - add experimental `DuckDB::Result#arrow_c_stream` returning `DuckDB::ArrowArrayStream` to export a query result as an Arrow C stream (Arrow C Data Interface). The stream can be consumed directly by ruby-polars (`Polars::DataFrame.new(result)`) and red-arrow (`Arrow::RecordBatchReader.import(stream.to_i)`).
+- add experimental `DuckDB::Connection#append_arrow(table, producer)` to import an Arrow producer (any object responding to `#arrow_c_stream`, such as a Polars `DataFrame` or a `DuckDB::Result`) into an existing table, returning the number of rows appended.
 - drop Ruby 3.2.
 - add `DuckDB::TableFunction::InitInfo#max_threads=` (and `#set_max_threads`) to hint DuckDB how many worker threads can execute a custom table function concurrently.
 - add `DuckDB::TableFunction::InitInfo#column_count` to get the number of projected result columns of a custom table function scan.

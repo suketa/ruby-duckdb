@@ -383,7 +383,61 @@ module DuckDB
       register_table_function(tf)
     end
 
+    # [EXPERIMENTAL] Appends an Arrow producer into an existing table.
+    #
+    # Reads +producer+ (any object responding to +#arrow_c_stream+, such as a
+    # ruby-polars +DataFrame+ or a +DuckDB::Result+) as an Arrow C stream and
+    # appends its chunks into the existing table +table+. The producer's Arrow
+    # columns must line up with the table's columns positionally and by count.
+    # DuckDB casts compatible column types (e.g. INTEGER into a BIGINT column);
+    # a type that cannot be cast (e.g. a non-numeric VARCHAR into an INTEGER
+    # column) or a column-count mismatch raises +DuckDB::Error+.
+    #
+    # This is not transactional: a schema mismatch fails before any rows are
+    # written, but a rarer mid-stream failure can leave earlier chunks
+    # appended. Wrap the call in your own transaction for all-or-nothing.
+    #
+    # This API is built on DuckDB's unstable Arrow C API and may change in any
+    # minor release.
+    #
+    # @param table [String] the name of the existing target table
+    # @param producer [#arrow_c_stream] the Arrow producer
+    # @raise [TypeError] if +producer+ does not respond to +#arrow_c_stream+
+    # @return [Integer] the number of rows appended
+    #
+    # @example Load a Polars DataFrame into a table
+    #   con.query('CREATE TABLE t (id INTEGER, name VARCHAR)')
+    #   con.append_arrow('t', polars_df)
+    #
+    def append_arrow(table, producer)
+      unless producer.respond_to?(:arrow_c_stream)
+        raise TypeError, "Arrow producer must respond to #arrow_c_stream, got #{producer.class}"
+      end
+
+      stream = producer.arrow_c_stream # keep the producer's stream alive for the duration
+      address = stream.to_i
+      begin
+        append_arrow_chunks(table, address)
+      ensure
+        _arrow_release(address)
+      end
+    end
+
     private
+
+    # Drives the Arrow stream at +address+ chunk by chunk into +table+,
+    # returning the number of rows appended.
+    def append_arrow_chunks(table, address)
+      converted_schema = _arrow_converted_schema(address)
+      rows = 0
+      appender(table) do |app|
+        while (chunk = _arrow_next_chunk(address, converted_schema))
+          rows += chunk.size
+          app.append_data_chunk(chunk)
+        end
+      end
+      rows
+    end
 
     def run_appender_block(appender, &)
       return appender unless block_given?

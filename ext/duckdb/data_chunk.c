@@ -44,6 +44,16 @@ rubyDuckDBDataChunk *rbduckdb_get_struct_data_chunk(VALUE obj) {
     return ctx;
 }
 
+VALUE rbduckdb_create_data_chunk(duckdb_data_chunk chunk, bool owned) {
+    VALUE obj = allocate(cDuckDBDataChunk);
+    rubyDuckDBDataChunk *ctx;
+
+    TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx->data_chunk = chunk;
+    ctx->owned = owned;
+    return obj;
+}
+
 static VALUE data_chunk_initialize(int argc, VALUE *argv, VALUE self) {
     rubyDuckDBDataChunk *ctx;
     VALUE logical_types;
