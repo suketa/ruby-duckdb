@@ -11,6 +11,7 @@ GEM
     bigdecimal (4.1.2)
     csv (3.3.5)
     drb (2.2.3)
+    fiddle (1.1.8)
     json (2.19.5)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
@@ -69,6 +70,7 @@ DEPENDENCIES
   bundler (~> 4.0)
   csv
   duckdb!
+  fiddle
   minitest (~> 6.0)
   parallel (< 2.0)
   rake (~> 13.0)

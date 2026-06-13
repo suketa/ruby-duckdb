@@ -16,6 +16,7 @@ static VALUE result_columns(VALUE oDuckDBResult);
 static VALUE destroy_data_chunk(VALUE arg);
 
 static VALUE result__chunk_stream(VALUE oDuckDBResult);
+static VALUE result_arrow_c_stream(VALUE oDuckDBResult);
 static VALUE yield_rows(VALUE arg);
 static VALUE result__return_type(VALUE oDuckDBResult);
 static VALUE result__statement_type(VALUE oDuckDBResult);
@@ -56,13 +57,28 @@ static const rb_data_type_t result_data_type = {
 static void deallocate(void *ctx) {
     rubyDuckDBResult *p = (rubyDuckDBResult *)ctx;
 
-    duckdb_destroy_result(&(p->result));
-    xfree(p);
+    rbduckdb_result_unref(p);
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBResult *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBResult));
+    rubyDuckDBResult *ctx = calloc((size_t)1, sizeof(rubyDuckDBResult));
+
+    if (ctx == NULL) {
+        rb_raise(rb_eNoMemError, "failed to allocate DuckDB::Result");
+    }
+    ctx->refcount = 1;
     return TypedData_Wrap_Struct(klass, &result_data_type, ctx);
+}
+
+void rbduckdb_result_ref(rubyDuckDBResult *ctx) {
+    RUBY_ATOMIC_FETCH_ADD(ctx->refcount, 1);
+}
+
+void rbduckdb_result_unref(rubyDuckDBResult *ctx) {
+    if (RUBY_ATOMIC_FETCH_SUB(ctx->refcount, 1) == 1) {
+        duckdb_destroy_result(&(ctx->result));
+        free(ctx);
+    }
 }
 
 static size_t memsize(const void *p) {
@@ -647,6 +663,35 @@ static VALUE vector_uuid(void* vector_data, idx_t row_idx) {
     return rbduckdb_uuid_to_ruby(((duckdb_hugeint *)vector_data)[row_idx]);
 }
 
+/*
+ *  call-seq:
+ *    result.arrow_c_stream -> DuckDB::ArrowArrayStream
+ *
+ *  [EXPERIMENTAL] Exports the result as an Arrow C stream
+ *  (Arrow C Data Interface). The returned stream object satisfies the
+ *  Ruby Arrow C stream protocol, so it can be consumed directly by
+ *  ruby-polars, red-arrow and other Arrow consumers:
+ *
+ *    result = con.query('SELECT * FROM users')
+ *    df = Polars::DataFrame.new(result)
+ *
+ *  The stream consumes the result's chunks; a result can be exported
+ *  only once. This API is built on DuckDB's unstable Arrow C API and
+ *  may change in any minor release.
+ */
+static VALUE result_arrow_c_stream(VALUE oDuckDBResult) {
+    rubyDuckDBResult *ctx;
+    VALUE stream;
+
+    TypedData_Get_Struct(oDuckDBResult, rubyDuckDBResult, &result_data_type, ctx);
+    if (ctx->arrow_exported) {
+        rb_raise(eDuckDBError, "result is already exported as an Arrow stream");
+    }
+    stream = rbduckdb_create_arrow_array_stream(oDuckDBResult);
+    ctx->arrow_exported = true;
+    return stream;
+}
+
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
     duckdb_logical_type ty;
     VALUE obj = Qnil;
@@ -671,6 +716,7 @@ void rbduckdb_init_result(void) {
     rb_define_method(cDuckDBResult, "rows_changed", result_rows_changed, 0);
     rb_define_method(cDuckDBResult, "columns", result_columns, 0);
     rb_define_private_method(cDuckDBResult, "_chunk_stream", result__chunk_stream, 0);
+    rb_define_method(cDuckDBResult, "arrow_c_stream", result_arrow_c_stream, 0);
     rb_define_private_method(cDuckDBResult, "_return_type", result__return_type, 0);
     rb_define_private_method(cDuckDBResult, "_statement_type", result__statement_type, 0);
 

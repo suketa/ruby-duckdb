@@ -6,6 +6,7 @@
 
 #include "ruby.h"
 #include "ruby/thread.h"
+#include "ruby/atomic.h"
 #include <duckdb.h>
 
 #ifdef HAVE_DUCKDB_UNSAFE_VECTOR_ASSIGN_STRING_ELEMENT_LEN
@@ -50,6 +51,7 @@
 #include "./memory_helper.h"
 #include "./table_function.h"
 #include "./table_description.h"
+#include "./arrow_array_stream.h"
 
 extern VALUE mDuckDB;
 extern VALUE cDuckDBDatabase;

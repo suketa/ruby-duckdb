@@ -7,6 +7,7 @@ gemspec
 
 gem 'bundler', '~> 4.0'
 gem 'csv'
+gem 'fiddle'
 gem 'minitest', '~> 6.0'
 gem 'rake', '~> 13.0'
 gem 'rake-compiler'
