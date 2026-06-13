@@ -483,7 +483,6 @@ void rbduckdb_init_scalar_function(void) {
     rb_define_alloc_func(cDuckDBScalarFunction, allocate);
     rb_define_method(cDuckDBScalarFunction, "initialize", scalar_function_initialize, 0);
     rb_define_method(cDuckDBScalarFunction, "set_name", scalar_function_set_name, 1);
-    rb_define_method(cDuckDBScalarFunction, "name=", scalar_function_set_name, 1);
     rb_define_private_method(cDuckDBScalarFunction, "_set_return_type", scalar_function__set_return_type, 1);
     rb_define_private_method(cDuckDBScalarFunction, "_set_varargs", scalar_function__set_varargs, 1);
     rb_define_private_method(cDuckDBScalarFunction, "_set_special_handling", scalar_function__set_special_handling, 0);
