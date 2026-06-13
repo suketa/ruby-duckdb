@@ -5,17 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>class DuckDB::Database - RDoc Documentation</title>
+<title>class DuckDB::ArrowArrayStream - RDoc Documentation</title>
 
 
   <meta
     name="keywords"
-    content="ruby,class,DuckDB::Database"
+    content="ruby,class,DuckDB::ArrowArrayStream"
   >
 
     <meta
       name="description"
-      content="class DuckDB::Database: The Database class encapsulates a DuckDB database. Database."
+      content="class DuckDB::ArrowArrayStream: The ArrowArrayStream class represents an exported Arrow C stream of a query result (Arrow C Data Interface). Result#arrow_c_stream and cannot be insta"
     >
 
 
@@ -24,11 +24,11 @@
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="class DuckDB::Database - RDoc Documentation">
+<meta property="og:title" content="class DuckDB::ArrowArrayStream - RDoc Documentation">
 
 
 
-    <meta property="og:description" content="The Database class encapsulates a DuckDB database. Database.">
+    <meta property="og:description" content="The ArrowArrayStream class represents an exported Arrow C stream of a query result (Arrow C Data Interface). Result#arrow_c_stream and cannot be insta">
 
 
 
@@ -36,11 +36,11 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class DuckDB::Database - RDoc Documentation">
+<meta name="twitter:title" content="class DuckDB::ArrowArrayStream - RDoc Documentation">
 
 
 
-    <meta name="twitter:description" content="The Database class encapsulates a DuckDB database. Database.">
+    <meta name="twitter:description" content="The ArrowArrayStream class represents an exported Arrow C stream of a query result (Arrow C Data Interface). Result#arrow_c_stream and cannot be insta">
 
 
 
@@ -480,8 +480,6 @@
 
         <li ><a href="#method-c-new">new</a></li>
 
-        <li ><a href="#method-c-open">open</a></li>
-
       </ul>
     </details>
   </div>
@@ -501,9 +499,9 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-i-close">close</a></li>
+        <li ><a href="#method-i-arrow_c_stream">arrow_c_stream</a></li>
 
-        <li ><a href="#method-i-connect">connect</a></li>
+        <li ><a href="#method-i-to_i">to_i</a></li>
 
       </ul>
     </details>
@@ -528,7 +526,7 @@
 
 </nav>
 
-<main role="main" aria-labelledby="class-DuckDB::Database">
+<main role="main" aria-labelledby="class-DuckDB::ArrowArrayStream">
   
   
     <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
@@ -541,39 +539,39 @@
       
       <li>
         
-        <span>Database</span>
+        <span>ArrowArrayStream</span>
         
       </li>
       
     </ol>
   
 
-  <h1 id="class-DuckDB::Database" class="anchor-link class">
-    class DuckDB::Database
+  <h1 id="class-DuckDB::ArrowArrayStream" class="anchor-link class">
+    class DuckDB::ArrowArrayStream
   </h1>
 
   <section class="description">
     
-<p>The <a href="Database.html"><code>Database</code></a> class encapsulates a <a href="../DuckDB.html"><code>DuckDB</code></a> database.</p>
+<p>The <a href="ArrowArrayStream.html"><code>ArrowArrayStream</code></a> class represents an exported Arrow C stream of a query result (Arrow C Data Interface). It is created by <a href="Result.html#method-i-arrow_c_stream"><code>DuckDB::Result#arrow_c_stream</code></a> and cannot be instantiated directly.</p>
 
-<p>The usage is as follows:</p>
+<p>The object satisfies the Ruby Arrow C stream protocol: <a href="ArrowArrayStream.html#method-i-arrow_c_stream"><code>arrow_c_stream</code></a> returns self and <a href="ArrowArrayStream.html#method-i-to_i"><code>to_i</code></a> returns the address of the underlying <code>struct ArrowArrayStream</code>, so it can be consumed by ruby-polars, red-arrow and other Arrow consumers:</p>
 
-<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<pre class="ruby"><span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * FROM users&#39;</span>)
 
-<span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-comment"># database in memory</span>
-<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-comment"># ruby-polars</span>
+<span class="ruby-identifier">df</span> = <span class="ruby-constant">Polars</span><span class="ruby-operator">::</span><span class="ruby-constant">DataFrame</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">result</span>)
 
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
-
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(1, &#39;Alice&#39;)&quot;</span>)
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(2, &#39;Bob&#39;)&quot;</span>)
-<span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;INSERT into users VALUES(3, &#39;Cathy&#39;)&quot;</span>)
-
-<span class="ruby-identifier">result</span> = <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;SELECT * from users&#39;</span>)
-<span class="ruby-identifier">result</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
-  <span class="ruby-identifier">p</span> <span class="ruby-identifier">row</span>
-<span class="ruby-keyword">end</span>
+<span class="ruby-comment"># red-arrow</span>
+<span class="ruby-identifier">reader</span> = <span class="ruby-constant">Arrow</span><span class="ruby-operator">::</span><span class="ruby-constant">RecordBatchReader</span>.<span class="ruby-identifier">import</span>(<span class="ruby-identifier">result</span>.<span class="ruby-identifier">arrow_c_stream</span>.<span class="ruby-identifier">to_i</span>)
 </pre>
+
+<p>The consumer takes ownership of the stream’s contents; a result can be exported only once.</p>
+<dl class="rdoc-list label-list"><dt>EXPERIMENTAL</dt>
+<dd>
+<p>This API is built on DuckDB’s unstable Arrow C API and</p>
+</dd></dl>
+
+<p>may change in any minor release.</p>
 
   </section>
 
@@ -603,7 +601,7 @@
             <div class="method-heading">
               <a href="#method-c-new" title="Link to this method">
                 <span class="method-name">new</span>
-                <span class="method-args">(path = :memory, config: nil, &amp;block)</span>
+                <span class="method-args">()</span>
               </a>
             </div>
 
@@ -616,15 +614,9 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/database.rb, line 31</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">path</span> = <span class="ruby-value">:memory</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">path</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">!=</span> <span class="ruby-value">:memory</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;path must be a String or :memory, got #{path.inspect}&quot;</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-identifier">dbpath</span> = <span class="ruby-identifier">path</span> <span class="ruby-operator">==</span> <span class="ruby-value">:memory</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">path</span>
-  <span class="ruby-identifier">_initialize</span>(<span class="ruby-identifier">dbpath</span>, <span class="ruby-identifier">config</span>)
-  <span class="ruby-identifier">_yield_self_and_close</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/arrow_array_stream.rb, line 28</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;DuckDB::ArrowArrayStream cannot be instantiated directly. Use DuckDB::Result#arrow_c_stream.&#39;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
 
@@ -633,76 +625,7 @@
         <div class="method-description">
 
 
-          <p>Opens a <a href="../DuckDB.html"><code>DuckDB</code></a> database.</p>
-
-<pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>                    <span class="ruby-comment">#=&gt; in-memory database</span>
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:memory</span>)           <span class="ruby-comment">#=&gt; in-memory database</span>
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;test.db&#39;</span>)         <span class="ruby-comment">#=&gt; file database</span>
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;test.db&#39;</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>) <span class="ruby-comment">#=&gt; with config</span>
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)    <span class="ruby-comment">#=&gt; in-memory with config</span>
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-c-open" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-c-open" title="Link to this method">
-                <span class="method-name">open</span>
-                <span class="method-args">(path = :memory, *args, config: nil) { |db| ... }</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="open-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/database.rb, line 53</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">open</span>(<span class="ruby-identifier">path</span> = <span class="ruby-value">:memory</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>)
-  <span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">_handle_deprecated_open_args</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">config</span>)
-
-  <span class="ruby-identifier">db</span> = <span class="ruby-identifier">new</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">db</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
-
-  <span class="ruby-keyword">begin</span>
-    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">db</span>
-  <span class="ruby-keyword">ensure</span>
-    <span class="ruby-identifier">db</span>.<span class="ruby-identifier">close</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Opens database.</p>
-
-<pre class="ruby"><span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>                          <span class="ruby-comment">#=&gt; in-memory database</span>
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;test.db&#39;</span>)               <span class="ruby-comment">#=&gt; file database</span>
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&#39;test.db&#39;</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>(<span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)          <span class="ruby-comment">#=&gt; in-memory with config</span>
-
-<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">db</span><span class="ruby-operator">|</span>
-  <span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
-  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
-<span class="ruby-keyword">end</span>
-</pre>
+          
 
 
         </div>
@@ -728,14 +651,14 @@
        </header>
 
 
-      <div id="method-i-close" class="method-detail anchor-link ">
+      <div id="method-i-arrow_c_stream" class="method-detail anchor-link ">
         <div class="method-header">
 
 
               <div class="method-heading">
-                <a href="#method-i-close" title="Link to this method">
+                <a href="#method-i-arrow_c_stream" title="Link to this method">
                   <span class="method-callseq">
-                    close &rarr; DuckDB::Database
+                    arrow_c_stream &rarr; self
                   </span>
                 </a>
               </div>
@@ -749,11 +672,8 @@
               <summary>Source</summary>
             </details>
           </div>
-          <div class="method-source-code" id="close-source">
-            <pre class="c" data-language="c">static VALUE database_close(VALUE self) {
-    rubyDuckDB *ctx;
-    TypedData_Get_Struct(self, rubyDuckDB, &amp;database_data_type, ctx);
-    close_database(ctx);
+          <div class="method-source-code" id="arrow_c_stream-source">
+            <pre class="c" data-language="c">static VALUE arrow_array_stream_arrow_c_stream(VALUE self) {
     return self;
 }</pre>
           </div>
@@ -763,7 +683,7 @@
         <div class="method-description">
 
 
-          <p>closes <a href="../DuckDB.html"><code>DuckDB</code></a> database.</p>
+          <p>Returns self. Defined so that the stream object itself satisfies the Arrow C stream protocol used by ruby-polars and others.</p>
 
 
         </div>
@@ -775,15 +695,18 @@
       </div>
 
 
-      <div id="method-i-connect" class="method-detail anchor-link ">
+      <div id="method-i-to_i" class="method-detail anchor-link ">
         <div class="method-header">
 
-            <div class="method-heading">
-              <a href="#method-i-connect" title="Link to this method">
-                <span class="method-name">connect</span>
-                <span class="method-args">() { |conn| ... }</span>
-              </a>
-            </div>
+
+              <div class="method-heading">
+                <a href="#method-i-to_i" title="Link to this method">
+                  <span class="method-callseq">
+                    to_i &rarr; Integer
+                  </span>
+                </a>
+              </div>
+
 
         </div>
 
@@ -793,18 +716,13 @@
               <summary>Source</summary>
             </details>
           </div>
-          <div class="method-source-code" id="connect-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/database.rb, line 103</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">connect</span>
-  <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">_connect</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">conn</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+          <div class="method-source-code" id="to_i-source">
+            <pre class="c" data-language="c">static VALUE arrow_array_stream_to_i(VALUE self) {
+    rubyDuckDBArrowArrayStream *p;
 
-  <span class="ruby-keyword">begin</span>
-    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">conn</span>
-  <span class="ruby-keyword">ensure</span>
-    <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">disconnect</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
+    TypedData_Get_Struct(self, rubyDuckDBArrowArrayStream, &amp;arrow_array_stream_data_type, p);
+    return ULL2NUM((unsigned long long)(uintptr_t)&amp;(p-&gt;stream));
+}</pre>
           </div>
 
 
@@ -812,17 +730,9 @@
         <div class="method-description">
 
 
-          <p>connects database.</p>
+          <p>Returns the address of the underlying C <code>struct ArrowArrayStream</code>. Arrow consumers such as red-arrow accept this address directly:</p>
 
-<p>The method yields block and disconnects the database if block given</p>
-
-<pre class="ruby"><span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
-
-<span class="ruby-identifier">con</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-comment"># =&gt; DuckDB::Connection</span>
-
-<span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">con</span><span class="ruby-operator">|</span>
-  <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&#39;CREATE TABLE users (id INTEGER, name VARCHAR(30))&#39;</span>)
-<span class="ruby-keyword">end</span>
+<pre class="ruby"><span class="ruby-identifier">reader</span> = <span class="ruby-constant">Arrow</span><span class="ruby-operator">::</span><span class="ruby-constant">RecordBatchReader</span>.<span class="ruby-identifier">import</span>(<span class="ruby-identifier">stream</span>.<span class="ruby-identifier">to_i</span>)
 </pre>
 
 
