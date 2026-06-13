@@ -5,17 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>class DuckDB::Expression - RDoc Documentation</title>
+<title>class DuckDB::ArrowConvertedSchema - RDoc Documentation</title>
 
 
   <meta
     name="keywords"
-    content="ruby,class,DuckDB::Expression"
+    content="ruby,class,DuckDB::ArrowConvertedSchema"
   >
 
     <meta
       name="description"
-      content="class DuckDB::Expression: Expression represents a DuckDB expression object. BindInfo#get_argument during the bind phase of a scalar function."
+      content="Documentation for the DuckDB::ArrowConvertedSchema class"
     >
 
 
@@ -24,11 +24,14 @@
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="class DuckDB::Expression - RDoc Documentation">
+<meta property="og:title" content="class DuckDB::ArrowConvertedSchema - RDoc Documentation">
 
 
 
-    <meta property="og:description" content="Expression represents a DuckDB expression object. BindInfo#get_argument during the bind phase of a scalar function.">
+    <meta
+      property="og:description"
+      content="Documentation for DuckDB::ArrowConvertedSchema class - API reference and code examples"
+    >
 
 
 
@@ -36,11 +39,14 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class DuckDB::Expression - RDoc Documentation">
+<meta name="twitter:title" content="class DuckDB::ArrowConvertedSchema - RDoc Documentation">
 
 
 
-    <meta name="twitter:description" content="Expression represents a DuckDB expression object. BindInfo#get_argument during the bind phase of a scalar function.">
+    <meta
+      name="twitter:description"
+      content="Documentation for DuckDB::ArrowConvertedSchema class - API reference and code examples"
+    >
 
 
 
@@ -467,27 +473,6 @@
   
 
 
-  <div class="nav-section">
-    <details class="nav-section-collapsible" open>
-      <summary class="nav-section-header">
-        <span class="nav-section-icon">
-          <svg><use href="#icon-instance-methods"></use></svg>
-        </span>
-        <span class="nav-section-title">Instance Methods</span>
-        <span class="nav-section-chevron">
-          <svg><use href="#icon-chevron"></use></svg>
-        </span>
-      </summary>
-      <ul class="nav-list" role="directory">
-
-        <li ><a href="#method-i-fold">fold</a></li>
-
-        <li ><a href="#method-i-foldable-3F">foldable?</a></li>
-
-      </ul>
-    </details>
-  </div>
-
 
   <div id="classindex-section" class="nav-section">
   <details class="nav-section-collapsible" open>
@@ -507,7 +492,7 @@
 
 </nav>
 
-<main role="main" aria-labelledby="class-DuckDB::Expression">
+<main role="main" aria-labelledby="class-DuckDB::ArrowConvertedSchema">
   
   
     <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
@@ -520,23 +505,19 @@
       
       <li>
         
-        <span>Expression</span>
+        <span>ArrowConvertedSchema</span>
         
       </li>
       
     </ol>
   
 
-  <h1 id="class-DuckDB::Expression" class="anchor-link class">
-    class DuckDB::Expression
+  <h1 id="class-DuckDB::ArrowConvertedSchema" class="anchor-link class">
+    class DuckDB::ArrowConvertedSchema
   </h1>
 
   <section class="description">
     
-<p><a href="Expression.html"><code>DuckDB::Expression</code></a> represents a <a href="../DuckDB.html"><code>DuckDB</code></a> expression object.</p>
-
-<p>Instances are returned by DuckDB::ScalarFunction::BindInfo#get_argument during the bind phase of a scalar function.</p>
-
   </section>
 
 
@@ -558,111 +539,6 @@
 
 
 
-
-     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
-       <header>
-         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
-       </header>
-
-
-      <div id="method-i-fold" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-i-fold" title="Link to this method">
-                <span class="method-name">fold</span>
-                <span class="method-args">(client_context)</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="fold-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/expression.rb, line 18</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">fold</span>(<span class="ruby-identifier">client_context</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&#39;expression is not foldable&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">foldable?</span>
-
-  <span class="ruby-identifier">_fold</span>(<span class="ruby-identifier">client_context</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Evaluates the expression at planning time and returns a <a href="Value.html"><code>DuckDB::Value</code></a> holding the constant result. Raises <a href="Error.html"><code>DuckDB::Error</code></a> if the expression is not foldable.</p>
-
-<pre class="ruby"><span class="ruby-identifier">sf</span>.<span class="ruby-identifier">set_bind</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">bind_info</span><span class="ruby-operator">|</span>
-  <span class="ruby-identifier">expr</span>           = <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">get_argument</span>(<span class="ruby-value">0</span>)
-  <span class="ruby-identifier">client_context</span> = <span class="ruby-identifier">bind_info</span>.<span class="ruby-identifier">client_context</span>
-  <span class="ruby-identifier">value</span>          = <span class="ruby-identifier">expr</span>.<span class="ruby-identifier">fold</span>(<span class="ruby-identifier">client_context</span>)   <span class="ruby-comment"># =&gt; DuckDB::Value</span>
-<span class="ruby-keyword">end</span>
-</pre>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-foldable-3F" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-foldable-3F" title="Link to this method">
-                  <span class="method-callseq">
-                    foldable? &rarr; true or false
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="foldable-3F-source">
-            <pre class="c" data-language="c">static VALUE expression_foldable_p(VALUE self) {
-    rubyDuckDBExpression *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBExpression, &amp;expression_data_type, ctx);
-    return duckdb_expression_is_foldable(ctx-&gt;expression) ? Qtrue : Qfalse;
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Returns <code>true</code> if the expression can be folded to a constant at query planning time (e.g. literals, constant arithmetic), <code>false</code> otherwise (e.g. column references, non-deterministic functions).</p>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-    </section>
 
 
 
