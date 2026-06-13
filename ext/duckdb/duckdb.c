@@ -73,4 +73,5 @@ Init_duckdb_native(void) {
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
     rbduckdb_init_table_description();
 #endif
+    rbduckdb_init_arrow_array_stream();
 }

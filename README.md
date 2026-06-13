@@ -266,6 +266,42 @@ res.first.first # => 4
 
 Set `DuckDB.default_timezone` to control how TIMESTAMP and TIME values without time zone are converted to Ruby `Time` objects. The default is `:local`, but you can use `:utc` for UTC conversion.
 
+### Arrow interop (experimental)
+
+`DuckDB::Result#arrow_c_stream` exports a query result as an Arrow C stream
+([Arrow C Data Interface](https://arrow.apache.org/docs/format/CDataInterface.html)).
+The returned `DuckDB::ArrowArrayStream` satisfies the Ruby Arrow C stream
+protocol (`#arrow_c_stream` / `#to_i`), so query results can be handed to
+Arrow consumers in columnar form, without converting each row to Ruby objects.
+
+With [ruby-polars](https://github.com/ankane/ruby-polars), no glue code is needed:
+
+```ruby
+result = con.query('SELECT * FROM users')
+df = Polars::DataFrame.new(result)
+```
+
+With [red-arrow](https://github.com/apache/arrow/tree/main/ruby/red-arrow),
+pass the stream address to `Arrow::RecordBatchReader.import`:
+
+```ruby
+result = con.query('SELECT * FROM users')
+reader = Arrow::RecordBatchReader.import(result.arrow_c_stream.to_i)
+```
+
+The consumer takes ownership of the stream's contents, so a result can be
+exported only once; exporting the same result again raises `DuckDB::Error`.
+
+This feature is **experimental**: it is built on DuckDB's unstable Arrow
+C API and may change in any minor release.
+
+Note: [red-arrow-format](https://github.com/apache/arrow/tree/main/ruby/red-arrow-format)
+(the pure-Ruby Arrow implementation) supports only the Arrow IPC
+serialization format, not the C Data Interface. To exchange data with it,
+write/read Arrow IPC files through DuckDB's
+[arrow community extension](https://duckdb.org/community_extensions/extensions/arrow.html)
+(`COPY ... TO 'data.arrows'` / `read_arrow(...)`).
+
 ## Versioning and DuckDB support
 
 The first three digits of the gem version track the DuckDB release that the

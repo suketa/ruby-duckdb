@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBResult {
     duckdb_result result;
+    bool arrow_exported;
 };
 
 typedef struct _rubyDuckDBResult rubyDuckDBResult;
