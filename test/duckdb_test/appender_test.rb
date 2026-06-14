@@ -451,6 +451,12 @@ module DuckDBTest
       assert_equal('The argument `18.555` must be Integer.', e.message)
     end
 
+    def test_append_uuid
+      assert_duckdb_appender('550e8400-e29b-41d4-a716-446655440000', 'UUID') do |appender|
+        appender.append_uuid('550e8400-e29b-41d4-a716-446655440000')
+      end
+    end
+
     def test_append_varchar
       assert_duckdb_appender('foobarbaz', 'VARCHAR') { |a| a.append_varchar('foobarbaz') }
     end
