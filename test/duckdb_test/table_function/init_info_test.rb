@@ -108,6 +108,38 @@ module DuckDBTest
       assert_equal 2, observed_column_count
     end
 
+    def test_init_info_column_index
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_column_index'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('id', DuckDB::LogicalType::BIGINT)
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      observed_column_indexes = nil
+      table_function.init do |init_info|
+        observed_column_indexes = [init_info.column_index(0), init_info.column_index(1)]
+      end
+
+      done = false
+      table_function.execute do |_func_info, output|
+        if done
+          output.size = 0
+        else
+          output.set_value(0, 0, 1)
+          output.set_value(1, 0, 10)
+          output.size = 1
+          done = true
+        end
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_column_index()').each.to_a
+
+      assert_equal [0, 1], observed_column_indexes
+    end
+
     def test_init_info_alias
       assert_same DuckDB::TableFunction::InitInfo, DuckDB::InitInfo
     end

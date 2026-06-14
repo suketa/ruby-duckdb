@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - drop Ruby 3.2.
 - add `DuckDB::TableFunction::InitInfo#max_threads=` (and `#set_max_threads`) to hint DuckDB how many worker threads can execute a custom table function concurrently.
 - add `DuckDB::TableFunction::InitInfo#column_count` to get the number of projected result columns of a custom table function scan.
+- add `DuckDB::TableFunction::InitInfo#column_index` to get the source column index of a given projected result column of a custom table function scan.
 
 # 1.5.3.0 - 2026-05-24
 - bump up DuckDB 1.5.3 on CI.
