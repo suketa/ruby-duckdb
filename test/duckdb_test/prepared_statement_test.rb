@@ -465,6 +465,7 @@ module DuckDBTest
 
     def test_bind_uuid_returns_self
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT $1::UUID')
+
       assert_same stmt, stmt.bind_uuid(1, '550e8400-e29b-41d4-a716-446655440000')
     end
 

@@ -459,6 +459,7 @@ module DuckDBTest
 
     def test_append_uuid_returns_self
       create_appender('col UUID')
+
       assert_same @appender, @appender.append_uuid('550e8400-e29b-41d4-a716-446655440000')
     ensure
       safe_drop_table
