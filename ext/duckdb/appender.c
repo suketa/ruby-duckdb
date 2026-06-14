@@ -35,6 +35,7 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper);
 static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper);
+static VALUE appender__append_uuid(VALUE self, VALUE val);
 static VALUE appender__append_value(VALUE self, VALUE val);
 static VALUE appender__append_data_chunk(VALUE self, VALUE chunk);
 static VALUE appender__append_default_to_chunk(VALUE self, VALUE chunk, VALUE col, VALUE row);
@@ -454,6 +455,21 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
 }
 
 /* :nodoc: */
+static VALUE appender__append_uuid(VALUE self, VALUE val) {
+    rubyDuckDBAppender *ctx;
+    duckdb_uhugeint uhugeint;
+    duckdb_value uuid_val;
+    duckdb_state state;
+
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+    rbduckdb_uuid_str_to_uhugeint(val, &uhugeint);
+    uuid_val = duckdb_create_uuid(uhugeint);
+    state = duckdb_append_value(ctx->appender, uuid_val);
+    duckdb_destroy_value(&uuid_val);
+    return state_to_rbool(state);
+}
+
+/* :nodoc: */
 static VALUE appender__append_value(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
     rubyDuckDBValue *value_ctx;
@@ -578,6 +594,7 @@ void rbduckdb_init_appender(void) {
     rb_define_private_method(cDuckDBAppender, "_append_timestamp", appender__append_timestamp, 7);
     rb_define_private_method(cDuckDBAppender, "_append_hugeint", appender__append_hugeint, 2);
     rb_define_private_method(cDuckDBAppender, "_append_uhugeint", appender__append_uhugeint, 2);
+    rb_define_private_method(cDuckDBAppender, "_append_uuid", appender__append_uuid, 1);
     rb_define_private_method(cDuckDBAppender, "_append_value", appender__append_value, 1);
     rb_define_private_method(cDuckDBAppender, "_append_data_chunk", appender__append_data_chunk, 1);
     rb_define_private_method(cDuckDBAppender, "_append_default_to_chunk", appender__append_default_to_chunk, 3);

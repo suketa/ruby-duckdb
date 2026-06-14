@@ -203,6 +203,33 @@ void rbduckdb_uuid_str_to_hugeint(VALUE uuid_str, duckdb_hugeint *out)
     }
 }
 
+/*
+ * Ruby-callable wrapper: parse a UUID string VALUE into a duckdb_uhugeint
+ * (no sign-bit flip), raising ArgumentError on invalid input.
+ */
+void rbduckdb_uuid_str_to_uhugeint(VALUE uuid_str, duckdb_uhugeint *out)
+{
+    StringValue(uuid_str);
+    const char *str = RSTRING_PTR(uuid_str);
+    long len = RSTRING_LEN(uuid_str);
+    if (len != 36 ||
+        str[8] != '-' || str[13] != '-' || str[18] != '-' || str[23] != '-') {
+        rb_raise(rb_eArgError, "Invalid UUID format: %"PRIsVALUE, uuid_str);
+    }
+    uint64_t hi = 0, lo = 0;
+    int nibble_idx = 0;
+    for (int string_idx = 0; string_idx < 36; string_idx++) {
+        if (string_idx == 8 || string_idx == 13 || string_idx == 18 || string_idx == 23) continue;
+        int nib = hex_nibble((unsigned char)str[string_idx]);
+        if (nib < 0) rb_raise(rb_eArgError, "Invalid UUID format: %"PRIsVALUE, uuid_str);
+        if (nibble_idx < 16) hi = (hi << 4) | (uint64_t)nib;
+        else lo = (lo << 4) | (uint64_t)nib;
+        nibble_idx++;
+    }
+    out->upper = hi;
+    out->lower = lo;
+}
+
 VALUE rbduckdb_interval_to_ruby(duckdb_interval i) {
     return rb_funcall(mDuckDBConverter, id__to_interval_from_vector, 3,
                       INT2NUM(i.months),
