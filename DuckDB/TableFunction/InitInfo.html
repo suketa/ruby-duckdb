@@ -482,6 +482,8 @@
 
         <li ><a href="#method-i-column_count">column_count</a></li>
 
+        <li ><a href="#method-i-column_index">column_index</a></li>
+
         <li ><a href="#method-i-max_threads-3D">max_threads=</a></li>
 
         <li ><a href="#method-i-set_error">set_error</a></li>
@@ -625,6 +627,57 @@
           <p>Returns the number of projected result columns for this scan. Without projection pushdown this equals the number of result columns added in the bind callback.</p>
 
 <pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">column_count</span> <span class="ruby-comment"># =&gt; 2</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-column_index" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-column_index" title="Link to this method">
+                  <span class="method-callseq">
+                    column_index(index) &rarr; Integer
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="column_index-source">
+            <pre class="c" data-language="c">static VALUE table_function_init_info_column_index(VALUE self, VALUE index) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+
+    return ULL2NUM(duckdb_init_get_column_index(ctx-&gt;info, NUM2ULL(index)));
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the column index of the projected result column at <code>index</code> (0 &lt;= <code>index</code> &lt; <a href="InitInfo.html#method-i-column_count"><code>column_count</code></a>). Without projection pushdown the projected columns mirror the columns added in the bind callback, so this returns <code>index</code> itself.</p>
+
+<pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">column_index</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; 0</span>
 </pre>
 
 
