@@ -38,6 +38,7 @@ static VALUE prepared_statement__bind_timestamp_tz(VALUE self, VALUE vidx, VALUE
 static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros);
 static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
 static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper);
+static VALUE prepared_statement__bind_uuid(VALUE self, VALUE vidx, VALUE val);
 static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale);
 static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val);
 
@@ -559,6 +560,25 @@ static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lowe
 }
 
 /* :nodoc: */
+static VALUE prepared_statement__bind_uuid(VALUE self, VALUE vidx, VALUE val) {
+    rubyDuckDBPreparedStatement *ctx;
+    duckdb_uhugeint uhugeint;
+    duckdb_value uuid_val;
+    duckdb_state state;
+    idx_t idx = check_index(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    rbduckdb_uuid_str_to_uhugeint(val, &uhugeint);
+    uuid_val = duckdb_create_uuid(uhugeint);
+    state = duckdb_bind_value(ctx->prepared_statement, idx, uuid_val);
+    duckdb_destroy_value(&uuid_val);
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+    return self;
+}
+
+/* :nodoc: */
 static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
     rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBValue *val_ctx;
@@ -617,6 +637,7 @@ void rbduckdb_init_prepared_statement(void) {
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_interval", prepared_statement__bind_interval, 4);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_hugeint", prepared_statement__bind_hugeint, 3);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_uhugeint", prepared_statement__bind_uhugeint, 3);
+    rb_define_private_method(cDuckDBPreparedStatement, "_bind_uuid", prepared_statement__bind_uuid, 2);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_decimal", prepared_statement__bind_decimal, 5);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_value", prepared_statement__bind_value, 2);
 }

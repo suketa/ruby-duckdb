@@ -153,22 +153,21 @@ static int hex_nibble(unsigned char c)
 
 /*
  * Parse a canonical UUID string ("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") into
- * a duckdb_hugeint. Returns true on success, false on invalid input.
+ * two uint64_t halves. Returns true on success, false on invalid input.
  *
  * Iterates the 36-character string, skipping the four dash positions. The 32
- * hex nibbles are accumulated directly into two uint64_t halves (hi, lo) with
- * no bignum arithmetic or intermediate allocation. The sign-bit flip is applied
- * to hi before storing in upper, matching DuckDB's internal UUID representation.
+ * hex nibbles are accumulated directly into hi (upper 64 bits) and lo (lower
+ * 64 bits) with no bignum arithmetic or intermediate allocation.
  */
-static bool uuid_str_to_hugeint(const char *str, long len, duckdb_hugeint *out)
+static bool parse_uuid_string(const char *str, long len, uint64_t *hi, uint64_t *lo)
 {
-    // Expected format: 8-4-4-4-12 = 36 characters with dashes at fixed positions
     if (len != 36 ||
         str[8] != '-' || str[13] != '-' || str[18] != '-' || str[23] != '-') {
         return false;
     }
 
-    uint64_t hi = 0, lo = 0;
+    *hi = 0;
+    *lo = 0;
     int nibble_idx = 0;
 
     for (int string_idx = 0; string_idx < 36; string_idx++) {
@@ -176,13 +175,27 @@ static bool uuid_str_to_hugeint(const char *str, long len, duckdb_hugeint *out)
         int nib = hex_nibble((unsigned char)str[string_idx]);
         if (nib < 0) return false;
         if (nibble_idx < 16) {
-            hi = (hi << 4) | (uint64_t)nib;
+            *hi = (*hi << 4) | (uint64_t)nib;
         } else {
-            lo = (lo << 4) | (uint64_t)nib;
+            *lo = (*lo << 4) | (uint64_t)nib;
         }
         nibble_idx++;
     }
 
+    return true;
+}
+
+/*
+ * Parse a canonical UUID string ("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") into
+ * a duckdb_hugeint. Returns true on success, false on invalid input.
+ *
+ * The sign-bit flip is applied to hi before storing in upper, matching
+ * DuckDB's internal UUID representation.
+ */
+static bool uuid_str_to_hugeint(const char *str, long len, duckdb_hugeint *out)
+{
+    uint64_t hi, lo;
+    if (!parse_uuid_string(str, len, &hi, &lo)) return false;
     // Apply the sign-bit flip to match DuckDB's internal UUID representation
     out->upper = (int64_t)(hi ^ DUCKDB_UUID_SIGN_BIT);
     out->lower = lo;
@@ -201,6 +214,23 @@ void rbduckdb_uuid_str_to_hugeint(VALUE uuid_str, duckdb_hugeint *out)
     if (!uuid_str_to_hugeint(str, len, out)) {
         rb_raise(rb_eArgError, "Invalid UUID format: %"PRIsVALUE, uuid_str);
     }
+}
+
+/*
+ * Ruby-callable wrapper: parse a UUID string VALUE into a duckdb_uhugeint
+ * (no sign-bit flip), raising ArgumentError on invalid input.
+ */
+void rbduckdb_uuid_str_to_uhugeint(VALUE uuid_str, duckdb_uhugeint *out)
+{
+    StringValue(uuid_str);
+    const char *str = RSTRING_PTR(uuid_str);
+    long len = RSTRING_LEN(uuid_str);
+    uint64_t hi, lo;
+    if (!parse_uuid_string(str, len, &hi, &lo)) {
+        rb_raise(rb_eArgError, "Invalid UUID format: %"PRIsVALUE, uuid_str);
+    }
+    out->upper = hi;
+    out->lower = lo;
 }
 
 VALUE rbduckdb_interval_to_ruby(duckdb_interval i) {

@@ -558,6 +558,29 @@ module DuckDB
       raise_appender_error('failed to append_uhugeint')
     end
 
+    # :call-seq:
+    #   appender.append_uuid(val) -> self
+    #
+    # Appends a UUID value to the current row in the appender.
+    # +val+ must be a String in canonical UUID format
+    # (<tt>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</tt>).
+    # Raises ArgumentError if +val+ is not a valid UUID string.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE uuids (id UUID)')
+    #   appender = con.appender('uuids')
+    #   appender
+    #     .append_uuid('550e8400-e29b-41d4-a716-446655440000')
+    #     .end_row
+    #     .flush
+    def append_uuid(value)
+      return self if _append_uuid(value)
+
+      raise_appender_error('failed to append_uuid')
+    end
+
     # call-seq:
     #   appender.append_date(val) -> self
     #

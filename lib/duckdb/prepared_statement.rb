@@ -193,6 +193,23 @@ module DuckDB
       _bind_uhugeint(index, lower, upper)
     end
 
+    # binds i-th parameter with a UUID value.
+    # The first argument is the index of the parameter (1-based).
+    # The second argument must be a String in canonical UUID format
+    # (<tt>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</tt>).
+    # Raises ArgumentError if the value is not a valid UUID string.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.query('CREATE TABLE uuids (id UUID)')
+    #   stmt = DuckDB::PreparedStatement.new(con, 'INSERT INTO uuids(id) VALUES ($1)')
+    #   stmt.bind_uuid(1, '550e8400-e29b-41d4-a716-446655440000')
+    #   stmt.execute
+    def bind_uuid(index, value)
+      _bind_uuid(index, value)
+    end
+
     # binds i-th parameter with SQL prepared statement.
     # The first argument is index of parameter.
     # The index of first parameter is 1 not 0.

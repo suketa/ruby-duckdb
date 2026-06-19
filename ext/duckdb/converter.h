@@ -19,6 +19,7 @@ extern ID id__decimal_to_unscaled;
 VALUE rbduckdb_uuid_to_ruby(duckdb_hugeint h);
 VALUE rbduckdb_uuid_uhugeint_to_ruby(duckdb_uhugeint h);
 void rbduckdb_uuid_str_to_hugeint(VALUE uuid_str, duckdb_hugeint *out);
+void rbduckdb_uuid_str_to_uhugeint(VALUE uuid_str, duckdb_uhugeint *out);
 VALUE rbduckdb_interval_to_ruby(duckdb_interval i);
 VALUE rbduckdb_hugeint_to_ruby(duckdb_hugeint h);
 VALUE rbduckdb_uhugeint_to_ruby(duckdb_uhugeint h);

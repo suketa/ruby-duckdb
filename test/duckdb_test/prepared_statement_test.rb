@@ -449,6 +449,31 @@ module DuckDBTest
       assert_equal(value, stmt.execute.each.first[0])
     end
 
+    def test_bind_uuid
+      uuid = '550e8400-e29b-41d4-a716-446655440000'
+      @con.query('CREATE TABLE uuids (id UUID)')
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'INSERT INTO uuids(id) VALUES ($1)')
+      stmt.bind_uuid(1, uuid)
+      stmt.execute
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM uuids WHERE id = $1')
+      stmt.bind_uuid(1, uuid)
+
+      assert_equal(uuid, stmt.execute.each.first[0])
+    end
+
+    def test_bind_uuid_returns_self
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT $1::UUID')
+
+      assert_same stmt, stmt.bind_uuid(1, '550e8400-e29b-41d4-a716-446655440000')
+    end
+
+    def test_bind_uuid_with_invalid_uuid_string
+      stmt = DuckDB::PreparedStatement.new(@con, 'SELECT $1::UUID')
+      assert_raises(ArgumentError) { stmt.bind_uuid(1, 'not-a-uuid') }
+    end
+
     def test_bind_float
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_real = $1')
 
