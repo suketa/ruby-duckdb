@@ -475,6 +475,10 @@
 <p>add <a href="DuckDB/TableFunction/InitInfo.html#method-i-column_count"><code>DuckDB::TableFunction::InitInfo#column_count</code></a> to get the number of projected result columns of a custom table function scan.</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction/InitInfo.html#method-i-column_index"><code>DuckDB::TableFunction::InitInfo#column_index</code></a> to get the source column index of a given projected result column of a custom table function scan.</p>
+</li><li>
+<p>add <a href="DuckDB/Appender.html#method-i-append_uuid"><code>DuckDB::Appender#append_uuid(value)</code></a> to append a UUID value to a <code>UUID</code> column. <code>value</code> must be a String in canonical UUID format (<code>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code>).</p>
+</li><li>
+<p>add <a href="DuckDB/PreparedStatement.html#method-i-bind_uuid"><code>DuckDB::PreparedStatement#bind_uuid(index, value)</code></a> to bind a UUID parameter. <code>value</code> must be a String in canonical UUID format.</p>
 </li></ul>
 
 <h1 id="label-1.5.3.0+-+2026-05-24"><a href="#label-1.5.3.0+-+2026-05-24">1.5.3.0 - 2026-05-24</a></h1>
