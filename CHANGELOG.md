@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- bump up DuckDB 1.5.4 and 1.4.5 on CI.
 - add experimental `DuckDB::Result#arrow_c_stream` returning `DuckDB::ArrowArrayStream` to export a query result as an Arrow C stream (Arrow C Data Interface). The stream can be consumed directly by ruby-polars (`Polars::DataFrame.new(result)`) and red-arrow (`Arrow::RecordBatchReader.import(stream.to_i)`).
 - add experimental `DuckDB::Connection#append_arrow(table, producer)` to import an Arrow producer (any object responding to `#arrow_c_stream`, such as a Polars `DataFrame` or a `DuckDB::Result`) into an existing table, returning the number of rows appended.
 - drop Ruby 3.2.
