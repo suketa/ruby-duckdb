@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. ArrowArrayStream` to export a query result as an Arrow C stream (Arrow"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased - bump up DuckDB 1."
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. ArrowArrayStream` to export a query result as an Arrow C stream (Arrow">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased - bump up DuckDB 1.">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. ArrowArrayStream` to export a query result as an Arrow C stream (Arrow">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased - bump up DuckDB 1.">
 
 
 
@@ -464,6 +464,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>bump up <a href="DuckDB.html"><code>DuckDB</code></a> 1.5.4 and 1.4.5 on CI.</p>
+</li><li>
 <p>add experimental <a href="DuckDB/Result.html#method-i-arrow_c_stream"><code>DuckDB::Result#arrow_c_stream</code></a> returning <a href="DuckDB/ArrowArrayStream.html"><code>DuckDB::ArrowArrayStream</code></a> to export a query result as an Arrow C stream (Arrow C Data Interface). The stream can be consumed directly by ruby-polars (<code>Polars::DataFrame.new(result)</code>) and red-arrow (<code>Arrow::RecordBatchReader.import(stream.to_i)</code>).</p>
 </li><li>
 <p>add experimental <a href="DuckDB/Connection.html#method-i-append_arrow"><code>DuckDB::Connection#append_arrow(table, producer)</code></a> to import an Arrow producer (any object responding to arrow_c_stream, such as a Polars <code>DataFrame</code> or a <a href="DuckDB/Result.html"><code>DuckDB::Result</code></a>) into an existing table, returning the number of rows appended.</p>
