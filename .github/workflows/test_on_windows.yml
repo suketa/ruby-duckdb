@@ -53,6 +53,15 @@ jobs:
         DUCKDB_VERSION: ${{ matrix.duckdb }}
       run: |
         curl -OL https://github.com/duckdb/duckdb/releases/download/v${env:DUCKDB_VERSION}/libduckdb-windows-amd64.zip
+        switch ($env:DUCKDB_VERSION) {
+          "1.5.4" { $EXPECTED_SHA256 = "74e73afd3b010c6f310e14a961fff679f876952bc196f82584b0e2e76d11a91f" }
+          "1.4.5" { $EXPECTED_SHA256 = "f2079105369a2698f7d9663e5908a16919e7b03f4ff681ceb716b270a5903a11" }
+          default { Write-Error "No known SHA256 for DuckDB v$env:DUCKDB_VERSION"; exit 1 }
+        }
+        $ACTUAL_SHA256 = (Get-FileHash libduckdb-windows-amd64.zip -Algorithm SHA256).Hash
+        if ($ACTUAL_SHA256 -ne $EXPECTED_SHA256) {
+          Write-Error "SHA256 mismatch: expected $EXPECTED_SHA256, got $ACTUAL_SHA256"; exit 1
+        }
         mkdir libduckdb-windows-amd64
         unzip libduckdb-windows-amd64.zip -d libduckdb-windows-amd64
 
