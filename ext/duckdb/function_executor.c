@@ -565,3 +565,39 @@ void rbduckdb_function_executor_dispatch_via_proxy(rbduckdb_function_callback_t 
 void rbduckdb_function_executor_dispatch(rbduckdb_function_callback_t cb, void *user_data) {
     rbduckdb_function_executor_dispatch_via_proxy(cb, user_data, NULL);
 }
+
+static VALUE g_function_data_registry = Qnil;
+static unsigned long long g_function_data_next_id = 0;
+
+static void function_data_registry_ensure(void) {
+    if (g_function_data_registry == Qnil) {
+        g_function_data_registry = rb_hash_new();
+        rb_global_variable(&g_function_data_registry);
+    }
+}
+
+void *rbduckdb_function_data_register(VALUE value) {
+    unsigned long long id;
+
+    function_data_registry_ensure();
+    id = ++g_function_data_next_id;
+    rb_hash_aset(g_function_data_registry, ULL2NUM(id), value);
+    return (void *)(uintptr_t)id;
+}
+
+VALUE rbduckdb_function_data_lookup(void *data) {
+    if (data == NULL || g_function_data_registry == Qnil) {
+        return Qnil;
+    }
+    return rb_hash_aref(g_function_data_registry, ULL2NUM((unsigned long long)(uintptr_t)data));
+}
+
+void rbduckdb_function_data_release(void *data) {
+    if (g_function_data_registry == Qnil) return;
+    rb_hash_delete(g_function_data_registry, ULL2NUM((unsigned long long)(uintptr_t)data));
+}
+
+void rbduckdb_function_data_destroy(void *data) {
+    if (data == NULL) return;
+    rbduckdb_function_executor_dispatch(rbduckdb_function_data_release, data);
+}

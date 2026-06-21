@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBBindInfo {
     duckdb_bind_info bind_info;
+    void *bind_data_handle;
 };
 
 typedef struct _rubyDuckDBBindInfo rubyDuckDBBindInfo;
