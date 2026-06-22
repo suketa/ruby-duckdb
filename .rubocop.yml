@@ -36,6 +36,7 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Exclude:
     - 'lib/duckdb/converter.rb'
+    - 'lib/duckdb/converter/int_to_sym.rb'
 
 Style/Documentation:
   Enabled: false
