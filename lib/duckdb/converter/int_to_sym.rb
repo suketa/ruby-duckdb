@@ -76,7 +76,59 @@ module DuckDB
         38 => :integer_literal
       }.freeze
 
+      ERROR_TYPES = %i[
+        invalid
+        out_of_range
+        conversion
+        unknown_type
+        decimal
+        mismatch_type
+        divide_by_zero
+        object_size
+        invalid_type
+        serialization
+        transaction
+        not_implemented
+        expression
+        catalog
+        parser
+        planner
+        scheduler
+        executor
+        constraint
+        index
+        stat
+        connection
+        syntax
+        settings
+        binder
+        network
+        optimizer
+        null_pointer
+        io
+        interrupt
+        fatal
+        internal
+        invalid_input
+        out_of_memory
+        permission
+        parameter_not_resolved
+        parameter_not_allowed
+        dependency
+        http
+        missing_extension
+        autoload
+        sequence
+        invalid_configuration
+      ].freeze
+
       module_function
+
+      def error_type_to_sym(val) # :nodoc:
+        raise DuckDB::Error, "Unknown error type: #{val}" if val >= ERROR_TYPES.size
+
+        ERROR_TYPES[val]
+      end
 
       def statement_type_to_sym(val) # :nodoc:
         raise DuckDB::Error, "Unknown statement type: #{val}" if val >= STATEMENT_TYPES.size

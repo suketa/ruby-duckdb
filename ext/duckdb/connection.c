@@ -198,7 +198,7 @@ static VALUE connection__query_sql(VALUE self, VALUE str) {
     RB_GC_GUARD(str);
 
     if (args.retval == DuckDBError) {
-        rb_raise(eDuckDBError, "%s", duckdb_result_error(&(ctxr->result)));
+        rbduckdb_raise_result_error(&(ctxr->result));
     }
     return result;
 }
