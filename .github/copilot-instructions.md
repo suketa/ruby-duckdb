@@ -113,7 +113,7 @@ rubocop -a
 ### Ruby Code Style
 - Frozen string literals: `# frozen_string_literal: true` at top of all files
 - Line length: 120 characters max
-- Target Ruby version: 3.2+
+- Target Ruby version: 3.3+
 - Documentation: Inline for complex Ruby logic; C functions use comment blocks with `call-seq:`
 - RuboCop config excludes C extension, benchmarks, vendor, tmp, pkg
 
@@ -121,7 +121,7 @@ rubocop -a
 - Gem version: `lib/duckdb/version.rb` (`DuckDB::VERSION`)
 - Library version: Dynamically retrieved from DuckDB via `DuckDB.library_version`
 - Minimum DuckDB: 1.3.0 (enforced in `extconf.rb`)
-- Minimum Ruby: 3.2.0 (in gemspec)
+- Minimum Ruby: 3.3.0 (in gemspec)
 
 ### Performance
 - Use `Appender` for bulk inserts (10-50x faster than prepared statements)
