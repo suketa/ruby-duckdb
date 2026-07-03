@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value#to_ruby` converting a `DuckDB::Value` to a Ruby object. LIST/ARRAY values are converted to Ruby Arrays recursively; NULL becomes `nil`.
 - add `DuckDB::Value.create_struct(struct_type, values)` to create STRUCT values from a STRUCT `DuckDB::LogicalType` and an Array of `DuckDB::Value` field values (positional, matching field order).
 - add `DuckDB::Value#struct_child(index)` to read STRUCT fields as `DuckDB::Value`. `DuckDB::Value#to_ruby` converts STRUCT values to a Hash with Symbol keys recursively.
+- add `DuckDB::Value.create_map(map_type, keys, values)` to create MAP values from a MAP `DuckDB::LogicalType` and parallel Arrays of `DuckDB::Value` keys and values.
+- add `DuckDB::Value#map_size`, `#map_key(index)` and `#map_value(index)` to read MAP entries as `DuckDB::Value`. `DuckDB::Value#to_ruby` converts MAP values to a Hash recursively (keys keep their natural Ruby type).
 - add `DuckDB::Error#error_type` returning the DuckDB error category as a Symbol (e.g. `:constraint`, `:catalog`, `:parser`), or `nil` for errors not originating from a query result. Helps the ActiveRecord adapter map failures to `RecordNotUnique` / `NotNullViolation` etc. without parsing error messages.
 
 # 1.5.4.0 - 2026-06-20

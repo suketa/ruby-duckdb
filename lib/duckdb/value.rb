@@ -308,6 +308,35 @@ module DuckDB
         _create_struct(struct_type, values)
       end
 
+      # Creates a DuckDB::Value of MAP type.
+      # The first argument is the MAP DuckDB::LogicalType.
+      # The second and third arguments are parallel Arrays of DuckDB::Value
+      # keys and values.
+      #
+      #   map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
+      #   keys = [DuckDB::Value.create_varchar('a'), DuckDB::Value.create_varchar('b')]
+      #   values = [DuckDB::Value.create_int32(1), DuckDB::Value.create_int32(2)]
+      #   map = DuckDB::Value.create_map(map_type, keys, values)
+      #
+      # @param map_type [DuckDB::LogicalType] the MAP logical type.
+      # @param keys [Array<DuckDB::Value>] the map keys.
+      # @param values [Array<DuckDB::Value>] the map values, matching +keys+ by position.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if map_type is not a MAP DuckDB::LogicalType,
+      #   keys or values is not an Array of DuckDB::Value, or their sizes differ.
+      def create_map(map_type, keys, values)
+        check_type!(map_type, DuckDB::LogicalType)
+        raise ArgumentError, "expected MAP LogicalType, got #{map_type.type}" unless map_type.type == :map
+
+        check_value_array!(keys)
+        check_value_array!(values)
+        unless keys.size == values.size
+          raise ArgumentError, "keys and values must have equal size (#{keys.size} != #{values.size})"
+        end
+
+        _create_map(map_type, keys, values)
+      end
+
       private
 
       def check_value_array!(values)

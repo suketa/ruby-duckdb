@@ -26,9 +26,13 @@ static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
 static VALUE value_s__create_array(VALUE klass, VALUE ltype, VALUE values);
 static VALUE value_s__create_struct(VALUE klass, VALUE ltype, VALUE values);
+static VALUE value_s__create_map(VALUE klass, VALUE ltype, VALUE keys, VALUE values);
 static VALUE value_list_size(VALUE self);
 static VALUE value_list_child(VALUE self, VALUE vidx);
 static VALUE value_struct_child(VALUE self, VALUE vidx);
+static VALUE value_map_size(VALUE self);
+static VALUE value_map_key(VALUE self, VALUE vidx);
+static VALUE value_map_value(VALUE self, VALUE vidx);
 static VALUE value_to_ruby(VALUE self);
 
 static const rb_data_type_t value_data_type = {
@@ -238,6 +242,28 @@ static VALUE value_s__create_struct(VALUE klass, VALUE ltype, VALUE values) {
     return rbduckdb_value_new(value);
 }
 
+/* :nodoc: */
+static VALUE value_s__create_map(VALUE klass, VALUE ltype, VALUE keys, VALUE values) {
+    duckdb_logical_type type = rbduckdb_get_struct_logical_type(ltype)->logical_type;
+    duckdb_value *kbuf;
+    duckdb_value *vbuf;
+    volatile VALUE kguard;
+    volatile VALUE vguard;
+    idx_t n = marshal_values(keys, &kbuf, &kguard);
+    duckdb_value value;
+
+    marshal_values(values, &vbuf, &vguard);   /* same length, validated in Ruby */
+    value = duckdb_create_map_value(type, kbuf, vbuf, n);
+    RB_GC_GUARD(keys);
+    RB_GC_GUARD(values);
+    ALLOCV_END(kguard);
+    ALLOCV_END(vguard);
+    if (value == NULL) {
+        rb_raise(eDuckDBError, "failed to create MAP value");
+    }
+    return rbduckdb_value_new(value);
+}
+
 /*
  *  call-seq:
  *    value.list_size -> Integer
@@ -296,6 +322,71 @@ static VALUE value_struct_child(VALUE self, VALUE vidx) {
 
     if (child == NULL) {
         rb_raise(rb_eIndexError, "struct index out of range (or the value is not a STRUCT)");
+    }
+    return rbduckdb_value_new(child);
+}
+
+/*
+ *  call-seq:
+ *    value.map_size -> Integer
+ *
+ *  Returns the number of entries of a MAP value.
+ *
+ *    require 'duckdb'
+ *    map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
+ *    keys = [DuckDB::Value.create_varchar('a')]
+ *    values = [DuckDB::Value.create_int32(1)]
+ *    map = DuckDB::Value.create_map(map_type, keys, values)
+ *    map.map_size # => 1
+ */
+static VALUE value_map_size(VALUE self) {
+    return ULL2NUM(duckdb_get_map_size(rbduckdb_get_struct_value(self)->value));
+}
+
+/*
+ *  call-seq:
+ *    value.map_key(index) -> DuckDB::Value
+ *
+ *  Returns the key at the specified index (0-based) of a MAP value
+ *  as a DuckDB::Value.
+ *  Raises IndexError if the index is out of range or the value is not a MAP.
+ *
+ *    require 'duckdb'
+ *    map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
+ *    keys = [DuckDB::Value.create_varchar('a')]
+ *    values = [DuckDB::Value.create_int32(1)]
+ *    map = DuckDB::Value.create_map(map_type, keys, values)
+ *    map.map_key(0) # => DuckDB::Value
+ */
+static VALUE value_map_key(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_map_key(rbduckdb_get_struct_value(self)->value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, "map index out of range (or the value is not a MAP)");
+    }
+    return rbduckdb_value_new(child);
+}
+
+/*
+ *  call-seq:
+ *    value.map_value(index) -> DuckDB::Value
+ *
+ *  Returns the value at the specified index (0-based) of a MAP value
+ *  as a DuckDB::Value.
+ *  Raises IndexError if the index is out of range or the value is not a MAP.
+ *
+ *    require 'duckdb'
+ *    map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
+ *    keys = [DuckDB::Value.create_varchar('a')]
+ *    values = [DuckDB::Value.create_int32(1)]
+ *    map = DuckDB::Value.create_map(map_type, keys, values)
+ *    map.map_value(0) # => DuckDB::Value
+ */
+static VALUE value_map_value(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_map_value(rbduckdb_get_struct_value(self)->value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, "map index out of range (or the value is not a MAP)");
     }
     return rbduckdb_value_new(child);
 }
@@ -429,6 +520,19 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
                 duckdb_free(name);
             }
             break;
+        case DUCKDB_TYPE_MAP:
+            size = duckdb_get_map_size(val);
+            result = rb_hash_new();
+            for (i = 0; i < size; i++) {
+                duckdb_value k = duckdb_get_map_key(val, i);
+                duckdb_value v = duckdb_get_map_value(val, i);
+                VALUE rk = rbduckdb_duckdb_value_to_ruby(k);
+                VALUE rv = rbduckdb_duckdb_value_to_ruby(v);
+                duckdb_destroy_value(&k);
+                duckdb_destroy_value(&v);
+                rb_hash_aset(result, rk, rv);
+            }
+            break;
         case DUCKDB_TYPE_ARRAY: {
             /* the C API has no duckdb_get_array_size/child; read via a vector */
             duckdb_logical_type child_type = duckdb_array_type_child_type(logical_type);
@@ -499,10 +603,14 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_map", value_s__create_map, 3);
     rb_define_singleton_method(cDuckDBValue, "create_null", value_s_create_null, 0);
 
     rb_define_method(cDuckDBValue, "list_size", value_list_size, 0);
     rb_define_method(cDuckDBValue, "list_child", value_list_child, 1);
     rb_define_method(cDuckDBValue, "struct_child", value_struct_child, 1);
+    rb_define_method(cDuckDBValue, "map_size", value_map_size, 0);
+    rb_define_method(cDuckDBValue, "map_key", value_map_key, 1);
+    rb_define_method(cDuckDBValue, "map_value", value_map_value, 1);
     rb_define_method(cDuckDBValue, "to_ruby", value_to_ruby, 0);
 }
