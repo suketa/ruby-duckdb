@@ -14,6 +14,7 @@ static idx_t check_index(VALUE vidx);
 
 static VALUE prepared_statement_bind_parameter_index(VALUE self, VALUE name);
 static VALUE prepared_statement_parameter_name(VALUE self, VALUE vidx);
+static VALUE prepared_statement_param_logical_type(VALUE self, VALUE vidx);
 static VALUE prepared_statement_clear_bindings(VALUE self);
 static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val);
 static VALUE prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val);
@@ -202,6 +203,28 @@ static VALUE prepared_statement_parameter_name(VALUE self, VALUE vidx) {
     vname = rb_str_new2(name);
     duckdb_free((void *)name);
     return vname;
+}
+
+/*
+ *  call-seq:
+ *    prepared_statement.param_logical_type(param_index) -> DuckDB::LogicalType
+ *
+ *  Returns the logical type of the parameter at the given (1-based) index.
+ *  This provides richer type information than #param_type, e.g. decimal
+ *  width/scale, nested types.
+ */
+static VALUE prepared_statement_param_logical_type(VALUE self, VALUE vidx) {
+    rubyDuckDBPreparedStatement *ctx;
+    duckdb_logical_type logical_type;
+    idx_t idx = check_index(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    logical_type = duckdb_param_logical_type(ctx->prepared_statement, idx);
+    if (logical_type == NULL) {
+        rb_raise(eDuckDBError, "fail to get logical type of the parameter at %llu. parameter index is out of range.", (unsigned long long)idx);
+    }
+    return rbduckdb_create_logical_type(logical_type);
 }
 
 /*
@@ -611,6 +634,7 @@ void rbduckdb_init_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "nparams", prepared_statement_nparams, 0);
     rb_define_method(cDuckDBPreparedStatement, "bind_parameter_index", prepared_statement_bind_parameter_index, 1);
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", prepared_statement_parameter_name, 1);
+    rb_define_method(cDuckDBPreparedStatement, "param_logical_type", prepared_statement_param_logical_type, 1);
     rb_define_method(cDuckDBPreparedStatement, "clear_bindings", prepared_statement_clear_bindings, 0);
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int8", prepared_statement_bind_int8, 2);
