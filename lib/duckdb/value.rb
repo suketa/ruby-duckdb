@@ -279,6 +279,35 @@ module DuckDB
         _create_array(child_type, values)
       end
 
+      # Creates a DuckDB::Value of STRUCT type.
+      # The first argument is the STRUCT DuckDB::LogicalType.
+      # The second argument is an Array of DuckDB::Value field values,
+      # positional, matching the struct's field order.
+      #
+      #   struct_type = DuckDB::LogicalType.create_struct(a: :integer, b: :varchar)
+      #   values = [DuckDB::Value.create_int32(1), DuckDB::Value.create_varchar('x')]
+      #   struct = DuckDB::Value.create_struct(struct_type, values)
+      #
+      # @param struct_type [DuckDB::LogicalType] the STRUCT logical type.
+      # @param values [Array<DuckDB::Value>] the field values, in field order.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if struct_type is not a STRUCT DuckDB::LogicalType,
+      #   values is not an Array of DuckDB::Value, or values.size does not match
+      #   the struct's field count.
+      def create_struct(struct_type, values)
+        check_type!(struct_type, DuckDB::LogicalType)
+        raise ArgumentError, "expected STRUCT LogicalType, got #{struct_type.type}" unless struct_type.type == :struct
+
+        check_value_array!(values)
+        # The C API's duckdb_create_struct_value reads exactly child_count
+        # values from the buffer with no count argument, so a size mismatch
+        # here would cause an out-of-bounds read in C.
+        n = struct_type.child_count
+        raise ArgumentError, "expected #{n} values for STRUCT, got #{values.size}" unless values.size == n
+
+        _create_struct(struct_type, values)
+      end
+
       private
 
       def check_value_array!(values)
