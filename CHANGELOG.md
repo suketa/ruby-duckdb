@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - bump Ruby to 3.4.10 on CI.
+- add `DuckDB::Value.create_list(child_type, values)` and `DuckDB::Value.create_array(child_type, values)` to create LIST/ARRAY values from a `DuckDB::LogicalType` and an Array of `DuckDB::Value` elements. The created values can be bound to prepared statements with `#bind_value`.
+- add `DuckDB::Value#list_size` and `DuckDB::Value#list_child(index)` to read LIST value elements as `DuckDB::Value`.
+- add `DuckDB::Value#to_ruby` converting a `DuckDB::Value` to a Ruby object. LIST/ARRAY values are converted to Ruby Arrays recursively; NULL becomes `nil`.
 - add `DuckDB::Error#error_type` returning the DuckDB error category as a Symbol (e.g. `:constraint`, `:catalog`, `:parser`), or `nil` for errors not originating from a query result. Helps the ActiveRecord adapter map failures to `RecordNotUnique` / `NotNullViolation` etc. without parsing error messages.
 
 # 1.5.4.0 - 2026-06-20
