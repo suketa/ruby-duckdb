@@ -166,10 +166,18 @@ static VALUE value_s_create_null(VALUE klass) {
  * an ALLOCV tmpbuf; the caller must call ALLOCV_END(*guard) after use.
  * The buffer is non-NULL even for an empty array because
  * duckdb_create_*_value functions reject a NULL values pointer.
+ *
+ * This always allocates via rb_alloc_tmp_buffer_with_count (heap-backed)
+ * rather than the ALLOCV_N macro, because that macro's small-size fast
+ * path uses alloca() in *this* function's stack frame: the returned
+ * pointer would dangle once marshal_values returns, and a second call
+ * (e.g. keys then values for MAP) would silently reuse and clobber the
+ * same stack slot as the first call's "buffer".
  */
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard) {
     idx_t n = (idx_t)RARRAY_LEN(ary);
-    duckdb_value *buf = ALLOCV_N(duckdb_value, *guard, n == 0 ? 1 : n);
+    idx_t count = n == 0 ? 1 : n;
+    duckdb_value *buf = (duckdb_value *)rb_alloc_tmp_buffer_with_count(guard, count * sizeof(duckdb_value), count);
     idx_t i;
 
     for (i = 0; i < n; i++) {
