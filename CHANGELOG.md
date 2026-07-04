@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - bump Ruby to 3.4.10 on CI.
+- add `DuckDB::PreparedStatement#column_count`, `#column_name(col_index)`, `#column_type(col_index)` and `#column_logical_type(col_index)` to get the result-set column metadata of a prepared statement without executing it (column index is 0-based). Useful for PG-style statement caching where column types must be known before execution.
 - add `DuckDB::Error#error_type` returning the DuckDB error category as a Symbol (e.g. `:constraint`, `:catalog`, `:parser`), or `nil` for errors not originating from a query result. Helps the ActiveRecord adapter map failures to `RecordNotUnique` / `NotNullViolation` etc. without parsing error messages.
 
 # 1.5.4.0 - 2026-06-20
