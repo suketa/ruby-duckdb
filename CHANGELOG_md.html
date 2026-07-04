@@ -466,6 +466,8 @@
 <ul><li>
 <p>bump Ruby to 3.4.10 on CI.</p>
 </li><li>
+<p>add <a href="DuckDB/PreparedStatement.html#method-i-column_count"><code>DuckDB::PreparedStatement#column_count</code></a>, column_name(col_index), column_type(col_index) and column_logical_type(col_index) to get the result-set column metadata of a prepared statement without executing it (column index is 0-based). Useful for PG-style statement caching where column types must be known before execution.</p>
+</li><li>
 <p>add <a href="DuckDB/Error.html#method-i-error_type"><code>DuckDB::Error#error_type</code></a> returning the <a href="DuckDB.html"><code>DuckDB</code></a> error category as a Symbol (e.g. <code>:constraint</code>, <code>:catalog</code>, <code>:parser</code>), or <code>nil</code> for errors not originating from a query result. Helps the ActiveRecord adapter map failures to <code>RecordNotUnique</code> / <code>NotNullViolation</code> etc. without parsing error messages.</p>
 </li></ul>
 
