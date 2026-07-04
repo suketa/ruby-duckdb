@@ -173,7 +173,7 @@ static VALUE value_s_create_null(VALUE klass) {
  * The buffer is non-NULL even for an empty array because
  * duckdb_create_*_value functions reject a NULL values pointer.
  *
- * This always allocates via rb_alloc_tmp_buffer_with_count (heap-backed)
+ * This always allocates via rb_alloc_tmp_buffer2 (heap-backed)
  * rather than the ALLOCV_N macro, because that macro's small-size fast
  * path uses alloca() in *this* function's stack frame: the returned
  * pointer would dangle once marshal_values returns, and a second call
@@ -183,7 +183,7 @@ static VALUE value_s_create_null(VALUE klass) {
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard) {
     idx_t n = (idx_t)RARRAY_LEN(ary);
     idx_t count = n == 0 ? 1 : n;
-    duckdb_value *buf = (duckdb_value *)rb_alloc_tmp_buffer_with_count(guard, count * sizeof(duckdb_value), count);
+    duckdb_value *buf = (duckdb_value *)rb_alloc_tmp_buffer2(guard, (long)count, sizeof(duckdb_value));
     idx_t i;
 
     for (i = 0; i < n; i++) {
