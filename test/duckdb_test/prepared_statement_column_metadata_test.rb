@@ -55,5 +55,28 @@ module DuckDBTest
       assert_equal 9, logical_type.width
       assert_equal 4, logical_type.scale
     end
+
+    def test_column_logical_type_out_of_range
+      stmt = @con.prepared_statement('SELECT id FROM users')
+
+      assert_raises(DuckDB::Error) { stmt.column_logical_type(1) }
+    end
+
+    # When any result column type is ambiguous (untyped parameter),
+    # metadata collapses to a single column of invalid type named 'unknown'.
+    def test_ambiguous_column_types
+      stmt = @con.prepared_statement('SELECT $1::TEXT, $2::INTEGER, $3')
+
+      assert_equal 1, stmt.column_count
+      assert_equal :invalid, stmt.column_type(0)
+      assert_equal :invalid, stmt.column_logical_type(0).type
+    end
+
+    def test_ambiguous_column_name
+      stmt = @con.prepared_statement('SELECT $1::TEXT, $2::INTEGER, $3')
+
+      assert_equal 'unknown', stmt.column_name(0)
+      assert_raises(DuckDB::Error) { stmt.column_name(1) }
+    end
   end
 end
