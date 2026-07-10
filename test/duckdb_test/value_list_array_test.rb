@@ -32,6 +32,20 @@ module DuckDBTest
       assert_raises(IndexError) { list.list_child(2) }
     end
 
+    def test_list_size_on_non_list_value
+      assert_equal(0, DuckDB::Value.create_int32(42).list_size)
+    end
+
+    def test_list_child_on_non_list_value
+      assert_raises(IndexError) { DuckDB::Value.create_int32(42).list_child(0) }
+    end
+
+    def test_create_list_with_mismatched_element_type
+      values = [DuckDB::Value.create_varchar('x')]
+
+      assert_raises(DuckDB::Error) { DuckDB::Value.create_list(integer_type, values) }
+    end
+
     def test_list_to_ruby
       list = DuckDB::Value.create_list(integer_type, int_values(1, 2, 3))
 
@@ -60,6 +74,12 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Value, array)
       assert_equal([10, 20, 30], array.to_ruby)
+    end
+
+    def test_empty_array_to_ruby
+      array = DuckDB::Value.create_array(integer_type, [])
+
+      assert_empty(array.to_ruby)
     end
 
     def test_array_with_null_element_to_ruby
@@ -98,6 +118,19 @@ module DuckDBTest
       stmt.bind_value(1, list)
 
       assert_equal(6, stmt.execute.first.first)
+    ensure
+      con&.close
+      db&.close
+    end
+
+    def test_bind_array_value_to_prepared_statement
+      db = DuckDB::Database.open
+      con = db.connect
+      array = DuckDB::Value.create_array(integer_type, int_values(1, 2, 3))
+      stmt = con.prepared_statement('SELECT ?::INTEGER[3] AS a')
+      stmt.bind_value(1, array)
+
+      assert_equal([1, 2, 3], stmt.execute.first.first)
     ensure
       con&.close
       db&.close
