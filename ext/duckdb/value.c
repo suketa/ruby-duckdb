@@ -274,8 +274,13 @@ rubyDuckDBValue *rbduckdb_get_struct_value(VALUE obj) {
 
 VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
     duckdb_logical_type logical_type;
+    duckdb_logical_type child_type;
     duckdb_type type_id;
+    duckdb_value child_value;
+    duckdb_vector vec;
+    duckdb_vector child_vec;
     VALUE result;
+    VALUE elem;
     char *str;
     idx_t i;
     idx_t size;
@@ -284,6 +289,7 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
         return Qnil;
     }
 
+    /* logical_type from duckdb_get_value_type is borrowed and must not be destroyed */
     logical_type = duckdb_get_value_type(val);
     type_id = duckdb_get_type_id(logical_type);
 
@@ -369,35 +375,31 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             size = duckdb_get_list_size(val);
             result = rb_ary_new_capa(size);
             for (i = 0; i < size; i++) {
-                duckdb_value child = duckdb_get_list_child(val, i);
-                VALUE elem = rbduckdb_duckdb_value_to_ruby(child);
-                duckdb_destroy_value(&child);
+                child_value = duckdb_get_list_child(val, i);
+                elem = rbduckdb_duckdb_value_to_ruby(child_value);
+                duckdb_destroy_value(&child_value);
                 rb_ary_push(result, elem);
             }
             break;
-        case DUCKDB_TYPE_ARRAY: {
+        case DUCKDB_TYPE_ARRAY:
             /* the C API has no duckdb_get_array_size/child; read via a vector */
-            duckdb_logical_type child_type = duckdb_array_type_child_type(logical_type);
-            duckdb_vector vec = duckdb_create_vector(logical_type, 1);
-            duckdb_vector child;
-
+            child_type = duckdb_array_type_child_type(logical_type);
+            vec = duckdb_create_vector(logical_type, 1);
             size = duckdb_array_type_array_size(logical_type);
             duckdb_vector_reference_value(vec, val);
-            child = duckdb_array_vector_get_child(vec);
+            child_vec = duckdb_array_vector_get_child(vec);
             result = rb_ary_new_capa(size);
             for (i = 0; i < size; i++) {
-                rb_ary_push(result, rbduckdb_vector_value_at(child, child_type, i));
+                rb_ary_push(result, rbduckdb_vector_value_at(child_vec, child_type, i));
             }
             duckdb_destroy_logical_type(&child_type);
             duckdb_destroy_vector(&vec);
             break;
-        }
         default:
             result = Qnil;
             break;
     }
 
-    /* logical_type from duckdb_get_value_type is borrowed and must not be destroyed */
     return result;
 }
 
@@ -406,8 +408,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
  *    value.to_ruby -> Object
  *
  *  Converts the DuckDB::Value to a Ruby object. Scalar types are converted
- *  to their natural Ruby classes. LIST values are converted to Array
- *  recursively. NULL is converted to nil. Returns nil for unsupported types.
+ *  to their natural Ruby classes. LIST and ARRAY values are converted to
+ *  Array recursively. NULL is converted to nil. Returns nil for unsupported
+ *  types.
  *
  *    require 'duckdb'
  *    child_type = DuckDB::LogicalType.resolve(:integer)
