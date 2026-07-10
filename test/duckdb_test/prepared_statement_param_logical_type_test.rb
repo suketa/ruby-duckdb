@@ -31,10 +31,38 @@ module DuckDBTest
       assert_equal(4, logical_type.scale)
     end
 
+    def test_param_logical_type_list
+      @con.query('CREATE TABLE items (tags INTEGER[])')
+      stmt = @con.prepared_statement('SELECT * FROM items WHERE tags = ?')
+      logical_type = stmt.param_logical_type(1)
+
+      assert_equal(:list, logical_type.type)
+      assert_equal(:integer, logical_type.child_type.type)
+    end
+
+    def test_param_logical_type_named_parameter
+      stmt = @con.prepared_statement('SELECT * FROM users WHERE id = $id')
+      logical_type = stmt.param_logical_type(stmt.bind_parameter_index('id'))
+
+      assert_equal(:integer, logical_type.type)
+    end
+
+    def test_param_logical_type_untyped_parameter
+      stmt = @con.prepared_statement('SELECT $1')
+
+      assert_raises(DuckDB::Error) { stmt.param_logical_type(1) }
+    end
+
     def test_param_logical_type_out_of_range
       stmt = @con.prepared_statement('SELECT * FROM users WHERE id = ?')
 
       assert_raises(DuckDB::Error) { stmt.param_logical_type(2) }
+    end
+
+    def test_param_logical_type_with_zero_index
+      stmt = @con.prepared_statement('SELECT * FROM users WHERE id = ?')
+
+      assert_raises(ArgumentError) { stmt.param_logical_type(0) }
     end
   end
 end
