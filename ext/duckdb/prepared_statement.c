@@ -28,6 +28,10 @@ static VALUE prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob);
 static VALUE prepared_statement_bind_null(VALUE self, VALUE vidx);
 static VALUE prepared_statement__statement_type(VALUE self);
 static VALUE prepared_statement__param_type(VALUE self, VALUE vidx);
+static VALUE prepared_statement_column_count(VALUE self);
+static VALUE prepared_statement_column_name(VALUE self, VALUE vidx);
+static VALUE prepared_statement__column_type(VALUE self, VALUE vidx);
+static VALUE prepared_statement_column_logical_type(VALUE self, VALUE vidx);
 static VALUE prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val);
 static VALUE prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val);
 static VALUE prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val);
@@ -381,6 +385,91 @@ static VALUE prepared_statement__statement_type(VALUE self) {
     return INT2FIX(duckdb_prepared_statement_type(ctx->prepared_statement));
 }
 
+/*
+ *  call-seq:
+ *    prepared_statement.column_count -> Integer
+ *
+ *  Returns the number of columns in the result set of the prepared statement
+ *  without executing it.
+ *
+ *    require 'duckdb'
+ *    db = DuckDB::Database.open
+ *    con = db.connect
+ *    stmt = con.prepared_statement('SELECT 1 AS a, 2 AS b')
+ *    stmt.column_count # => 2
+ */
+static VALUE prepared_statement_column_count(VALUE self) {
+    rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    return ULL2NUM(duckdb_prepared_statement_column_count(ctx->prepared_statement));
+}
+
+/*
+ *  call-seq:
+ *    prepared_statement.column_name(col_index) -> String
+ *
+ *  Returns the name of the column at the specified index (0-based) of the
+ *  result set of the prepared statement without executing it.
+ *  Raises DuckDB::Error if the column index is out of range.
+ *
+ *    require 'duckdb'
+ *    db = DuckDB::Database.open
+ *    con = db.connect
+ *    stmt = con.prepared_statement('SELECT 1 AS a, 2 AS b')
+ *    stmt.column_name(1) # => 'b'
+ */
+static VALUE prepared_statement_column_name(VALUE self, VALUE vidx) {
+    rubyDuckDBPreparedStatement *ctx;
+    VALUE vname;
+    const char *name;
+    idx_t idx = NUM2ULL(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    name = duckdb_prepared_statement_column_name(ctx->prepared_statement, idx);
+    if (name == NULL) {
+        rb_raise(eDuckDBError, "fail to get column name at %llu. column index is out of range.", (unsigned long long)idx);
+    }
+    vname = rb_str_new2(name);
+    duckdb_free((void *)name);
+    return vname;
+}
+
+/* :nodoc: */
+static VALUE prepared_statement__column_type(VALUE self, VALUE vidx) {
+    rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    return INT2FIX(duckdb_prepared_statement_column_type(ctx->prepared_statement, NUM2ULL(vidx)));
+}
+
+/*
+ *  call-seq:
+ *    prepared_statement.column_logical_type(col_index) -> DuckDB::LogicalType
+ *
+ *  Returns the logical type of the column at the specified index (0-based) of
+ *  the result set of the prepared statement without executing it.
+ *  Raises DuckDB::Error if the column index is out of range.
+ *
+ *    require 'duckdb'
+ *    db = DuckDB::Database.open
+ *    con = db.connect
+ *    stmt = con.prepared_statement('SELECT 1.5::DECIMAL(9, 4) AS a')
+ *    stmt.column_logical_type(0).type # => :decimal
+ */
+static VALUE prepared_statement_column_logical_type(VALUE self, VALUE vidx) {
+    rubyDuckDBPreparedStatement *ctx;
+    duckdb_logical_type logical_type;
+    idx_t idx = NUM2ULL(vidx);
+
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+
+    logical_type = duckdb_prepared_statement_column_logical_type(ctx->prepared_statement, idx);
+    if (logical_type == NULL) {
+        rb_raise(eDuckDBError, "fail to get column logical type at %llu. column index is out of range.", (unsigned long long)idx);
+    }
+    return rbduckdb_create_logical_type(logical_type);
+}
+
 /* :nodoc: */
 static VALUE prepared_statement__param_type(VALUE self, VALUE vidx) {
     rubyDuckDBPreparedStatement *ctx;
@@ -636,6 +725,9 @@ void rbduckdb_init_prepared_statement(void) {
     rb_define_method(cDuckDBPreparedStatement, "parameter_name", prepared_statement_parameter_name, 1);
     rb_define_method(cDuckDBPreparedStatement, "param_logical_type", prepared_statement_param_logical_type, 1);
     rb_define_method(cDuckDBPreparedStatement, "clear_bindings", prepared_statement_clear_bindings, 0);
+    rb_define_method(cDuckDBPreparedStatement, "column_count", prepared_statement_column_count, 0);
+    rb_define_method(cDuckDBPreparedStatement, "column_name", prepared_statement_column_name, 1);
+    rb_define_method(cDuckDBPreparedStatement, "column_logical_type", prepared_statement_column_logical_type, 1);
     rb_define_method(cDuckDBPreparedStatement, "bind_bool", prepared_statement_bind_bool, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int8", prepared_statement_bind_int8, 2);
     rb_define_method(cDuckDBPreparedStatement, "bind_int16", prepared_statement_bind_int16, 2);
@@ -652,6 +744,7 @@ void rbduckdb_init_prepared_statement(void) {
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_uint64", prepared_statement__bind_uint64, 2);
     rb_define_private_method(cDuckDBPreparedStatement, "_statement_type", prepared_statement__statement_type, 0);
     rb_define_private_method(cDuckDBPreparedStatement, "_param_type", prepared_statement__param_type, 1);
+    rb_define_private_method(cDuckDBPreparedStatement, "_column_type", prepared_statement__column_type, 1);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_date", prepared_statement__bind_date, 4);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_time", prepared_statement__bind_time, 5);
     rb_define_private_method(cDuckDBPreparedStatement, "_bind_timestamp", prepared_statement__bind_timestamp, 8);
