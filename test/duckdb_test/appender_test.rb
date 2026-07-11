@@ -273,10 +273,8 @@ module DuckDBTest
     end
 
     def test_append_value_with_map
-      map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
-      keys = [DuckDB::Value.create_varchar('a')]
-      values = [DuckDB::Value.create_int32(1)]
-      map = DuckDB::Value.create_map(map_type, keys, values)
+      entries = { DuckDB::Value.create_varchar('a') => DuckDB::Value.create_int32(1) }
+      map = DuckDB::Value.create_map({ varchar: :integer }, entries)
       assert_duckdb_appender({ 'a' => 1 }, 'MAP(VARCHAR, INTEGER)') { |a| a.append_value(map) }
     end
 
