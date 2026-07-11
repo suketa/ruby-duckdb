@@ -481,6 +481,10 @@
 </li><li>
 <p>add <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> converting a <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a> to a Ruby object. LIST/ARRAY values are converted to Ruby Arrays recursively; NULL becomes <code>nil</code>.</p>
 </li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_struct"><code>DuckDB::Value.create_struct(struct_type, values)</code></a> to create STRUCT values from a field spec (a Hash like <code>{ a: :integer, b: :varchar }</code> or a STRUCT <a href="DuckDB/LogicalType.html"><code>DuckDB::LogicalType</code></a>) and an Array of <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a> field values (positional, matching field order).</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-i-struct_child"><code>DuckDB::Value#struct_child(index)</code></a> to read STRUCT fields as <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a>. <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> converts STRUCT values to a Hash with Symbol keys recursively.</p>
+</li><li>
 <p>add <a href="DuckDB/PreparedStatement.html#method-i-column_count"><code>DuckDB::PreparedStatement#column_count</code></a>, column_name(col_index), column_type(col_index) and column_logical_type(col_index) to get the result-set column metadata of a prepared statement without executing it (column index is 0-based). Useful for PG-style statement caching where column types must be known before execution.</p>
 </li><li>
 <p>add <a href="DuckDB/Error.html#method-i-error_type"><code>DuckDB::Error#error_type</code></a> returning the <a href="DuckDB.html"><code>DuckDB</code></a> error category as a Symbol (e.g. <code>:constraint</code>, <code>:catalog</code>, <code>:parser</code>), or <code>nil</code> for errors not originating from a query result. Helps the ActiveRecord adapter map failures to <code>RecordNotUnique</code> / <code>NotNullViolation</code> etc. without parsing error messages.</p>

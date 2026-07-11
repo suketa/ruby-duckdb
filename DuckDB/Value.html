@@ -519,6 +519,8 @@
 
         <li ><a href="#method-c-create_null">create_null</a></li>
 
+        <li ><a href="#method-c-create_struct">create_struct</a></li>
+
         <li ><a href="#method-c-create_uhugeint">create_uhugeint</a></li>
 
         <li ><a href="#method-c-create_uint16">create_uint16</a></li>
@@ -553,6 +555,8 @@
         <li ><a href="#method-i-list_child">list_child</a></li>
 
         <li ><a href="#method-i-list_size">list_size</a></li>
+
+        <li ><a href="#method-i-struct_child">struct_child</a></li>
 
         <li ><a href="#method-i-to_ruby">to_ruby</a></li>
 
@@ -1287,6 +1291,76 @@
       </div>
 
 
+      <div id="method-c-create_struct" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_struct" title="Link to this method">
+                <span class="method-name">create_struct</span>
+                <span class="method-args">(struct_type, values)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_struct-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 304</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
+  <span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">struct_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected STRUCT LogicalType, got #{struct_type.type}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:struct</span>
+
+  <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
+  <span class="ruby-comment"># The C API&#39;s duckdb_create_struct_value reads exactly child_count</span>
+  <span class="ruby-comment"># values from the buffer with no count argument, so a size mismatch</span>
+  <span class="ruby-comment"># here would cause an out-of-bounds read in C.</span>
+  <span class="ruby-identifier">n</span> = <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">child_count</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected #{n} values for STRUCT, got #{values.size}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">values</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">n</span>
+
+  <span class="ruby-identifier">_create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of STRUCT type. The first argument is the field spec: a Hash of field name to field type (a Symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>, as accepted by <a href="LogicalType.html#method-c-create_struct"><code>DuckDB::LogicalType.create_struct</code></a>) or a STRUCT <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>. The second argument is an Array of <a href="Value.html"><code>DuckDB::Value</code></a> field values, positional, matching the struct’s field order.</p>
+
+<pre class="ruby"><span class="ruby-identifier">values</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">1</span>), <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;x&#39;</span>)]
+<span class="ruby-identifier">struct</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_struct</span>({ <span class="ruby-value">a:</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">b:</span> <span class="ruby-value">:varchar</span> }, <span class="ruby-identifier">values</span>)
+
+<span class="ruby-comment"># equivalent, with an explicit STRUCT logical type:</span>
+<span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-value">a:</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">b:</span> <span class="ruby-value">:varchar</span>)
+<span class="ruby-identifier">struct</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
+</pre>
+
+<p>@param struct_type [Hash, <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>] the field spec or STRUCT logical type. @param values [Array&lt;DuckDB::Value&gt;] the field values, in field order. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [DuckDB::Error] if a field type in the Hash cannot be resolved</p>
+
+<pre>to a DuckDB::LogicalType.</pre>
+
+<p>@raise [ArgumentError] if struct_type is not a Hash or a STRUCT</p>
+
+<pre>DuckDB::LogicalType, values is not an Array of DuckDB::Value, or
+values.size does not match the struct&#39;s field count.</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-c-create_uhugeint" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -1700,6 +1774,62 @@
 <span class="ruby-identifier">values</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>, <span class="ruby-value">3</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-identifier">i</span>) }
 <span class="ruby-identifier">list</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
 <span class="ruby-identifier">list</span>.<span class="ruby-identifier">list_size</span> <span class="ruby-comment"># =&gt; 3</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-struct_child" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-struct_child" title="Link to this method">
+                  <span class="method-callseq">
+                    struct_child(index) &rarr; DuckDB::Value
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="struct_child-source">
+            <pre class="c" data-language="c">static VALUE value_struct_child(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_struct_child(rbduckdb_get_struct_value(self)-&gt;value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, &quot;struct index out of range (or the value is not a STRUCT)&quot;);
+    }
+    return rbduckdb_value_new(child);
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the field at the specified index (0-based) of a STRUCT value as a <a href="Value.html"><code>DuckDB::Value</code></a>. Raises IndexError if the index is out of range or the value is not a STRUCT.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-value">a:</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">b:</span> <span class="ruby-value">:varchar</span>)
+<span class="ruby-identifier">values</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">1</span>), <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;x&#39;</span>)]
+<span class="ruby-identifier">struct</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">struct</span>.<span class="ruby-identifier">struct_child</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; DuckDB::Value</span>
 </pre>
 
 
