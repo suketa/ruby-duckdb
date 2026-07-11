@@ -76,6 +76,21 @@ module DuckDB
       Converter::IntToSym.type_to_sym(i)
     end
 
+    # returns the column type of the result set of the prepared statement
+    # without executing it. The argument is the column index (0-based).
+    # Returns :invalid if the column index is out of range.
+    #
+    #   require 'duckdb'
+    #   db = DuckDB::Database.open
+    #   con = db.connect
+    #   con.execute('CREATE TABLE users (id INTEGER, name VARCHAR(255))')
+    #   stmt = con.prepared_statement('SELECT * FROM users')
+    #   stmt.column_type(0) # => :integer
+    def column_type(index)
+      i = _column_type(index)
+      Converter::IntToSym.type_to_sym(i)
+    end
+
     # binds all parameters with SQL prepared statement.
     #
     #   require 'duckdb'

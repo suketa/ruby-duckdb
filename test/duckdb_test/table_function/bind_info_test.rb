@@ -78,6 +78,29 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
+    def test_bind_get_parameter_returns_nil_for_null_argument
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_get_param_null'
+      table_function.add_parameter(DuckDB::LogicalType::BIGINT)
+
+      observed_parameter = :unset
+      table_function.bind do |bind_info|
+        observed_parameter = bind_info.get_parameter(0)
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init { |_init_info| nil }
+
+      table_function.execute do |_func_info, output|
+        output.size = 0
+      end
+
+      @conn.register_table_function(table_function)
+      @conn.query('SELECT * FROM test_get_param_null(NULL)').each.to_a
+
+      assert_nil observed_parameter
+    end
+
     def test_bind_get_named_parameter
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_named_param'
