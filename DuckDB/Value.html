@@ -517,6 +517,8 @@
 
         <li ><a href="#method-c-create_list">create_list</a></li>
 
+        <li ><a href="#method-c-create_map">create_map</a></li>
+
         <li ><a href="#method-c-create_null">create_null</a></li>
 
         <li ><a href="#method-c-create_struct">create_struct</a></li>
@@ -555,6 +557,12 @@
         <li ><a href="#method-i-list_child">list_child</a></li>
 
         <li ><a href="#method-i-list_size">list_size</a></li>
+
+        <li ><a href="#method-i-map_key">map_key</a></li>
+
+        <li ><a href="#method-i-map_size">map_size</a></li>
+
+        <li ><a href="#method-i-map_value">map_value</a></li>
 
         <li ><a href="#method-i-struct_child">struct_child</a></li>
 
@@ -1242,6 +1250,73 @@
       </div>
 
 
+      <div id="method-c-create_map" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_map" title="Link to this method">
+                <span class="method-name">create_map</span>
+                <span class="method-args">(map_type, entries)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_map-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 344</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>)
+  <span class="ruby-identifier">map_type</span> = <span class="ruby-identifier">resolve_map_type</span>(<span class="ruby-identifier">map_type</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">entries</span>, <span class="ruby-constant">Hash</span>)
+  <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">entries</span>.<span class="ruby-identifier">keys</span>)
+  <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">entries</span>.<span class="ruby-identifier">values</span>)
+
+  <span class="ruby-identifier">_create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">keys</span>, <span class="ruby-identifier">entries</span>.<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of MAP type. The first argument is the type spec: a one-pair Hash of key type to value type (each a Symbol or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>, as accepted by <a href="LogicalType.html#method-c-create_map"><code>DuckDB::LogicalType.create_map</code></a>) or a MAP <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>. The second argument is a Hash of <a href="Value.html"><code>DuckDB::Value</code></a> keys to <a href="Value.html"><code>DuckDB::Value</code></a> values.</p>
+
+<pre class="ruby"><span class="ruby-identifier">entries</span> = {
+  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;a&#39;</span>) <span class="ruby-operator">=&gt;</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">1</span>),
+  <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;b&#39;</span>) <span class="ruby-operator">=&gt;</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">2</span>)
+}
+<span class="ruby-identifier">map</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_map</span>({ <span class="ruby-value">varchar:</span> <span class="ruby-value">:integer</span> }, <span class="ruby-identifier">entries</span>)
+
+<span class="ruby-comment"># equivalent, with an explicit MAP logical type:</span>
+<span class="ruby-identifier">map_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-value">:varchar</span>, <span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">map</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>)
+</pre>
+
+<p>@param map_type [Hash, <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>] the type spec or MAP logical type. @param entries [Hash{DuckDB::Value =&gt; <a href="Value.html"><code>DuckDB::Value</code></a>}] the map entries. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [DuckDB::Error] if a type in the Hash spec cannot be resolved</p>
+
+<pre>to a DuckDB::LogicalType.</pre>
+
+<p>@raise [ArgumentError] if map_type is not a one-pair Hash or a MAP</p>
+
+<pre>DuckDB::LogicalType, or entries is not a Hash of DuckDB::Value to
+DuckDB::Value.</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-c-create_null" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -1786,6 +1861,172 @@ values.size does not match the struct&#39;s field count.</pre>
       </div>
 
 
+      <div id="method-i-map_key" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-map_key" title="Link to this method">
+                  <span class="method-callseq">
+                    map_key(index) &rarr; DuckDB::Value
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="map_key-source">
+            <pre class="c" data-language="c">static VALUE value_map_key(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_map_key(rbduckdb_get_struct_value(self)-&gt;value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, &quot;map index out of range (or the value is not a MAP)&quot;);
+    }
+    return rbduckdb_value_new(child);
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the key at the specified index (0-based) of a MAP value as a <a href="Value.html"><code>DuckDB::Value</code></a>. Raises IndexError if the index is out of range or the value is not a MAP.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">map_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-value">:varchar</span>, <span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">keys</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;a&#39;</span>)]
+<span class="ruby-identifier">values</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">1</span>)]
+<span class="ruby-identifier">map</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">keys</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">map</span>.<span class="ruby-identifier">map_key</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; DuckDB::Value</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-map_size" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-map_size" title="Link to this method">
+                  <span class="method-callseq">
+                    map_size &rarr; Integer
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="map_size-source">
+            <pre class="c" data-language="c">static VALUE value_map_size(VALUE self) {
+    return ULL2NUM(duckdb_get_map_size(rbduckdb_get_struct_value(self)-&gt;value));
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the number of entries of a MAP value.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">map_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-value">:varchar</span>, <span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">keys</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;a&#39;</span>)]
+<span class="ruby-identifier">values</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">1</span>)]
+<span class="ruby-identifier">map</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">keys</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">map</span>.<span class="ruby-identifier">map_size</span> <span class="ruby-comment"># =&gt; 1</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-map_value" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-map_value" title="Link to this method">
+                  <span class="method-callseq">
+                    map_value(index) &rarr; DuckDB::Value
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="map_value-source">
+            <pre class="c" data-language="c">static VALUE value_map_value(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_map_value(rbduckdb_get_struct_value(self)-&gt;value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, &quot;map index out of range (or the value is not a MAP)&quot;);
+    }
+    return rbduckdb_value_new(child);
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the value at the specified index (0-based) of a MAP value as a <a href="Value.html"><code>DuckDB::Value</code></a>. Raises IndexError if the index is out of range or the value is not a MAP.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">map_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-value">:varchar</span>, <span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">keys</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_varchar</span>(<span class="ruby-string">&#39;a&#39;</span>)]
+<span class="ruby-identifier">values</span> = [<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">1</span>)]
+<span class="ruby-identifier">map</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">keys</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">map</span>.<span class="ruby-identifier">map_value</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; DuckDB::Value</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-i-struct_child" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -1874,7 +2115,7 @@ values.size does not match the struct&#39;s field count.</pre>
         <div class="method-description">
 
 
-          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. NULL is converted to nil. Returns nil for unsupported types.</p>
+          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. STRUCT and MAP values are converted to Hash recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby type). NULL is converted to nil. Returns nil for unsupported types.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">child_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-value">:integer</span>)
