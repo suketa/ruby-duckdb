@@ -238,7 +238,53 @@ module DuckDB
         _create_decimal(lower, upper, width, value.scale)
       end
 
+      # Creates a DuckDB::Value of LIST type.
+      # The first argument is the element type: a Symbol (e.g. :integer) or a
+      # DuckDB::LogicalType.
+      # The second argument is an Array of DuckDB::Value elements.
+      #
+      #   values = [1, 2, 3].map { |i| DuckDB::Value.create_int32(i) }
+      #   list = DuckDB::Value.create_list(:integer, values)
+      #
+      # @param child_type [Symbol, DuckDB::LogicalType] the element logical type.
+      # @param values [Array<DuckDB::Value>] the list elements.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [DuckDB::Error] if child_type cannot be resolved to a
+      #   DuckDB::LogicalType.
+      # @raise [ArgumentError] if values is not an Array of DuckDB::Value.
+      def create_list(child_type, values)
+        check_value_array!(values)
+
+        _create_list(DuckDB::LogicalType.resolve(child_type), values)
+      end
+
+      # Creates a DuckDB::Value of ARRAY type. The array size is the number
+      # of elements given.
+      # The first argument is the element type: a Symbol (e.g. :integer) or a
+      # DuckDB::LogicalType.
+      # The second argument is an Array of DuckDB::Value elements.
+      #
+      #   values = [1, 2, 3].map { |i| DuckDB::Value.create_int32(i) }
+      #   array = DuckDB::Value.create_array(:integer, values)
+      #
+      # @param child_type [Symbol, DuckDB::LogicalType] the element logical type.
+      # @param values [Array<DuckDB::Value>] the array elements.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [DuckDB::Error] if child_type cannot be resolved to a
+      #   DuckDB::LogicalType.
+      # @raise [ArgumentError] if values is not an Array of DuckDB::Value.
+      def create_array(child_type, values)
+        check_value_array!(values)
+
+        _create_array(DuckDB::LogicalType.resolve(child_type), values)
+      end
+
       private
+
+      def check_value_array!(values)
+        check_type!(values, Array)
+        values.each { |value| check_type!(value, DuckDB::Value) }
+      end
 
       def check_range!(value, range, type_name)
         raise ArgumentError, "value out of range for #{type_name} (#{range})" unless range.cover?(value)
