@@ -316,7 +316,55 @@ module DuckDB
         _create_struct(struct_type, values)
       end
 
+      # Creates a DuckDB::Value of MAP type.
+      # The first argument is the type spec: a one-pair Hash of key type to
+      # value type (each a Symbol or a DuckDB::LogicalType, as accepted by
+      # DuckDB::LogicalType.create_map) or a MAP DuckDB::LogicalType.
+      # The second argument is a Hash of DuckDB::Value keys to DuckDB::Value
+      # values.
+      #
+      #   entries = {
+      #     DuckDB::Value.create_varchar('a') => DuckDB::Value.create_int32(1),
+      #     DuckDB::Value.create_varchar('b') => DuckDB::Value.create_int32(2)
+      #   }
+      #   map = DuckDB::Value.create_map({ varchar: :integer }, entries)
+      #
+      #   # equivalent, with an explicit MAP logical type:
+      #   map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
+      #   map = DuckDB::Value.create_map(map_type, entries)
+      #
+      # @param map_type [Hash, DuckDB::LogicalType] the type spec or MAP logical type.
+      # @param entries [Hash{DuckDB::Value => DuckDB::Value}] the map entries.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [DuckDB::Error] if a type in the Hash spec cannot be resolved
+      #   to a DuckDB::LogicalType.
+      # @raise [ArgumentError] if map_type is not a one-pair Hash or a MAP
+      #   DuckDB::LogicalType, or entries is not a Hash of DuckDB::Value to
+      #   DuckDB::Value.
+      def create_map(map_type, entries)
+        map_type = resolve_map_type(map_type)
+        check_type!(entries, Hash)
+        check_value_array!(entries.keys)
+        check_value_array!(entries.values)
+
+        _create_map(map_type, entries.keys, entries.values)
+      end
+
       private
+
+      def resolve_map_type(map_type)
+        if map_type.is_a?(Hash)
+          unless map_type.size == 1
+            raise ArgumentError, "expected exactly one key type => value type pair, got #{map_type.size}"
+          end
+
+          map_type = DuckDB::LogicalType.create_map(*map_type.first)
+        end
+        check_type!(map_type, DuckDB::LogicalType)
+        raise ArgumentError, "expected MAP LogicalType, got #{map_type.type}" unless map_type.type == :map
+
+        map_type
+      end
 
       def check_value_array!(values)
         check_type!(values, Array)
