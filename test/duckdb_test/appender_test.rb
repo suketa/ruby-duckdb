@@ -247,6 +247,24 @@ module DuckDBTest
       assert_duckdb_appender(42, 'INTEGER') { |a| a.append_value(value) }
     end
 
+    def test_append_value_with_list
+      values = [1, 2, 3].map { |i| DuckDB::Value.create_int32(i) }
+      list = DuckDB::Value.create_list(:integer, values)
+      assert_duckdb_appender([1, 2, 3], 'INTEGER[]') { |a| a.append_value(list) }
+    end
+
+    def test_append_value_with_list_containing_null
+      values = [DuckDB::Value.create_int32(1), DuckDB::Value.create_null]
+      list = DuckDB::Value.create_list(:integer, values)
+      assert_duckdb_appender([1, nil], 'INTEGER[]') { |a| a.append_value(list) }
+    end
+
+    def test_append_value_with_array
+      values = [10, 20, 30].map { |i| DuckDB::Value.create_int32(i) }
+      array = DuckDB::Value.create_array(:integer, values)
+      assert_duckdb_appender([10, 20, 30], 'INTEGER[3]') { |a| a.append_value(array) }
+    end
+
     def test_append_value_with_invalid_type
       create_appender('col INTEGER')
       e = assert_raises(ArgumentError) { @appender.append_value(42) }
