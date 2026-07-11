@@ -94,6 +94,24 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Value.create_struct(struct_type, values) }
     end
 
+    def test_create_struct_with_hash_type
+      struct = DuckDB::Value.create_struct({ a: :integer, b: :varchar }, struct_values(1, 'x'))
+
+      assert_equal({ a: 1, b: 'x' }, struct.to_ruby)
+    end
+
+    def test_create_struct_with_hash_type_nested
+      list_type = DuckDB::LogicalType.create_list(:integer)
+      inner = [1, 2].map { |n| DuckDB::Value.create_int32(n) }
+      struct = DuckDB::Value.create_struct({ xs: list_type }, [DuckDB::Value.create_list(:integer, inner)])
+
+      assert_equal({ xs: [1, 2] }, struct.to_ruby)
+    end
+
+    def test_create_struct_with_hash_type_unknown_field_type
+      assert_raises(DuckDB::Error) { DuckDB::Value.create_struct({ a: :nonsense }, struct_values(1, 'x')[0, 1]) }
+    end
+
     def test_create_struct_with_invalid_type
       assert_raises(ArgumentError) { DuckDB::Value.create_struct(DuckDB::LogicalType.resolve(:integer), struct_values(1, 'x')) }
     end
