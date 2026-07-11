@@ -265,6 +265,13 @@ module DuckDBTest
       assert_duckdb_appender([10, 20, 30], 'INTEGER[3]') { |a| a.append_value(array) }
     end
 
+    def test_append_value_with_struct
+      struct_type = DuckDB::LogicalType.create_struct(a: :integer, b: :varchar)
+      values = [DuckDB::Value.create_int32(1), DuckDB::Value.create_varchar('x')]
+      struct = DuckDB::Value.create_struct(struct_type, values)
+      assert_duckdb_appender({ a: 1, b: 'x' }, 'STRUCT(a INTEGER, b VARCHAR)') { |a| a.append_value(struct) }
+    end
+
     def test_append_value_with_invalid_type
       create_appender('col INTEGER')
       e = assert_raises(ArgumentError) { @appender.append_value(42) }

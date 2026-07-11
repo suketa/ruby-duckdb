@@ -25,8 +25,10 @@ static VALUE value_s_create_null(VALUE klass);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
 static VALUE value_s__create_array(VALUE klass, VALUE ltype, VALUE values);
+static VALUE value_s__create_struct(VALUE klass, VALUE ltype, VALUE values);
 static VALUE value_list_size(VALUE self);
 static VALUE value_list_child(VALUE self, VALUE vidx);
+static VALUE value_struct_child(VALUE self, VALUE vidx);
 static VALUE value_to_ruby(VALUE self);
 
 static const rb_data_type_t value_data_type = {
@@ -219,6 +221,23 @@ static VALUE value_s__create_array(VALUE klass, VALUE ltype, VALUE values) {
     return rbduckdb_value_new(value);
 }
 
+/* :nodoc: */
+static VALUE value_s__create_struct(VALUE klass, VALUE ltype, VALUE values) {
+    duckdb_logical_type type = rbduckdb_get_struct_logical_type(ltype)->logical_type;
+    duckdb_value *buf;
+    volatile VALUE guard;
+    idx_t n = marshal_values(values, &buf, &guard);
+    duckdb_value value = duckdb_create_struct_value(type, buf);
+
+    (void)n;
+    RB_GC_GUARD(values);
+    ALLOCV_END(guard);
+    if (value == NULL) {
+        rb_raise(eDuckDBError, "failed to create STRUCT value");
+    }
+    return rbduckdb_value_new(value);
+}
+
 /*
  *  call-seq:
  *    value.list_size -> Integer
@@ -254,6 +273,29 @@ static VALUE value_list_child(VALUE self, VALUE vidx) {
 
     if (child == NULL) {
         rb_raise(rb_eIndexError, "list index out of range (or the value is not a LIST)");
+    }
+    return rbduckdb_value_new(child);
+}
+
+/*
+ *  call-seq:
+ *    value.struct_child(index) -> DuckDB::Value
+ *
+ *  Returns the field at the specified index (0-based) of a STRUCT value
+ *  as a DuckDB::Value.
+ *  Raises IndexError if the index is out of range or the value is not a STRUCT.
+ *
+ *    require 'duckdb'
+ *    struct_type = DuckDB::LogicalType.create_struct(a: :integer, b: :varchar)
+ *    values = [DuckDB::Value.create_int32(1), DuckDB::Value.create_varchar('x')]
+ *    struct = DuckDB::Value.create_struct(struct_type, values)
+ *    struct.struct_child(0) # => DuckDB::Value
+ */
+static VALUE value_struct_child(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_struct_child(rbduckdb_get_struct_value(self)->value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, "struct index out of range (or the value is not a STRUCT)");
     }
     return rbduckdb_value_new(child);
 }
@@ -381,6 +423,18 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
                 rb_ary_push(result, elem);
             }
             break;
+        case DUCKDB_TYPE_STRUCT:
+            size = duckdb_struct_type_child_count(logical_type);
+            result = rb_hash_new();
+            for (i = 0; i < size; i++) {
+                str = duckdb_struct_type_child_name(logical_type, i);
+                child_value = duckdb_get_struct_child(val, i);
+                elem = rbduckdb_duckdb_value_to_ruby(child_value);
+                duckdb_destroy_value(&child_value);
+                rb_hash_aset(result, ID2SYM(rb_intern(str)), elem);
+                duckdb_free(str);
+            }
+            break;
         case DUCKDB_TYPE_ARRAY:
             /* the C API has no duckdb_get_array_size/child; read via a vector */
             child_type = duckdb_array_type_child_type(logical_type);
@@ -447,9 +501,11 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_decimal", value_s__create_decimal, 4);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
     rb_define_singleton_method(cDuckDBValue, "create_null", value_s_create_null, 0);
 
     rb_define_method(cDuckDBValue, "list_size", value_list_size, 0);
     rb_define_method(cDuckDBValue, "list_child", value_list_child, 1);
+    rb_define_method(cDuckDBValue, "struct_child", value_struct_child, 1);
     rb_define_method(cDuckDBValue, "to_ruby", value_to_ruby, 0);
 }
