@@ -493,6 +493,8 @@
       </summary>
       <ul class="nav-list" role="directory">
 
+        <li ><a href="#method-c-create_array">create_array</a></li>
+
         <li ><a href="#method-c-create_blob">create_blob</a></li>
 
         <li ><a href="#method-c-create_bool">create_bool</a></li>
@@ -513,6 +515,8 @@
 
         <li ><a href="#method-c-create_int8">create_int8</a></li>
 
+        <li ><a href="#method-c-create_list">create_list</a></li>
+
         <li ><a href="#method-c-create_null">create_null</a></li>
 
         <li ><a href="#method-c-create_uhugeint">create_uhugeint</a></li>
@@ -532,6 +536,29 @@
   </div>
 
 
+
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-list_child">list_child</a></li>
+
+        <li ><a href="#method-i-list_size">list_size</a></li>
+
+        <li ><a href="#method-i-to_ruby">to_ruby</a></li>
+
+      </ul>
+    </details>
+  </div>
 
 
   <div id="classindex-section" class="nav-section">
@@ -598,6 +625,60 @@
        <header>
          <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
        </header>
+
+
+      <div id="method-c-create_array" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_array" title="Link to this method">
+                <span class="method-name">create_array</span>
+                <span class="method-args">(child_type, values)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_array-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 276</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
+  <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
+
+  <span class="ruby-identifier">_create_array</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">child_type</span>), <span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of ARRAY type. The array size is the number of elements given. The first argument is the element type: a Symbol (e.g. :integer) or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>. The second argument is an Array of <a href="Value.html"><code>DuckDB::Value</code></a> elements.</p>
+
+<pre class="ruby"><span class="ruby-identifier">values</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>, <span class="ruby-value">3</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-identifier">i</span>) }
+<span class="ruby-identifier">array</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_array</span>(<span class="ruby-value">:integer</span>, <span class="ruby-identifier">values</span>)
+</pre>
+
+<p>@param child_type [Symbol, <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>] the element logical type. @param values [Array&lt;DuckDB::Value&gt;] the array elements. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [DuckDB::Error] if child_type cannot be resolved to a</p>
+
+<pre>DuckDB::LogicalType.</pre>
+
+<p>@raise [ArgumentError] if values is not an Array of <a href="Value.html"><code>DuckDB::Value</code></a>.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
 
 
       <div id="method-c-create_blob" class="method-detail anchor-link ">
@@ -1103,6 +1184,60 @@
       </div>
 
 
+      <div id="method-c-create_list" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_list" title="Link to this method">
+                <span class="method-name">create_list</span>
+                <span class="method-args">(child_type, values)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_list-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 255</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
+  <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
+
+  <span class="ruby-identifier">_create_list</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-identifier">child_type</span>), <span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of LIST type. The first argument is the element type: a Symbol (e.g. :integer) or a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>. The second argument is an Array of <a href="Value.html"><code>DuckDB::Value</code></a> elements.</p>
+
+<pre class="ruby"><span class="ruby-identifier">values</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>, <span class="ruby-value">3</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-identifier">i</span>) }
+<span class="ruby-identifier">list</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_list</span>(<span class="ruby-value">:integer</span>, <span class="ruby-identifier">values</span>)
+</pre>
+
+<p>@param child_type [Symbol, <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>] the element logical type. @param values [Array&lt;DuckDB::Value&gt;] the list elements. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [DuckDB::Error] if child_type cannot be resolved to a</p>
+
+<pre>DuckDB::LogicalType.</pre>
+
+<p>@raise [ArgumentError] if values is not an Array of <a href="Value.html"><code>DuckDB::Value</code></a>.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-c-create_null" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -1463,6 +1598,172 @@
 
 
 
+
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-instance-methods"><a href="#public-instance-methods">Public Instance Methods</a></h3>
+       </header>
+
+
+      <div id="method-i-list_child" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-list_child" title="Link to this method">
+                  <span class="method-callseq">
+                    list_child(index) &rarr; DuckDB::Value
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="list_child-source">
+            <pre class="c" data-language="c">static VALUE value_list_child(VALUE self, VALUE vidx) {
+    duckdb_value child = duckdb_get_list_child(rbduckdb_get_struct_value(self)-&gt;value, (idx_t)NUM2ULL(vidx));
+
+    if (child == NULL) {
+        rb_raise(rb_eIndexError, &quot;list index out of range (or the value is not a LIST)&quot;);
+    }
+    return rbduckdb_value_new(child);
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the element at the specified index (0-based) of a LIST value as a <a href="Value.html"><code>DuckDB::Value</code></a>. Raises IndexError if the index is out of range or the value is not a LIST.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">child_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">values</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>, <span class="ruby-value">3</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-identifier">i</span>) }
+<span class="ruby-identifier">list</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">list</span>.<span class="ruby-identifier">list_child</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; DuckDB::Value</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-list_size" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-list_size" title="Link to this method">
+                  <span class="method-callseq">
+                    list_size &rarr; Integer
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="list_size-source">
+            <pre class="c" data-language="c">static VALUE value_list_size(VALUE self) {
+    return ULL2NUM(duckdb_get_list_size(rbduckdb_get_struct_value(self)-&gt;value));
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Returns the number of elements of a LIST value.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">child_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">values</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>, <span class="ruby-value">3</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-identifier">i</span>) }
+<span class="ruby-identifier">list</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">list</span>.<span class="ruby-identifier">list_size</span> <span class="ruby-comment"># =&gt; 3</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-to_ruby" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-to_ruby" title="Link to this method">
+                  <span class="method-callseq">
+                    to_ruby &rarr; Object
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="to_ruby-source">
+            <pre class="c" data-language="c">static VALUE value_to_ruby(VALUE self) {
+    return rbduckdb_duckdb_value_to_ruby(rbduckdb_get_struct_value(self)-&gt;value);
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. NULL is converted to nil. Returns nil for unsupported types.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
+<span class="ruby-identifier">child_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-value">:integer</span>)
+<span class="ruby-identifier">values</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>, <span class="ruby-value">3</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-identifier">i</span>) }
+<span class="ruby-identifier">list</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
+<span class="ruby-identifier">list</span>.<span class="ruby-identifier">to_ruby</span> <span class="ruby-comment"># =&gt; [1, 2, 3]</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
 
 
 
