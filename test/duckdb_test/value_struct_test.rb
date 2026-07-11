@@ -48,10 +48,40 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, child)
     end
 
+    def test_struct_child_values
+      struct = DuckDB::Value.create_struct(struct_type, struct_values(1, 'x'))
+
+      assert_equal(1, struct.struct_child(0).to_ruby)
+      assert_equal('x', struct.struct_child(1).to_ruby)
+    end
+
     def test_struct_child_out_of_range
       struct = DuckDB::Value.create_struct(struct_type, struct_values(1, 'x'))
 
       assert_raises(IndexError) { struct.struct_child(2) }
+    end
+
+    def test_struct_child_on_non_struct_value
+      assert_raises(IndexError) { DuckDB::Value.create_int32(42).struct_child(0) }
+    end
+
+    def test_create_struct_with_mismatched_field_type
+      values = [DuckDB::Value.create_varchar('y'), DuckDB::Value.create_varchar('x')]
+
+      assert_raises(DuckDB::Error) { DuckDB::Value.create_struct(struct_type, values) }
+    end
+
+    def test_bind_struct_value_to_prepared_statement
+      db = DuckDB::Database.open
+      con = db.connect
+      struct = DuckDB::Value.create_struct(struct_type, struct_values(1, 'x'))
+      stmt = con.prepared_statement('SELECT (?).a + 10 AS v')
+      stmt.bind_value(1, struct)
+
+      assert_equal(11, stmt.execute.first.first)
+    ensure
+      con&.close
+      db&.close
     end
 
     def test_create_struct_with_too_few_values
