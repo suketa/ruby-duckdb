@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - bump Ruby to 3.4.10 on CI.
-- add `DuckDB::Value.create_list(child_type, values)` and `DuckDB::Value.create_array(child_type, values)` to create LIST/ARRAY values from a `DuckDB::LogicalType` and an Array of `DuckDB::Value` elements. The created values can be bound to prepared statements with `#bind_value`.
+- add `DuckDB::Value.create_list(child_type, values)` and `DuckDB::Value.create_array(child_type, values)` to create LIST/ARRAY values from an element type (a Symbol like `:integer` or a `DuckDB::LogicalType`) and an Array of `DuckDB::Value` elements. The created values can be bound to prepared statements with `#bind_value`.
 - add `DuckDB::Value#list_size` and `DuckDB::Value#list_child(index)` to read LIST value elements as `DuckDB::Value`.
 - add `DuckDB::Value#to_ruby` converting a `DuckDB::Value` to a Ruby object. LIST/ARRAY values are converted to Ruby Arrays recursively; NULL becomes `nil`.
 - add `DuckDB::PreparedStatement#column_count`, `#column_name(col_index)`, `#column_type(col_index)` and `#column_logical_type(col_index)` to get the result-set column metadata of a prepared statement without executing it (column index is 0-based). Useful for PG-style statement caching where column types must be known before execution.

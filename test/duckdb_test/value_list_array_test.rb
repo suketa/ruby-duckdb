@@ -102,12 +102,28 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Value.create_list(integer_type, [1, 2]) }
     end
 
-    def test_create_list_with_invalid_type
-      assert_raises(ArgumentError) { DuckDB::Value.create_list(:integer, int_values(1)) }
+    def test_create_list_with_symbol_child_type
+      list = DuckDB::Value.create_list(:integer, int_values(1, 2, 3))
+
+      assert_equal([1, 2, 3], list.to_ruby)
+    end
+
+    def test_create_list_with_unknown_type
+      assert_raises(DuckDB::Error) { DuckDB::Value.create_list(:nonsense, int_values(1)) }
     end
 
     def test_create_array_with_invalid_element
       assert_raises(ArgumentError) { DuckDB::Value.create_array(integer_type, [1]) }
+    end
+
+    def test_create_array_with_symbol_child_type
+      array = DuckDB::Value.create_array(:integer, int_values(10, 20))
+
+      assert_equal([10, 20], array.to_ruby)
+    end
+
+    def test_create_array_with_unknown_type
+      assert_raises(DuckDB::Error) { DuckDB::Value.create_array(:nonsense, int_values(1)) }
     end
 
     def test_bind_list_value_to_prepared_statement
