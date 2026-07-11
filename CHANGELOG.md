@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - bump Ruby to 3.4.10 on CI.
-- add `DuckDB::Value.create_list(child_type, values)` and `DuckDB::Value.create_array(child_type, values)` to create LIST/ARRAY values from a `DuckDB::LogicalType` and an Array of `DuckDB::Value` elements. The created values can be bound to prepared statements with `#bind_value`.
+- add `DuckDB::Value.create_list(child_type, values)` and `DuckDB::Value.create_array(child_type, values)` to create LIST/ARRAY values from an element type (a Symbol like `:integer` or a `DuckDB::LogicalType`) and an Array of `DuckDB::Value` elements. The created values can be bound to prepared statements with `#bind_value`.
 - add `DuckDB::Value#list_size` and `DuckDB::Value#list_child(index)` to read LIST value elements as `DuckDB::Value`.
 - add `DuckDB::Value#to_ruby` converting a `DuckDB::Value` to a Ruby object. LIST/ARRAY values are converted to Ruby Arrays recursively; NULL becomes `nil`.
 - add `DuckDB::Value.create_struct(struct_type, values)` to create STRUCT values from a STRUCT `DuckDB::LogicalType` and an Array of `DuckDB::Value` field values (positional, matching field order).
 - add `DuckDB::Value#struct_child(index)` to read STRUCT fields as `DuckDB::Value`. `DuckDB::Value#to_ruby` converts STRUCT values to a Hash with Symbol keys recursively.
+- add `DuckDB::PreparedStatement#column_count`, `#column_name(col_index)`, `#column_type(col_index)` and `#column_logical_type(col_index)` to get the result-set column metadata of a prepared statement without executing it (column index is 0-based). Useful for PG-style statement caching where column types must be known before execution.
 - add `DuckDB::Error#error_type` returning the DuckDB error category as a Symbol (e.g. `:constraint`, `:catalog`, `:parser`), or `nil` for errors not originating from a query result. Helps the ActiveRecord adapter map failures to `RecordNotUnique` / `NotNullViolation` etc. without parsing error messages.
+- add `DuckDB::PreparedStatement#param_logical_type(param_index)` returning the `DuckDB::LogicalType` of a bind parameter (1-based index), giving richer type information than `#param_type` (e.g. decimal width/scale, nested types).
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.
