@@ -272,6 +272,14 @@ module DuckDBTest
       assert_duckdb_appender({ a: 1, b: 'x' }, 'STRUCT(a INTEGER, b VARCHAR)') { |a| a.append_value(struct) }
     end
 
+    def test_append_value_with_map
+      map_type = DuckDB::LogicalType.create_map(:varchar, :integer)
+      keys = [DuckDB::Value.create_varchar('a')]
+      values = [DuckDB::Value.create_int32(1)]
+      map = DuckDB::Value.create_map(map_type, keys, values)
+      assert_duckdb_appender({ 'a' => 1 }, 'MAP(VARCHAR, INTEGER)') { |a| a.append_value(map) }
+    end
+
     def test_append_value_with_invalid_type
       create_appender('col INTEGER')
       e = assert_raises(ArgumentError) { @appender.append_value(42) }

@@ -87,6 +87,25 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, map.map_value(0))
     end
 
+    def test_map_key_and_value_read_back
+      map = DuckDB::Value.create_map(map_type, map_keys('a', 'b'), map_values(1, 2))
+
+      assert_equal('b', map.map_key(1).to_ruby)
+      assert_equal(2, map.map_value(1).to_ruby)
+    end
+
+    def test_map_size_on_non_map_value
+      assert_equal(0, DuckDB::Value.create_int32(42).map_size)
+    end
+
+    def test_map_key_on_non_map_value
+      assert_raises(IndexError) { DuckDB::Value.create_int32(42).map_key(0) }
+    end
+
+    def test_map_value_on_non_map_value
+      assert_raises(IndexError) { DuckDB::Value.create_int32(42).map_value(0) }
+    end
+
     def test_map_key_out_of_range
       map = DuckDB::Value.create_map(map_type, map_keys('a', 'b'), map_values(1, 2))
 
@@ -109,6 +128,27 @@ module DuckDBTest
 
     def test_create_map_with_invalid_element
       assert_raises(ArgumentError) { DuckDB::Value.create_map(map_type, ['a'], map_values(1)) }
+    end
+
+    def test_create_map_casts_mismatched_key_type
+      # unlike LIST/STRUCT (which fail), duckdb_create_map_value casts
+      # entries to the map's key/value types
+      map = DuckDB::Value.create_map(map_type, [DuckDB::Value.create_int32(9)], map_values(1))
+
+      assert_equal({ '9' => 1 }, map.to_ruby)
+    end
+
+    def test_bind_map_value_to_prepared_statement
+      db = DuckDB::Database.open
+      con = db.connect
+      map = DuckDB::Value.create_map(map_type, map_keys('a', 'b'), map_values(1, 2))
+      stmt = con.prepared_statement("SELECT (?)['b'] AS v")
+      stmt.bind_value(1, map)
+
+      assert_equal(2, stmt.execute.first.first)
+    ensure
+      con&.close
+      db&.close
     end
   end
 end
