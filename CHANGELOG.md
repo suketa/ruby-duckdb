@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_time_tz(value)` to create TIMETZ values from a Time (the UTC offset is taken from the Time) or a parseable String with offset.
 - add `DuckDB::Value.create_timestamp(value)` to create TIMESTAMP values (microsecond precision) from a Time, a Date, or a parseable String (same lenient input as `Appender#append_timestamp`).
 - add `DuckDB::Value.create_timestamp_s(value)` to create TIMESTAMP_S values (second precision; sub-second input is truncated).
+- add `DuckDB::Value.create_timestamp_ms(value)` to create TIMESTAMP_MS values (millisecond precision).
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.

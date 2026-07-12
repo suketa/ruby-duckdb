@@ -329,6 +329,21 @@ module DuckDB
         _create_timestamp_s(time.year, time.month, time.day, time.hour, time.min, time.sec)
       end
 
+      # Creates a DuckDB::Value of TIMESTAMP_MS type (millisecond precision).
+      # The argument is parsed leniently: a Time, a Date, or a String
+      # accepted by Time.parse. Sub-millisecond input is truncated.
+      #
+      #   value = DuckDB::Value.create_timestamp_ms(Time.now)
+      #   value = DuckDB::Value.create_timestamp_ms('2026-07-12 12:34:56.789')
+      #
+      # @param value [Time, Date, String] the timestamp value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ cannot be parsed to a Time.
+      def create_timestamp_ms(value)
+        time = to_time(value)
+        _create_timestamp_ms(time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
