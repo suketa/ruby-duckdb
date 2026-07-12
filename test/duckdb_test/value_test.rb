@@ -573,6 +573,24 @@ module DuckDBTest
       end
     end
 
+    def test_decimal_to_ruby_round_trips
+      decimal = BigDecimal('12345.678')
+
+      assert_equal(decimal, DuckDB::Value.create_decimal(decimal).to_ruby)
+    end
+
+    def test_decimal_to_ruby_round_trips_negative
+      decimal = BigDecimal('-0.00001')
+
+      assert_equal(decimal, DuckDB::Value.create_decimal(decimal).to_ruby)
+    end
+
+    def test_decimal_to_ruby_round_trips_max_width
+      decimal = BigDecimal('-1234567890123456789012345678.9012345678')
+
+      assert_equal(decimal, DuckDB::Value.create_decimal(decimal).to_ruby)
+    end
+
     def test_create_decimal_with_positive
       value = DuckDB::Value.create_decimal(BigDecimal('12345.678'))
 
