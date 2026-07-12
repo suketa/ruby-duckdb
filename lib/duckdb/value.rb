@@ -253,6 +253,21 @@ module DuckDB
         _create_date(date.year, date.month, date.day)
       end
 
+      # Creates a DuckDB::Value of TIME type (microsecond precision).
+      # The argument is parsed leniently: a Time or a String accepted by
+      # Time.parse, matching Appender#append_time.
+      #
+      #   value = DuckDB::Value.create_time(Time.now)
+      #   value = DuckDB::Value.create_time('12:34:56.789')
+      #
+      # @param value [Time, String] the time value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ cannot be parsed to a Time.
+      def create_time(value)
+        time = _parse_time(value)
+        _create_time(time.hour, time.min, time.sec, time.usec)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
