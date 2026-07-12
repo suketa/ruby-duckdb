@@ -89,12 +89,12 @@ module DuckDB
 
     def _to_time_from_duckdb_time_ns(nanos)
       hour = nanos / 3_600_000_000_000
-      nanos %= 3_600_000_000_000
-      min = nanos / 60_000_000_000
-      nanos %= 60_000_000_000
-      sec = nanos / 1_000_000_000
-      microsecond = (nanos % 1_000_000_000) / 1_000
-      _to_time_from_duckdb_time(hour, min, sec, microsecond)
+      min = nanos % 3_600_000_000_000 / 60_000_000_000
+      sec = nanos % 60_000_000_000 / 1_000_000_000
+      nsec = nanos % 1_000_000_000
+      return Time.utc(1970, 1, 1, hour, min, sec, Rational(nsec, 1_000)) if default_timezone_utc?
+
+      Time.parse(format('%<hour>02d:%<min>02d:%<sec>02d.%<nsec>09d', hour: hour, min: min, sec: sec, nsec: nsec))
     end
 
     def _to_time_from_duckdb_time_tz(hour, min, sec, micro, timezone)
