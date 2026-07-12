@@ -63,8 +63,7 @@ module DuckDBTest
       result = @conn.execute('SELECT value FROM test;')
       time = result.each.to_a.first.first
 
-      # TIMESTAMP_NS has nanosecond resolution; Ruby Time stores microseconds.
-      assert_equal(Time.utc(2019, 1, 2, 12, 34, 56, 123_456), time)
+      assert_equal(Time.utc(2019, 1, 2, 12, 34, 56, Rational(123_456_789, 1000)), time)
       assert_predicate(time, :utc?)
     end
 
