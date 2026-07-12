@@ -46,6 +46,9 @@ module DuckDBTest
     end
 
     def test_create_time_ns_with_time_preserves_nanoseconds
+      # Value#to_ruby cannot convert TIME_NS on DuckDB < 1.5.0.
+      skip 'TIME_NS requires DuckDB >= 1.5.0' if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+
       time = Time.local(2026, 7, 12, 12, 34, 56, Rational(123_456_789, 1000))
       value = DuckDB::Value.create_time_ns(time)
 
@@ -56,6 +59,9 @@ module DuckDBTest
     end
 
     def test_create_time_ns_with_string
+      # Value#to_ruby cannot convert TIME_NS on DuckDB < 1.5.0.
+      skip 'TIME_NS requires DuckDB >= 1.5.0' if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+
       result = DuckDB::Value.create_time_ns('12:34:56.123456789').to_ruby
 
       assert_equal(123_456_789, result.nsec)
