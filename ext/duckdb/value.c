@@ -599,6 +599,11 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
         case DUCKDB_TYPE_UUID:
             result = rbduckdb_uuid_uhugeint_to_ruby(duckdb_get_uuid(val));
             break;
+        case DUCKDB_TYPE_ENUM:
+            str = duckdb_enum_dictionary_value(logical_type, duckdb_get_enum_value(val));
+            result = rb_utf8_str_new_cstr(str);
+            duckdb_free(str);
+            break;
         case DUCKDB_TYPE_LIST:
             size = duckdb_get_list_size(val);
             result = rb_ary_new_capa(size);
@@ -664,7 +669,8 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
  *  to their natural Ruby classes. LIST and ARRAY values are converted to
  *  Array recursively. STRUCT and MAP values are converted to Hash
  *  recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby
- *  type). NULL is converted to nil. Returns nil for unsupported types.
+ *  type). ENUM values are converted to the member String. NULL is
+ *  converted to nil. Returns nil for unsupported types.
  *
  *    require 'duckdb'
  *    child_type = DuckDB::LogicalType.resolve(:integer)
