@@ -452,6 +452,22 @@ module DuckDB
         _create_union(union_type, tag_index, member_value)
       end
 
+      # Creates a DuckDB::Value of BIT (bitstring) type.
+      #
+      #   value = DuckDB::Value.create_bit('0101')
+      #
+      # @param value [String] the bitstring: '0'/'1' characters, MSB first.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a non-empty String of '0'
+      #   and '1' characters.
+      def create_bit(value)
+        check_type!(value, String)
+        raise ArgumentError, "expected a String of '0'/'1' characters" unless value.match?(/\A[01]+\z/)
+
+        pad = -value.length % 8
+        _create_bit("#{pad.chr}#{[('1' * pad) + value].pack('B*')}".b)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
