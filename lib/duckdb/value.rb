@@ -468,6 +468,22 @@ module DuckDB
         _create_bit("#{pad.chr}#{[('1' * pad) + value].pack('B*')}".b)
       end
 
+      # Creates a DuckDB::Value of BIGNUM (arbitrary-precision integer)
+      # type.
+      #
+      #   value = DuckDB::Value.create_bignum(2**200)
+      #
+      # @param value [Integer] the integer value, of arbitrary size.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not an Integer.
+      def create_bignum(value)
+        check_type!(value, Integer)
+
+        hex = value.abs.to_s(16)
+        hex = "0#{hex}" if hex.length.odd?
+        _create_bignum([hex].pack('H*'), value.negative?)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
