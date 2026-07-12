@@ -196,6 +196,28 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Value.create_timestamp_ns(nil) }
     end
 
+    def test_create_timestamp_tz_with_time_stores_instant
+      time = Time.new(2026, 7, 12, 12, 34, 56, '+05:30')
+      value = DuckDB::Value.create_timestamp_tz(time)
+
+      assert_instance_of(DuckDB::Value, value)
+      assert_equal(time, value.to_ruby)
+    end
+
+    def test_create_timestamp_tz_with_string
+      expected = Time.parse('2026-07-12 12:34:56.789 +0000')
+
+      assert_equal(expected, DuckDB::Value.create_timestamp_tz('2026-07-12 12:34:56.789 +0000').to_ruby)
+    end
+
+    def test_create_timestamp_tz_with_invalid_string_raises_argument_error
+      assert_raises(ArgumentError) { DuckDB::Value.create_timestamp_tz('not a timestamp') }
+    end
+
+    def test_create_timestamp_tz_with_nil_raises_argument_error
+      assert_raises(ArgumentError) { DuckDB::Value.create_timestamp_tz(nil) }
+    end
+
     def test_create_date_with_invalid_string_raises_argument_error
       assert_raises(ArgumentError) { DuckDB::Value.create_date('not a date') }
     end
