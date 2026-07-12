@@ -238,6 +238,21 @@ module DuckDB
         _create_decimal(lower, upper, width, value.scale)
       end
 
+      # Creates a DuckDB::Value of DATE type.
+      # The argument is parsed leniently: a Date, a Time, or a String
+      # accepted by Date.parse, matching Appender#append_date.
+      #
+      #   value = DuckDB::Value.create_date(Date.new(2026, 7, 12))
+      #   value = DuckDB::Value.create_date('2026-07-12')
+      #
+      # @param value [Date, Time, String] the date value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ cannot be parsed to a Date.
+      def create_date(value)
+        date = _parse_date(value)
+        _create_date(date.year, date.month, date.day)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.

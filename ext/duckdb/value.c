@@ -21,6 +21,7 @@ static VALUE value_s__create_blob(VALUE klass, VALUE str);
 static VALUE value_s__create_hugeint(VALUE klass, VALUE lower, VALUE upper);
 static VALUE value_s__create_uhugeint(VALUE klass, VALUE lower, VALUE upper);
 static VALUE value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALUE width, VALUE scale);
+static VALUE value_s__create_date(VALUE klass, VALUE year, VALUE month, VALUE day);
 static VALUE value_s_create_null(VALUE klass);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
@@ -149,6 +150,12 @@ static VALUE value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALU
     decimal.width = (uint8_t)NUM2UINT(width);
     decimal.scale = (uint8_t)NUM2UINT(scale);
     duckdb_value value = duckdb_create_decimal(decimal);
+    return rbduckdb_value_new(value);
+}
+
+/* :nodoc: */
+static VALUE value_s__create_date(VALUE klass, VALUE year, VALUE month, VALUE day) {
+    duckdb_value value = duckdb_create_date(rbduckdb_to_duckdb_date_from_value(year, month, day));
     return rbduckdb_value_new(value);
 }
 
@@ -605,6 +612,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_hugeint", value_s__create_hugeint, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_uhugeint", value_s__create_uhugeint, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_decimal", value_s__create_decimal, 4);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_date", value_s__create_date, 3);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
