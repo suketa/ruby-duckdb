@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_interval(value)` to create INTERVAL values from a `DuckDB::Interval`.
 - add `DuckDB::Value.create_enum(enum_type, member)` to create ENUM values from an Array of member names (or an ENUM `DuckDB::LogicalType`) and a member name or 0-based index.
 - `DuckDB::Value#to_ruby` converts ENUM values to the member String.
+- add `DuckDB::Value.create_union(union_type, tag, value)` to create UNION values from a member spec Hash like `{ num: :integer, str: :varchar }` (or a UNION `DuckDB::LogicalType`), a member tag, and a `DuckDB::Value`. `DuckDB::Value#to_ruby` converts UNION values to the member value.
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.

@@ -32,7 +32,9 @@ static VALUE value_s__create_timestamp_ns(VALUE klass, VALUE year, VALUE month, 
 static VALUE value_s__create_timestamp_tz(VALUE klass, VALUE micros);
 static VALUE value_s__create_interval(VALUE klass, VALUE months, VALUE days, VALUE micros);
 static VALUE value_s__create_enum(VALUE klass, VALUE ltype, VALUE index);
+static VALUE value_s__create_union(VALUE klass, VALUE ltype, VALUE tag_index, VALUE member);
 static VALUE value_s_create_null(VALUE klass);
+static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value val);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
 static VALUE value_s__create_array(VALUE klass, VALUE ltype, VALUE values);
@@ -242,6 +244,17 @@ static VALUE value_s__create_enum(VALUE klass, VALUE ltype, VALUE index) {
 
     if (value == NULL) {
         rb_raise(eDuckDBError, "failed to create ENUM value");
+    }
+    return rbduckdb_value_new(value);
+}
+
+/* :nodoc: */
+static VALUE value_s__create_union(VALUE klass, VALUE ltype, VALUE tag_index, VALUE member) {
+    duckdb_logical_type type = rbduckdb_get_struct_logical_type(ltype)->logical_type;
+    duckdb_value value = duckdb_create_union_value(type, (idx_t)NUM2ULL(tag_index), rbduckdb_get_struct_value(member)->value);
+
+    if (value == NULL) {
+        rb_raise(eDuckDBError, "failed to create UNION value (mismatched member type?)");
     }
     return rbduckdb_value_new(value);
 }
@@ -499,13 +512,26 @@ rubyDuckDBValue *rbduckdb_get_struct_value(VALUE obj) {
     return ctx;
 }
 
+/*
+ * Converts a duckdb_value to Ruby by referencing it into a one-element
+ * vector and reusing the vector read path, so Value#to_ruby returns the
+ * same Ruby object a query result produces for that type. Used for types
+ * the C API has no direct duckdb_get_* accessors for.
+ */
+static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value val) {
+    duckdb_vector vec = duckdb_create_vector(logical_type, 1);
+    VALUE result;
+
+    duckdb_vector_reference_value(vec, val);
+    result = rbduckdb_vector_value_at(vec, logical_type, 0);
+    duckdb_destroy_vector(&vec);
+    return result;
+}
+
 VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
     duckdb_logical_type logical_type;
-    duckdb_logical_type child_type;
     duckdb_type type_id;
     duckdb_value child_value;
-    duckdb_vector vec;
-    duckdb_vector child_vec;
     VALUE result;
     VALUE elem;
     VALUE key;
@@ -644,18 +670,8 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             }
             break;
         case DUCKDB_TYPE_ARRAY:
-            /* the C API has no duckdb_get_array_size/child; read via a vector */
-            child_type = duckdb_array_type_child_type(logical_type);
-            vec = duckdb_create_vector(logical_type, 1);
-            size = duckdb_array_type_array_size(logical_type);
-            duckdb_vector_reference_value(vec, val);
-            child_vec = duckdb_array_vector_get_child(vec);
-            result = rb_ary_new_capa(size);
-            for (i = 0; i < size; i++) {
-                rb_ary_push(result, rbduckdb_vector_value_at(child_vec, child_type, i));
-            }
-            duckdb_destroy_logical_type(&child_type);
-            duckdb_destroy_vector(&vec);
+        case DUCKDB_TYPE_UNION:
+            result = to_ruby_via_vector(logical_type, val);
             break;
         default:
             result = Qnil;
@@ -673,8 +689,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
  *  to their natural Ruby classes. LIST and ARRAY values are converted to
  *  Array recursively. STRUCT and MAP values are converted to Hash
  *  recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby
- *  type). ENUM values are converted to the member String. NULL is
- *  converted to nil. Returns nil for unsupported types.
+ *  type). ENUM values are converted to the member String. UNION values
+ *  are converted to the member's Ruby value. NULL is converted to nil.
+ *  Returns nil for unsupported types.
  *
  *    require 'duckdb'
  *    child_type = DuckDB::LogicalType.resolve(:integer)
@@ -720,6 +737,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_tz", value_s__create_timestamp_tz, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_interval", value_s__create_interval, 3);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_enum", value_s__create_enum, 2);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_union", value_s__create_union, 3);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
