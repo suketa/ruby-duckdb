@@ -601,6 +601,10 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             break;
         case DUCKDB_TYPE_ENUM:
             str = duckdb_enum_dictionary_value(logical_type, duckdb_get_enum_value(val));
+            if (str == NULL) {
+                result = Qnil;
+                break;
+            }
             result = rb_utf8_str_new_cstr(str);
             duckdb_free(str);
             break;
