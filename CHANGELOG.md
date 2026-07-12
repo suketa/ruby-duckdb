@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_date(value)` to create DATE values from a Date, a Time, or a parseable String (same lenient input as `Appender#append_date`).
 - add `DuckDB::Value.create_time(value)` to create TIME values (microsecond precision) from a Time or a parseable String.
 - add `DuckDB::Value.create_time_ns(value)` to create TIME_NS values (nanosecond precision) from a Time or a parseable String. TIME_NS values are now converted to Ruby Time with full nanosecond precision (previously truncated to microseconds).
+- add `DuckDB::Value.create_time_tz(value)` to create TIMETZ values from a Time (the UTC offset is taken from the Time) or a parseable String with offset.
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.
