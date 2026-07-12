@@ -462,6 +462,21 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, value)
     end
 
+    def test_blob_to_ruby_round_trips_byte_exact
+      bytes = "\x00\x01\xFFabc\x00".b
+      result = DuckDB::Value.create_blob(bytes).to_ruby
+
+      assert_equal(bytes, result)
+      assert_equal(Encoding::BINARY, result.encoding)
+    end
+
+    def test_blob_to_ruby_with_empty_blob
+      result = DuckDB::Value.create_blob(''.b).to_ruby
+
+      assert_equal(''.b, result)
+      assert_equal(Encoding::BINARY, result.encoding)
+    end
+
     def test_create_blob_with_binary_duckdb_blob
       value = DuckDB::Value.create_blob(DuckDB::Blob.new("\x00\x01\x02".b))
 

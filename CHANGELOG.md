@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - `DuckDB::Value#to_ruby` converts BIT values to a String of '0'/'1' characters.
 - add `DuckDB::Value.create_bignum(value)` to create BIGNUM (arbitrary-precision integer) values from a Ruby Integer.
 - `DuckDB::Value#to_ruby` converts BIGNUM values to a Ruby Integer.
+- `DuckDB::Value#to_ruby` converts BLOB values to a BINARY-encoded String.
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.
