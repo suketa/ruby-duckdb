@@ -391,6 +391,32 @@ module DuckDB
         _create_interval(value.interval_months, value.interval_days, value.interval_micros)
       end
 
+      # Creates a DuckDB::Value of ENUM type.
+      # The first argument is the enum type: an Array of member names (as
+      # accepted by DuckDB::LogicalType.create_enum) or an ENUM
+      # DuckDB::LogicalType.
+      # The second argument is the member: its name (String or Symbol) or
+      # its 0-based index (Integer).
+      #
+      #   value = DuckDB::Value.create_enum(%w[happy sad neutral], 'sad')
+      #
+      #   # equivalent, with an explicit ENUM logical type:
+      #   enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
+      #   value = DuckDB::Value.create_enum(enum_type, 'sad')
+      #
+      # @param enum_type [Array<String>, DuckDB::LogicalType] the member names or ENUM logical type.
+      # @param member [String, Symbol, Integer] the member name or 0-based index.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if enum_type is not an Array or an ENUM
+      #   DuckDB::LogicalType, or member is not a member of the enum.
+      def create_enum(enum_type, member)
+        enum_type = DuckDB::LogicalType.create_enum(*enum_type) if enum_type.is_a?(Array)
+        check_type!(enum_type, DuckDB::LogicalType)
+        raise ArgumentError, "expected ENUM LogicalType, got #{enum_type.type}" unless enum_type.type == :enum
+
+        _create_enum(enum_type, enum_member_index(enum_type, member))
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
@@ -507,6 +533,25 @@ module DuckDB
 
       def to_time(value)
         value.is_a?(Date) ? value.to_time : _parse_time(value)
+      end
+
+      def enum_member_index(enum_type, member)
+        case member
+        when Integer
+          check_range!(member, 0...enum_type.dictionary_size, 'ENUM index')
+          member
+        when String, Symbol
+          enum_member_index_by_name(enum_type, member)
+        else
+          raise ArgumentError, "expected String, Symbol or Integer, got #{member.class.name}"
+        end
+      end
+
+      def enum_member_index_by_name(enum_type, member)
+        index = enum_type.each_dictionary_value.find_index(member.to_s)
+        raise ArgumentError, "`#{member}` is not a member of the enum" if index.nil?
+
+        index
       end
 
       def resolve_map_type(map_type)
