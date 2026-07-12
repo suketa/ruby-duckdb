@@ -28,6 +28,7 @@ static VALUE value_s__create_time_tz(VALUE klass, VALUE micros, VALUE offset);
 static VALUE value_s__create_timestamp(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE value_s__create_timestamp_s(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec);
 static VALUE value_s__create_timestamp_ms(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
+static VALUE value_s__create_timestamp_ns(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE nanos);
 static VALUE value_s_create_null(VALUE klass);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
@@ -205,6 +206,14 @@ static VALUE value_s__create_timestamp_ms(VALUE klass, VALUE year, VALUE month, 
 
     ts.millis = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros).micros / 1000;
     return rbduckdb_value_new(duckdb_create_timestamp_ms(ts));
+}
+
+/* :nodoc: */
+static VALUE value_s__create_timestamp_ns(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE nanos) {
+    duckdb_timestamp_ns ts;
+
+    ts.nanos = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, INT2FIX(0)).micros * 1000 + NUM2LL(nanos);
+    return rbduckdb_value_new(duckdb_create_timestamp_ns(ts));
 }
 
 /*
@@ -667,6 +676,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp", value_s__create_timestamp, 7);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_s", value_s__create_timestamp_s, 6);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_ms", value_s__create_timestamp_ms, 7);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_ns", value_s__create_timestamp_ns, 7);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);

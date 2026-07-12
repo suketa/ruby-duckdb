@@ -83,7 +83,7 @@ module DuckDB
 
     def _to_time_from_duckdb_timestamp_ns(time)
       _to_time_from_duckdb_timestamp_s(time / 1_000_000_000).then do |tm|
-        _to_time(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, time % 1_000_000_000 / 1000)
+        _to_time(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec, Rational(time % 1_000_000_000, 1000))
       end
     end
 
