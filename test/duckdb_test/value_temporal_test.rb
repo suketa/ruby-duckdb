@@ -218,6 +218,22 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Value.create_timestamp_tz(nil) }
     end
 
+    def test_create_interval_with_interval
+      interval = DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 12_345_678)
+      value = DuckDB::Value.create_interval(interval)
+
+      assert_instance_of(DuckDB::Value, value)
+      assert_equal(interval, value.to_ruby)
+    end
+
+    def test_create_interval_with_string_raises_argument_error
+      assert_raises(ArgumentError) { DuckDB::Value.create_interval('P1Y2D') }
+    end
+
+    def test_create_interval_with_nil_raises_argument_error
+      assert_raises(ArgumentError) { DuckDB::Value.create_interval(nil) }
+    end
+
     def test_create_date_with_invalid_string_raises_argument_error
       assert_raises(ArgumentError) { DuckDB::Value.create_date('not a date') }
     end
