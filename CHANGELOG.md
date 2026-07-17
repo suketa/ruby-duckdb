@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Error#error_type` returning the DuckDB error category as a Symbol (e.g. `:constraint`, `:catalog`, `:parser`), or `nil` for errors not originating from a query result. Helps the ActiveRecord adapter map failures to `RecordNotUnique` / `NotNullViolation` etc. without parsing error messages.
 - add `DuckDB::PreparedStatement#param_logical_type(param_index)` returning the `DuckDB::LogicalType` of a bind parameter (1-based index), giving richer type information than `#param_type` (e.g. decimal width/scale, nested types).
 - add `DuckDB::Value.create_date(value)` to create DATE values from a Date, a Time, or a parseable String (same lenient input as `Appender#append_date`).
+- add `DuckDB::Value.create_time(value)` to create TIME values (microsecond precision) from a Time or a parseable String.
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.
