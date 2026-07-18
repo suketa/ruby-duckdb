@@ -299,6 +299,21 @@ module DuckDB
         _create_time_tz(micros, time.utc_offset)
       end
 
+      # Creates a DuckDB::Value of TIMESTAMP type (microsecond precision).
+      # The argument is parsed leniently: a Time, a Date, or a String
+      # accepted by Time.parse, matching Appender#append_timestamp.
+      #
+      #   value = DuckDB::Value.create_timestamp(Time.now)
+      #   value = DuckDB::Value.create_timestamp('2026-07-12 12:34:56.789')
+      #
+      # @param value [Time, Date, String] the timestamp value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ cannot be parsed to a Time.
+      def create_timestamp(value)
+        time = to_time(value)
+        _create_timestamp(time.year, time.month, time.day, time.hour, time.min, time.sec, time.usec)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
@@ -412,6 +427,10 @@ module DuckDB
       end
 
       private
+
+      def to_time(value)
+        value.is_a?(Date) ? value.to_time : _parse_time(value)
+      end
 
       def resolve_map_type(map_type)
         if map_type.is_a?(Hash)
