@@ -33,6 +33,7 @@ static VALUE value_s__create_timestamp_tz(VALUE klass, VALUE micros);
 static VALUE value_s__create_interval(VALUE klass, VALUE months, VALUE days, VALUE micros);
 static VALUE value_s__create_enum(VALUE klass, VALUE ltype, VALUE index);
 static VALUE value_s__create_union(VALUE klass, VALUE ltype, VALUE tag_index, VALUE member);
+static VALUE value_s__create_bit(VALUE klass, VALUE data);
 static VALUE value_s_create_null(VALUE klass);
 static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value val);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
@@ -255,6 +256,25 @@ static VALUE value_s__create_union(VALUE klass, VALUE ltype, VALUE tag_index, VA
 
     if (value == NULL) {
         rb_raise(eDuckDBError, "failed to create UNION value (mismatched member type?)");
+    }
+    return rbduckdb_value_new(value);
+}
+
+/*
+ * :nodoc:
+ * data is the raw DuckDB BIT blob built in Ruby: one byte holding the
+ * number of padding bits, then the bits MSB-first with the padding bits
+ * of the first data byte set to 1.
+ */
+static VALUE value_s__create_bit(VALUE klass, VALUE data) {
+    duckdb_bit bit;
+    duckdb_value value;
+
+    bit.data = (uint8_t *)StringValuePtr(data);
+    bit.size = RSTRING_LEN(data);
+    value = duckdb_create_bit(bit);
+    if (value == NULL) {
+        rb_raise(eDuckDBError, "failed to create BIT value");
     }
     return rbduckdb_value_new(value);
 }
@@ -738,6 +758,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_interval", value_s__create_interval, 3);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_enum", value_s__create_enum, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_union", value_s__create_union, 3);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_bit", value_s__create_bit, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
