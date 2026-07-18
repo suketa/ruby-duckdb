@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_timestamp_ms(value)` to create TIMESTAMP_MS values (millisecond precision).
 - add `DuckDB::Value.create_timestamp_ns(value)` to create TIMESTAMP_NS values (nanosecond precision). TIMESTAMP_NS values (including query results) are now converted to Ruby Time with full nanosecond precision (previously truncated to microseconds).
 - add `DuckDB::Value.create_timestamp_tz(value)` to create TIMESTAMP WITH TIME ZONE values; the instant is stored correctly regardless of the input UTC offset.
+- add `DuckDB::Value.create_interval(value)` to create INTERVAL values from a `DuckDB::Interval`.
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.

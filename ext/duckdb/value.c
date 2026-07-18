@@ -30,6 +30,7 @@ static VALUE value_s__create_timestamp_s(VALUE klass, VALUE year, VALUE month, V
 static VALUE value_s__create_timestamp_ms(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE value_s__create_timestamp_ns(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE nanos);
 static VALUE value_s__create_timestamp_tz(VALUE klass, VALUE micros);
+static VALUE value_s__create_interval(VALUE klass, VALUE months, VALUE days, VALUE micros);
 static VALUE value_s_create_null(VALUE klass);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
@@ -223,6 +224,14 @@ static VALUE value_s__create_timestamp_tz(VALUE klass, VALUE micros) {
 
     ts.micros = NUM2LL(micros);
     return rbduckdb_value_new(duckdb_create_timestamp_tz(ts));
+}
+
+/* :nodoc: */
+static VALUE value_s__create_interval(VALUE klass, VALUE months, VALUE days, VALUE micros) {
+    duckdb_interval interval;
+
+    rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
+    return rbduckdb_value_new(duckdb_create_interval(interval));
 }
 
 /*
@@ -687,6 +696,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_ms", value_s__create_timestamp_ms, 7);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_ns", value_s__create_timestamp_ns, 7);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_tz", value_s__create_timestamp_tz, 1);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_interval", value_s__create_interval, 3);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);

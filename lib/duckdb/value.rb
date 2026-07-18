@@ -375,6 +375,22 @@ module DuckDB
         _create_timestamp_tz((time.to_i * 1_000_000) + time.usec)
       end
 
+      # Creates a DuckDB::Value of INTERVAL type.
+      # Unlike the other temporal creators, the input is strict: it must be
+      # a DuckDB::Interval.
+      #
+      #   interval = DuckDB::Interval.new(interval_months: 14, interval_days: 3, interval_micros: 12_000_000)
+      #   value = DuckDB::Value.create_interval(interval)
+      #
+      # @param value [DuckDB::Interval] the interval value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ is not a DuckDB::Interval.
+      def create_interval(value)
+        check_type!(value, DuckDB::Interval)
+
+        _create_interval(value.interval_months, value.interval_days, value.interval_micros)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
