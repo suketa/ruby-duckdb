@@ -75,6 +75,31 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::Value.create_time_ns(nil) }
     end
 
+    def test_create_time_tz_with_time
+      time = Time.new(2026, 7, 12, 12, 34, 56, '+05:30')
+      value = DuckDB::Value.create_time_tz(time)
+
+      assert_instance_of(DuckDB::Value, value)
+      result = value.to_ruby
+
+      assert_equal([12, 34, 56, 19_800], [result.hour, result.min, result.sec, result.utc_offset])
+    end
+
+    def test_create_time_tz_with_string
+      result = DuckDB::Value.create_time_tz('12:34:56.789012-08:00').to_ruby
+
+      assert_equal([12, 34, 56, 789_012, -28_800],
+                   [result.hour, result.min, result.sec, result.usec, result.utc_offset])
+    end
+
+    def test_create_time_tz_with_invalid_string_raises_argument_error
+      assert_raises(ArgumentError) { DuckDB::Value.create_time_tz('not a time') }
+    end
+
+    def test_create_time_tz_with_nil_raises_argument_error
+      assert_raises(ArgumentError) { DuckDB::Value.create_time_tz(nil) }
+    end
+
     def test_create_date_with_invalid_string_raises_argument_error
       assert_raises(ArgumentError) { DuckDB::Value.create_date('not a date') }
     end

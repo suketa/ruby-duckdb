@@ -283,6 +283,22 @@ module DuckDB
         _create_time_ns(time.hour, time.min, time.sec, time.nsec)
       end
 
+      # Creates a DuckDB::Value of TIMETZ type (time with UTC offset).
+      # The argument is parsed leniently: a Time (the offset is taken from
+      # the Time) or a String accepted by Time.parse.
+      #
+      #   value = DuckDB::Value.create_time_tz(Time.now)
+      #   value = DuckDB::Value.create_time_tz('12:34:56.789012+05:30')
+      #
+      # @param value [Time, String] the time value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ cannot be parsed to a Time.
+      def create_time_tz(value)
+        time = _parse_time(value)
+        micros = (((((time.hour * 60) + time.min) * 60) + time.sec) * 1_000_000) + time.usec
+        _create_time_tz(micros, time.utc_offset)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.

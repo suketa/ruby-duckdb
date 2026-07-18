@@ -24,6 +24,7 @@ static VALUE value_s__create_decimal(VALUE klass, VALUE lower, VALUE upper, VALU
 static VALUE value_s__create_date(VALUE klass, VALUE year, VALUE month, VALUE day);
 static VALUE value_s__create_time(VALUE klass, VALUE hour, VALUE min, VALUE sec, VALUE micros);
 static VALUE value_s__create_time_ns(VALUE klass, VALUE hour, VALUE min, VALUE sec, VALUE nanos);
+static VALUE value_s__create_time_tz(VALUE klass, VALUE micros, VALUE offset);
 static VALUE value_s_create_null(VALUE klass);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
@@ -173,6 +174,12 @@ static VALUE value_s__create_time_ns(VALUE klass, VALUE hour, VALUE min, VALUE s
 
     time_ns.nanos = ((NUM2LL(hour) * 60 + NUM2LL(min)) * 60 + NUM2LL(sec)) * 1000000000LL + NUM2LL(nanos);
     return rbduckdb_value_new(duckdb_create_time_ns(time_ns));
+}
+
+/* :nodoc: */
+static VALUE value_s__create_time_tz(VALUE klass, VALUE micros, VALUE offset) {
+    duckdb_time_tz time_tz = duckdb_create_time_tz(NUM2LL(micros), NUM2INT(offset));
+    return rbduckdb_value_new(duckdb_create_time_tz_value(time_tz));
 }
 
 /*
@@ -631,6 +638,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_date", value_s__create_date, 3);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_time", value_s__create_time, 4);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_time_ns", value_s__create_time_ns, 4);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_time_tz", value_s__create_time_tz, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
