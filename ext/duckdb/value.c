@@ -31,6 +31,7 @@ static VALUE value_s__create_timestamp_ms(VALUE klass, VALUE year, VALUE month, 
 static VALUE value_s__create_timestamp_ns(VALUE klass, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE nanos);
 static VALUE value_s__create_timestamp_tz(VALUE klass, VALUE micros);
 static VALUE value_s__create_interval(VALUE klass, VALUE months, VALUE days, VALUE micros);
+static VALUE value_s__create_enum(VALUE klass, VALUE ltype, VALUE index);
 static VALUE value_s_create_null(VALUE klass);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
@@ -232,6 +233,17 @@ static VALUE value_s__create_interval(VALUE klass, VALUE months, VALUE days, VAL
 
     rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
     return rbduckdb_value_new(duckdb_create_interval(interval));
+}
+
+/* :nodoc: */
+static VALUE value_s__create_enum(VALUE klass, VALUE ltype, VALUE index) {
+    duckdb_logical_type type = rbduckdb_get_struct_logical_type(ltype)->logical_type;
+    duckdb_value value = duckdb_create_enum_value(type, NUM2ULL(index));
+
+    if (value == NULL) {
+        rb_raise(eDuckDBError, "failed to create ENUM value");
+    }
+    return rbduckdb_value_new(value);
 }
 
 /*
@@ -697,6 +709,7 @@ void rbduckdb_init_value(void) {
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_ns", value_s__create_timestamp_ns, 7);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_timestamp_tz", value_s__create_timestamp_tz, 1);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_interval", value_s__create_interval, 3);
+    rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_enum", value_s__create_enum, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_list", value_s__create_list, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_array", value_s__create_array, 2);
     rb_define_private_method(rb_singleton_class(cDuckDBValue), "_create_struct", value_s__create_struct, 2);
