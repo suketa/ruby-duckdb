@@ -495,6 +495,8 @@
 
         <li ><a href="#method-c-create_array">create_array</a></li>
 
+        <li ><a href="#method-c-create_bit">create_bit</a></li>
+
         <li ><a href="#method-c-create_blob">create_blob</a></li>
 
         <li ><a href="#method-c-create_bool">create_bool</a></li>
@@ -682,7 +684,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_array-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 490</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 506</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -706,6 +708,59 @@
 <pre>DuckDB::LogicalType.</pre>
 
 <p>@raise [ArgumentError] if values is not an Array of <a href="Value.html"><code>DuckDB::Value</code></a>.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-create_bit" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_bit" title="Link to this method">
+                <span class="method-name">create_bit</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_bit-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 463</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_bit</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">value</span>, <span class="ruby-constant">String</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;expected a String of &#39;0&#39;/&#39;1&#39; characters&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">/\A[01]+\z/</span>)
+
+  <span class="ruby-identifier">pad</span> = <span class="ruby-operator">-</span><span class="ruby-identifier">value</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">%</span> <span class="ruby-value">8</span>
+  <span class="ruby-identifier">_create_bit</span>(<span class="ruby-node">&quot;#{pad.chr}#{[(&#39;1&#39; * pad) + value].pack(&#39;B*&#39;)}&quot;</span>.<span class="ruby-identifier">b</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of BIT (bitstring) type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_bit</span>(<span class="ruby-string">&#39;0101&#39;</span>)
+</pre>
+
+<p>@param value [String] the bitstring: ‘0’/‘1’ characters, MSB first. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a non-empty String of ‘0’</p>
+
+<pre>and &#39;1&#39; characters.</pre>
 
 
         </div>
@@ -1395,7 +1450,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_list-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 469</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 485</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -1449,7 +1504,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_map-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 558</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 574</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>)
   <span class="ruby-identifier">map_type</span> = <span class="ruby-identifier">resolve_map_type</span>(<span class="ruby-identifier">map_type</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">entries</span>, <span class="ruby-constant">Hash</span>)
@@ -1565,7 +1620,7 @@ DuckDB::Value.</pre>
             </details>
           </div>
           <div class="method-source-code" id="create_struct-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 518</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 534</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">struct_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)

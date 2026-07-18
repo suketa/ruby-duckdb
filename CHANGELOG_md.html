@@ -520,6 +520,8 @@
 <p><a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> converts ENUM values to the member String.</p>
 </li><li>
 <p>add <a href="DuckDB/Value.html#method-c-create_union"><code>DuckDB::Value.create_union(union_type, tag, value)</code></a> to create UNION values from a member spec Hash like <code>{ num: :integer, str: :varchar }</code> (or a UNION <a href="DuckDB/LogicalType.html"><code>DuckDB::LogicalType</code></a>), a member tag, and a <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a>. <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> converts UNION values to the member value.</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_bit"><code>DuckDB::Value.create_bit(value)</code></a> to create BIT values from a String of ‘0’/‘1’ characters.</p>
 </li></ul>
 
 <h1 id="label-1.5.4.0+-+2026-06-20"><a href="#label-1.5.4.0+-+2026-06-20">1.5.4.0 - 2026-06-20</a></h1>
