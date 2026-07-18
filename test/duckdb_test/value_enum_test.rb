@@ -28,6 +28,15 @@ module DuckDBTest
       assert_instance_of(DuckDB::Value, DuckDB::Value.create_enum(enum_type, 2))
     end
 
+    def test_create_enum_reuses_same_logical_type
+      type = enum_type
+      happy = DuckDB::Value.create_enum(type, 'happy')
+      sad = DuckDB::Value.create_enum(type, 'sad')
+
+      assert_instance_of(DuckDB::Value, happy)
+      assert_instance_of(DuckDB::Value, sad)
+    end
+
     def test_to_ruby_returns_member_string
       assert_equal('sad', DuckDB::Value.create_enum(enum_type, 'sad').to_ruby)
     end
