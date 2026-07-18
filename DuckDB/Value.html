@@ -529,6 +529,8 @@
 
         <li ><a href="#method-c-create_time_ns">create_time_ns</a></li>
 
+        <li ><a href="#method-c-create_time_tz">create_time_tz</a></li>
+
         <li ><a href="#method-c-create_uhugeint">create_uhugeint</a></li>
 
         <li ><a href="#method-c-create_uint16">create_uint16</a></li>
@@ -664,7 +666,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_array-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 321</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 337</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -1270,7 +1272,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_list-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 300</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 316</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -1324,7 +1326,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_map-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 389</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 405</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>)
   <span class="ruby-identifier">map_type</span> = <span class="ruby-identifier">resolve_map_type</span>(<span class="ruby-identifier">map_type</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">entries</span>, <span class="ruby-constant">Hash</span>)
@@ -1440,7 +1442,7 @@ DuckDB::Value.</pre>
             </details>
           </div>
           <div class="method-source-code" id="create_struct-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 349</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 365</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">struct_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
@@ -1575,6 +1577,56 @@ values.size does not match the struct&#39;s field count.</pre>
 
 <pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_time_ns</span>(<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>)
 <span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_time_ns</span>(<span class="ruby-string">&#39;12:34:56.123456789&#39;</span>)
+</pre>
+
+<p>@param value [Time, String] the time value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> cannot be parsed to a Time.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-create_time_tz" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_time_tz" title="Link to this method">
+                <span class="method-name">create_time_tz</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_time_tz-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 296</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_time_tz</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">time</span> = <span class="ruby-identifier">_parse_time</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">micros</span> = (((((<span class="ruby-identifier">time</span>.<span class="ruby-identifier">hour</span> <span class="ruby-operator">*</span> <span class="ruby-value">60</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">time</span>.<span class="ruby-identifier">min</span>) <span class="ruby-operator">*</span> <span class="ruby-value">60</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">time</span>.<span class="ruby-identifier">sec</span>) <span class="ruby-operator">*</span> <span class="ruby-value">1_000_000</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">time</span>.<span class="ruby-identifier">usec</span>
+  <span class="ruby-identifier">_create_time_tz</span>(<span class="ruby-identifier">micros</span>, <span class="ruby-identifier">time</span>.<span class="ruby-identifier">utc_offset</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of TIMETZ type (time with UTC offset). The argument is parsed leniently: a Time (the offset is taken from the Time) or a String accepted by Time.parse.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_time_tz</span>(<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>)
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_time_tz</span>(<span class="ruby-string">&#39;12:34:56.789012+05:30&#39;</span>)
 </pre>
 
 <p>@param value [Time, String] the time value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> cannot be parsed to a Time.</p>

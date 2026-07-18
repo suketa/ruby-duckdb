@@ -500,6 +500,8 @@
 <p>add <a href="DuckDB/Value.html#method-c-create_time"><code>DuckDB::Value.create_time(value)</code></a> to create TIME values (microsecond precision) from a Time or a parseable String.</p>
 </li><li>
 <p>add <a href="DuckDB/Value.html#method-c-create_time_ns"><code>DuckDB::Value.create_time_ns(value)</code></a> to create TIME_NS values (nanosecond precision) from a Time or a parseable String. TIME_NS values are now converted to Ruby Time with full nanosecond precision (previously truncated to microseconds).</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_time_tz"><code>DuckDB::Value.create_time_tz(value)</code></a> to create TIMETZ values from a Time (the UTC offset is taken from the Time) or a parseable String with offset.</p>
 </li></ul>
 
 <h1 id="label-1.5.4.0+-+2026-06-20"><a href="#label-1.5.4.0+-+2026-06-20">1.5.4.0 - 2026-06-20</a></h1>
