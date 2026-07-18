@@ -505,6 +505,8 @@
 
         <li ><a href="#method-c-create_double">create_double</a></li>
 
+        <li ><a href="#method-c-create_enum">create_enum</a></li>
+
         <li ><a href="#method-c-create_float">create_float</a></li>
 
         <li ><a href="#method-c-create_hugeint">create_hugeint</a></li>
@@ -678,7 +680,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_array-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 429</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 455</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -951,6 +953,63 @@
 </pre>
 
 <p>@param value [Numeric] the numeric value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if <code>value</code> is not a Numeric.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-create_enum" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_enum" title="Link to this method">
+                <span class="method-name">create_enum</span>
+                <span class="method-args">(enum_type, member)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_enum-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 412</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_enum</span>(<span class="ruby-identifier">enum_type</span>, <span class="ruby-identifier">member</span>)
+  <span class="ruby-identifier">enum_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_enum</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">enum_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">enum_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">enum_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected ENUM LogicalType, got #{enum_type.type}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">enum_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:enum</span>
+
+  <span class="ruby-identifier">_create_enum</span>(<span class="ruby-identifier">enum_type</span>, <span class="ruby-identifier">enum_member_index</span>(<span class="ruby-identifier">enum_type</span>, <span class="ruby-identifier">member</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of ENUM type. The first argument is the enum type: an Array of member names (as accepted by <a href="LogicalType.html#method-c-create_enum"><code>DuckDB::LogicalType.create_enum</code></a>) or an ENUM <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>. The second argument is the member: its name (String or Symbol) or its 0-based index (Integer).</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_enum</span>(<span class="ruby-node">%w[happy sad neutral]</span>, <span class="ruby-string">&#39;sad&#39;</span>)
+
+<span class="ruby-comment"># equivalent, with an explicit ENUM logical type:</span>
+<span class="ruby-identifier">enum_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_enum</span>(<span class="ruby-string">&#39;happy&#39;</span>, <span class="ruby-string">&#39;sad&#39;</span>, <span class="ruby-string">&#39;neutral&#39;</span>)
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_enum</span>(<span class="ruby-identifier">enum_type</span>, <span class="ruby-string">&#39;sad&#39;</span>)
+</pre>
+
+<p>@param enum_type [Array&lt;String&gt;, <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>] the member names or ENUM logical type. @param member [String, Symbol, Integer] the member name or 0-based index. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if enum_type is not an Array or an ENUM</p>
+
+<pre>DuckDB::LogicalType, or member is not a member of the enum.</pre>
 
 
         </div>
@@ -1334,7 +1393,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_list-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 408</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 434</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -1388,7 +1447,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_map-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 497</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 523</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>)
   <span class="ruby-identifier">map_type</span> = <span class="ruby-identifier">resolve_map_type</span>(<span class="ruby-identifier">map_type</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">entries</span>, <span class="ruby-constant">Hash</span>)
@@ -1504,7 +1563,7 @@ DuckDB::Value.</pre>
             </details>
           </div>
           <div class="method-source-code" id="create_struct-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 457</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 483</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">struct_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
