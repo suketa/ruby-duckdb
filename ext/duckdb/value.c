@@ -691,6 +691,7 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             break;
         case DUCKDB_TYPE_ARRAY:
         case DUCKDB_TYPE_UNION:
+        case DUCKDB_TYPE_BIT:
             result = to_ruby_via_vector(logical_type, val);
             break;
         default:
@@ -710,8 +711,9 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
  *  Array recursively. STRUCT and MAP values are converted to Hash
  *  recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby
  *  type). ENUM values are converted to the member String. UNION values
- *  are converted to the member's Ruby value. NULL is converted to nil.
- *  Returns nil for unsupported types.
+ *  are converted to the member's Ruby value. BIT values are converted to
+ *  a String of '0'/'1' characters. NULL is converted to nil. Returns nil
+ *  for unsupported types.
  *
  *    require 'duckdb'
  *    child_type = DuckDB::LogicalType.resolve(:integer)
