@@ -21,7 +21,7 @@ module DuckDBTest
       result = @conn.execute('SELECT value FROM test;')
       ary = result.each.to_a
 
-      assert_equal([[Time.local(2019, 1, 2, 12, 34, 56, 123_456)]], ary)
+      assert_equal([[Time.local(2019, 1, 2, 12, 34, 56, Rational(123_456_789, 1000))]], ary)
     end
   end
 end
