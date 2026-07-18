@@ -417,6 +417,41 @@ module DuckDB
         _create_enum(enum_type, enum_member_index(enum_type, member))
       end
 
+      # Creates a DuckDB::Value of UNION type.
+      # The first argument is the union type: a Hash of member name to
+      # member type (as accepted by DuckDB::LogicalType.create_union) or a
+      # UNION DuckDB::LogicalType.
+      # The second argument is the member tag (String or Symbol), and the
+      # third is the member value as a DuckDB::Value of the tagged type.
+      #
+      #   value = DuckDB::Value.create_union({ num: :integer, str: :varchar }, :num, DuckDB::Value.create_int32(42))
+      #   value.to_ruby #=> 42
+      #
+      #   # equivalent, with an explicit UNION logical type:
+      #   union_type = DuckDB::LogicalType.create_union(num: :integer, str: :varchar)
+      #   value = DuckDB::Value.create_union(union_type, :num, DuckDB::Value.create_int32(42))
+      #
+      # @param union_type [Hash, DuckDB::LogicalType] the member spec or UNION logical type.
+      # @param tag [String, Symbol] the member tag.
+      # @param member_value [DuckDB::Value] the member value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if union_type is not a Hash or a UNION
+      #   DuckDB::LogicalType, tag is not a member of the union, or
+      #   member_value is not a DuckDB::Value.
+      # @raise [DuckDB::Error] if member_value does not match the tagged
+      #   member's type.
+      def create_union(union_type, tag, member_value)
+        union_type = DuckDB::LogicalType.create_union(**union_type) if union_type.is_a?(Hash)
+        check_type!(union_type, DuckDB::LogicalType)
+        raise ArgumentError, "expected UNION LogicalType, got #{union_type.type}" unless union_type.type == :union
+
+        check_type!(member_value, DuckDB::Value)
+        tag_index = union_type.each_member_name.find_index(tag.to_s)
+        raise ArgumentError, "`#{tag}` is not a member of the union" if tag_index.nil?
+
+        _create_union(union_type, tag_index, member_value)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
