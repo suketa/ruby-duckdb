@@ -268,6 +268,21 @@ module DuckDB
         _create_time(time.hour, time.min, time.sec, time.usec)
       end
 
+      # Creates a DuckDB::Value of TIME_NS type (nanosecond precision).
+      # The argument is parsed leniently: a Time or a String accepted by
+      # Time.parse. Nanoseconds are preserved.
+      #
+      #   value = DuckDB::Value.create_time_ns(Time.now)
+      #   value = DuckDB::Value.create_time_ns('12:34:56.123456789')
+      #
+      # @param value [Time, String] the time value.
+      # @return [DuckDB::Value] the created Value object.
+      # @raise [ArgumentError] if +value+ cannot be parsed to a Time.
+      def create_time_ns(value)
+        time = _parse_time(value)
+        _create_time_ns(time.hour, time.min, time.sec, time.nsec)
+      end
+
       # Creates a DuckDB::Value of LIST type.
       # The first argument is the element type: a Symbol (e.g. :integer) or a
       # DuckDB::LogicalType.
