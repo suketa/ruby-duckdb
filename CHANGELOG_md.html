@@ -510,6 +510,8 @@
 <p>add <a href="DuckDB/Value.html#method-c-create_timestamp_ms"><code>DuckDB::Value.create_timestamp_ms(value)</code></a> to create TIMESTAMP_MS values (millisecond precision).</p>
 </li><li>
 <p>add <a href="DuckDB/Value.html#method-c-create_timestamp_ns"><code>DuckDB::Value.create_timestamp_ns(value)</code></a> to create TIMESTAMP_NS values (nanosecond precision). TIMESTAMP_NS values (including query results) are now converted to Ruby Time with full nanosecond precision (previously truncated to microseconds).</p>
+</li><li>
+<p>add <a href="DuckDB/Value.html#method-c-create_timestamp_tz"><code>DuckDB::Value.create_timestamp_tz(value)</code></a> to create TIMESTAMP WITH TIME ZONE values; the instant is stored correctly regardless of the input UTC offset.</p>
 </li></ul>
 
 <h1 id="label-1.5.4.0+-+2026-06-20"><a href="#label-1.5.4.0+-+2026-06-20">1.5.4.0 - 2026-06-20</a></h1>
