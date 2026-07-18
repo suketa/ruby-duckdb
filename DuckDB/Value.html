@@ -2863,7 +2863,7 @@ member_value is not a DuckDB::Value.</pre>
         <div class="method-description">
 
 
-          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. STRUCT and MAP values are converted to Hash recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby type). ENUM values are converted to the member String. UNION values are converted to the member’s Ruby value. BIT values are converted to a String of ‘0’/‘1’ characters. NULL is converted to nil. Returns nil for unsupported types.</p>
+          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. STRUCT and MAP values are converted to Hash recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby type). ENUM values are converted to the member String. UNION values are converted to the member’s Ruby value. BIT values are converted to a String of ‘0’/‘1’ characters. BIGNUM values are converted to Integer. NULL is converted to nil. Returns nil for unsupported types.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">child_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-value">:integer</span>)
