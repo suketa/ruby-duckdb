@@ -555,6 +555,8 @@
 
         <li ><a href="#method-c-create_uint8">create_uint8</a></li>
 
+        <li ><a href="#method-c-create_union">create_union</a></li>
+
         <li ><a href="#method-c-create_varchar">create_varchar</a></li>
 
       </ul>
@@ -680,7 +682,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_array-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 455</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 490</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_array</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -1393,7 +1395,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_list-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 434</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 469</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_list</span>(<span class="ruby-identifier">child_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">check_value_array!</span>(<span class="ruby-identifier">values</span>)
 
@@ -1447,7 +1449,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create_map-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 523</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 558</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_map</span>(<span class="ruby-identifier">map_type</span>, <span class="ruby-identifier">entries</span>)
   <span class="ruby-identifier">map_type</span> = <span class="ruby-identifier">resolve_map_type</span>(<span class="ruby-identifier">map_type</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">entries</span>, <span class="ruby-constant">Hash</span>)
@@ -1563,7 +1565,7 @@ DuckDB::Value.</pre>
             </details>
           </div>
           <div class="method-source-code" id="create_struct-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 483</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 518</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_struct</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-identifier">values</span>)
   <span class="ruby-identifier">struct_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_struct</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">struct_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">struct_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
   <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">struct_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
@@ -2262,6 +2264,73 @@ values.size does not match the struct&#39;s field count.</pre>
       </div>
 
 
+      <div id="method-c-create_union" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-create_union" title="Link to this method">
+                <span class="method-name">create_union</span>
+                <span class="method-args">(union_type, tag, member_value)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create_union-source">
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/value.rb, line 443</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_union</span>(<span class="ruby-identifier">union_type</span>, <span class="ruby-identifier">tag</span>, <span class="ruby-identifier">member_value</span>)
+  <span class="ruby-identifier">union_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_union</span>(<span class="ruby-operator">**</span><span class="ruby-identifier">union_type</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">union_type</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">union_type</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;expected UNION LogicalType, got #{union_type.type}&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">union_type</span>.<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:union</span>
+
+  <span class="ruby-identifier">check_type!</span>(<span class="ruby-identifier">member_value</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>)
+  <span class="ruby-identifier">tag_index</span> = <span class="ruby-identifier">union_type</span>.<span class="ruby-identifier">each_member_name</span>.<span class="ruby-identifier">find_index</span>(<span class="ruby-identifier">tag</span>.<span class="ruby-identifier">to_s</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;`#{tag}` is not a member of the union&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">tag_index</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">_create_union</span>(<span class="ruby-identifier">union_type</span>, <span class="ruby-identifier">tag_index</span>, <span class="ruby-identifier">member_value</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Creates a <a href="Value.html"><code>DuckDB::Value</code></a> of UNION type. The first argument is the union type: a Hash of member name to member type (as accepted by <a href="LogicalType.html#method-c-create_union"><code>DuckDB::LogicalType.create_union</code></a>) or a UNION <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>. The second argument is the member tag (String or Symbol), and the third is the member value as a <a href="Value.html"><code>DuckDB::Value</code></a> of the tagged type.</p>
+
+<pre class="ruby"><span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_union</span>({ <span class="ruby-value">num:</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">str:</span> <span class="ruby-value">:varchar</span> }, <span class="ruby-value">:num</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">42</span>))
+<span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_ruby</span> <span class="ruby-comment">#=&gt; 42</span>
+
+<span class="ruby-comment"># equivalent, with an explicit UNION logical type:</span>
+<span class="ruby-identifier">union_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">create_union</span>(<span class="ruby-value">num:</span> <span class="ruby-value">:integer</span>, <span class="ruby-value">str:</span> <span class="ruby-value">:varchar</span>)
+<span class="ruby-identifier">value</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_union</span>(<span class="ruby-identifier">union_type</span>, <span class="ruby-value">:num</span>, <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>.<span class="ruby-identifier">create_int32</span>(<span class="ruby-value">42</span>))
+</pre>
+
+<p>@param union_type [Hash, <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a>] the member spec or UNION logical type. @param tag [String, Symbol] the member tag. @param member_value [DuckDB::Value] the member value. @return [DuckDB::Value] the created <a href="Value.html"><code>Value</code></a> object. @raise [ArgumentError] if union_type is not a Hash or a UNION</p>
+
+<pre>DuckDB::LogicalType, tag is not a member of the union, or
+member_value is not a DuckDB::Value.</pre>
+
+<p>@raise [DuckDB::Error] if member_value does not match the tagged</p>
+
+<pre>member&#39;s type.</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-c-create_varchar" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -2686,7 +2755,7 @@ values.size does not match the struct&#39;s field count.</pre>
         <div class="method-description">
 
 
-          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. STRUCT and MAP values are converted to Hash recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby type). ENUM values are converted to the member String. NULL is converted to nil. Returns nil for unsupported types.</p>
+          <p>Converts the <a href="Value.html"><code>DuckDB::Value</code></a> to a Ruby object. Scalar types are converted to their natural Ruby classes. LIST and ARRAY values are converted to Array recursively. STRUCT and MAP values are converted to Hash recursively (STRUCT keys are Symbols; MAP keys keep their natural Ruby type). ENUM values are converted to the member String. UNION values are converted to the member’s Ruby value. NULL is converted to nil. Returns nil for unsupported types.</p>
 
 <pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;duckdb&#39;</span>
 <span class="ruby-identifier">child_type</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">LogicalType</span>.<span class="ruby-identifier">resolve</span>(<span class="ruby-value">:integer</span>)
