@@ -423,6 +423,25 @@ module DuckDB
       end
     end
 
+    # Returns the names of the tables referenced by the given SQL query,
+    # without executing it.
+    #
+    # @param query [String] the SQL query to inspect
+    # @param qualified [Boolean] if true, returns each table reference as
+    #   written in the query, keeping any catalog/schema qualification;
+    #   if false (default), bare table names only
+    # @return [Array<String>] the referenced table names
+    # @raise [DuckDB::Error] if the query cannot be parsed
+    #
+    # @example
+    #   con.table_names('SELECT * FROM users u JOIN orders o ON u.id = o.user_id')
+    #   #=> ["users", "orders"]
+    #   con.table_names('SELECT * FROM memory.main.users', qualified: true)
+    #   #=> ["memory.main.users"]
+    def table_names(query, qualified: false)
+      _get_table_names(query, qualified).to_ruby
+    end
+
     private
 
     # Drives the Arrow stream at +address+ chunk by chunk into +table+,

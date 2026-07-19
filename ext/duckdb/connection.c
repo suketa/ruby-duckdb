@@ -17,6 +17,7 @@ static VALUE connection__register_scalar_function_set(VALUE self, VALUE scalar_f
 static VALUE connection__register_aggregate_function(VALUE self, VALUE aggregate_function);
 static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggregate_function_set);
 static VALUE connection__register_table_function(VALUE self, VALUE table_function);
+static VALUE connection__get_table_names(VALUE self, VALUE query, VALUE qualified);
 
 static const rb_data_type_t connection_data_type = {
     "DuckDB/Connection",
@@ -204,6 +205,26 @@ static VALUE connection__query_sql(VALUE self, VALUE str) {
 }
 
 /* :nodoc: */
+static VALUE connection__get_table_names(VALUE self, VALUE query, VALUE qualified) {
+    rubyDuckDBConnection *ctx;
+    duckdb_value table_names;
+
+    ctx = rbduckdb_get_struct_connection(self);
+
+    if (!(ctx->con)) {
+        rb_raise(eDuckDBError, "Database connection closed");
+    }
+
+    table_names = duckdb_get_table_names(ctx->con, StringValueCStr(query), RTEST(qualified));
+
+    if (!table_names) {
+        rb_raise(eDuckDBError, "Failed to get table names from query");
+    }
+
+    return rbduckdb_value_new(table_names);
+}
+
+/* :nodoc: */
 static VALUE connection__register_logical_type(VALUE self, VALUE logical_type) {
     rubyDuckDBConnection *ctxcon;
     rubyDuckDBLogicalType *ctxlt;
@@ -346,4 +367,5 @@ void rbduckdb_init_connection(void) {
     rb_define_private_method(cDuckDBConnection, "_register_table_function", connection__register_table_function, 1);
     rb_define_private_method(cDuckDBConnection, "_connect", connection__connect, 1);
     rb_define_private_method(cDuckDBConnection, "_query_sql", connection__query_sql, 1);
+    rb_define_private_method(cDuckDBConnection, "_get_table_names", connection__get_table_names, 2);
 }
