@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::Value.create_bignum(value)` to create BIGNUM (arbitrary-precision integer) values from a Ruby Integer.
 - `DuckDB::Value#to_ruby` converts BIGNUM values to a Ruby Integer.
 - `DuckDB::Value#to_ruby` converts BLOB values to a BINARY-encoded String.
+- `DuckDB::Value#to_ruby` converts DECIMAL values to a BigDecimal.
 
 # 1.5.4.0 - 2026-06-20
 - bump up DuckDB 1.5.4 and 1.4.5 on CI.
