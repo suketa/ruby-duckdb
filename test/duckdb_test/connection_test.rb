@@ -524,6 +524,45 @@ module DuckDBTest
       end
     end
 
+    def test_table_names_with_nonexistent_tables
+      names = @con.table_names('SELECT * FROM no_such_table')
+
+      assert_equal(['no_such_table'], names)
+    end
+
+    def test_table_names_deduplicates
+      names = @con.table_names('SELECT * FROM my_table, my_table m2, my_table m3')
+
+      assert_equal(['my_table'], names)
+    end
+
+    def test_table_names_excludes_cte_names
+      names = @con.table_names('WITH cte AS (SELECT * FROM my_table) SELECT * FROM cte')
+
+      assert_equal(['my_table'], names)
+    end
+
+    def test_table_names_expands_views
+      @con.query('CREATE TABLE base_table (id INTEGER)')
+      @con.query('CREATE VIEW v1 AS SELECT * FROM base_table')
+
+      names = @con.table_names('SELECT * FROM v1')
+
+      assert_equal(['base_table'], names)
+    end
+
+    def test_table_names_with_table_function
+      names = @con.table_names('SELECT * FROM generate_series(1, 3)')
+
+      assert_empty(names)
+    end
+
+    def test_table_names_qualified_includes_alias
+      names = @con.table_names('SELECT * FROM schema1.table1 alias1', qualified: true)
+
+      assert_equal(['schema1.table1 AS alias1'], names)
+    end
+
     def test_table_names_with_closed_connection
       @con.disconnect
 
