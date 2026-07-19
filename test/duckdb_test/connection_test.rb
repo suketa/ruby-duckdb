@@ -523,5 +523,13 @@ module DuckDBTest
         @con.table_names('NOT A VALID SQL')
       end
     end
+
+    def test_table_names_with_closed_connection
+      @con.disconnect
+
+      assert_raises(DuckDB::Error) do
+        @con.table_names('SELECT * FROM users')
+      end
+    end
   end
 end
