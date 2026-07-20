@@ -181,9 +181,8 @@ static VALUE value_s__create_time(VALUE klass, VALUE hour, VALUE min, VALUE sec,
 
 /* :nodoc: */
 static VALUE value_s__create_time_ns(VALUE klass, VALUE hour, VALUE min, VALUE sec, VALUE nanos) {
-    duckdb_time_ns time_ns;
+    duckdb_time_ns time_ns = rbduckdb_to_duckdb_time_ns_from_value(hour, min, sec, nanos);
 
-    time_ns.nanos = ((NUM2LL(hour) * 60 + NUM2LL(min)) * 60 + NUM2LL(sec)) * 1000000000LL + NUM2LL(nanos);
     return rbduckdb_value_new(duckdb_create_time_ns(time_ns));
 }
 

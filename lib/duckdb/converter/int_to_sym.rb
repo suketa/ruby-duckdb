@@ -73,7 +73,8 @@ module DuckDB
         35 => :bignum,
         36 => :sqlnull,
         37 => :string_literal,
-        38 => :integer_literal
+        38 => :integer_literal,
+        39 => :time_ns
       }.freeze
 
       ERROR_TYPES = %i[

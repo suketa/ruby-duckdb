@@ -29,6 +29,27 @@ module DuckDBTest
       assert_equal 4950, result.first.first
     end
 
+    def test_time_ns_parameter_and_return_type
+      # The C API supports TIME_NS fully on DuckDB >= 1.5.0.
+      skip 'TIME_NS requires DuckDB >= 1.5.0' if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+
+      af = DuckDB::AggregateFunction.create(
+        name: 'my_max_time_ns',
+        return_type: :time_ns,
+        params: [:time_ns],
+        init: -> {},
+        update: ->(state, value) { state && state > value ? state : value },
+        combine: ->(state, other_state) { [state, other_state].compact.max }
+      )
+      @con.register_aggregate_function(af)
+      @con.execute('CREATE TABLE test_table (t TIME_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00.123456789'), ('23:59:59.999999999')")
+
+      result = @con.query('SELECT my_max_time_ns(t) FROM test_table').first.first
+
+      assert_equal [23, 59, 59, 999_999_999], [result.hour, result.min, result.sec, result.nsec]
+    end
+
     def test_default_finalize_returns_state_as_is
       register_aggregate('my_agg_default_finalize',
                          init: -> { 42 })
