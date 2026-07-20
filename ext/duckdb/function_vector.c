@@ -137,6 +137,20 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             ((duckdb_time *)vector_data)[index] = time;
             break;
         }
+        case DUCKDB_TYPE_TIME_NS: {
+            if (!rb_obj_is_kind_of(value, rb_cTime)) {
+                rb_raise(rb_eTypeError, "Expected Time object for TIME_NS");
+            }
+
+            VALUE hour = rb_funcall(value, rb_intern("hour"), 0);
+            VALUE min = rb_funcall(value, rb_intern("min"), 0);
+            VALUE sec = rb_funcall(value, rb_intern("sec"), 0);
+            VALUE nsec = rb_funcall(value, rb_intern("nsec"), 0);
+
+            duckdb_time_ns time_ns = rbduckdb_to_duckdb_time_ns_from_value(hour, min, sec, nsec);
+            ((duckdb_time_ns *)vector_data)[index] = time_ns;
+            break;
+        }
         case DUCKDB_TYPE_TIME_TZ: {
             if (!rb_obj_is_kind_of(value, rb_cTime)) {
                 rb_raise(rb_eTypeError, "Expected Time object for TIME_TZ");

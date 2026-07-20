@@ -307,6 +307,30 @@ module DuckDBTest
       assert_equal 59, rows[1][0].min
     end
 
+    def test_scalar_function_time_ns_return_type
+      # The C API supports TIME_NS fully on DuckDB >= 1.5.0.
+      skip 'TIME_NS requires DuckDB >= 1.5.0' if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+
+      @con.execute('CREATE TABLE test_table (t TIME_NS)')
+      @con.execute("INSERT INTO test_table VALUES ('10:30:00.123456789'), ('23:59:59.999999999')")
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'add_one_hour_ns'
+      sf.add_parameter(DuckDB::LogicalType::TIME_NS)
+      sf.return_type = DuckDB::LogicalType::TIME_NS
+      sf.set_function { |time| time + 3600 } # Add 1 hour (3600 seconds)
+
+      @con.register_scalar_function(sf)
+      result = @con.execute('SELECT add_one_hour_ns(t) FROM test_table ORDER BY t')
+      rows = result.to_a
+
+      assert_equal 2, rows.size
+      assert_equal [11, 30, 0, 123_456_789],
+                   [rows[0][0].hour, rows[0][0].min, rows[0][0].sec, rows[0][0].nsec]
+      assert_equal [0, 59, 59, 999_999_999],
+                   [rows[1][0].hour, rows[1][0].min, rows[1][0].sec, rows[1][0].nsec]
+    end
+
     def test_scalar_function_smallint_return_type # rubocop:disable Minitest/MultipleAssertions
       @con.execute('CREATE TABLE test_table (value SMALLINT)')
       @con.execute('INSERT INTO test_table VALUES (32767), (-32768), (1000)')

@@ -21,6 +21,14 @@ duckdb_time rbduckdb_to_duckdb_time_from_value(VALUE hour, VALUE min, VALUE sec,
     return duckdb_to_time(time_st);
 }
 
+duckdb_time_ns rbduckdb_to_duckdb_time_ns_from_value(VALUE hour, VALUE min, VALUE sec, VALUE nanos) {
+    duckdb_time_ns time_ns;
+
+    time_ns.nanos = ((NUM2LL(hour) * 60 + NUM2LL(min)) * 60 + NUM2LL(sec)) * 1000000000LL + NUM2LL(nanos);
+
+    return time_ns;
+}
+
 duckdb_timestamp rbduckdb_to_duckdb_timestamp_from_time_value(VALUE time_obj) {
     if (!rb_obj_is_kind_of(time_obj, rb_cTime)) {
         rb_raise(rb_eTypeError, "Expected Time object");

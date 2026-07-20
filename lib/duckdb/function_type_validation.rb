@@ -23,6 +23,7 @@ module DuckDB
       timestamp_s
       timestamp_ms
       timestamp_ns
+      time_ns
       time_tz
       timestamp_tz
       tinyint

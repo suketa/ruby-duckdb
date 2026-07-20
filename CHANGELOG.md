@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- support TIME_NS columns in `DuckDB::ScalarFunction` and `DuckDB::AggregateFunction`: TIME_NS can now be used as parameter and return type (with `DuckDB::LogicalType::TIME_NS`). Requires DuckDB >= 1.5.0 for full TIME_NS support in the C API.
 - bump Ruby to 3.4.10 on CI.
 - add `DuckDB::Connection#table_names(sql, qualified: false)` returning the table names referenced by a SQL query without executing it (binds `duckdb_get_table_names`). With `qualified: true`, names are returned as written in the query (including schema/catalog prefixes and aliases). Result order is unspecified.
 - add `DuckDB::Value.create_list(child_type, values)` and `DuckDB::Value.create_array(child_type, values)` to create LIST/ARRAY values from an element type (a Symbol like `:integer` or a `DuckDB::LogicalType`) and an Array of `DuckDB::Value` elements. The created values can be bound to prepared statements with `#bind_value`.

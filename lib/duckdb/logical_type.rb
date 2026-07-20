@@ -46,8 +46,8 @@ module DuckDB
       bignum: 35,
       sqlnull: 36,
       string_literal: 37,
-      integer_literal: 38
-      # time_ns: 39
+      integer_literal: 38,
+      time_ns: 39
     }.each do |method_name, type_id|
       define_singleton_method(method_name) do
         @logical_types[type_id] ||= DuckDB::LogicalType.new(type_id)
