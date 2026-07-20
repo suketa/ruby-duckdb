@@ -475,6 +475,8 @@
 <ul><li>
 <p>bump Ruby to 3.4.10 on CI.</p>
 </li><li>
+<p>add <code>DuckDB::Connection#table_names(sql, qualified: false)</code> returning the table names referenced by a SQL query without executing it (binds <code>duckdb_get_table_names</code>). With <code>qualified: true</code>, names are returned as written in the query (including schema/catalog prefixes and aliases). Result order is unspecified.</p>
+</li><li>
 <p>add <a href="DuckDB/Value.html#method-c-create_list"><code>DuckDB::Value.create_list(child_type, values)</code></a> and <a href="DuckDB/Value.html#method-c-create_array"><code>DuckDB::Value.create_array(child_type, values)</code></a> to create LIST/ARRAY values from an element type (a Symbol like <code>:integer</code> or a <a href="DuckDB/LogicalType.html"><code>DuckDB::LogicalType</code></a>) and an Array of <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a> elements. The created values can be bound to prepared statements with bind_value.</p>
 </li><li>
 <p>add <a href="DuckDB/Value.html#method-i-list_size"><code>DuckDB::Value#list_size</code></a> and <a href="DuckDB/Value.html#method-i-list_child"><code>DuckDB::Value#list_child(index)</code></a> to read LIST value elements as <a href="DuckDB/Value.html"><code>DuckDB::Value</code></a>.</p>
