@@ -7,7 +7,7 @@ module DuckDB
 
     @logical_types = {}
 
-    {
+    types = {
       boolean: 1,
       tinyint: 2,
       smallint: 3,
@@ -46,9 +46,12 @@ module DuckDB
       bignum: 35,
       sqlnull: 36,
       string_literal: 37,
-      integer_literal: 38,
-      time_ns: 39
-    }.each do |method_name, type_id|
+      integer_literal: 38
+    }
+    # duckdb_create_logical_type rejects TIME_NS on DuckDB < 1.5.0.
+    types[:time_ns] = 39 if Gem::Version.new(DuckDB::LIBRARY_VERSION) >= Gem::Version.new('1.5.0')
+
+    types.each do |method_name, type_id|
       define_singleton_method(method_name) do
         @logical_types[type_id] ||= DuckDB::LogicalType.new(type_id)
       end
