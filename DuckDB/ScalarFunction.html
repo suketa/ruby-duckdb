@@ -841,7 +841,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
         <div class="method-description">
 
 
-          <p>Adds a parameter to the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types. For DECIMAL, pass a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance created with <a href="LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal(width, scale)</code></a>.</p>
+          <p>Adds a parameter to the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types. For DECIMAL, pass a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance created with <a href="LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal(width, scale)</code></a>.</p>
 
 <p>@param <a href="../lib/duckdb/logical_type_rb.html">logical_type</a> [DuckDB::LogicalType | :logical_type_symbol] the parameter type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
 
@@ -929,7 +929,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
         <div class="method-description">
 
 
-          <p>Sets the return type for the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types. For DECIMAL, pass a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance created with <a href="LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal(width, scale)</code></a>.</p>
+          <p>Sets the return type for the scalar function. Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types. For DECIMAL, pass a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance created with <a href="LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal(width, scale)</code></a>.</p>
 
 <p>@param <a href="../lib/duckdb/logical_type_rb.html">logical_type</a> [DuckDB::LogicalType | :logical_type_symbol] the return type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
 
@@ -1074,7 +1074,7 @@ Default is +false+ (standard SQL NULL propagation).</pre>
         <div class="method-description">
 
 
-          <p>Sets the varargs type for the scalar function. Marks the function to accept a variable number of trailing arguments all of the given type. Can be combined with <a href="ScalarFunction.html#method-i-add_parameter"><code>add_parameter</code></a> to add fixed leading parameters (e.g. a separator followed by a variable list of values). The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|). Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types. For DECIMAL, pass a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance created with <a href="LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal(width, scale)</code></a>.</p>
+          <p>Sets the varargs type for the scalar function. Marks the function to accept a variable number of trailing arguments all of the given type. Can be combined with <a href="ScalarFunction.html#method-i-add_parameter"><code>add_parameter</code></a> to add fixed leading parameters (e.g. a separator followed by a variable list of values). The block receives fixed parameters positionally, then varargs as a splat (|fixed, *rest|). Currently supports BIGINT, BLOB, BOOLEAN, DATE, DECIMAL, DOUBLE, FLOAT, HUGEINT, INTEGER, INTERVAL, SMALLINT, TIME, TIMESTAMP, TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS, TIME_NS, TIME_TZ, TIMESTAMP_TZ, TINYINT, UBIGINT, UHUGEINT, UINTEGER, USMALLINT, UTINYINT, UUID, and VARCHAR types. For DECIMAL, pass a <a href="LogicalType.html"><code>DuckDB::LogicalType</code></a> instance created with <a href="LogicalType.html#method-c-create_decimal"><code>DuckDB::LogicalType.create_decimal(width, scale)</code></a>.</p>
 
 <p>@param <a href="../lib/duckdb/logical_type_rb.html">logical_type</a> [DuckDB::LogicalType | :logical_type_symbol] the varargs element type @return [DuckDB::ScalarFunction] self @raise [DuckDB::Error] if the type is not supported</p>
 
