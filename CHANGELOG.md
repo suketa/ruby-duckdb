@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+
+# 1.5.5.0 - 2026-07-27
+
 - bump up DuckDB 1.5.5 on CI.
 - support TIME_NS columns in `DuckDB::ScalarFunction` and `DuckDB::AggregateFunction`: TIME_NS can now be used as parameter and return type (with `DuckDB::LogicalType::TIME_NS`). Requires DuckDB >= 1.5.0 for full TIME_NS support in the C API.
 - bump Ruby to 3.4.10 on CI.
