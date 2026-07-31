@@ -43,6 +43,83 @@ module DuckDBTest
       assert_equal table_function, result2
     end
 
+    def test_bind_data_round_trip
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_bind_data'
+
+      returned_bind_info = nil
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+        returned_bind_info = bind_info.set_bind_data({ token: 'round-trip', n: 7 })
+      end
+
+      table_function.init { |_init_info| GC.compact }
+
+      observed_bind_data = nil
+      table_function.execute do |func_info, output|
+        observed_bind_data = func_info.get_bind_data
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_bind_data()').each.to_a
+
+      assert_instance_of DuckDB::TableFunction::BindInfo, returned_bind_info
+      assert_equal({ token: 'round-trip', n: 7 }, observed_bind_data)
+    end
+
+    def test_bind_data_last_set_wins
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_bind_data_overwrite'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+        bind_info.set_bind_data({ which: 'first' })
+        bind_info.set_bind_data({ which: 'second' })
+      end
+
+      table_function.init { |_init_info| GC.compact }
+
+      observed_bind_data = nil
+      table_function.execute do |func_info, output|
+        observed_bind_data = func_info.get_bind_data
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_bind_data_overwrite()').each.to_a
+
+      assert_equal({ which: 'second' }, observed_bind_data)
+    end
+
+    def test_bind_data_nil_when_unset
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_bind_data_unset'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init { |_init_info| GC.compact }
+
+      observed_bind_data = :unset
+      table_function.execute do |func_info, output|
+        observed_bind_data = func_info.get_bind_data
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_bind_data_unset()').each.to_a
+
+      assert_nil observed_bind_data
+    end
+
     def test_execute_without_block
       table_function = DuckDB::TableFunction.new
 

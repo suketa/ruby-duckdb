@@ -10,6 +10,7 @@ static VALUE table_function_bind_info_get_parameter(VALUE self, VALUE index);
 static VALUE table_function_bind_info_get_named_parameter(VALUE self, VALUE name);
 static VALUE table_function_bind_info__add_result_column(VALUE self, VALUE column_name, VALUE logical_type);
 static VALUE table_function_bind_info_set_cardinality(VALUE self, VALUE cardinality, VALUE is_exact);
+static VALUE table_function_bind_info_set_bind_data(VALUE self, VALUE data);
 static VALUE table_function_bind_info_set_error(VALUE self, VALUE error);
 
 static const rb_data_type_t bind_info_data_type = {
@@ -169,6 +170,32 @@ static VALUE table_function_bind_info_set_cardinality(VALUE self, VALUE cardinal
 
 /*
  * call-seq:
+ *   bind_info.set_bind_data(data) -> self
+ *
+ * Stores an arbitrary Ruby object as the table function's bind data. The same
+ * object can be retrieved during init and execution, and is kept alive until
+ * DuckDB frees the bind data.
+ *
+ *   bind_info.set_bind_data({ rows: 100 })
+ */
+static VALUE table_function_bind_info_set_bind_data(VALUE self, VALUE data) {
+    rubyDuckDBBindInfo *ctx;
+    void *handle;
+
+    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
+
+    if (ctx->bind_data_handle != NULL) {
+        rbduckdb_function_data_release(ctx->bind_data_handle);
+    }
+    handle = rbduckdb_function_data_register(data);
+    ctx->bind_data_handle = handle;
+    duckdb_bind_set_bind_data(ctx->bind_info, handle, rbduckdb_function_data_destroy);
+
+    return self;
+}
+
+/*
+ * call-seq:
  *   bind_info.set_error(error_message) -> self
  *
  * Reports an error during bind phase.
@@ -198,6 +225,7 @@ void rbduckdb_init_table_function_bind_info(void) {
     rb_define_method(cDuckDBTableFunctionBindInfo, "get_parameter", table_function_bind_info_get_parameter, 1);
     rb_define_method(cDuckDBTableFunctionBindInfo, "get_named_parameter", table_function_bind_info_get_named_parameter, 1);
     rb_define_method(cDuckDBTableFunctionBindInfo, "set_cardinality", table_function_bind_info_set_cardinality, 2);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "set_bind_data", table_function_bind_info_set_bind_data, 1);
     rb_define_method(cDuckDBTableFunctionBindInfo, "set_error", table_function_bind_info_set_error, 1);
 
     rb_define_private_method(cDuckDBTableFunctionBindInfo, "_add_result_column", table_function_bind_info__add_result_column, 2);

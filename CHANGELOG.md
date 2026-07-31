@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB::TableFunction::BindInfo#set_bind_data` to store an arbitrary Ruby object as a custom table function's bind data.
+- add `DuckDB::TableFunction::FunctionInfo#get_bind_data` to retrieve, during execution, the object stored by `BindInfo#set_bind_data`.
 
 # 1.5.5.0 - 2026-07-27
 

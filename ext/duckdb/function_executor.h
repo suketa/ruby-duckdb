@@ -87,4 +87,9 @@ void rbduckdb_worker_proxy_destroy(void *proxy);
  */
 void rbduckdb_function_executor_dispatch_via_proxy(rbduckdb_function_callback_t cb, void *user_data, struct worker_proxy *proxy);
 
+void *rbduckdb_function_data_register(VALUE value);
+VALUE rbduckdb_function_data_lookup(void *data);
+void rbduckdb_function_data_release(void *data);
+void rbduckdb_function_data_destroy(void *data);
+
 #endif
