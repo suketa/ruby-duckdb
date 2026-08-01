@@ -9,6 +9,7 @@ static VALUE table_function_init_info_set_error(VALUE self, VALUE error);
 static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_threads);
 static VALUE table_function_init_info_column_count(VALUE self);
 static VALUE table_function_init_info_column_index(VALUE self, VALUE index);
+static VALUE table_function_init_info_get_bind_data(VALUE self);
 
 static const rb_data_type_t init_info_data_type = {
     "DuckDB/TableFunctionInitInfo",
@@ -115,6 +116,24 @@ static VALUE table_function_init_info_column_index(VALUE self, VALUE index) {
     return ULL2NUM(duckdb_init_get_column_index(ctx->info, NUM2ULL(index)));
 }
 
+/*
+ * call-seq:
+ *   init_info.get_bind_data -> object or nil
+ *   init_info.bind_data -> object or nil
+ *
+ * Returns the object stored during the bind phase with
+ * DuckDB::TableFunction::BindInfo#set_bind_data, or nil if none was set.
+ *
+ *   data = init_info.bind_data
+ */
+static VALUE table_function_init_info_get_bind_data(VALUE self) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+
+    return rbduckdb_function_data_lookup(duckdb_init_get_bind_data(ctx->info));
+}
+
 void rbduckdb_init_table_function_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -127,4 +146,6 @@ void rbduckdb_init_table_function_init_info(void) {
     rb_define_method(cDuckDBTableFunctionInitInfo, "max_threads=", table_function_init_info_set_max_threads, 1);
     rb_define_method(cDuckDBTableFunctionInitInfo, "column_count", table_function_init_info_column_count, 0);
     rb_define_method(cDuckDBTableFunctionInitInfo, "column_index", table_function_init_info_column_index, 1);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "get_bind_data", table_function_init_info_get_bind_data, 0);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "bind_data", table_function_init_info_get_bind_data, 0);
 }
