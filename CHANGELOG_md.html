@@ -478,6 +478,8 @@
 <p>add <a href="DuckDB/TableFunction/FunctionInfo.html#method-i-get_bind_data"><code>DuckDB::TableFunction::FunctionInfo#get_bind_data</code></a> to retrieve, during execution, the object stored by <code>BindInfo#set_bind_data</code>.</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction/InitInfo.html#method-i-bind_data"><code>DuckDB::TableFunction::InitInfo#bind_data</code></a> (and get_bind_data) to retrieve, during the init phase, the object stored by <code>BindInfo#set_bind_data</code>.</p>
+</li><li>
+<p>support the statement types added in <a href="DuckDB.html"><code>DuckDB</code></a> 1.5.5: statement_type now returns <code>:copy_database</code>, <code>:update_extensions</code> and <code>:merge_into</code> instead of raising <code>DuckDB::Error: Unknown statement type</code>.</p>
 </li></ul>
 
 <h1 id="label-1.5.5.0+-+2026-07-27"><a href="#label-1.5.5.0+-+2026-07-27">1.5.5.0 - 2026-07-27</a></h1>
