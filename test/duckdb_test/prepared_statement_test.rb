@@ -142,7 +142,7 @@ module DuckDBTest
     end
 
     def test_statement_type_merge_into
-      skip 'MERGE INTO requires DuckDB >= 1.5.0' if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+      skip 'DUCKDB_STATEMENT_TYPE_MERGE_INTO requires DuckDB >= 1.5.5' if duckdb_before_1_5_5?
 
       @con.query('CREATE TABLE src (id INTEGER, col_integer INTEGER)')
       stmt = DuckDB::PreparedStatement.new(
@@ -151,6 +151,30 @@ module DuckDBTest
       )
 
       assert_equal(:merge_into, stmt.statement_type)
+    end
+
+    def test_statement_type_update_extensions
+      skip 'DUCKDB_STATEMENT_TYPE_UPDATE_EXTENSIONS requires DuckDB >= 1.5.5' if duckdb_before_1_5_5?
+
+      stmt = DuckDB::PreparedStatement.new(@con, 'UPDATE EXTENSIONS')
+
+      assert_equal(:update_extensions, stmt.statement_type)
+    end
+
+    def test_statement_type_copy_database
+      skip 'DUCKDB_STATEMENT_TYPE_COPY_DATABASE requires DuckDB >= 1.5.5' if duckdb_before_1_5_5?
+
+      @con.query("ATTACH ':memory:' AS db1")
+      @con.query("ATTACH ':memory:' AS db2")
+      # COPY FROM DATABASE expands into several statements, so it can only be prepared via ExtractedStatements.
+      stmts = DuckDB::ExtractedStatements.new(@con, 'COPY FROM DATABASE db1 TO db2')
+      types = (0...stmts.size).map { |i| stmts.prepared_statement(@con, i).statement_type }
+
+      assert_includes(types, :copy_database)
+    end
+
+    def duckdb_before_1_5_5?
+      ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.5')
     end
 
     def test_param_type
