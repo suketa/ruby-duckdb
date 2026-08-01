@@ -32,6 +32,9 @@ module DuckDB
         attach
         detach
         multi
+        copy_database
+        update_extensions
+        merge_into
       ].freeze
 
       HASH_TYPES = {
