@@ -141,6 +141,18 @@ module DuckDBTest
       assert_equal(:select, stmt.statement_type)
     end
 
+    def test_statement_type_merge_into
+      skip 'MERGE INTO requires DuckDB >= 1.5.0' if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+
+      @con.query('CREATE TABLE src (id INTEGER, col_integer INTEGER)')
+      stmt = DuckDB::PreparedStatement.new(
+        @con,
+        'MERGE INTO a USING src ON a.id = src.id WHEN MATCHED THEN UPDATE SET col_integer = src.col_integer'
+      )
+
+      assert_equal(:merge_into, stmt.statement_type)
+    end
+
     def test_param_type
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE id = $1')
 
