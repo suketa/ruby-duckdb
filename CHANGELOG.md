@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 # Unreleased
 - add `DuckDB::TableFunction::BindInfo#set_bind_data` to store an arbitrary Ruby object as a custom table function's bind data.
 - add `DuckDB::TableFunction::FunctionInfo#get_bind_data` to retrieve, during execution, the object stored by `BindInfo#set_bind_data`.
-
 - support the statement types added in DuckDB 1.5.5: `#statement_type` now returns `:copy_database`, `:update_extensions` and `:merge_into` instead of raising `DuckDB::Error: Unknown statement type`.
 
 # 1.5.5.0 - 2026-07-27
