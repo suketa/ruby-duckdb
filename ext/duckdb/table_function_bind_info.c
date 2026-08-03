@@ -170,13 +170,13 @@ static VALUE table_function_bind_info_set_cardinality(VALUE self, VALUE cardinal
 
 /*
  * call-seq:
- *   bind_info.set_bind_data(data) -> self
+ *   bind_info.bind_data = data
  *
  * Stores an arbitrary Ruby object as the table function's bind data. The same
  * object can be retrieved during init and execution, and is kept alive until
  * DuckDB frees the bind data.
  *
- *   bind_info.set_bind_data({ rows: 100 })
+ *   bind_info.bind_data = { rows: 100 }
  */
 static VALUE table_function_bind_info_set_bind_data(VALUE self, VALUE data) {
     rubyDuckDBBindInfo *ctx;
@@ -225,7 +225,7 @@ void rbduckdb_init_table_function_bind_info(void) {
     rb_define_method(cDuckDBTableFunctionBindInfo, "get_parameter", table_function_bind_info_get_parameter, 1);
     rb_define_method(cDuckDBTableFunctionBindInfo, "get_named_parameter", table_function_bind_info_get_named_parameter, 1);
     rb_define_method(cDuckDBTableFunctionBindInfo, "set_cardinality", table_function_bind_info_set_cardinality, 2);
-    rb_define_method(cDuckDBTableFunctionBindInfo, "set_bind_data", table_function_bind_info_set_bind_data, 1);
+    rb_define_method(cDuckDBTableFunctionBindInfo, "bind_data=", table_function_bind_info_set_bind_data, 1);
     rb_define_method(cDuckDBTableFunctionBindInfo, "set_error", table_function_bind_info_set_error, 1);
 
     rb_define_private_method(cDuckDBTableFunctionBindInfo, "_add_result_column", table_function_bind_info__add_result_column, 2);
