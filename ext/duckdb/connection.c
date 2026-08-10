@@ -91,7 +91,9 @@ static VALUE connection_disconnect(VALUE self) {
     /*
      * Registered functions are not released here: the catalog entry is still
      * reachable from other connections. They are released with the database.
+     * This connection no longer needs the database, so stop retaining it.
      */
+    ctx->database = Qnil;
 
     return self;
 }

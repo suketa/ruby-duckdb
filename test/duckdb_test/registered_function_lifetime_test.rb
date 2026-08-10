@@ -78,6 +78,13 @@ module DuckDBTest
       assert_equal 10, result.first.first
     end
 
+    def test_register_on_disconnected_connection_raises
+      con = @db.connect
+      con.disconnect
+
+      assert_raises(DuckDB::Error) { register_double(con, 'never_registered') }
+    end
+
     def test_database_outlives_connection
       con = @db.connect
       @db = nil
