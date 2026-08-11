@@ -148,15 +148,13 @@ module DuckDBTest
 
       table_function.bind do |bind_info|
         bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
-        bind_info.set_bind_data({ token: 'init-round-trip', n: 7 })
+        bind_info.bind_data = { token: 'init-round-trip', n: 7 }
       end
 
       observed_bind_data = nil
-      observed_via_alias = nil
       table_function.init do |init_info|
         GC.compact
-        observed_bind_data = init_info.get_bind_data
-        observed_via_alias = init_info.bind_data
+        observed_bind_data = init_info.bind_data
       end
 
       table_function.execute { |_func_info, output| output.size = 0 }
@@ -165,7 +163,6 @@ module DuckDBTest
       @connection.query('SELECT * FROM test_init_bind_data()').each.to_a
 
       assert_equal({ token: 'init-round-trip', n: 7 }, observed_bind_data)
-      assert_same observed_bind_data, observed_via_alias
     end
 
     def test_init_info_bind_data_nil_when_unset
@@ -178,7 +175,7 @@ module DuckDBTest
 
       observed_bind_data = :unset
       table_function.init do |init_info|
-        observed_bind_data = init_info.get_bind_data
+        observed_bind_data = init_info.bind_data
       end
 
       table_function.execute { |_func_info, output| output.size = 0 }

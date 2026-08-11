@@ -49,24 +49,22 @@ module DuckDBTest
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_bind_data'
 
-      returned_bind_info = nil
       table_function.bind do |bind_info|
         bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
-        returned_bind_info = bind_info.set_bind_data({ token: 'round-trip', n: 7 })
+        bind_info.bind_data = { token: 'round-trip', n: 7 }
       end
 
       table_function.init { |_init_info| GC.compact }
 
       observed_bind_data = nil
       table_function.execute do |func_info, output|
-        observed_bind_data = func_info.get_bind_data
+        observed_bind_data = func_info.bind_data
         output.size = 0
       end
 
       @connection.register_table_function(table_function)
       @connection.query('SELECT * FROM test_bind_data()').each.to_a
 
-      assert_instance_of DuckDB::TableFunction::BindInfo, returned_bind_info
       assert_equal({ token: 'round-trip', n: 7 }, observed_bind_data)
     end
 
@@ -78,15 +76,15 @@ module DuckDBTest
 
       table_function.bind do |bind_info|
         bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
-        bind_info.set_bind_data({ which: 'first' })
-        bind_info.set_bind_data({ which: 'second' })
+        bind_info.bind_data = { which: 'first' }
+        bind_info.bind_data = { which: 'second' }
       end
 
       table_function.init { |_init_info| GC.compact }
 
       observed_bind_data = nil
       table_function.execute do |func_info, output|
-        observed_bind_data = func_info.get_bind_data
+        observed_bind_data = func_info.bind_data
         output.size = 0
       end
 
@@ -110,7 +108,7 @@ module DuckDBTest
 
       observed_bind_data = :unset
       table_function.execute do |func_info, output|
-        observed_bind_data = func_info.get_bind_data
+        observed_bind_data = func_info.bind_data
         output.size = 0
       end
 
