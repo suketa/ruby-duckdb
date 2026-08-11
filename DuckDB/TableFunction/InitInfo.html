@@ -495,8 +495,6 @@
 
         <li ><a href="#method-i-column_index">column_index</a></li>
 
-        <li ><a href="#method-i-get_bind_data">get_bind_data</a></li>
-
         <li ><a href="#method-i-max_threads-3D">max_threads=</a></li>
 
         <li ><a href="#method-i-set_error">set_error</a></li>
@@ -601,7 +599,7 @@
        </header>
 
 
-      <div id="method-i-bind_data" class="method-detail anchor-link method-alias">
+      <div id="method-i-bind_data" class="method-detail anchor-link ">
         <div class="method-header">
 
 
@@ -617,12 +615,27 @@
         </div>
 
 
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="bind_data-source">
+            <pre class="c" data-language="c">static VALUE table_function_init_info_bind_data(VALUE self) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+
+    return rbduckdb_function_data_lookup(duckdb_init_get_bind_data(ctx-&gt;info));
+}</pre>
+          </div>
+
 
 
         <div class="method-description">
 
 
-          <p>Returns the object stored during the bind phase with DuckDB::TableFunction::BindInfo#set_bind_data, or nil if none was set.</p>
+          <p>Returns the object stored during the bind phase with DuckDB::TableFunction::BindInfo#bind_data=, or nil if none was set.</p>
 
 <pre class="ruby"><span class="ruby-identifier">data</span> = <span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">bind_data</span>
 </pre>
@@ -633,10 +646,6 @@
 
 
 
-
-        <div class="aliases">
-          Alias for: <a href="InitInfo.html#method-i-get_bind_data">get_bind_data</a>
-        </div>
 
       </div>
 
@@ -737,61 +746,6 @@
         </div>
 
 
-
-
-
-      </div>
-
-
-      <div id="method-i-get_bind_data" class="method-detail anchor-link ">
-        <div class="method-header">
-
-
-              <div class="method-heading">
-                <a href="#method-i-get_bind_data" title="Link to this method">
-                  <span class="method-callseq">
-                    get_bind_data &rarr; object or nil
-                  </span>
-                </a>
-              </div>
-
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="get_bind_data-source">
-            <pre class="c" data-language="c">static VALUE table_function_init_info_get_bind_data(VALUE self) {
-    rubyDuckDBInitInfo *ctx;
-
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
-
-    return rbduckdb_function_data_lookup(duckdb_init_get_bind_data(ctx-&gt;info));
-}</pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Returns the object stored during the bind phase with DuckDB::TableFunction::BindInfo#set_bind_data, or nil if none was set.</p>
-
-<pre class="ruby"><span class="ruby-identifier">data</span> = <span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">bind_data</span>
-</pre>
-
-
-        </div>
-
-
-
-        <div class="aliases">
-          Also aliased as: <a href="InitInfo.html#method-i-bind_data">bind_data</a>
-        </div>
 
 
 
