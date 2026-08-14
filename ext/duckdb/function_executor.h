@@ -18,8 +18,9 @@
  * A generic callback to be executed with the GVL held.
  * The user_data pointer is passed through unchanged from the dispatch call.
  *
- * The callback is responsible for catching Ruby exceptions (e.g. via
- * rb_protect) if needed — this module does not perform exception handling.
+ * The callback should still catch its own Ruby exceptions (e.g. via rb_protect)
+ * to report them to DuckDB. The dispatcher only guarantees that an exception it
+ * lets escape wakes the waiting worker instead of stranding it.
  */
 typedef void (*rbduckdb_function_callback_t)(void *user_data);
 
@@ -66,10 +67,8 @@ struct worker_proxy;
  * (typically by dispatching this through the global executor from a per-worker
  * init callback, which itself runs on a non-Ruby thread).
  *
- * May raise (NoMemError, Thread.new failure). The executor runs callbacks
- * unprotected, so a wrapper dispatched to it must rb_protect this call —
- * otherwise a raise longjmps past the executor's done-signaling and the
- * waiting DuckDB worker blocks forever.
+ * May raise (NoMemError, Thread.new failure), so a wrapper dispatched to the
+ * executor should rb_protect this call and fall back to the global executor.
  */
 struct worker_proxy *rbduckdb_worker_proxy_create(void);
 
@@ -86,6 +85,14 @@ void rbduckdb_worker_proxy_destroy(void *proxy);
  * back to the global executor when NULL. Cases 1 and 2 are unchanged.
  */
 void rbduckdb_function_executor_dispatch_via_proxy(rbduckdb_function_callback_t cb, void *user_data, struct worker_proxy *proxy);
+
+/*
+ * Take the pending Ruby exception's message as a String safe to hand to a
+ * DuckDB set_error entry point, and clear the exception. Always returns a
+ * String with no embedded NUL, so StringValueCStr on it cannot raise; #message
+ * runs under rb_protect, so neither can a hostile exception object.
+ */
+VALUE rbduckdb_pending_error_message(void);
 
 void *rbduckdb_function_data_register(VALUE value);
 VALUE rbduckdb_function_data_lookup(void *data);

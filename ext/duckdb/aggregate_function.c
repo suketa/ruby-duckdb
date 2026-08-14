@@ -180,12 +180,9 @@ static inline void state_registry_remove(ruby_aggregate_state *state) {
  * Caller must only invoke this when rb_protect reported exception_state != 0.
  */
 static void report_ruby_error_to_duckdb(duckdb_function_info info) {
-    VALUE errinfo = rb_errinfo();
-    if (errinfo != Qnil) {
-        VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
-        duckdb_aggregate_function_set_error(info, StringValueCStr(msg));
-    }
-    rb_set_errinfo(Qnil);
+    VALUE msg = rbduckdb_pending_error_message();
+    duckdb_aggregate_function_set_error(info, StringValueCStr(msg));
+    RB_GC_GUARD(msg);
 }
 
 /* state_size callback: constant buffer per state. */

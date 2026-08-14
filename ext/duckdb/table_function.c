@@ -243,10 +243,9 @@ static void execute_bind_callback_protected(void *user_data) {
     rb_protect(call_bind_proc, (VALUE)call_args, &state);
 
     if (state) {
-        VALUE err = rb_errinfo();
-        VALUE msg = rb_funcall(err, rb_intern("message"), 0);
+        VALUE msg = rbduckdb_pending_error_message();
         duckdb_bind_set_error(darg->info, StringValueCStr(msg));
-        rb_set_errinfo(Qnil);
+        RB_GC_GUARD(msg);
     }
 }
 
@@ -319,10 +318,9 @@ static void execute_init_callback_protected(void *user_data) {
     rb_protect(call_init_proc, (VALUE)call_args, &state);
 
     if (state) {
-        VALUE err = rb_errinfo();
-        VALUE msg = rb_funcall(err, rb_intern("message"), 0);
+        VALUE msg = rbduckdb_pending_error_message();
         duckdb_init_set_error(darg->info, StringValueCStr(msg));
-        rb_set_errinfo(Qnil);
+        RB_GC_GUARD(msg);
     }
 }
 
@@ -404,10 +402,9 @@ static void execute_execute_callback_protected(void *user_data) {
     rb_protect(call_execute_proc, (VALUE)call_args, &state);
 
     if (state) {
-        VALUE err = rb_errinfo();
-        VALUE msg = rb_funcall(err, rb_intern("message"), 0);
+        VALUE msg = rbduckdb_pending_error_message();
         duckdb_function_set_error(darg->info, StringValueCStr(msg));
-        rb_set_errinfo(Qnil);
+        RB_GC_GUARD(msg);
     }
 }
 
@@ -452,11 +449,9 @@ static VALUE create_proxy_callback(VALUE varg) {
 }
 
 /*
- * rbduckdb_worker_proxy_create may raise (NoMemError, Thread.new failure),
- * and the executor runs callbacks unprotected — a raise would longjmp past
- * its done-signaling and block the waiting DuckDB worker forever. Swallow
- * the exception instead: the proxy stays NULL, local_init sets no state, and
- * the execute callback falls back to the global executor.
+ * rbduckdb_worker_proxy_create may raise (NoMemError, Thread.new failure).
+ * Swallow it: the proxy stays NULL, local_init sets no state, and the execute
+ * callback falls back to the global executor.
  */
 static void create_proxy_callback_protected(void *user_data) {
     int exception_state;
