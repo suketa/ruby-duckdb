@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- fix a permanent hang when a UDF callback raised an exception whose message contained a NUL byte (or whose `#message` raised): the error reporter raised while reporting, killing the callback executor thread and stranding every later UDF callback in the process (PR #1448).
 - add `DuckDB::TableFunction::BindInfo#bind_data=` to store an arbitrary Ruby object as a custom table function's bind data.
 - add `DuckDB::TableFunction::FunctionInfo#bind_data` to retrieve, during execution, the object stored by `BindInfo#bind_data=`.
 - add `DuckDB::TableFunction::InitInfo#bind_data` to retrieve, during the init phase, the object stored by `BindInfo#bind_data=`.
