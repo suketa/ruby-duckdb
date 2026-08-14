@@ -4,6 +4,7 @@ VALUE cDuckDBDatabase;
 
 static void close_database(rubyDuckDB *p);
 static void deallocate(void * ctx);
+static void mark(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static duckdb_config create_config_with_ruby_api(void);
@@ -13,7 +14,7 @@ static VALUE database_close(VALUE self);
 
 static const rb_data_type_t database_data_type = {
     "DuckDB/Database",
-    {NULL, deallocate, memsize,},
+    {mark, deallocate, memsize,},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
 
@@ -28,13 +29,35 @@ static void deallocate(void * ctx) {
     xfree(p);
 }
 
+static void mark(void *ctx) {
+    rubyDuckDB *p = (rubyDuckDB *)ctx;
+
+    rb_gc_mark(p->registered_functions);
+}
+
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDB);
 }
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDB *ctx = xcalloc((size_t)1, sizeof(rubyDuckDB));
-    return TypedData_Wrap_Struct(klass, &database_data_type, ctx);
+    VALUE obj = TypedData_Wrap_Struct(klass, &database_data_type, ctx);
+    VALUE registered_functions = rb_ary_new();
+    ctx->registered_functions = registered_functions;
+    RB_GC_GUARD(registered_functions);
+    return obj;
+}
+
+/*
+ * Keeps obj alive as long as this database is alive.
+ * DuckDB registers functions in the database-level catalog and has no
+ * unregister API, so releasing them any earlier leaves a dangling extra_info.
+ */
+void rbduckdb_database_retain(VALUE database, VALUE obj) {
+    rubyDuckDB *ctx;
+
+    TypedData_Get_Struct(database, rubyDuckDB, &database_data_type, ctx);
+    rb_ary_push(ctx->registered_functions, obj);
 }
 
 rubyDuckDB *rbduckdb_get_struct_database(VALUE obj) {

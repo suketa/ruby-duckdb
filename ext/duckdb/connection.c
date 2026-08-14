@@ -34,16 +34,24 @@ static void deallocate(void *ctx) {
 
 static void mark(void *ctx) {
     rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;
-    rb_gc_mark(p->registered_functions);
+    rb_gc_mark(p->database);
 }
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBConnection *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConnection));
-    VALUE obj = TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
-    VALUE registered_functions = rb_ary_new();
-    ctx->registered_functions = registered_functions;
-    RB_GC_GUARD(registered_functions);
-    return obj;
+    ctx->database = Qnil;
+    return TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
+}
+
+/* Anchors obj to this connection's database so it outlives the connection. */
+static void connection_retain_registered(VALUE self, VALUE obj) {
+    rubyDuckDBConnection *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
+    if (NIL_P(ctx->database)) {
+        rb_raise(eDuckDBError, "connection is not associated with a database");
+    }
+    rbduckdb_database_retain(ctx->database, obj);
 }
 
 static size_t memsize(const void *p) {
@@ -69,6 +77,7 @@ VALUE rbduckdb_create_connection(VALUE oDuckDBDatabase) {
     if (duckdb_connect(ctxdb->db, &(ctxcon->con)) == DuckDBError) {
         rb_raise(eDuckDBError, "connection error");
     }
+    ctxcon->database = oDuckDBDatabase;
 
     return obj;
 }
@@ -79,8 +88,12 @@ static VALUE connection_disconnect(VALUE self) {
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
     duckdb_disconnect(&(ctx->con));
 
-    /* Clear registered functions to release memory */
-    rb_ary_clear(ctx->registered_functions);
+    /*
+     * Registered functions are not released here: the catalog entry is still
+     * reachable from other connections. They are released with the database.
+     * This connection no longer needs the database, so stop retaining it.
+     */
+    ctx->database = Qnil;
 
     return self;
 }
@@ -145,9 +158,11 @@ static VALUE connection__connect(VALUE self, VALUE oDuckDBDatabase) {
     ctxdb = rbduckdb_get_struct_database(oDuckDBDatabase);
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
 
+    /* Set only on success: a failed connect must not re-anchor registrations to the new database. */
     if (duckdb_connect(ctxdb->db, &(ctx->con)) == DuckDBError) {
         rb_raise(eDuckDBError, "connection error");
     }
+    ctx->database = oDuckDBDatabase;
 
     return self;
 }
@@ -239,8 +254,8 @@ static VALUE connection__register_logical_type(VALUE self, VALUE logical_type) {
         rb_raise(eDuckDBError, "Failed to register logical type");
     }
 
-    /* Keep reference to prevent GC while connection is alive */
-    rb_ary_push(ctxcon->registered_functions, logical_type);
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, logical_type);
 
     return self;
 }
@@ -260,8 +275,8 @@ static VALUE connection__register_scalar_function(VALUE self, VALUE scalar_funct
         rb_raise(eDuckDBError, "Failed to register scalar function");
     }
 
-    /* Keep reference to prevent GC while connection is alive */
-    rb_ary_push(ctxcon->registered_functions, scalar_function);
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, scalar_function);
 
     return self;
 }
@@ -281,8 +296,8 @@ static VALUE connection__register_scalar_function_set(VALUE self, VALUE scalar_f
         rb_raise(eDuckDBError, "Failed to register scalar function set");
     }
 
-    /* Keep reference to prevent GC while connection is alive */
-    rb_ary_push(ctxcon->registered_functions, scalar_function_set);
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, scalar_function_set);
 
     return self;
 }
@@ -302,8 +317,8 @@ static VALUE connection__register_aggregate_function(VALUE self, VALUE aggregate
         rb_raise(eDuckDBError, "Failed to register aggregate function");
     }
 
-    /* Keep reference to prevent GC while connection is alive */
-    rb_ary_push(ctxcon->registered_functions, aggregate_function);
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, aggregate_function);
 
     return self;
 }
@@ -323,8 +338,8 @@ static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggre
         rb_raise(eDuckDBError, "Failed to register aggregate function set");
     }
 
-    /* Keep reference to prevent GC while connection is alive */
-    rb_ary_push(ctxcon->registered_functions, aggregate_function_set);
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, aggregate_function_set);
 
     return self;
 }
@@ -343,8 +358,8 @@ static VALUE connection__register_table_function(VALUE self, VALUE table_functio
         rb_raise(eDuckDBError, "Failed to register table function");
     }
 
-    /* Keep reference to prevent GC while connection is alive */
-    rb_ary_push(ctxcon->registered_functions, table_function);
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, table_function);
 
     return self;
 }

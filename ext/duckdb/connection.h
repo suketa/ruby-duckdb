@@ -3,7 +3,8 @@
 
 struct _rubyDuckDBConnection {
     duckdb_connection con;
-    VALUE registered_functions;
+    /* The DuckDB::Database this connection belongs to. Registrations are anchored there. */
+    VALUE database;
 };
 
 typedef struct _rubyDuckDBConnection rubyDuckDBConnection;
