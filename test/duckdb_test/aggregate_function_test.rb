@@ -451,6 +451,37 @@ module DuckDBTest
       assert_equal 'my_agg', result.to_s
     end
 
+    # A window frame feeds the same source state into many combine calls, so
+    # anything that releases the source state after the first call loses it for
+    # every later one.
+    def test_aggregate_as_window_function_reuses_source_state
+      force_parallel_execution(@con)
+      @con.query('CREATE TABLE w AS SELECT i FROM generate_series(1, 5000) s(i)')
+      nil_states = 0
+
+      @con.register_aggregate_function(
+        DuckDB::AggregateFunction.create(
+          name: 'win_count',
+          return_type: :bigint,
+          params: [:bigint],
+          init: -> { 0 },
+          update: ->(state, _value) { state + 1 },
+          combine: lambda { |state, other_state|
+            nil_states += 1 if state.nil? || other_state.nil?
+            (state || 0) + (other_state || 0)
+          },
+          finalize: ->(state) { state }
+        )
+      )
+
+      rows = @con.query(
+        'SELECT win_count(i) OVER (ORDER BY i ROWS BETWEEN 100 PRECEDING AND 100 FOLLOWING) FROM w'
+      ).to_a
+
+      assert_equal 0, nil_states
+      assert_equal [[101], [201], [101]], [rows.first, rows[2500], rows.last]
+    end
+
     private
 
     # Force DuckDB to actually parallelise aggregation so the combine callback
