@@ -76,6 +76,52 @@ static int g_executor_started = 0;
  */
 static VALUE g_proxy_threads = Qnil;
 
+/*
+ * Replace embedded NUL bytes so the message can be handed to a C API.
+ * Returns str unchanged when there is nothing to replace.
+ */
+static VALUE message_without_nul(VALUE str) {
+    long len = RSTRING_LEN(str);
+    long i;
+    VALUE copy;
+    char *p;
+
+    if (memchr(RSTRING_PTR(str), '\0', (size_t)len) == NULL) {
+        return str;
+    }
+
+    copy = rb_str_new(RSTRING_PTR(str), len);
+    p = RSTRING_PTR(copy);
+    for (i = 0; i < len; i++) {
+        if (p[i] == '\0') {
+            p[i] = ' ';
+        }
+    }
+    return copy;
+}
+
+static VALUE pending_error_message(VALUE errinfo) {
+    return message_without_nul(rb_obj_as_string(rb_funcall(errinfo, rb_intern("message"), 0)));
+}
+
+VALUE rbduckdb_pending_error_message(void) {
+    VALUE errinfo = rb_errinfo();
+    VALUE msg;
+    int state = 0;
+
+    rb_set_errinfo(Qnil);
+    if (errinfo == Qnil) {
+        return rb_str_new_cstr("unknown error");
+    }
+
+    msg = rb_protect(pending_error_message, errinfo, &state);
+    if (state) {
+        rb_set_errinfo(Qnil);
+        return rb_str_new_cstr("an exception was raised, but its message could not be read");
+    }
+    return msg;
+}
+
 /* Data passed to the executor wait function */
 struct executor_wait_data {
     struct callback_request *request;
@@ -130,6 +176,49 @@ static void executor_stop_func(void *data) {
 #endif
 }
 
+/*
+ * Discard an exception a dispatched callback let escape, so that one bad
+ * callback cannot take a dispatcher thread down with it and strand every
+ * later callback. Interrupt, SystemExit and thread kill still get through.
+ */
+static void discard_callback_exception(int state) {
+    VALUE err = rb_errinfo();
+
+    if (err != Qnil && !rb_obj_is_kind_of(err, rb_eStandardError)) {
+        rb_jump_tag(state);
+    }
+    rb_set_errinfo(Qnil);
+}
+
+static VALUE request_run_body(VALUE varg) {
+    struct callback_request *req = (struct callback_request *)varg;
+    req->cb(req->user_data);
+    return Qnil;
+}
+
+/* Runs from rb_ensure: the worker waits on done_cond even if the callback raised. */
+static VALUE request_signal_done(VALUE varg) {
+    struct callback_request *req = (struct callback_request *)varg;
+
+#ifdef _MSC_VER
+    EnterCriticalSection(&req->done_lock);
+    req->done = 1;
+    WakeConditionVariable(&req->done_cond);
+    LeaveCriticalSection(&req->done_lock);
+#else
+    pthread_mutex_lock(&req->done_mutex);
+    req->done = 1;
+    pthread_cond_signal(&req->done_cond);
+    pthread_mutex_unlock(&req->done_mutex);
+#endif
+
+    return Qnil;
+}
+
+static VALUE request_run(VALUE varg) {
+    return rb_ensure(request_run_body, varg, request_signal_done, varg);
+}
+
 /* The executor thread main loop (Ruby thread) */
 static VALUE executor_thread_func(void *data) {
     struct executor_wait_data w;
@@ -140,23 +229,12 @@ static VALUE executor_thread_func(void *data) {
         rb_thread_call_without_gvl(executor_wait_func, &w, executor_stop_func, &w);
 
         if (w.request != NULL) {
-            struct callback_request *req = w.request;
+            int state = 0;
 
-            /* Execute the callback with the GVL held */
-            req->cb(req->user_data);
-
-            /* Signal the DuckDB worker thread that the callback is done */
-#ifdef _MSC_VER
-            EnterCriticalSection(&req->done_lock);
-            req->done = 1;
-            WakeConditionVariable(&req->done_cond);
-            LeaveCriticalSection(&req->done_lock);
-#else
-            pthread_mutex_lock(&req->done_mutex);
-            req->done = 1;
-            pthread_cond_signal(&req->done_cond);
-            pthread_mutex_unlock(&req->done_mutex);
-#endif
+            rb_protect(request_run, (VALUE)w.request, &state);
+            if (state) {
+                discard_callback_exception(state);
+            }
         }
     }
 
@@ -326,6 +404,37 @@ static void proxy_stop_func(void *data) {
 #endif
 }
 
+static VALUE proxy_run_body(VALUE data) {
+    struct worker_proxy *proxy = (struct worker_proxy *)data;
+    proxy->cb(proxy->user_data);
+    return Qnil;
+}
+
+/* Runs from rb_ensure: see request_signal_done. */
+static VALUE proxy_signal_done(VALUE data) {
+    struct worker_proxy *proxy = (struct worker_proxy *)data;
+
+#ifdef _MSC_VER
+    EnterCriticalSection(&proxy->lock);
+    proxy->has_request = 0;
+    proxy->request_done = 1;
+    WakeConditionVariable(&proxy->request_done_cond);
+    LeaveCriticalSection(&proxy->lock);
+#else
+    pthread_mutex_lock(&proxy->lock);
+    proxy->has_request = 0;
+    proxy->request_done = 1;
+    pthread_cond_signal(&proxy->request_done_cond);
+    pthread_mutex_unlock(&proxy->lock);
+#endif
+
+    return Qnil;
+}
+
+static VALUE proxy_run(VALUE data) {
+    return rb_ensure(proxy_run_body, data, proxy_signal_done, data);
+}
+
 /* The proxy thread main loop. Runs as the body of rb_ensure (see below). */
 static VALUE proxy_loop_body(VALUE data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
@@ -337,23 +446,12 @@ static VALUE proxy_loop_body(VALUE data) {
         if (proxy->stop_requested) break;
 
         if (proxy->has_request) {
-            /* Execute the callback with the GVL held */
-            proxy->cb(proxy->user_data);
+            int state = 0;
 
-            /* Signal completion to the DuckDB worker thread */
-#ifdef _MSC_VER
-            EnterCriticalSection(&proxy->lock);
-            proxy->has_request = 0;
-            proxy->request_done = 1;
-            WakeConditionVariable(&proxy->request_done_cond);
-            LeaveCriticalSection(&proxy->lock);
-#else
-            pthread_mutex_lock(&proxy->lock);
-            proxy->has_request = 0;
-            proxy->request_done = 1;
-            pthread_cond_signal(&proxy->request_done_cond);
-            pthread_mutex_unlock(&proxy->lock);
-#endif
+            rb_protect(proxy_run, data, &state);
+            if (state) {
+                discard_callback_exception(state);
+            }
         }
     }
 

@@ -70,12 +70,9 @@ static void execute_callback_protected(void *user_data) {
 
     rb_protect(execute_callback, (VALUE)arg, &exception_state);
     if (exception_state) {
-        VALUE errinfo = rb_errinfo();
-        if (errinfo != Qnil) {
-            VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
-            duckdb_scalar_function_set_error(arg->info, StringValueCStr(msg));
-        }
-        rb_set_errinfo(Qnil);
+        VALUE msg = rbduckdb_pending_error_message();
+        duckdb_scalar_function_set_error(arg->info, StringValueCStr(msg));
+        RB_GC_GUARD(msg);
     }
 }
 
@@ -443,12 +440,9 @@ static void execute_bind_callback_protected(void *user_data) {
 
     rb_protect(call_bind_proc, (VALUE)&arg, &exception_state);
     if (exception_state) {
-        VALUE errinfo = rb_errinfo();
-        if (errinfo != Qnil) {
-            VALUE msg = rb_funcall(errinfo, rb_intern("message"), 0);
-            duckdb_scalar_function_bind_set_error(darg->info, StringValueCStr(msg));
-        }
-        rb_set_errinfo(Qnil);
+        VALUE msg = rbduckdb_pending_error_message();
+        duckdb_scalar_function_bind_set_error(darg->info, StringValueCStr(msg));
+        RB_GC_GUARD(msg);
     }
 }
 
