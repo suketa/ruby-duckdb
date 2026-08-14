@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. BindInfo#bind_data=` to store an arbitrary Ruby object as a custom tab"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. the error reporter raised while reporting, killing the callback execut"
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. BindInfo#bind_data=` to store an arbitrary Ruby object as a custom tab">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. the error reporter raised while reporting, killing the callback execut">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. BindInfo#bind_data=` to store an arbitrary Ruby object as a custom tab">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. the error reporter raised while reporting, killing the callback execut">
 
 
 
@@ -473,6 +473,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>fix a permanent hang when a UDF callback raised an exception whose message contained a NUL byte (or whose message raised): the error reporter raised while reporting, killing the callback executor thread and stranding every later UDF callback in the process (PR #1448).</p>
+</li><li>
 <p>add <code>DuckDB::TableFunction::BindInfo#bind_data=</code> to store an arbitrary Ruby object as a custom table function’s bind data.</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction/FunctionInfo.html#method-i-bind_data"><code>DuckDB::TableFunction::FunctionInfo#bind_data</code></a> to retrieve, during execution, the object stored by <code>BindInfo#bind_data=</code>.</p>
