@@ -73,11 +73,11 @@ VALUE rbduckdb_create_connection(VALUE oDuckDBDatabase) {
 
     obj = allocate(cDuckDBConnection);
     TypedData_Get_Struct(obj, rubyDuckDBConnection, &connection_data_type, ctxcon);
-    ctxcon->database = oDuckDBDatabase;
 
     if (duckdb_connect(ctxdb->db, &(ctxcon->con)) == DuckDBError) {
         rb_raise(eDuckDBError, "connection error");
     }
+    ctxcon->database = oDuckDBDatabase;
 
     return obj;
 }
@@ -157,11 +157,12 @@ static VALUE connection__connect(VALUE self, VALUE oDuckDBDatabase) {
     }
     ctxdb = rbduckdb_get_struct_database(oDuckDBDatabase);
     TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
-    ctx->database = oDuckDBDatabase;
 
+    /* Set only on success: a failed connect must not re-anchor registrations to the new database. */
     if (duckdb_connect(ctxdb->db, &(ctx->con)) == DuckDBError) {
         rb_raise(eDuckDBError, "connection error");
     }
+    ctx->database = oDuckDBDatabase;
 
     return self;
 }

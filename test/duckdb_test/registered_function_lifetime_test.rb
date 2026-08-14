@@ -92,5 +92,22 @@ module DuckDBTest
 
       assert_equal 1, con.query('SELECT 1').first.first
     end
+
+    # Both locals must go out of scope, or the registration stays alive by accident.
+    def register_after_failed_connect(name)
+      con = @db.connect
+      closed = DuckDB::Database.open
+      closed.close
+
+      assert_raises(DuckDB::Error) { con.connect(closed) }
+      register_double(con, name)
+    end
+
+    def test_failed_connect_keeps_the_original_database_association
+      register_after_failed_connect('double_after_failed_connect')
+      3.times { GC.start }
+
+      assert_equal 42, @db.connect.query('SELECT double_after_failed_connect(21)').first.first
+    end
   end
 end
