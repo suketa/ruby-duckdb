@@ -95,7 +95,10 @@ jobs:
           puts "duckdb library #{actual}"
         '
 
+    # A UDF callback that strands the dispatcher wedges the VM with the GVL
+    # held, so the run never returns. Bound the step: the suite takes ~1 minute.
     - name: test with Ruby ${{ matrix.ruby }}
+      timeout-minutes: 3
       env:
         MYSQL_TEST: 1
       run: |

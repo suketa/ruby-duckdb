@@ -36,25 +36,15 @@ module DuckDBTest
       end)
     end
 
-    # Bounds a query that stops returning once the dispatcher is stranded, so a
-    # regression fails the run instead of blocking it forever.
-    def within_dispatch_timeout(timeout = 60, &block)
-      thread = Thread.new do
-        Thread.current.report_on_exception = false
-        block.call
-      end
-      return thread.value if thread.join(timeout)
-
-      thread.kill
-
-      flunk 'UDF callback dispatch is stranded'
-    end
-
+    # A regression here strands the dispatcher, and the queries below then never
+    # return. Nothing in Ruby can bound that: the stranded state holds the GVL,
+    # so Thread#join timeouts never fire and even SIGTERM is not delivered. The
+    # bound lives in CI instead, as timeout-minutes on the test step.
     def test_scalar_error_message_with_a_null_byte_is_reported_to_duckdb
       register_scalar('nul_boom') { |v| raise "bad token: \0#{v}" }
 
       error = assert_raises(DuckDB::Error) do
-        within_dispatch_timeout { @con.query('SELECT nul_boom(a) FROM t') }
+        @con.query('SELECT nul_boom(a) FROM t')
       end
 
       assert_match(/bad token:/, error.message)
@@ -64,7 +54,7 @@ module DuckDBTest
       register_scalar('unreadable_boom') { |_v| raise MessageRaises }
 
       assert_raises(DuckDB::Error) do
-        within_dispatch_timeout { @con.query('SELECT unreadable_boom(a) FROM t') }
+        @con.query('SELECT unreadable_boom(a) FROM t')
       end
     end
 
@@ -82,7 +72,7 @@ module DuckDBTest
       )
 
       error = assert_raises(DuckDB::Error) do
-        within_dispatch_timeout { @con.query('SELECT nul_boom_agg(a) FROM t') }
+        @con.query('SELECT nul_boom_agg(a) FROM t')
       end
 
       assert_match(/bad token:/, error.message)
@@ -95,10 +85,10 @@ module DuckDBTest
       # Deliberately loose: the reporting path is asserted above, and a regression
       # there must not fail this test before it reaches the recovery check.
       assert_raises(StandardError) do
-        within_dispatch_timeout { @con.query('SELECT nul_boom2(a) FROM t') }
+        @con.query('SELECT nul_boom2(a) FROM t')
       end
 
-      result = within_dispatch_timeout { @con.query('SELECT echo(a) FROM t LIMIT 1').to_a }
+      result = @con.query('SELECT echo(a) FROM t LIMIT 1').to_a
 
       assert_equal [['echo0']], result
     end
