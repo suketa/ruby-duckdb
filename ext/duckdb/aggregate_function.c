@@ -245,20 +245,18 @@ struct update_callback_arg {
     duckdb_aggregate_state *states;
     duckdb_vector *input_vectors;
     duckdb_logical_type *input_types;
-    VALUE *args;
     idx_t row_count;
     idx_t col_count;
 };
 
 struct update_one_arg {
     VALUE update_proc;
-    int argc;
-    VALUE *argv;
+    VALUE args;
 };
 
 static VALUE call_update_proc(VALUE varg) {
     struct update_one_arg *arg = (struct update_one_arg *)varg;
-    return rb_funcallv(arg->update_proc, rb_intern("call"), arg->argc, arg->argv);
+    return rb_apply(arg->update_proc, rb_intern("call"), arg->args);
 }
 
 /*
@@ -278,9 +276,12 @@ static VALUE update_process_rows(VALUE varg) {
     ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
     idx_t i, j;
 
+    /* A Ruby Array, not a plain buffer: converting a later column can trigger
+     * a GC, and the earlier columns' objects must stay reachable. */
+    VALUE args = rb_ary_new_capa((long)arg->col_count + 1);
+
     arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
     arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
-    arg->args = ALLOC_N(VALUE, arg->col_count + 1);
 
     for (j = 0; j < arg->col_count; j++) {
         arg->input_vectors[j] = duckdb_data_chunk_get_vector(arg->input, j);
@@ -314,14 +315,13 @@ static VALUE update_process_rows(VALUE varg) {
             }
         }
 
-        arg->args[0] = state->ruby_state;
+        rb_ary_store(args, 0, state->ruby_state);
         for (j = 0; j < arg->col_count; j++) {
-            arg->args[j + 1] = rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i);
+            rb_ary_store(args, (long)j + 1, rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i));
         }
 
         one.update_proc = arg->ctx->update_proc;
-        one.argc = (int)(arg->col_count + 1);
-        one.argv = arg->args;
+        one.args = args;
 
         ret = rb_protect(call_update_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
@@ -336,12 +336,15 @@ static VALUE update_process_rows(VALUE varg) {
             for (j = 0; j < arg->row_count; j++) {
                 state_registry_remove(states[j]);
             }
+            RB_GC_GUARD(args);
             return Qnil;
         }
 
         state->ruby_state = ret;
         state_registry_store(state, ret);
     }
+
+    RB_GC_GUARD(args);
 
     return Qnil;
 }
@@ -355,9 +358,6 @@ static VALUE update_cleanup_callback(VALUE varg) {
             duckdb_destroy_logical_type(&arg->input_types[j]);
         }
         xfree(arg->input_types);
-    }
-    if (arg->args != NULL) {
-        xfree(arg->args);
     }
     if (arg->input_vectors != NULL) {
         xfree(arg->input_vectors);
@@ -395,7 +395,6 @@ static void update_callback(duckdb_function_info info,
     arg.states = states;
     arg.input_vectors = NULL;
     arg.input_types = NULL;
-    arg.args = NULL;
     arg.row_count = duckdb_data_chunk_get_size(input);
     arg.col_count = duckdb_data_chunk_get_column_count(input);
 

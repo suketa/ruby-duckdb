@@ -35,7 +35,6 @@ struct callback_arg {
     duckdb_logical_type output_type;
     duckdb_vector *input_vectors;
     duckdb_logical_type *input_types;
-    VALUE *args;
     idx_t row_count;
     idx_t col_count;
 };
@@ -223,7 +222,6 @@ static void scalar_function_callback(duckdb_function_info info, duckdb_data_chun
     arg.output_type = duckdb_vector_get_column_type(output);
     arg.input_vectors = NULL;
     arg.input_types = NULL;
-    arg.args = NULL;
     arg.row_count = duckdb_data_chunk_get_size(input);
     arg.col_count = duckdb_data_chunk_get_column_count(input);
 
@@ -252,11 +250,13 @@ static VALUE process_rows(VALUE varg) {
     struct callback_arg *arg = (struct callback_arg *)varg;
     idx_t i, j;
     VALUE result;
+    /* A Ruby Array, not a plain buffer: converting a later column can trigger
+     * a GC, and the earlier columns' objects must stay reachable. */
+    VALUE args = rb_ary_new_capa((long)arg->col_count);
 
     /* Allocate arrays to hold input vectors and their types */
     arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
     arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
-    arg->args = ALLOC_N(VALUE, arg->col_count);
 
     /* Get all input vectors and their types */
     for (j = 0; j < arg->col_count; j++) {
@@ -268,15 +268,17 @@ static VALUE process_rows(VALUE varg) {
     for (i = 0; i < arg->row_count; i++) {
         /* Build arguments array for this row using vector_value_at */
         for (j = 0; j < arg->col_count; j++) {
-            arg->args[j] = rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i);
+            rb_ary_store(args, (long)j, rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i));
         }
 
         /* Call the Ruby block with the arguments */
-        result = rb_funcallv(arg->ctx->function_proc, rb_intern("call"), (int)arg->col_count, arg->args);
+        result = rb_apply(arg->ctx->function_proc, rb_intern("call"), args);
 
         /* Write result to output using helper function */
         rbduckdb_vector_set_value_at(arg->output, arg->output_type, i, result);
     }
+
+    RB_GC_GUARD(args);
 
     return Qnil;
 }
@@ -294,9 +296,6 @@ static VALUE cleanup_callback(VALUE varg) {
     duckdb_destroy_logical_type(&arg->output_type);
 
     /* Free allocated memory */
-    if (arg->args != NULL) {
-        xfree(arg->args);
-    }
     if (arg->input_types != NULL) {
         xfree(arg->input_types);
     }
