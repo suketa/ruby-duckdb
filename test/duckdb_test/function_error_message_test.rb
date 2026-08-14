@@ -36,19 +36,26 @@ module DuckDBTest
       end)
     end
 
-    def assert_dispatch_alive(timeout = 60, &)
-      thread = Thread.new(&)
-      joined = thread.join(timeout)
-      thread.kill unless joined
+    # Bounds a query that stops returning once the dispatcher is stranded, so a
+    # regression fails the run instead of blocking it forever.
+    def within_dispatch_timeout(timeout = 60, &block)
+      thread = Thread.new do
+        Thread.current.report_on_exception = false
+        block.call
+      end
+      return thread.value if thread.join(timeout)
 
-      assert joined, 'UDF callback dispatch is stranded'
-      thread.value
+      thread.kill
+
+      flunk 'UDF callback dispatch is stranded'
     end
 
     def test_scalar_error_message_with_a_null_byte_is_reported_to_duckdb
       register_scalar('nul_boom') { |v| raise "bad token: \0#{v}" }
 
-      error = assert_raises(DuckDB::Error) { @con.query('SELECT nul_boom(a) FROM t') }
+      error = assert_raises(DuckDB::Error) do
+        within_dispatch_timeout { @con.query('SELECT nul_boom(a) FROM t') }
+      end
 
       assert_match(/bad token:/, error.message)
     end
@@ -56,7 +63,9 @@ module DuckDBTest
     def test_scalar_error_message_that_cannot_be_read_is_reported_to_duckdb
       register_scalar('unreadable_boom') { |_v| raise MessageRaises }
 
-      assert_raises(DuckDB::Error) { @con.query('SELECT unreadable_boom(a) FROM t') }
+      assert_raises(DuckDB::Error) do
+        within_dispatch_timeout { @con.query('SELECT unreadable_boom(a) FROM t') }
+      end
     end
 
     def test_aggregate_error_message_with_a_null_byte_is_reported_to_duckdb
@@ -72,7 +81,9 @@ module DuckDBTest
         )
       )
 
-      error = assert_raises(DuckDB::Error) { @con.query('SELECT nul_boom_agg(a) FROM t') }
+      error = assert_raises(DuckDB::Error) do
+        within_dispatch_timeout { @con.query('SELECT nul_boom_agg(a) FROM t') }
+      end
 
       assert_match(/bad token:/, error.message)
     end
@@ -81,9 +92,13 @@ module DuckDBTest
       register_scalar('nul_boom2') { |v| raise "bad token: \0#{v}" }
       register_scalar('echo') { |v| "echo#{v}" }
 
-      assert_raises(StandardError) { @con.query('SELECT nul_boom2(a) FROM t') }
+      # Deliberately loose: the reporting path is asserted above, and a regression
+      # there must not fail this test before it reaches the recovery check.
+      assert_raises(StandardError) do
+        within_dispatch_timeout { @con.query('SELECT nul_boom2(a) FROM t') }
+      end
 
-      result = assert_dispatch_alive { @con.query('SELECT echo(a) FROM t LIMIT 1').to_a }
+      result = within_dispatch_timeout { @con.query('SELECT echo(a) FROM t LIMIT 1').to_a }
 
       assert_equal [['echo0']], result
     end
