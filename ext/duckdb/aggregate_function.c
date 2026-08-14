@@ -24,7 +24,6 @@ static unsigned long long g_next_state_id = 0;
 
 typedef struct {
     unsigned long long state_id;
-    VALUE ruby_state;
 } ruby_aggregate_state;
 
 static void mark(void *);
@@ -156,6 +155,18 @@ static inline void state_registry_store(ruby_aggregate_state *state, VALUE value
 }
 
 /*
+ * Read a state's Ruby VALUE back out of the registry.
+ *
+ * The registry is the only place the VALUE may be read from: a copy cached
+ * in the state buffer would be a raw VALUE in a C struct DuckDB allocates,
+ * which GC compaction does not update.  Returns Qnil for a state that has
+ * no entry (init failed, or the entry was already released).
+ */
+static inline VALUE state_registry_load(ruby_aggregate_state *state) {
+    return rb_hash_aref(g_aggregate_state_registry, state_registry_key(state));
+}
+
+/*
  * Remove a state entry from the registry.  Safe to call even if the
  * entry was already removed (rb_hash_delete is a no-op for missing keys).
  */
@@ -201,8 +212,7 @@ static void execute_init_callback_protected(void *user_data) {
     int exception_state;
     VALUE result;
 
-    /* Initialise buffer to a safe value before calling Ruby. */
-    state->ruby_state = Qnil;
+    /* Assign the ID before calling Ruby: the registry entry is keyed on it. */
     state->state_id = ++g_next_state_id;
 
     result = rb_protect(call_init_proc, (VALUE)arg, &exception_state);
@@ -211,7 +221,6 @@ static void execute_init_callback_protected(void *user_data) {
         return;
     }
 
-    state->ruby_state = result;
     state_registry_store(state, result);
 }
 
@@ -223,9 +232,9 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
     if (ctx == NULL || ctx->init_proc == Qnil) {
         /* Defensive: maybe_set_functions only wires callbacks when init_proc
          * is set, so this branch should be unreachable in practice. Zero the
-         * buffer anyway to keep the Ruby state slot well-defined. */
+         * ID anyway: IDs start at 1, so this state matches no registry entry
+         * and state_registry_load returns Qnil for it. */
         ruby_aggregate_state *state = (ruby_aggregate_state *)state_p;
-        state->ruby_state = Qnil;
         state->state_id = 0;
         return;
     }
@@ -245,20 +254,18 @@ struct update_callback_arg {
     duckdb_aggregate_state *states;
     duckdb_vector *input_vectors;
     duckdb_logical_type *input_types;
-    VALUE *args;
     idx_t row_count;
     idx_t col_count;
 };
 
 struct update_one_arg {
     VALUE update_proc;
-    int argc;
-    VALUE *argv;
+    VALUE args;
 };
 
 static VALUE call_update_proc(VALUE varg) {
     struct update_one_arg *arg = (struct update_one_arg *)varg;
-    return rb_funcallv(arg->update_proc, rb_intern("call"), arg->argc, arg->argv);
+    return rb_apply(arg->update_proc, rb_intern("call"), arg->args);
 }
 
 /*
@@ -278,9 +285,12 @@ static VALUE update_process_rows(VALUE varg) {
     ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
     idx_t i, j;
 
+    /* A Ruby Array, not a plain buffer: converting a later column can trigger
+     * a GC, and the earlier columns' objects must stay reachable. */
+    VALUE args = rb_ary_new_capa((long)arg->col_count + 1);
+
     arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
     arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
-    arg->args = ALLOC_N(VALUE, arg->col_count + 1);
 
     for (j = 0; j < arg->col_count; j++) {
         arg->input_vectors[j] = duckdb_data_chunk_get_vector(arg->input, j);
@@ -314,14 +324,13 @@ static VALUE update_process_rows(VALUE varg) {
             }
         }
 
-        arg->args[0] = state->ruby_state;
+        rb_ary_store(args, 0, state_registry_load(state));
         for (j = 0; j < arg->col_count; j++) {
-            arg->args[j + 1] = rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i);
+            rb_ary_store(args, (long)j + 1, rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i));
         }
 
         one.update_proc = arg->ctx->update_proc;
-        one.argc = (int)(arg->col_count + 1);
-        one.argv = arg->args;
+        one.args = args;
 
         ret = rb_protect(call_update_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
@@ -336,12 +345,14 @@ static VALUE update_process_rows(VALUE varg) {
             for (j = 0; j < arg->row_count; j++) {
                 state_registry_remove(states[j]);
             }
+            RB_GC_GUARD(args);
             return Qnil;
         }
 
-        state->ruby_state = ret;
         state_registry_store(state, ret);
     }
+
+    RB_GC_GUARD(args);
 
     return Qnil;
 }
@@ -355,9 +366,6 @@ static VALUE update_cleanup_callback(VALUE varg) {
             duckdb_destroy_logical_type(&arg->input_types[j]);
         }
         xfree(arg->input_types);
-    }
-    if (arg->args != NULL) {
-        xfree(arg->args);
     }
     if (arg->input_vectors != NULL) {
         xfree(arg->input_vectors);
@@ -395,7 +403,6 @@ static void update_callback(duckdb_function_info info,
     arg.states = states;
     arg.input_vectors = NULL;
     arg.input_types = NULL;
-    arg.args = NULL;
     arg.row_count = duckdb_data_chunk_get_size(input);
     arg.col_count = duckdb_data_chunk_get_column_count(input);
 
@@ -437,8 +444,8 @@ static void execute_combine_callback_protected(void *user_data) {
         VALUE ret;
 
         one.combine_proc = arg->ctx->combine_proc;
-        one.source_state = src[i]->ruby_state;
-        one.target_state = tgt[i]->ruby_state;
+        one.source_state = state_registry_load(src[i]);
+        one.target_state = state_registry_load(tgt[i]);
 
         ret = rb_protect(call_combine_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
@@ -446,12 +453,13 @@ static void execute_combine_callback_protected(void *user_data) {
             return;
         }
 
-        tgt[i]->ruby_state = ret;
         state_registry_store(tgt[i], ret);
 
-        /* source state is consumed by combine; release its registry entry
-         * so the Ruby VALUE can be GC'd. */
-        state_registry_remove(src[i]);
+        /* The source entry is left in place: DuckDB reuses one source state
+         * across many combine calls (WindowSegmentTree does this for every
+         * frame), and the registry is now the only copy of the VALUE, so
+         * releasing it here would hand nil to the next combine. The entry is
+         * reclaimed by destroy_callback when DuckDB frees the state. */
     }
 }
 
@@ -529,7 +537,7 @@ static void execute_finalize_callback_protected(void *user_data) {
         VALUE ret;
 
         one.finalize_proc = arg->ctx->finalize_proc;
-        one.ruby_state = state->ruby_state;
+        one.ruby_state = state_registry_load(state);
 
         ret = rb_protect(call_finalize_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
