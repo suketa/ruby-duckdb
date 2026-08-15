@@ -33,6 +33,8 @@ static void mark(void *ctx) {
     rubyDuckDB *p = (rubyDuckDB *)ctx;
 
     rb_gc_mark(p->registered_functions);
+    rb_gc_mark(p->cached_path);
+    rb_gc_mark(p->cache_wrappers);
 }
 
 static size_t memsize(const void *p) {
@@ -44,6 +46,8 @@ static VALUE allocate(VALUE klass) {
     VALUE obj = TypedData_Wrap_Struct(klass, &database_data_type, ctx);
     VALUE registered_functions = rb_ary_new();
     ctx->registered_functions = registered_functions;
+    ctx->cached_path = Qnil;
+    ctx->cache_wrappers = Qnil;
     RB_GC_GUARD(registered_functions);
     return obj;
 }
@@ -58,6 +62,18 @@ void rbduckdb_database_retain(VALUE database, VALUE obj) {
 
     TypedData_Get_Struct(database, rubyDuckDB, &database_data_type, ctx);
     rb_ary_push(ctx->registered_functions, obj);
+}
+
+/*
+ * Records that this database is the InstanceCache's wrapper for path, so the
+ * cache can find it again and #close can remove it from the cache's weak set.
+ */
+void rbduckdb_database_set_cache_entry(VALUE database, VALUE path, VALUE wrappers) {
+    rubyDuckDB *ctx;
+
+    TypedData_Get_Struct(database, rubyDuckDB, &database_data_type, ctx);
+    ctx->cached_path = rb_str_new_frozen(path);
+    ctx->cache_wrappers = wrappers;
 }
 
 rubyDuckDB *rbduckdb_get_struct_database(VALUE obj) {
@@ -142,6 +158,15 @@ static VALUE database__connect(VALUE self) {
 static VALUE database_close(VALUE self) {
     rubyDuckDB *ctx;
     TypedData_Get_Struct(self, rubyDuckDB, &database_data_type, ctx);
+    /*
+     * A closed wrapper must not be handed to the next get_or_create, so drop it
+     * from the cache's set first. The next call then opens a fresh wrapper.
+     */
+    if (!NIL_P(ctx->cache_wrappers)) {
+        rb_funcall(ctx->cache_wrappers, rb_intern("delete"), 1, self);
+        ctx->cache_wrappers = Qnil;
+        ctx->cached_path = Qnil;
+    }
     close_database(ctx);
     return self;
 }

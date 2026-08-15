@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::TableFunction::FunctionInfo#bind_data` to retrieve, during execution, the object stored by `BindInfo#bind_data=`.
 - add `DuckDB::TableFunction::InitInfo#bind_data` to retrieve, during the init phase, the object stored by `BindInfo#bind_data=`.
 - support the statement types added in DuckDB 1.5.5: `#statement_type` now returns `:copy_database`, `:update_extensions` and `:merge_into` instead of raising `DuckDB::Error: Unknown statement type`.
+- fix a use-after-free when a function was registered through `DuckDB::InstanceCache`: two `get_or_create` calls on the same path returned separate `DuckDB::Database` objects over one shared instance, so collecting either one freed functions the other's connections could still resolve. `get_or_create` now returns the same `DuckDB::Database` for the same path.
 
 # 1.5.5.0 - 2026-07-27
 
