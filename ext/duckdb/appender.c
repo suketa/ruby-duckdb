@@ -116,9 +116,14 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
         if (rb_obj_is_kind_of(columns, rb_cArray) == Qfalse) {
             rb_raise(rb_eTypeError, "4th argument should be an Array or nil");
         }
-        idx_t col_count = RARRAY_LEN(columns);
-        column_names = ALLOCA_N(const char *, (size_t)col_count);
-        for (idx_t i = 0; i < col_count; i++) {
+        /* DuckDB reads column_count entries from column_names, so a shorter list
+         * makes it read uninitialized stack slots as column names. */
+        if ((idx_t)RARRAY_LEN(columns) != column_count) {
+            rb_raise(rb_eArgError, "column names size (%ld) must be the same as types size (%ld)",
+                     RARRAY_LEN(columns), RARRAY_LEN(types));
+        }
+        column_names = ALLOCA_N(const char *, (size_t)column_count);
+        for (idx_t i = 0; i < column_count; i++) {
             VALUE col_name_val = rb_ary_entry(columns, i);
             column_names[i] = StringValuePtr(col_name_val);
         }
