@@ -486,6 +486,8 @@
 <p>add <a href="DuckDB/TableFunction/InitInfo.html#method-i-bind_data"><code>DuckDB::TableFunction::InitInfo#bind_data</code></a> to retrieve, during the init phase, the object stored by <code>BindInfo#bind_data=</code>.</p>
 </li><li>
 <p>support the statement types added in <a href="DuckDB.html"><code>DuckDB</code></a> 1.5.5: statement_type now returns <code>:copy_database</code>, <code>:update_extensions</code> and <code>:merge_into</code> instead of raising <code>DuckDB::Error: Unknown statement type</code>.</p>
+</li><li>
+<p>fix a use-after-free when a function was registered through <a href="DuckDB/InstanceCache.html"><code>DuckDB::InstanceCache</code></a>: two <code>get_or_create</code> calls on the same path returned separate <a href="DuckDB/Database.html"><code>DuckDB::Database</code></a> objects over one shared instance, so collecting either one freed functions the other’s connections could still resolve. <code>get_or_create</code> now returns the same <a href="DuckDB/Database.html"><code>DuckDB::Database</code></a> for the same path.</p>
 </li></ul>
 
 <h1 id="label-1.5.5.0+-+2026-07-27"><a href="#label-1.5.5.0+-+2026-07-27">1.5.5.0 - 2026-07-27</a></h1>

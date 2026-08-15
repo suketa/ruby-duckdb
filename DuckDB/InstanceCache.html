@@ -620,6 +620,10 @@
         rb_raise(eDuckDBError, &quot;Failed to create instance cache&quot;);
     }
 
+    ctx-&gt;wrappers = rb_funcall(rb_const_get(rb_const_get(rb_cObject, rb_intern(&quot;ObjectSpace&quot;)),
+                                            rb_intern(&quot;WeakMap&quot;)),
+                               rb_intern(&quot;new&quot;), 0);
+
     return self;
 }</pre>
           </div>

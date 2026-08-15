@@ -762,6 +762,15 @@
             <pre class="c" data-language="c">static VALUE database_close(VALUE self) {
     rubyDuckDB *ctx;
     TypedData_Get_Struct(self, rubyDuckDB, &amp;database_data_type, ctx);
+    /*
+     * A closed wrapper must not be handed to the next get_or_create, so drop it
+     * from the cache&#39;s set first. The next call then opens a fresh wrapper.
+     */
+    if (!NIL_P(ctx-&gt;cache_wrappers)) {
+        rb_funcall(ctx-&gt;cache_wrappers, rb_intern(&quot;delete&quot;), 1, self);
+        ctx-&gt;cache_wrappers = Qnil;
+        ctx-&gt;cached_path = Qnil;
+    }
     close_database(ctx);
     return self;
 }</pre>
