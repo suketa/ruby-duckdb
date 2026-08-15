@@ -94,6 +94,8 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
     idx_t column_count = 0;
     duckdb_logical_type *type_array = NULL;
     VALUE appender = Qnil;
+    VALUE column_name_strings = Qnil;
+    duckdb_state state;
 
     if (!rb_obj_is_kind_of(con, cDuckDBConnection)) {
         rb_raise(rb_eTypeError, "1st argument should be instance of DackDB::Connection");
@@ -116,17 +118,29 @@ static VALUE appender_s_create_query(VALUE klass, VALUE con, VALUE query, VALUE 
         if (rb_obj_is_kind_of(columns, rb_cArray) == Qfalse) {
             rb_raise(rb_eTypeError, "4th argument should be an Array or nil");
         }
-        idx_t col_count = RARRAY_LEN(columns);
-        column_names = ALLOCA_N(const char *, (size_t)col_count);
-        for (idx_t i = 0; i < col_count; i++) {
+        /* DuckDB reads column_count entries from column_names, so a shorter list
+         * makes it read uninitialized stack slots as column names. */
+        if ((idx_t)RARRAY_LEN(columns) != column_count) {
+            rb_raise(rb_eArgError, "column names size (%ld) must be the same as types size (%ld)",
+                     RARRAY_LEN(columns), RARRAY_LEN(types));
+        }
+        /* Keep the converted Strings alive: StringValue on a to_str object
+         * returns a String that nothing else references. */
+        column_name_strings = rb_ary_new_capa((long)column_count);
+        column_names = ALLOCA_N(const char *, (size_t)column_count);
+        for (idx_t i = 0; i < column_count; i++) {
             VALUE col_name_val = rb_ary_entry(columns, i);
-            column_names[i] = StringValuePtr(col_name_val);
+            StringValue(col_name_val);
+            rb_ary_push(column_name_strings, col_name_val);
+            column_names[i] = RSTRING_PTR(col_name_val);
         }
     }
     ctxcon = rbduckdb_get_struct_connection(con);
     appender = allocate(klass);
     TypedData_Get_Struct(appender, rubyDuckDBAppender, &appender_data_type, ctx);
-    if (duckdb_appender_create_query(ctxcon->con, query_str, column_count, type_array, table_name, column_names, &ctx->appender) == DuckDBError) {
+    state = duckdb_appender_create_query(ctxcon->con, query_str, column_count, type_array, table_name, column_names, &ctx->appender);
+    RB_GC_GUARD(column_name_strings);
+    if (state == DuckDBError) {
         rb_raise(eDuckDBError, "failed to create appender from query");
     }
 
