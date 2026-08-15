@@ -266,16 +266,29 @@ static VALUE call_update_proc(VALUE varg) {
 }
 
 /*
+ * DuckDB does not call the destroy callback once update has failed, so the
+ * chunk's registry entries have to be dropped here or the Ruby VALUEs leak.
+ * Rows in a chunk may share a state; state_registry_remove is idempotent.
+ */
+static void release_chunk_states(struct update_callback_arg *arg) {
+    ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
+    idx_t i;
+
+    for (i = 0; i < arg->row_count; i++) {
+        state_registry_remove(states[i]);
+    }
+}
+
+/*
  * Body of the update callback: allocate input buffers, walk each row,
  * dispatch to the user's update_proc. Runs inside rb_ensure so that
  * update_cleanup_callback always runs — even if rbduckdb_vector_value_at
  * or the Ruby proc call raises, allocated buffers and logical types are
  * released on the unwind path.
  *
- * Ruby exceptions raised by the user's proc are caught inline via
- * rb_protect and reported to DuckDB as scalar errors; other Ruby
- * exceptions (e.g. from vector_value_at) propagate and are cleaned up
- * by rb_ensure.
+ * Ruby exceptions raised by the user's proc are caught inline via rb_protect
+ * and reported to DuckDB; anything else (vector_value_at, or an async
+ * exception such as Timeout::Error) unwinds to execute_update_callback_protected.
  */
 static VALUE update_process_rows(VALUE varg) {
     struct update_callback_arg *arg = (struct update_callback_arg *)varg;
@@ -332,16 +345,7 @@ static VALUE update_process_rows(VALUE varg) {
         ret = rb_protect(call_update_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
             report_ruby_error_to_duckdb(arg->info);
-            /*
-             * DuckDB does not call the destroy callback on the update error
-             * path, so we must remove reachable states from the registry
-             * ourselves to avoid leaking Ruby VALUEs.  Iterate all rows in
-             * the chunk — multiple rows may share the same state (same
-             * group), but state_registry_remove is idempotent.
-             */
-            for (j = 0; j < arg->row_count; j++) {
-                state_registry_remove(states[j]);
-            }
+            release_chunk_states(arg);
             RB_GC_GUARD(args);
             return Qnil;
         }
@@ -371,9 +375,25 @@ static VALUE update_cleanup_callback(VALUE varg) {
     return Qnil;
 }
 
+static VALUE update_process_rows_ensured(VALUE varg) {
+    return rb_ensure(update_process_rows, varg, update_cleanup_callback, varg);
+}
+
+/*
+ * The scalar path has always protected its callback body; this one did not, so
+ * an exception from anywhere but the user's proc unwound into DuckDB's C++
+ * frames. Reachable from ordinary Ruby: Timeout.timeout around a query lands
+ * its Timeout::Error in the row loop and wedges the VM.
+ */
 static void execute_update_callback_protected(void *user_data) {
     struct update_callback_arg *arg = (struct update_callback_arg *)user_data;
-    rb_ensure(update_process_rows, (VALUE)arg, update_cleanup_callback, (VALUE)arg);
+    int exception_state;
+
+    rb_protect(update_process_rows_ensured, (VALUE)arg, &exception_state);
+    if (exception_state) {
+        report_ruby_error_to_duckdb(arg->info);
+        release_chunk_states(arg);
+    }
 }
 
 static void update_callback(duckdb_function_info info,
