@@ -9,6 +9,17 @@ module DuckDBTest
   class AppenderCreateQueryTest < Minitest::Test
     QUERY = 'INSERT INTO t SELECT i, val FROM my_appended_data'
 
+    # to_str returns a fresh String, so nothing but the C local holds it.
+    class ColumnName
+      def initialize(name)
+        @name = name
+      end
+
+      def to_str
+        @name.dup
+      end
+    end
+
     def setup
       skip 'not supported' unless DuckDB::Appender.respond_to?(:create_query)
 
@@ -18,6 +29,7 @@ module DuckDBTest
     end
 
     def teardown
+      GC.stress = false
       @con&.close
       @db&.close
     end
@@ -28,6 +40,13 @@ module DuckDBTest
 
     def create_query_appender(column_names)
       DuckDB::Appender.create_query(@con, QUERY, types, 'my_appended_data', column_names)
+    end
+
+    def with_gc_stress
+      GC.stress = true
+      yield
+    ensure
+      GC.stress = false
     end
 
     def test_fewer_column_names_than_types_raises_argument_error
@@ -48,6 +67,14 @@ module DuckDBTest
       appender = DuckDB::Appender.create_query(
         @con, 'INSERT INTO t SELECT col1, col2 FROM my_appended_data', types, 'my_appended_data', nil
       )
+      appender.append_row(1, 'hello')
+      appender.close
+
+      assert_equal [[1, 'hello']], @con.query('SELECT * FROM t').to_a
+    end
+
+    def test_column_names_survive_gc_while_the_appender_is_created
+      appender = with_gc_stress { create_query_appender([ColumnName.new('i'), ColumnName.new('val')]) }
       appender.append_row(1, 'hello')
       appender.close
 
