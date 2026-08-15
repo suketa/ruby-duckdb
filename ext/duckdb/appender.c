@@ -333,11 +333,13 @@ static VALUE appender__append_double(VALUE self, VALUE val) {
 /* :nodoc: */
 static VALUE appender__append_varchar(VALUE self, VALUE val) {
     rubyDuckDBAppender *ctx;
+    /* Length-aware, as duckdb_append_varchar would stop at an embedded NUL. */
     char *pval = StringValuePtr(val);
+    long len = RSTRING_LEN(val);
 
     TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    return state_to_rbool(duckdb_append_varchar(ctx->appender, pval));
+    return state_to_rbool(duckdb_append_varchar_length(ctx->appender, pval, (idx_t)len));
 }
 
 /* :nodoc: */

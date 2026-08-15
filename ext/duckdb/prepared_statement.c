@@ -345,10 +345,17 @@ static VALUE prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
 static VALUE prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
     rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
+    const char *pstr;
+    long len;
 
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
-    if (duckdb_bind_varchar(ctx->prepared_statement, idx, StringValuePtr(str)) == DuckDBError) {
+    /* Pass the byte length: duckdb_bind_varchar stops at the first NUL, so an
+     * embedded one stored a prefix of the String the caller had validated. */
+    pstr = StringValuePtr(str);
+    len = RSTRING_LEN(str);
+
+    if (duckdb_bind_varchar_length(ctx->prepared_statement, idx, pstr, (idx_t)len) == DuckDBError) {
         rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
     }
     return self;
