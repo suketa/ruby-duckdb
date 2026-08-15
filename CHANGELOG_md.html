@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. the error reporter raised while reporting, killing the callback execut"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Error` from wrapping a query in `Timeout."
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. the error reporter raised while reporting, killing the callback execut">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Error` from wrapping a query in `Timeout.">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. the error reporter raised while reporting, killing the callback execut">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Error` from wrapping a query in `Timeout.">
 
 
 
@@ -473,6 +473,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>fix an exception raised while converting a row for an aggregate UDF’s update callback — including the <code>Timeout::Error</code> from wrapping a query in <code>Timeout.timeout</code> — unwinding into <a href="DuckDB.html"><code>DuckDB</code></a> instead of aborting the query, which could wedge the process for good (PR #1450).</p>
+</li><li>
 <p>fix a permanent hang when a UDF callback raised an exception whose message contained a NUL byte (or whose message raised): the error reporter raised while reporting, killing the callback executor thread and stranding every later UDF callback in the process (PR #1448).</p>
 </li><li>
 <p>add <code>DuckDB::TableFunction::BindInfo#bind_data=</code> to store an arbitrary Ruby object as a custom table function’s bind data.</p>
