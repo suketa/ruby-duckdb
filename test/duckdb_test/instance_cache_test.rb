@@ -70,7 +70,10 @@ if defined?(DuckDB::InstanceCache)
 
       def test_get_or_create_returns_the_same_database_for_the_same_path
         with_cached_path do |cache, path|
-          assert_same cache.get_or_create(path), cache.get_or_create(path)
+          db = cache.get_or_create(path)
+
+          assert_same db, cache.get_or_create(path)
+          db.close
         end
       end
 
@@ -78,12 +81,14 @@ if defined?(DuckDB::InstanceCache)
       # goes away must not take another wrapper's functions with it.
       def test_registered_function_outlives_a_dropped_wrapper_over_the_same_instance
         with_cached_path do |cache, path|
-          con = cache.get_or_create(path).connect
+          db = cache.get_or_create(path)
+          con = db.connect
           register_doubler(cache, path)
           3.times { GC.start }
 
           assert_equal [[42]], con.query('SELECT dbl(21)').to_a
           con.disconnect
+          db.close
         end
       end
 
@@ -96,12 +101,21 @@ if defined?(DuckDB::InstanceCache)
           second = cache.get_or_create(path)
 
           refute_same first, second, "expected distinct databases for #{path.inspect}"
+          first.close
+          second.close
         end
       end
 
       def test_separate_caches_return_distinct_databases_for_the_same_path
+        skip 'Windows cannot open one database file from two instances' if RUBY_PLATFORM.match?(/mingw|mswin|cygwin/)
+
         with_cached_path do |cache, path|
-          refute_same cache.get_or_create(path), DuckDB::InstanceCache.new.get_or_create(path)
+          first = cache.get_or_create(path)
+          second = DuckDB::InstanceCache.new.get_or_create(path)
+
+          refute_same first, second
+          first.close
+          second.close
         end
       end
 
@@ -111,14 +125,20 @@ if defined?(DuckDB::InstanceCache)
           closed.close
 
           reopened = cache.get_or_create(path)
+          con = reopened.connect
 
           refute_same closed, reopened
-          assert_equal [[1]], reopened.connect.query('SELECT 1').to_a
+          assert_equal [[1]], con.query('SELECT 1').to_a
+          con.disconnect
+          reopened.close
         end
       end
 
       private
 
+      # Every database opened under the yielded path must be closed before the
+      # block ends: Windows refuses to delete a file that is still open, so an
+      # unclosed wrapper fails the tmpdir cleanup rather than the assertion.
       def with_cached_path
         Dir.mktmpdir do |dir|
           yield DuckDB::InstanceCache.new, File.join(dir, 'cached.duckdb')
