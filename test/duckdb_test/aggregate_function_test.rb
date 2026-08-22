@@ -482,6 +482,38 @@ module DuckDBTest
       assert_equal [[101], [201], [101]], [rows.first, rows[2500], rows.last]
     end
 
+    # An empty OVER () frame is constant over the whole partition, so DuckDB
+    # switches to WindowConstantAggregator, which hands update a states array
+    # that is not row-indexed: it reports the real row count but fills only a
+    # short fixed prefix. Reading one state per row ran off the populated part
+    # and dereferenced NULL.
+    def test_aggregate_over_an_empty_window_counts_the_whole_partition
+      skip 'segfaults until issue #1446 is fixed'
+
+      @con.register_aggregate_function(
+        DuckDB::AggregateFunction.create(
+          name: 'const_count',
+          return_type: :bigint,
+          params: [:bigint],
+          init: -> { 0 },
+          update: ->(state, _value) { state + 1 },
+          combine: ->(state, other_state) { (state || 0) + (other_state || 0) },
+          finalize: ->(state) { state }
+        )
+      )
+
+      # More than one row count: the populated prefix is a constant two entries
+      # whatever the partition size, so a fix that trusts it passes at tiny row
+      # counts and is silently wrong at real ones.
+      [2, 100, 5000].each do |row_count|
+        @con.query("CREATE OR REPLACE TABLE c AS SELECT i FROM generate_series(1, #{row_count}) s(i)")
+
+        rows = @con.query('SELECT const_count(i) OVER () FROM c').to_a
+
+        assert_equal [[row_count]], rows.uniq, "every row should see all #{row_count} rows"
+      end
+    end
+
     private
 
     # Force DuckDB to actually parallelise aggregation so the combine callback
