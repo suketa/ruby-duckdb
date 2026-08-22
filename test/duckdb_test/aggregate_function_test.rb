@@ -483,10 +483,10 @@ module DuckDBTest
     end
 
     # An empty OVER () frame is constant over the whole partition, so DuckDB
-    # switches to WindowConstantAggregator, which hands update a states array
-    # that is not row-indexed: it reports the real row count but fills only a
-    # short fixed prefix. Reading one state per row ran off the populated part
-    # and dereferenced NULL.
+    # switches to WindowConstantAggregator, which builds the states array as a
+    # constant vector: a single eight-byte allocation holding the partition's
+    # one state, passed along with the partition's full row count. Reading one
+    # state per row ran off the end of it and dereferenced whatever followed.
     def test_aggregate_over_an_empty_window_counts_the_whole_partition
       @con.register_aggregate_function(
         DuckDB::AggregateFunction.create(
@@ -500,9 +500,9 @@ module DuckDBTest
         )
       )
 
-      # More than one row count: the populated prefix is a constant two entries
-      # whatever the partition size, so a fix that trusts it passes at tiny row
-      # counts and is silently wrong at real ones.
+      # More than one row count: only the first entry of that array is ever the
+      # real state, whatever the partition size, so a fix that trusts a fixed
+      # prefix passes at tiny row counts and is silently wrong at real ones.
       [2, 100, 5000].each do |row_count|
         @con.query("CREATE OR REPLACE TABLE c AS SELECT i FROM generate_series(1, #{row_count}) s(i)")
 

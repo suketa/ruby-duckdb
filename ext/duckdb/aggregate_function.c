@@ -205,29 +205,12 @@ static inline void state_registry_remove(ruby_aggregate_state *state) {
 }
 
 /*
- * Membership helpers for g_aggregate_state_addresses. The key is the state
- * buffer's own address, so testing membership never dereferences the pointer;
- * that is the whole point of the set. Only state_address_forget reads through
- * the pointer, and it is called only where doing so is already safe.
+ * Key into g_aggregate_state_addresses. Takes the bare address, so testing
+ * membership never dereferences the pointer; that is the whole point of the
+ * set.
  */
-static inline VALUE state_address_key(ruby_aggregate_state *state) {
-    return ULL2NUM((unsigned long long)(uintptr_t)state);
-}
-
-static inline void state_address_add(ruby_aggregate_state *state) {
-    rb_hash_aset(g_aggregate_state_addresses, state_address_key(state), Qtrue);
-}
-
-/*
- * Only safe on a pointer already known to be dereferenceable -- a live state,
- * or one from a callback whose state vector DuckDB flattened.
- */
-static inline void state_address_forget(ruby_aggregate_state *state) {
-    rb_hash_delete(g_aggregate_state_addresses, state_address_key(state));
-    if (state->origin != (void *)state) {
-        rb_hash_delete(g_aggregate_state_addresses,
-                       ULL2NUM((unsigned long long)(uintptr_t)state->origin));
-    }
+static inline VALUE state_address_key(const void *addr) {
+    return ULL2NUM((unsigned long long)(uintptr_t)addr);
 }
 
 static inline int state_address_is_live(ruby_aggregate_state *state) {
@@ -235,6 +218,42 @@ static inline int state_address_is_live(ruby_aggregate_state *state) {
         return 0;
     }
     return RTEST(rb_hash_lookup2(g_aggregate_state_addresses, state_address_key(state), Qfalse));
+}
+
+/*
+ * Birth and death of a state, in both maps at once.
+ *
+ * The address set is only meaningful as a dereference-free stand-in for "this
+ * state has a registry entry", so the two must never disagree. Keeping every
+ * add and remove inside this pair is what stops a later call site from
+ * updating one and forgetting the other -- which is how the address set came
+ * to leak an entry per query the first time round.
+ *
+ * (state_registry_store on its own is not a birth: the update and combine
+ * callbacks use it to replace a registered state's value, and the address is
+ * already live by then.)
+ */
+static inline void state_register(ruby_aggregate_state *state, VALUE value) {
+    state_registry_store(state, value);
+    rb_hash_aset(g_aggregate_state_addresses, state_address_key(state), Qtrue);
+}
+
+/*
+ * Idempotent, and harmless for a state that was never registered. Only safe on
+ * a pointer already known to be dereferenceable: a live state, or one from a
+ * callback whose state vector DuckDB flattened.
+ *
+ * Drops the address the state was initialised at as well as its own. DuckDB
+ * rolls partial states up by memcpy'ing the whole buffer elsewhere and
+ * destroying the copy, so the copy is the only thing left that can still name
+ * the original address.
+ */
+static inline void state_release(ruby_aggregate_state *state) {
+    state_registry_remove(state);
+    rb_hash_delete(g_aggregate_state_addresses, state_address_key(state));
+    if (state->origin != (void *)state) {
+        rb_hash_delete(g_aggregate_state_addresses, state_address_key(state->origin));
+    }
 }
 
 /*
@@ -289,7 +308,6 @@ static void execute_init_callback_protected(void *user_data) {
     /* Assign the ID before calling Ruby: the registry entry is keyed on it. */
     state->state_id = ++g_next_state_id;
     state->origin = state;
-    state_address_add(state);
 
     result = rb_protect(call_init_proc, (VALUE)arg, &exception_state);
     if (exception_state) {
@@ -297,7 +315,7 @@ static void execute_init_callback_protected(void *user_data) {
         return;
     }
 
-    state_registry_store(state, result);
+    state_register(state, result);
 }
 
 static void state_init_callback(duckdb_function_info info, duckdb_aggregate_state state_p) {
@@ -308,13 +326,13 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
     if (ctx == NULL || ctx->init_proc == Qnil) {
         /* Defensive: maybe_set_functions only wires callbacks when init_proc
          * is set, so this branch should be unreachable in practice. Zero the
-         * ID anyway: IDs start at 1, so this state matches no registry entry
-         * and the callbacks report it as a missing state rather than running
-         * the user's proc on a state that was never initialised. */
+         * ID anyway, and leave the state unregistered: the callbacks then
+         * report it rather than running the user's proc on a state that was
+         * never initialised. Set origin so state_release can read it if
+         * DuckDB destroys the buffer. */
         ruby_aggregate_state *state = (ruby_aggregate_state *)state_p;
         state->state_id = 0;
         state->origin = state;
-        state_address_add(state);
         return;
     }
 
@@ -367,8 +385,7 @@ static void release_chunk_states(struct update_callback_arg *arg) {
 
     for (i = 0; i < arg->row_count; i++) {
         if (state_address_is_live(states[i])) {
-            state_registry_remove(states[i]);
-            state_address_forget(states[i]);
+            state_release(states[i]);
         }
     }
 }
@@ -387,18 +404,32 @@ static void release_chunk_states(struct update_callback_arg *arg) {
  * dead entry is proof of the constant layout -- and proof reached without ever
  * dereferencing the pointer, which is what the crash in issue #1446 was.
  *
- * The converse does not hold: the bytes past the constant vector are ordinary
- * heap and sometimes happen to hold live state pointers, so "every entry is
- * live" is only evidence, not proof. It is the safe way round, though: the
- * worst it can do is keep the row-indexed reading DuckDB itself intends, and
- * the entries observed in that prefix are copies of states[0] anyway.
+ * Be clear about what this is: a heuristic with a known ceiling, not a fix.
+ * The real fix is one line in DuckDB, `state.Flatten(count)` in
+ * CAPIAggregateUpdate, and this whole mechanism can be deleted once a release
+ * carrying it is the oldest DuckDB supported here.
  *
- * What this does rest on is that every state reaching update was initialised
- * at the address it is passed at. That is not true of states in general --
- * DuckDB rolls partial states up by memcpy, and the destroy callback does see
- * copies at addresses it never initialised -- but those copies are made to be
- * combined and finalized, after the rows have been updated, so update itself
- * only ever sees the states DuckDB is still accumulating into.
+ * Two things it does not do:
+ *
+ *   - It still reads states[i] past the end of that eight-byte allocation.
+ *     Not dereferencing the result is what stops the SIGSEGV, but the read
+ *     itself remains out of bounds and would trip a sanitiser.
+ *   - Only one direction is proof. The bytes past the constant vector are
+ *     ordinary heap and were observed to hold live state pointers belonging
+ *     to other partitions, so "every entry is live" is evidence, not proof.
+ *     That is the safe way round -- it falls back to the row-indexed reading
+ *     DuckDB intends -- but it is probability, not a guarantee.
+ *
+ * It also rests on every state reaching update having been initialised at the
+ * address it is passed at. That does not hold for states in general: DuckDB
+ * rolls partial states up by memcpy, and the destroy callback is observed
+ * receiving copies at addresses it never initialised. Those copies are made to
+ * be combined and finalized, after the rows are updated, so update should only
+ * ever see states DuckDB is still accumulating into -- but if that assumption
+ * ever broke for an entry past index 0, the chunk would be read as constant
+ * and the rows aggregated into states[0], silently. Attempts to reproduce that
+ * (400k rows, 50k groups, 8 threads, forcing hash-table repartitioning) did
+ * not manage it.
  */
 static int resolve_state_layout(struct update_callback_arg *arg) {
     ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
@@ -749,16 +780,14 @@ static void execute_finalize_callback_protected(void *user_data) {
         }
 
         /* Release Ruby state from the GC registry. */
-        state_registry_remove(state);
-        state_address_forget(state);
+        state_release(state);
     }
 
 cleanup:
     /* Clean up registry entries for the current (failed) state and any
        remaining unprocessed states so we don't leak GC-registered objects. */
     for (; i < arg->count; i++) {
-        state_registry_remove(states[i]);
-        state_address_forget(states[i]);
+        state_release(states[i]);
     }
     duckdb_destroy_logical_type(&result_type);
 }
@@ -803,8 +832,7 @@ static void execute_destroy_callback(void *data) {
     ruby_aggregate_state **s = (ruby_aggregate_state **)arg->states;
     idx_t i;
     for (i = 0; i < arg->count; i++) {
-        state_registry_remove(s[i]);
-        state_address_forget(s[i]);
+        state_release(s[i]);
     }
 }
 
