@@ -510,6 +510,7 @@ module DuckDBTest
 
         rows = @con.query('SELECT const_count(i) OVER () FROM c').to_a
 
+        assert_equal row_count, rows.size, 'the window should emit one row per input row'
         assert_equal [[row_count]], rows.uniq, "every row should see all #{row_count} rows"
       end
     end

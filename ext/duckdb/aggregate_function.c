@@ -249,7 +249,8 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
         /* Defensive: maybe_set_functions only wires callbacks when init_proc
          * is set, so this branch should be unreachable in practice. Zero the
          * ID anyway: IDs start at 1, so this state matches no registry entry
-         * and state_registry_load returns Qnil for it. */
+         * and the callbacks report it as a missing state rather than running
+         * the user's proc on a state that was never initialised. */
         ruby_aggregate_state *state = (ruby_aggregate_state *)state_p;
         state->state_id = 0;
         return;
