@@ -22,8 +22,33 @@ static VALUE g_aggregate_state_registry;
  */
 static unsigned long long g_next_state_id = 0;
 
+/*
+ * Addresses of every state buffer DuckDB has initialised and not yet
+ * destroyed, used as a set: keys are the buffer addresses, the values are
+ * unused.
+ *
+ * This exists only to make a state pointer testable without dereferencing it.
+ * DuckDB's CAPIAggregateUpdate flattens the input vectors but not the state
+ * vector, although its combine and finalize counterparts both flatten theirs.
+ * A window frame that is constant over the whole partition -- `OVER ()` --
+ * makes DuckDB pass a constant vector holding one pointer while reporting the
+ * partition's full row count, so states[1] onwards read off the end of an
+ * eight-byte allocation and yield unrelated heap bytes. Dereferencing those to
+ * reach state_id is the crash; membership here is the only test that does not.
+ * See issue #1446.
+ *
+ * Protected from GC via rb_gc_register_mark_object on init.
+ */
+static VALUE g_aggregate_state_addresses;
+
 typedef struct {
     unsigned long long state_id;
+    /* The address this state was initialised at. DuckDB rolls partial states
+     * up by memcpy'ing the whole buffer elsewhere and destroying the copy, so
+     * the copy is the only thing that can still name the original address --
+     * and that address has to leave g_aggregate_state_addresses when the state
+     * dies, or the set grows by one entry per query. */
+    void *origin;
 } ruby_aggregate_state;
 
 static void mark(void *);
@@ -180,6 +205,39 @@ static inline void state_registry_remove(ruby_aggregate_state *state) {
 }
 
 /*
+ * Membership helpers for g_aggregate_state_addresses. The key is the state
+ * buffer's own address, so testing membership never dereferences the pointer;
+ * that is the whole point of the set. Only state_address_forget reads through
+ * the pointer, and it is called only where doing so is already safe.
+ */
+static inline VALUE state_address_key(ruby_aggregate_state *state) {
+    return ULL2NUM((unsigned long long)(uintptr_t)state);
+}
+
+static inline void state_address_add(ruby_aggregate_state *state) {
+    rb_hash_aset(g_aggregate_state_addresses, state_address_key(state), Qtrue);
+}
+
+/*
+ * Only safe on a pointer already known to be dereferenceable -- a live state,
+ * or one from a callback whose state vector DuckDB flattened.
+ */
+static inline void state_address_forget(ruby_aggregate_state *state) {
+    rb_hash_delete(g_aggregate_state_addresses, state_address_key(state));
+    if (state->origin != (void *)state) {
+        rb_hash_delete(g_aggregate_state_addresses,
+                       ULL2NUM((unsigned long long)(uintptr_t)state->origin));
+    }
+}
+
+static inline int state_address_is_live(ruby_aggregate_state *state) {
+    if (state == NULL) {
+        return 0;
+    }
+    return RTEST(rb_hash_lookup2(g_aggregate_state_addresses, state_address_key(state), Qfalse));
+}
+
+/*
  * Report a pending Ruby exception to DuckDB via
  * duckdb_aggregate_function_set_error and clear it from errinfo.
  * Caller must only invoke this when rb_protect reported exception_state != 0.
@@ -230,6 +288,8 @@ static void execute_init_callback_protected(void *user_data) {
 
     /* Assign the ID before calling Ruby: the registry entry is keyed on it. */
     state->state_id = ++g_next_state_id;
+    state->origin = state;
+    state_address_add(state);
 
     result = rb_protect(call_init_proc, (VALUE)arg, &exception_state);
     if (exception_state) {
@@ -253,6 +313,8 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
          * the user's proc on a state that was never initialised. */
         ruby_aggregate_state *state = (ruby_aggregate_state *)state_p;
         state->state_id = 0;
+        state->origin = state;
+        state_address_add(state);
         return;
     }
 
@@ -273,6 +335,9 @@ struct update_callback_arg {
     duckdb_logical_type *input_types;
     idx_t row_count;
     idx_t col_count;
+    /* Non-zero when `states` holds a single pointer shared by every row
+     * instead of one per row; set by resolve_state_layout. */
+    int constant_states;
 };
 
 struct update_one_arg {
@@ -289,14 +354,79 @@ static VALUE call_update_proc(VALUE varg) {
  * DuckDB does not call the destroy callback once update has failed, so the
  * chunk's registry entries have to be dropped here or the Ruby VALUEs leak.
  * Rows in a chunk may share a state; state_registry_remove is idempotent.
+ *
+ * Entries that are not live states are skipped rather than dropped: under the
+ * unflattened constant vector of issue #1446 everything past index 0 is
+ * adjacent heap, and reading state_id out of that is the very crash this file
+ * is avoiding. Skipping them loses nothing, because a pointer that is not a
+ * live state has no registry entry to remove.
  */
 static void release_chunk_states(struct update_callback_arg *arg) {
     ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
     idx_t i;
 
     for (i = 0; i < arg->row_count; i++) {
-        state_registry_remove(states[i]);
+        if (state_address_is_live(states[i])) {
+            state_registry_remove(states[i]);
+            state_address_forget(states[i]);
+        }
     }
+}
+
+/*
+ * Work out how `states` is laid out before anything dereferences it.
+ *
+ * DuckDB passes one of two shapes. Normally it is row-indexed: every entry is
+ * a state DuckDB has initialised, and rows may share one. When the window
+ * frame is constant over the partition, DuckDB instead builds a constant
+ * vector holding that partition's single state and forgets to flatten it into
+ * row_count copies, so only a short prefix of the array really is that state
+ * and the rest is whatever bytes follow an eight-byte allocation.
+ *
+ * A row-indexed array cannot contain an entry that is not a live state, so one
+ * dead entry is proof of the constant layout -- and proof reached without ever
+ * dereferencing the pointer, which is what the crash in issue #1446 was.
+ *
+ * The converse does not hold: the bytes past the constant vector are ordinary
+ * heap and sometimes happen to hold live state pointers, so "every entry is
+ * live" is only evidence, not proof. It is the safe way round, though: the
+ * worst it can do is keep the row-indexed reading DuckDB itself intends, and
+ * the entries observed in that prefix are copies of states[0] anyway.
+ *
+ * What this does rest on is that every state reaching update was initialised
+ * at the address it is passed at. That is not true of states in general --
+ * DuckDB rolls partial states up by memcpy, and the destroy callback does see
+ * copies at addresses it never initialised -- but those copies are made to be
+ * combined and finalized, after the rows have been updated, so update itself
+ * only ever sees the states DuckDB is still accumulating into.
+ */
+static int resolve_state_layout(struct update_callback_arg *arg) {
+    ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
+    idx_t i;
+
+    arg->constant_states = 0;
+
+    if (arg->row_count == 0) {
+        return 1;
+    }
+
+    if (!state_address_is_live(states[0])) {
+        /* Not even the one entry DuckDB always fills is a state of ours;
+         * there is nothing here that can be aggregated into. */
+        duckdb_aggregate_function_set_error(
+            arg->info, "aggregate update received a state array holding no live state "
+                       "(ruby-duckdb internal error)");
+        return 0;
+    }
+
+    for (i = 1; i < arg->row_count; i++) {
+        if (!state_address_is_live(states[i])) {
+            arg->constant_states = 1;
+            return 1;
+        }
+    }
+
+    return 1;
 }
 
 /*
@@ -309,6 +439,8 @@ static void release_chunk_states(struct update_callback_arg *arg) {
  * Ruby exceptions raised by the user's proc are caught inline via rb_protect
  * and reported to DuckDB; anything else (vector_value_at, or an async
  * exception such as Timeout::Error) unwinds to execute_update_callback_protected.
+ *
+ * arg->constant_states must already have been set by resolve_state_layout.
  */
 static VALUE update_process_rows(VALUE varg) {
     struct update_callback_arg *arg = (struct update_callback_arg *)varg;
@@ -328,7 +460,7 @@ static VALUE update_process_rows(VALUE varg) {
     }
 
     for (i = 0; i < arg->row_count; i++) {
-        ruby_aggregate_state *state = states[i];
+        ruby_aggregate_state *state = arg->constant_states ? states[0] : states[i];
         struct update_one_arg one;
         int exception_state;
         VALUE ruby_state;
@@ -418,6 +550,11 @@ static void execute_update_callback_protected(void *user_data) {
     struct update_callback_arg *arg = (struct update_callback_arg *)user_data;
     int exception_state;
 
+    if (!resolve_state_layout(arg)) {
+        release_chunk_states(arg);
+        return;
+    }
+
     rb_protect(update_process_rows_ensured, (VALUE)arg, &exception_state);
     if (exception_state) {
         report_ruby_error_to_duckdb(arg->info);
@@ -451,6 +588,7 @@ static void update_callback(duckdb_function_info info,
     arg.input_types = NULL;
     arg.row_count = duckdb_data_chunk_get_size(input);
     arg.col_count = duckdb_data_chunk_get_column_count(input);
+    arg.constant_states = 0;
 
     rbduckdb_function_executor_dispatch(execute_update_callback_protected, &arg);
 }
@@ -612,6 +750,7 @@ static void execute_finalize_callback_protected(void *user_data) {
 
         /* Release Ruby state from the GC registry. */
         state_registry_remove(state);
+        state_address_forget(state);
     }
 
 cleanup:
@@ -619,6 +758,7 @@ cleanup:
        remaining unprocessed states so we don't leak GC-registered objects. */
     for (; i < arg->count; i++) {
         state_registry_remove(states[i]);
+        state_address_forget(states[i]);
     }
     duckdb_destroy_logical_type(&result_type);
 }
@@ -664,6 +804,7 @@ static void execute_destroy_callback(void *data) {
     idx_t i;
     for (i = 0; i < arg->count; i++) {
         state_registry_remove(s[i]);
+        state_address_forget(s[i]);
     }
 }
 
@@ -811,4 +952,6 @@ void rbduckdb_init_aggregate_function(void) {
 
     g_aggregate_state_registry = rb_hash_new();
     rb_gc_register_mark_object(g_aggregate_state_registry);
+    g_aggregate_state_addresses = rb_hash_new();
+    rb_gc_register_mark_object(g_aggregate_state_addresses);
 }

@@ -488,8 +488,6 @@ module DuckDBTest
     # short fixed prefix. Reading one state per row ran off the populated part
     # and dereferenced NULL.
     def test_aggregate_over_an_empty_window_counts_the_whole_partition
-      skip 'segfaults until issue #1446 is fixed'
-
       @con.register_aggregate_function(
         DuckDB::AggregateFunction.create(
           name: 'const_count',
@@ -513,6 +511,32 @@ module DuckDBTest
         assert_equal row_count, rows.size, 'the window should emit one row per input row'
         assert_equal [[row_count]], rows.uniq, "every row should see all #{row_count} rows"
       end
+    end
+
+    # PARTITION BY keeps the frame constant but gives DuckDB several partition
+    # states at once, so the bytes past the states array can hold a live state
+    # belonging to a *different* partition. Aggregating a row into that one
+    # would be silently wrong rather than a crash, which is what makes this
+    # worth covering separately from the single-partition OVER () case.
+    def test_aggregate_over_a_partitioned_constant_window_counts_each_partition
+      @con.register_aggregate_function(
+        DuckDB::AggregateFunction.create(
+          name: 'part_count',
+          return_type: :bigint,
+          params: [:bigint],
+          init: -> { 0 },
+          update: ->(state, _value) { state + 1 },
+          combine: ->(state, other_state) { (state || 0) + (other_state || 0) },
+          finalize: ->(state) { state }
+        )
+      )
+
+      @con.query('CREATE TABLE p AS SELECT i, i % 4 AS g FROM generate_series(1, 4000) s(i)')
+
+      rows = @con.query('SELECT g, part_count(i) OVER (PARTITION BY g) FROM p').to_a
+
+      assert_equal 4000, rows.size
+      assert_equal [[0, 1000], [1, 1000], [2, 1000], [3, 1000]], rows.uniq.sort
     end
 
     private
