@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Appender."
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. finalize` proc as `nil`, indistinguishable from an `init` proc that le"
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Appender.">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. finalize` proc as `nil`, indistinguishable from an `init` proc that le">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Appender.">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. finalize` proc as `nil`, indistinguishable from an `init` proc that le">
 
 
 
@@ -473,6 +473,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>fix an aggregate UDF state that has lost its registry entry being passed to the user’s <code>update</code>/<code>combine</code>/<code>finalize</code> proc as <code>nil</code>, indistinguishable from an <code>init</code> proc that legitimately returned <code>nil</code>. Such a state now reports an internal error instead of silently producing wrong results (issue #1445).</p>
+</li><li>
 <p>fix <a href="DuckDB/Appender.html#method-c-create_query"><code>DuckDB::Appender.create_query</code></a> reading past the end of its column name array when the array is shorter than the types array, and freeing a column name before <a href="DuckDB.html"><code>DuckDB</code></a> copies it when the array holds <code>to_str</code> objects. A column name array whose size differs from the types array now raises <code>ArgumentError</code> (PR #1453).</p>
 </li><li>
 <p>fix a bound or appended <code>VARCHAR</code> being silently truncated at an embedded NUL byte, so that a String validated on the Ruby side is now stored in full (PR #1451). Affects <code>Connection#query(sql, *args)</code>, <code>PreparedStatement#bind</code>/bind_varchar and <code>Appender#append_varchar</code>.</p>
