@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- fix an aggregate UDF state that has lost its registry entry being passed to the user's `update`/`combine`/`finalize` proc as `nil`, indistinguishable from an `init` proc that legitimately returned `nil`. Such a state now reports an internal error instead of silently producing wrong results (issue #1445).
 - fix `DuckDB::Appender.create_query` reading past the end of its column name array when the array is shorter than the types array, and freeing a column name before DuckDB copies it when the array holds `to_str` objects. A column name array whose size differs from the types array now raises `ArgumentError` (PR #1453).
 - fix a bound or appended `VARCHAR` being silently truncated at an embedded NUL byte, so that a String validated on the Ruby side is now stored in full (PR #1451). Affects `Connection#query(sql, *args)`, `PreparedStatement#bind`/`#bind_varchar` and `Appender#append_varchar`.
 - fix an exception raised while converting a row for an aggregate UDF's update callback — including the `Timeout::Error` from wrapping a query in `Timeout.timeout` — unwinding into DuckDB instead of aborting the query, which could wedge the process for good (PR #1450).

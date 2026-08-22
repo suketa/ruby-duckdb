@@ -159,11 +159,16 @@ static inline void state_registry_store(ruby_aggregate_state *state, VALUE value
  *
  * The registry is the only place the VALUE may be read from: a copy cached
  * in the state buffer would be a raw VALUE in a C struct DuckDB allocates,
- * which GC compaction does not update.  Returns Qnil for a state that has
- * no entry (init failed, or the entry was already released).
+ * which GC compaction does not update.
+ *
+ * Returns Qundef, not Qnil, when the state has no entry: nil is a legitimate
+ * state (a user's init proc may return it), so the two must not be conflated.
+ * Every live state has an entry, so Qundef means a bug in this file; callers
+ * report it through report_missing_state_to_duckdb rather than handing the
+ * user's proc a state it never returned.
  */
 static inline VALUE state_registry_load(ruby_aggregate_state *state) {
-    return rb_hash_aref(g_aggregate_state_registry, state_registry_key(state));
+    return rb_hash_lookup2(g_aggregate_state_registry, state_registry_key(state), Qundef);
 }
 
 /*
@@ -183,6 +188,20 @@ static void report_ruby_error_to_duckdb(duckdb_function_info info) {
     VALUE msg = rbduckdb_pending_error_message();
     duckdb_aggregate_function_set_error(info, StringValueCStr(msg));
     RB_GC_GUARD(msg);
+}
+
+/*
+ * Report a state that has no registry entry.  Not reachable from Ruby code:
+ * it means a state was released while DuckDB still held it, which would
+ * otherwise pass nil to the user's proc and silently corrupt the result.
+ */
+static void report_missing_state_to_duckdb(duckdb_function_info info, ruby_aggregate_state *state) {
+    char msg[128];
+
+    snprintf(msg, sizeof(msg),
+             "aggregate state %llu has no registry entry (ruby-duckdb internal error)",
+             (unsigned long long)state->state_id);
+    duckdb_aggregate_function_set_error(info, msg);
 }
 
 /* state_size callback: constant buffer per state. */
@@ -230,7 +249,8 @@ static void state_init_callback(duckdb_function_info info, duckdb_aggregate_stat
         /* Defensive: maybe_set_functions only wires callbacks when init_proc
          * is set, so this branch should be unreachable in practice. Zero the
          * ID anyway: IDs start at 1, so this state matches no registry entry
-         * and state_registry_load returns Qnil for it. */
+         * and the callbacks report it as a missing state rather than running
+         * the user's proc on a state that was never initialised. */
         ruby_aggregate_state *state = (ruby_aggregate_state *)state_p;
         state->state_id = 0;
         return;
@@ -311,6 +331,7 @@ static VALUE update_process_rows(VALUE varg) {
         ruby_aggregate_state *state = states[i];
         struct update_one_arg one;
         int exception_state;
+        VALUE ruby_state;
         VALUE ret;
 
         /*
@@ -334,7 +355,15 @@ static VALUE update_process_rows(VALUE varg) {
             }
         }
 
-        rb_ary_store(args, 0, state_registry_load(state));
+        ruby_state = state_registry_load(state);
+        if (ruby_state == Qundef) {
+            report_missing_state_to_duckdb(arg->info, state);
+            release_chunk_states(arg);
+            RB_GC_GUARD(args);
+            return Qnil;
+        }
+
+        rb_ary_store(args, 0, ruby_state);
         for (j = 0; j < arg->col_count; j++) {
             rb_ary_store(args, (long)j + 1, rbduckdb_vector_value_at(arg->input_vectors[j], arg->input_types[j], i));
         }
@@ -463,6 +492,10 @@ static void execute_combine_callback_protected(void *user_data) {
         one.combine_proc = arg->ctx->combine_proc;
         one.source_state = state_registry_load(src[i]);
         one.target_state = state_registry_load(tgt[i]);
+        if (one.source_state == Qundef || one.target_state == Qundef) {
+            report_missing_state_to_duckdb(arg->info, one.source_state == Qundef ? src[i] : tgt[i]);
+            return;
+        }
 
         ret = rb_protect(call_combine_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
@@ -555,6 +588,10 @@ static void execute_finalize_callback_protected(void *user_data) {
 
         one.finalize_proc = arg->ctx->finalize_proc;
         one.ruby_state = state_registry_load(state);
+        if (one.ruby_state == Qundef) {
+            report_missing_state_to_duckdb(arg->info, state);
+            goto cleanup;
+        }
 
         ret = rb_protect(call_finalize_proc, (VALUE)&one, &exception_state);
         if (exception_state) {
