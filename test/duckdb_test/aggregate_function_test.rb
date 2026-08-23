@@ -483,13 +483,11 @@ module DuckDBTest
     end
 
     # An empty OVER () frame is constant over the whole partition, so DuckDB
-    # switches to WindowConstantAggregator, which hands update a states array
-    # that is not row-indexed: it reports the real row count but fills only a
-    # short fixed prefix. Reading one state per row ran off the populated part
-    # and dereferenced NULL.
+    # switches to WindowConstantAggregator, which builds the states array as a
+    # constant vector: a single eight-byte allocation holding the partition's
+    # one state, passed along with the partition's full row count. Reading one
+    # state per row ran off the end of it and dereferenced whatever followed.
     def test_aggregate_over_an_empty_window_counts_the_whole_partition
-      skip 'segfaults until issue #1446 is fixed'
-
       @con.register_aggregate_function(
         DuckDB::AggregateFunction.create(
           name: 'const_count',
@@ -502,9 +500,9 @@ module DuckDBTest
         )
       )
 
-      # More than one row count: the populated prefix is a constant two entries
-      # whatever the partition size, so a fix that trusts it passes at tiny row
-      # counts and is silently wrong at real ones.
+      # More than one row count: only the first entry of that array is ever the
+      # real state, whatever the partition size, so a fix that trusts a fixed
+      # prefix passes at tiny row counts and is silently wrong at real ones.
       [2, 100, 5000].each do |row_count|
         @con.query("CREATE OR REPLACE TABLE c AS SELECT i FROM generate_series(1, #{row_count}) s(i)")
 
@@ -513,6 +511,77 @@ module DuckDBTest
         assert_equal row_count, rows.size, 'the window should emit one row per input row'
         assert_equal [[row_count]], rows.uniq, "every row should see all #{row_count} rows"
       end
+    end
+
+    # PARTITION BY keeps the frame constant but gives DuckDB several partition
+    # states at once, so the bytes past the states array can hold a live state
+    # belonging to a *different* partition. Aggregating a row into that one
+    # would be silently wrong rather than a crash, which is what makes this
+    # worth covering separately from the single-partition OVER () case.
+    def test_aggregate_over_a_partitioned_constant_window_counts_each_partition
+      @con.register_aggregate_function(
+        DuckDB::AggregateFunction.create(
+          name: 'part_count',
+          return_type: :bigint,
+          params: [:bigint],
+          init: -> { 0 },
+          update: ->(state, _value) { state + 1 },
+          combine: ->(state, other_state) { (state || 0) + (other_state || 0) },
+          finalize: ->(state) { state }
+        )
+      )
+
+      @con.query('CREATE TABLE p AS SELECT i, i % 4 AS g FROM generate_series(1, 4000) s(i)')
+
+      rows = @con.query('SELECT g, part_count(i) OVER (PARTITION BY g) FROM p').to_a
+
+      assert_equal 4000, rows.size
+      assert_equal [[0, 1000], [1, 1000], [2, 1000], [3, 1000]], rows.uniq.sort
+    end
+
+    # Failing mid-chunk under the constant layout used to release every entry of
+    # the states array, and the bytes past that array can hold live states of
+    # other partitions -- so the cleanup dropped registry entries the chunk had
+    # never touched. The damage only shows up afterwards, hence the queries at
+    # the end rather than an assertion on the failure itself.
+    def test_a_failed_update_over_a_constant_window_leaves_later_queries_intact
+      calls = 0
+      raising = false
+
+      @con.register_aggregate_function(
+        DuckDB::AggregateFunction.create(
+          name: 'flaky_count',
+          return_type: :bigint,
+          params: [:bigint],
+          init: -> { 0 },
+          update: lambda { |state, _value|
+            calls += 1
+            raise 'update failed' if raising && calls > 3000
+
+            state + 1
+          },
+          combine: ->(state, other_state) { (state || 0) + (other_state || 0) },
+          finalize: ->(state) { state }
+        )
+      )
+
+      @con.query('CREATE TABLE f AS SELECT i, i % 8 AS g FROM generate_series(1, 8000) s(i)')
+
+      raising = true
+      assert_raises(DuckDB::Error) do
+        @con.query('SELECT g, flaky_count(i) OVER (PARTITION BY g) FROM f').to_a
+      end
+      raising = false
+
+      # No registry-size assertion here: DuckDB 1.4.x drops the failed query's
+      # pipeline asynchronously, so the destroy callback for its states can run
+      # any time up to database close. Registry drain on a failed update is
+      # covered by test_aggregate_update_error_surfaces_without_registry_leak.
+      rows = @con.query('SELECT g, flaky_count(i) OVER (PARTITION BY g) FROM f').to_a
+
+      assert_equal [[0, 1000], [1, 1000], [2, 1000], [3, 1000],
+                    [4, 1000], [5, 1000], [6, 1000], [7, 1000]], rows.uniq.sort,
+                   'a state released by the failed query would resurface as a wrong count here'
     end
 
     private
