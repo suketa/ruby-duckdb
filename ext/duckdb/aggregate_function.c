@@ -373,17 +373,22 @@ static VALUE call_update_proc(VALUE varg) {
  * chunk's registry entries have to be dropped here or the Ruby VALUEs leak.
  * Rows in a chunk may share a state; state_registry_remove is idempotent.
  *
- * Entries that are not live states are skipped rather than dropped: under the
- * unflattened constant vector of issue #1446 everything past index 0 is
- * adjacent heap, and reading state_id out of that is the very crash this file
- * is avoiding. Skipping them loses nothing, because a pointer that is not a
- * live state has no registry entry to remove.
+ * Only the states this chunk actually used are released. Under the constant
+ * layout that is states[0] alone: everything past it is adjacent heap, which
+ * was observed to hold live states belonging to *other* partitions, and
+ * releasing one of those would drop a registry entry this chunk never owned.
+ *
+ * Entries that are not live states are skipped rather than dropped, because
+ * reading state_id out of adjacent heap is the very crash this file avoids.
+ * Skipping them loses nothing: a pointer that is not a live state has no
+ * registry entry to remove.
  */
 static void release_chunk_states(struct update_callback_arg *arg) {
     ruby_aggregate_state **states = (ruby_aggregate_state **)arg->states;
+    idx_t count = arg->constant_states ? (idx_t)1 : arg->row_count;
     idx_t i;
 
-    for (i = 0; i < arg->row_count; i++) {
+    for (i = 0; i < count; i++) {
         if (state_address_is_live(states[i])) {
             state_release(states[i]);
         }

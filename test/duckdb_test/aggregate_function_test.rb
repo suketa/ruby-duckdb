@@ -539,6 +539,51 @@ module DuckDBTest
       assert_equal [[0, 1000], [1, 1000], [2, 1000], [3, 1000]], rows.uniq.sort
     end
 
+    # Failing mid-chunk under the constant layout used to release every entry of
+    # the states array, and the bytes past that array can hold live states of
+    # other partitions -- so the cleanup dropped registry entries the chunk had
+    # never touched. The damage only shows up afterwards, hence the queries at
+    # the end rather than an assertion on the failure itself.
+    def test_a_failed_update_over_a_constant_window_leaves_later_queries_intact
+      calls = 0
+      raising = false
+
+      @con.register_aggregate_function(
+        DuckDB::AggregateFunction.create(
+          name: 'flaky_count',
+          return_type: :bigint,
+          params: [:bigint],
+          init: -> { 0 },
+          update: lambda { |state, _value|
+            calls += 1
+            raise 'update failed' if raising && calls > 3000
+
+            state + 1
+          },
+          combine: ->(state, other_state) { (state || 0) + (other_state || 0) },
+          finalize: ->(state) { state }
+        )
+      )
+
+      @con.query('CREATE TABLE f AS SELECT i, i % 8 AS g FROM generate_series(1, 8000) s(i)')
+      baseline = DuckDB::AggregateFunction._state_registry_size
+
+      raising = true
+      assert_raises(DuckDB::Error) do
+        @con.query('SELECT g, flaky_count(i) OVER (PARTITION BY g) FROM f').to_a
+      end
+      raising = false
+
+      assert_equal baseline, DuckDB::AggregateFunction._state_registry_size,
+                   'the failed query must not leave registry entries behind'
+
+      rows = @con.query('SELECT g, flaky_count(i) OVER (PARTITION BY g) FROM f').to_a
+
+      assert_equal [[0, 1000], [1, 1000], [2, 1000], [3, 1000],
+                    [4, 1000], [5, 1000], [6, 1000], [7, 1000]], rows.uniq.sort,
+                   'a state released by the failed query would resurface as a wrong count here'
+    end
+
     private
 
     # Force DuckDB to actually parallelise aggregation so the combine callback
