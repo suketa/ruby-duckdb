@@ -566,7 +566,6 @@ module DuckDBTest
       )
 
       @con.query('CREATE TABLE f AS SELECT i, i % 8 AS g FROM generate_series(1, 8000) s(i)')
-      baseline = DuckDB::AggregateFunction._state_registry_size
 
       raising = true
       assert_raises(DuckDB::Error) do
@@ -574,9 +573,10 @@ module DuckDBTest
       end
       raising = false
 
-      assert_equal baseline, DuckDB::AggregateFunction._state_registry_size,
-                   'the failed query must not leave registry entries behind'
-
+      # No registry-size assertion here: DuckDB 1.4.x drops the failed query's
+      # pipeline asynchronously, so the destroy callback for its states can run
+      # any time up to database close. Registry drain on a failed update is
+      # covered by test_aggregate_update_error_surfaces_without_registry_leak.
       rows = @con.query('SELECT g, flaky_count(i) OVER (PARTITION BY g) FROM f').to_a
 
       assert_equal [[0, 1000], [1, 1000], [2, 1000], [3, 1000],

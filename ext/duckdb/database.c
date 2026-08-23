@@ -22,6 +22,23 @@ static void close_database(rubyDuckDB *p) {
     duckdb_close(&(p->db));
 }
 
+/*
+ * duckdb_close joins DuckDB's worker threads, and a worker tearing down a
+ * pipeline can still run a UDF callback -- the aggregate destroy callback,
+ * say, for a query that failed and left its pipeline queued. That callback is
+ * dispatched to the executor thread, which needs the GVL, so closing while
+ * holding it deadlocks: the worker waits for the executor, the executor waits
+ * for us, and we wait for the worker.
+ *
+ * The GC free function calls close_database directly and cannot do this;
+ * releasing the GVL mid-sweep is not allowed. A database reaching close via
+ * the GC with callbacks still pending would deadlock the same way.
+ */
+static void *close_database_without_gvl(void *ctx) {
+    close_database((rubyDuckDB *)ctx);
+    return NULL;
+}
+
 static void deallocate(void * ctx) {
     rubyDuckDB *p = (rubyDuckDB *)ctx;
 
@@ -167,7 +184,7 @@ static VALUE database_close(VALUE self) {
         ctx->cache_wrappers = Qnil;
         ctx->cached_path = Qnil;
     }
-    close_database(ctx);
+    rb_thread_call_without_gvl(close_database_without_gvl, ctx, NULL, NULL);
     return self;
 }
 
