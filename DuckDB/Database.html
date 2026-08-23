@@ -771,7 +771,7 @@
         ctx-&gt;cache_wrappers = Qnil;
         ctx-&gt;cached_path = Qnil;
     }
-    close_database(ctx);
+    rb_thread_call_without_gvl(close_database_without_gvl, ctx, NULL, NULL);
     return self;
 }</pre>
           </div>
