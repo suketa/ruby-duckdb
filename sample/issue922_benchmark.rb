@@ -83,7 +83,7 @@ class PolarsDataFrameOptimizedTableAdapter
 
   private
 
-  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable-next Metrics/MethodLength
   def execute_block(data_frame)
     col_arrays = extract_columns(data_frame)
     offset = 0
@@ -99,7 +99,6 @@ class PolarsDataFrameOptimizedTableAdapter
       rows
     end
   end
-  # rubocop:enable Metrics/MethodLength
 
   def extract_columns(data_frame)
     data_frame.columns.map { |col| data_frame[col].cast(Polars::Utf8).to_a }

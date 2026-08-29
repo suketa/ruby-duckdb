@@ -26,6 +26,11 @@ jobs:
       matrix:
         ruby: ['3.3.10', '3.4.10', '4.0.6', 'ucrt', 'mingw', 'mswin', 'head']
         duckdb: ['1.4.5', '1.5.5']
+    # The ruby-master nightlies hit a sub-millisecond `sleep` regression
+    # (2026-08-28, 90e729c9bc): 0.2ms/iter -> 8.5ms/iter, which blows the test
+    # timeout. Non-blocking until upstream fixes it. `mingw` is excluded because
+    # its nightly is still pinned to 2025-11-18.
+    continue-on-error: ${{ matrix.ruby == 'ucrt' || matrix.ruby == 'mswin' || matrix.ruby == 'head' }}
     env:
       # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
       # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.

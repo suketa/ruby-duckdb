@@ -15,10 +15,9 @@ module DuckDB
     #     init_info.set_error('Initialization failed')
     #   end
     #
-    # rubocop:disable Lint/EmptyClass
+    # rubocop:disable-next Lint/EmptyClass
     class InitInfo
       # All methods are defined in C extension (ext/duckdb/table_function_init_info.c)
     end
-    # rubocop:enable Lint/EmptyClass
   end
 end

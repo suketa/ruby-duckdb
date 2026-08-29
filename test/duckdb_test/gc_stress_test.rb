@@ -77,7 +77,7 @@ module DuckDBTest
       end
     end
 
-    # rubocop:disable Minitest/MultipleAssertions
+    # rubocop:disable-next Minitest/MultipleAssertions
     def test_table_function_with_gc_compaction
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
       skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
@@ -127,7 +127,6 @@ module DuckDBTest
         done = false
       end
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     def test_mixed_functions_gc_stress
       skip 'GC.compact not available' unless GC.respond_to?(:compact)

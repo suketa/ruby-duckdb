@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+
+# 1.5.5.1 - 2026-08-29
 - fix `DuckDB::Database#close` deadlocking when DuckDB tears down a pipeline that still owes a UDF callback, as a failed aggregate window query does on DuckDB 1.4.x. `duckdb_close` joins DuckDB's worker threads, and a worker running a callback waits for the executor thread, which waits for the GVL the closing thread was holding. The GVL is now released for the duration of `duckdb_close`.
 - fix a segfault when an aggregate UDF was used as a window function over a constant frame, such as `OVER ()` or `OVER (PARTITION BY x)` (issue #1446). DuckDB's `CAPIAggregateUpdate` does not flatten the state vector the way its combine and finalize counterparts do, so it hands the update callback a single state while reporting the partition's full row count; reading one state per row then ran off the end of the allocation. Such a chunk is now recognised and every row aggregated into the one state DuckDB supplied.
 - fix an aggregate UDF state that has lost its registry entry being passed to the user's `update`/`combine`/`finalize` proc as `nil`, indistinguishable from an `init` proc that legitimately returned `nil`. Such a state now reports an internal error instead of silently producing wrong results (issue #1445).

@@ -14,10 +14,9 @@ module DuckDB
     #     func_info.set_error('Something went wrong')
     #   end
     #
-    # rubocop:disable Lint/EmptyClass
+    # rubocop:disable-next Lint/EmptyClass
     class FunctionInfo
       # All methods are defined in C extension (ext/duckdb/table_function_function_info.c)
     end
-    # rubocop:enable Lint/EmptyClass
   end
 end

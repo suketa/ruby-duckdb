@@ -44,7 +44,7 @@ module DuckDB
     # @example Set NULL value
     #   output.set_value(0, 1, nil)
     #
-    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+    # rubocop:disable-next Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
     def set_value(col_idx, row_idx, value)
       vector = cached_vector(col_idx)
       type_id = cached_type_id(col_idx, vector)
@@ -94,7 +94,6 @@ module DuckDB
 
       value
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
     #
     # Resets the data chunk so it can be reused for another batch of rows.

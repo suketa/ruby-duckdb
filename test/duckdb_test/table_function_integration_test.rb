@@ -15,7 +15,7 @@ module DuckDBTest
     end
 
     # Test 1: Simple table function returning data
-    # rubocop:disable Minitest/MultipleAssertions
+    # rubocop:disable-next Minitest/MultipleAssertions
     def test_simple_table_function
       table_function = create_simple_function
 
@@ -29,10 +29,9 @@ module DuckDBTest
       assert_equal [2, 'Bob'], rows[1]
       assert_equal [3, 'Charlie'], rows[2]
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     # Test 2: Table function with parameters
-    # rubocop:disable Minitest/MultipleAssertions
+    # rubocop:disable-next Minitest/MultipleAssertions
     def test_table_function_with_parameters
       table_function = create_parameterized_function
 
@@ -46,7 +45,6 @@ module DuckDBTest
       assert_equal ['test'], rows[1]
       assert_equal ['test'], rows[2]
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     # Verifies that register_table_function works with threads > 1.
     # Callbacks are dispatched to the shared executor thread so correctness

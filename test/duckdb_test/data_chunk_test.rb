@@ -290,7 +290,7 @@ module DuckDBTest
     end
 
     # Test 11: DataChunk#set_value with multiple columns
-    # rubocop:disable Minitest/MultipleAssertions
+    # rubocop:disable-next Minitest/MultipleAssertions
     def test_data_chunk_set_value_multiple_columns
       done = false
       table_function = DuckDB::TableFunction.new
@@ -341,7 +341,6 @@ module DuckDBTest
       assert_equal 'Bob', row1[1]
       assert_in_delta 87.3, row1[2], 0.001
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     # Test 12: DataChunk#set_value with TIMESTAMP
     def test_data_chunk_set_value_timestamp
