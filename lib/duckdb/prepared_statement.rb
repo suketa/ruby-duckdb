@@ -379,7 +379,7 @@ module DuckDB
 
     private
 
-    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+    # rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/MethodLength
     def bind_with_index(index, value)
       case value
       when NilClass
@@ -402,7 +402,6 @@ module DuckDB
         raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
       end
     end
-    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength
 
     def bind_integer_value(index, value)
       if RANGE_INT64.cover?(value)

@@ -12,9 +12,8 @@ module DuckDB
   #   vector.assign_string_element(0, 'hello')
   #   vector.assign_string_element(1, 'world')
   #
-  # rubocop:disable Lint/EmptyClass
+  # rubocop:disable-next Lint/EmptyClass
   class Vector
     # All methods are defined in C extension (ext/duckdb/vector.c)
   end
-  # rubocop:enable Lint/EmptyClass
 end

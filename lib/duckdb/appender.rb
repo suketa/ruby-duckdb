@@ -759,7 +759,7 @@ module DuckDB
     #   appender.append(1)
     #   appender.append('Alice')
     #   appender.end_row
-    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+    # rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/MethodLength
     def append(value)
       case value
       when NilClass
@@ -782,7 +782,6 @@ module DuckDB
         raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
       end
     end
-    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength
 
     # append a row.
     #

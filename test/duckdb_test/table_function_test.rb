@@ -12,7 +12,7 @@ module DuckDBTest
     end
 
     # Test: Create function with set_value (high-level API)
-    # rubocop:disable Minitest/MultipleAssertions
+    # rubocop:disable-next Minitest/MultipleAssertions
     def test_create_with_set_value
       db = DuckDB::Database.open
       conn = db.connect
@@ -51,7 +51,6 @@ module DuckDBTest
       conn.disconnect
       db.close
     end
-    # rubocop:enable Minitest/MultipleAssertions
 
     # Test: Create requires name
     def test_create_requires_name

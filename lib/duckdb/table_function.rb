@@ -75,7 +75,7 @@ module DuckDB
       #     3  # Return row count
       #   end
       #
-      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      # rubocop:disable-next Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       def create(name:, columns:, parameters: nil, &)
         raise ArgumentError, 'name is required' unless name
         raise ArgumentError, 'columns are required' unless columns
@@ -116,7 +116,6 @@ module DuckDB
 
         tf
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
 
       # Registers a table adapter for a Ruby class.
       #

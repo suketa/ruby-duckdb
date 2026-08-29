@@ -44,14 +44,13 @@ module DuckDB
       Date.new(year, month, day)
     end
 
-    # rubocop:disable Metrics/ParameterLists
+    # rubocop:disable-next Metrics/ParameterLists
     def _to_time(year, month, day, hour, minute, second, microsecond)
       Time.public_send(
         default_timezone_utc? ? :utc : :local,
         year, month, day, hour, minute, second, microsecond
       )
     end
-    # rubocop:enable Metrics/ParameterLists
 
     def _to_time_from_duckdb_time(hour, minute, second, microsecond)
       return Time.utc(1970, 1, 1, hour, minute, second, microsecond) if default_timezone_utc?
