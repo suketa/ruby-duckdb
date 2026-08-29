@@ -1023,7 +1023,7 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 </pre>
 
-<p>rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
+<p>rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
 
 
         </div>
@@ -1947,7 +1947,7 @@
             </details>
           </div>
           <div class="method-source-code" id="append_row-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 796</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 795</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append_row</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">append</span>(<span class="ruby-identifier">arg</span>)

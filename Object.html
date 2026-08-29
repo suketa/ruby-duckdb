@@ -972,7 +972,7 @@
             </details>
           </div>
           <div class="method-source-code" id="query_via_parquet-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue922_benchmark.rb, line 120</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File sample/issue922_benchmark.rb, line 119</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">query_via_parquet</span>(<span class="ruby-identifier">con</span>, <span class="ruby-identifier">data_frame</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">parquet_path</span>)
   <span class="ruby-identifier">data_frame</span>.<span class="ruby-identifier">write_parquet</span>(<span class="ruby-identifier">parquet_path</span>)
   <span class="ruby-identifier">con</span>.<span class="ruby-identifier">query</span>(<span class="ruby-node">&quot;CREATE OR REPLACE TABLE #{name} AS SELECT * FROM read_parquet(&#39;#{parquet_path}&#39;)&quot;</span>)

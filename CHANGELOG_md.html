@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Database#close` deadlocking when DuckDB tears down a pipeline that sti"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased # 1."
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Database#close` deadlocking when DuckDB tears down a pipeline that sti">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Database#close` deadlocking when DuckDB tears down a pipeline that sti">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
 
 
 
@@ -472,6 +472,8 @@
 <p>All notable changes to this project will be documented in this file.</p>
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
+
+<h1 id="label-1.5.5.1+-+2026-08-29"><a href="#label-1.5.5.1+-+2026-08-29">1.5.5.1 - 2026-08-29</a></h1>
 <ul><li>
 <p>fix <a href="DuckDB/Database.html#method-i-close"><code>DuckDB::Database#close</code></a> deadlocking when <a href="DuckDB.html"><code>DuckDB</code></a> tears down a pipeline that still owes a UDF callback, as a failed aggregate window query does on <a href="DuckDB.html"><code>DuckDB</code></a> 1.4.x. <code>duckdb_close</code> joins DuckDB’s worker threads, and a worker running a callback waits for the executor thread, which waits for the GVL the closing thread was holding. The GVL is now released for the duration of <code>duckdb_close</code>.</p>
 </li><li>
