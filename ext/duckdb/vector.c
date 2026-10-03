@@ -15,7 +15,7 @@ static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid);
 static const rb_data_type_t vector_data_type = {
     "DuckDB/Vector",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

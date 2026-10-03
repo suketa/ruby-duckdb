@@ -15,7 +15,7 @@ static VALUE pending_result__execute_check_state(VALUE self);
 static const rb_data_type_t pending_result_data_type = {
     "DuckDB/PendingResult",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

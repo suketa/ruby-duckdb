@@ -14,7 +14,7 @@ static VALUE table_function_init_info_bind_data(VALUE self);
 static const rb_data_type_t init_info_data_type = {
     "DuckDB/TableFunctionInitInfo",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

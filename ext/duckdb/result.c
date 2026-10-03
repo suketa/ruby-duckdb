@@ -51,7 +51,7 @@ static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

@@ -10,7 +10,7 @@ static VALUE client_context_connection_id(VALUE self);
 static const rb_data_type_t client_context_data_type = {
     "DuckDB/ClientContext",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

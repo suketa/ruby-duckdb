@@ -35,7 +35,7 @@ static VALUE logical_type_initialize(VALUE self, VALUE type_id_arg);
 static const rb_data_type_t logical_type_data_type = {
     "DuckDB/LogicalType",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

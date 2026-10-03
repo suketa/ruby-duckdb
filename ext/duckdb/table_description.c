@@ -19,7 +19,7 @@ static VALUE table_description__column_has_default(VALUE self, VALUE idx);
 static const rb_data_type_t table_description_data_type = {
     "DuckDB/TableDescription",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {
