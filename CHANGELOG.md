@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- bump up DuckDB 1.5.6 on CI.
 
 # 1.5.5.1 - 2026-08-29
 - fix `DuckDB::Database#close` deadlocking when DuckDB tears down a pipeline that still owes a UDF callback, as a failed aggregate window query does on DuckDB 1.4.x. `duckdb_close` joins DuckDB's worker threads, and a worker running a callback waits for the executor thread, which waits for the GVL the closing thread was holding. The GVL is now released for the duration of `duckdb_close`.
