@@ -5,6 +5,7 @@ VALUE cDuckDBDatabase;
 static void close_database(rubyDuckDB *p);
 static void deallocate(void * ctx);
 static void mark(void *ctx);
+static void compact(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static duckdb_config create_config_with_ruby_api(void);
@@ -14,8 +15,8 @@ static VALUE database_close(VALUE self);
 
 static const rb_data_type_t database_data_type = {
     "DuckDB/Database",
-    {mark, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    {mark, deallocate, memsize, compact},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void close_database(rubyDuckDB *p) {
@@ -49,9 +50,17 @@ static void deallocate(void * ctx) {
 static void mark(void *ctx) {
     rubyDuckDB *p = (rubyDuckDB *)ctx;
 
-    rb_gc_mark(p->registered_functions);
-    rb_gc_mark(p->cached_path);
-    rb_gc_mark(p->cache_wrappers);
+    rb_gc_mark_movable(p->registered_functions);
+    rb_gc_mark_movable(p->cached_path);
+    rb_gc_mark_movable(p->cache_wrappers);
+}
+
+static void compact(void *ctx) {
+    rubyDuckDB *p = (rubyDuckDB *)ctx;
+
+    p->registered_functions = rb_gc_location(p->registered_functions);
+    p->cached_path = rb_gc_location(p->cached_path);
+    p->cache_wrappers = rb_gc_location(p->cache_wrappers);
 }
 
 static size_t memsize(const void *p) {
@@ -61,11 +70,9 @@ static size_t memsize(const void *p) {
 static VALUE allocate(VALUE klass) {
     rubyDuckDB *ctx = xcalloc((size_t)1, sizeof(rubyDuckDB));
     VALUE obj = TypedData_Wrap_Struct(klass, &database_data_type, ctx);
-    VALUE registered_functions = rb_ary_new();
-    ctx->registered_functions = registered_functions;
     ctx->cached_path = Qnil;
     ctx->cache_wrappers = Qnil;
-    RB_GC_GUARD(registered_functions);
+    RB_OBJ_WRITE(obj, &ctx->registered_functions, rb_ary_new());
     return obj;
 }
 
@@ -89,8 +96,8 @@ void rbduckdb_database_set_cache_entry(VALUE database, VALUE path, VALUE wrapper
     rubyDuckDB *ctx;
 
     TypedData_Get_Struct(database, rubyDuckDB, &database_data_type, ctx);
-    ctx->cached_path = rb_str_new_frozen(path);
-    ctx->cache_wrappers = wrappers;
+    RB_OBJ_WRITE(database, &ctx->cached_path, rb_str_new_frozen(path));
+    RB_OBJ_WRITE(database, &ctx->cache_wrappers, wrappers);
 }
 
 rubyDuckDB *rbduckdb_get_struct_database(VALUE obj) {
@@ -181,8 +188,8 @@ static VALUE database_close(VALUE self) {
      */
     if (!NIL_P(ctx->cache_wrappers)) {
         rb_funcall(ctx->cache_wrappers, rb_intern("delete"), 1, self);
-        ctx->cache_wrappers = Qnil;
-        ctx->cached_path = Qnil;
+        RB_OBJ_WRITE(self, &ctx->cache_wrappers, Qnil);
+        RB_OBJ_WRITE(self, &ctx->cached_path, Qnil);
     }
     rb_thread_call_without_gvl(close_database_without_gvl, ctx, NULL, NULL);
     return self;
