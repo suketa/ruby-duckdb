@@ -130,7 +130,9 @@ module DuckDBTest
       skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
       set = DuckDB::ScalarFunctionSet.new(:twice)
-      set.add(DuckDB::ScalarFunction.create(name: :twice, return_type: :integer, parameter_types: [:integer]) { |a| a * 2 })
+      set.add(
+        DuckDB::ScalarFunction.create(name: :twice, return_type: :integer, parameter_types: [:integer]) { |a| a * 2 }
+      )
       GC.verify_compaction_references(expand_heap: true, toward: :empty)
       @con.register_scalar_function_set(set)
 
