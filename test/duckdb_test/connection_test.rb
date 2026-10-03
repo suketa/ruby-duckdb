@@ -570,5 +570,18 @@ module DuckDBTest
         @con.table_names('SELECT * FROM users')
       end
     end
+
+    # The connection's database reference must follow the database when
+    # GC.compact moves it; registering a function goes through that reference.
+    def test_connection_survives_compaction
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      con = DuckDB::Database.open.connect
+      GC.verify_compaction_references(expand_heap: true, toward: :empty)
+      con.register_scalar_function(name: :dbl, return_type: :integer, parameter_type: :integer) { |v| v * 2 }
+
+      assert_equal [[42]], con.query('SELECT dbl(21)').to_a
+    end
   end
 end
