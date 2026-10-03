@@ -768,8 +768,8 @@
      */
     if (!NIL_P(ctx-&gt;cache_wrappers)) {
         rb_funcall(ctx-&gt;cache_wrappers, rb_intern(&quot;delete&quot;), 1, self);
-        ctx-&gt;cache_wrappers = Qnil;
-        ctx-&gt;cached_path = Qnil;
+        RB_OBJ_WRITE(self, &amp;ctx-&gt;cache_wrappers, Qnil);
+        RB_OBJ_WRITE(self, &amp;ctx-&gt;cached_path, Qnil);
     }
     rb_thread_call_without_gvl(close_database_without_gvl, ctx, NULL, NULL);
     return self;
