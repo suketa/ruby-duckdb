@@ -134,18 +134,24 @@ if defined?(DuckDB::InstanceCache)
         end
       end
 
-      # The cache's wrappers map must follow the map when GC.compact moves it;
-      # get_or_create looks the existing wrapper up through that reference.
-      def test_instance_cache_survives_compaction
+      # The database's cache entry and registered functions must follow their
+      # objects when GC.compact moves them.
+      def test_cached_database_survives_compaction
         skip 'GC.compact not available' unless GC.respond_to?(:compact)
         skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
 
         with_cached_path do |cache, path|
           db = cache.get_or_create(path)
+          con = db.connect
+          register_doubler(cache, path)
           GC.verify_compaction_references(expand_heap: true, toward: :empty)
 
           assert_same db, cache.get_or_create(path)
+          assert_equal [[42]], con.query('SELECT dbl(21)').to_a
+          con.disconnect
           db.close
+
+          refute_same db, cache.get_or_create(path).tap(&:close)
         end
       end
 

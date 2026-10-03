@@ -4,6 +4,7 @@ VALUE cDuckDBConnection;
 
 static void deallocate(void *ctx);
 static void mark(void *ctx);
+static void compact(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE connection_disconnect(VALUE self);
@@ -21,8 +22,8 @@ static VALUE connection__get_table_names(VALUE self, VALUE query, VALUE qualifie
 
 static const rb_data_type_t connection_data_type = {
     "DuckDB/Connection",
-    {mark, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    {mark, deallocate, memsize, compact},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {
@@ -34,7 +35,12 @@ static void deallocate(void *ctx) {
 
 static void mark(void *ctx) {
     rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;
-    rb_gc_mark(p->database);
+    rb_gc_mark_movable(p->database);
+}
+
+static void compact(void *ctx) {
+    rubyDuckDBConnection *p = (rubyDuckDBConnection *)ctx;
+    p->database = rb_gc_location(p->database);
 }
 
 static VALUE allocate(VALUE klass) {
@@ -77,7 +83,7 @@ VALUE rbduckdb_create_connection(VALUE oDuckDBDatabase) {
     if (duckdb_connect(ctxdb->db, &(ctxcon->con)) == DuckDBError) {
         rb_raise(eDuckDBError, "connection error");
     }
-    ctxcon->database = oDuckDBDatabase;
+    RB_OBJ_WRITE(obj, &ctxcon->database, oDuckDBDatabase);
 
     return obj;
 }
@@ -93,7 +99,7 @@ static VALUE connection_disconnect(VALUE self) {
      * reachable from other connections. They are released with the database.
      * This connection no longer needs the database, so stop retaining it.
      */
-    ctx->database = Qnil;
+    RB_OBJ_WRITE(self, &ctx->database, Qnil);
 
     return self;
 }
@@ -162,7 +168,7 @@ static VALUE connection__connect(VALUE self, VALUE oDuckDBDatabase) {
     if (duckdb_connect(ctxdb->db, &(ctx->con)) == DuckDBError) {
         rb_raise(eDuckDBError, "connection error");
     }
-    ctx->database = oDuckDBDatabase;
+    RB_OBJ_WRITE(self, &ctx->database, oDuckDBDatabase);
 
     return self;
 }
