@@ -12,7 +12,7 @@ static VALUE column_name(VALUE oDuckDBColumn);
 static const rb_data_type_t column_data_type = {
     "DuckDB/Column",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

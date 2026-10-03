@@ -9,7 +9,7 @@ static size_t memsize(const void *p);
 static const rb_data_type_t extract_statements_data_type = {
     "DuckDB/ExtractedStatements",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx);

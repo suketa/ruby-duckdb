@@ -26,7 +26,7 @@ static VALUE connection__arrow_release(VALUE self, VALUE address);
 static const rb_data_type_t arrow_converted_schema_data_type = {
     "DuckDB/ArrowConvertedSchema",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

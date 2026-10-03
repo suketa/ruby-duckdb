@@ -16,7 +16,7 @@ static VALUE table_function_bind_info_set_error(VALUE self, VALUE error);
 static const rb_data_type_t bind_info_data_type = {
     "DuckDB/TableFunctionBindInfo",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

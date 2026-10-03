@@ -53,7 +53,7 @@ static VALUE state_to_rbool(duckdb_state state);
 static const rb_data_type_t appender_data_type = {
     "DuckDB/Appender",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void * ctx) {

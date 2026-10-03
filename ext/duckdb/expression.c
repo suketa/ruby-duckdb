@@ -11,7 +11,7 @@ static VALUE expression__fold(VALUE self, VALUE client_context);
 static const rb_data_type_t expression_data_type = {
     "DuckDB/Expression",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

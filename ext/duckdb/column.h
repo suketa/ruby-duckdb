@@ -2,7 +2,6 @@
 #define RUBY_DUCKDB_COLUMN_H
 
 struct _rubyDuckDBColumn {
-    VALUE result;
     idx_t col;
 };
 
