@@ -332,7 +332,7 @@ static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard
     idx_t i;
 
     for (i = 0; i < n; i++) {
-        buf[i] = rbduckdb_get_struct_value(RARRAY_AREF(ary, i))->value;
+        buf[i] = rbduckdb_get_struct_value(rb_ary_entry(ary, (long)i))->value;
     }
     *out = buf;
     return n;
