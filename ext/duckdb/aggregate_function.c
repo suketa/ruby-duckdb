@@ -69,7 +69,7 @@ static VALUE aggregate_function__set_special_handling(VALUE self);
 static const rb_data_type_t aggregate_function_data_type = {
     "DuckDB/AggregateFunction",
     {mark, deallocate, memsize, compact},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void mark(void *ctx) {
@@ -895,7 +895,7 @@ static VALUE aggregate_function__set_init(VALUE self) {
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    p->init_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &p->init_proc, rb_block_proc());
 
     maybe_set_functions(p);
 
@@ -911,7 +911,7 @@ static VALUE aggregate_function__set_update(VALUE self) {
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    p->update_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &p->update_proc, rb_block_proc());
 
     maybe_set_functions(p);
 
@@ -927,7 +927,7 @@ static VALUE aggregate_function__set_combine(VALUE self) {
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    p->combine_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &p->combine_proc, rb_block_proc());
 
     maybe_set_functions(p);
 
@@ -943,7 +943,7 @@ static VALUE aggregate_function__set_finalize(VALUE self) {
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    p->finalize_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &p->finalize_proc, rb_block_proc());
 
     maybe_set_functions(p);
 

@@ -117,5 +117,20 @@ module DuckDBTest
       assert_equal 60, bigint_result
       assert_in_delta 4.0, double_result
     end
+
+    def test_functions_survive_compaction_before_register
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      set = DuckDB::AggregateFunctionSet.new('agg_sum_compact')
+      set.add(make_af(:bigint))
+      GC.verify_compaction_references(expand_heap: true, toward: :empty)
+      @con.register_aggregate_function_set(set)
+      result = @con.query(
+        'SELECT agg_sum_compact(v) FROM (VALUES (1::BIGINT), (2::BIGINT), (3::BIGINT)) t(v)'
+      ).first.first
+
+      assert_equal 6, result
+    end
   end
 end
