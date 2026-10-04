@@ -13,12 +13,12 @@ static VALUE scalar_function_set__add(VALUE self, VALUE scalar_function);
 static const rb_data_type_t scalar_function_set_data_type = {
     "DuckDB/ScalarFunctionSet",
     {mark, deallocate, memsize, compact},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void mark(void *ctx) {
     rubyDuckDBScalarFunctionSet *p = (rubyDuckDBScalarFunctionSet *)ctx;
-    rb_gc_mark(p->functions);
+    rb_gc_mark_movable(p->functions);
 }
 
 static void deallocate(void *ctx) {
@@ -35,8 +35,7 @@ static void compact(void *ctx) {
 static VALUE allocate(VALUE klass) {
     rubyDuckDBScalarFunctionSet *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBScalarFunctionSet));
     VALUE obj = TypedData_Wrap_Struct(klass, &scalar_function_set_data_type, ctx);
-    ctx->functions = rb_ary_new();
-    RB_GC_GUARD(ctx->functions);
+    RB_OBJ_WRITE(obj, &ctx->functions, rb_ary_new());
     return obj;
 }
 
