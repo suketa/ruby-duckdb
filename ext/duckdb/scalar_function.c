@@ -79,13 +79,13 @@ static void execute_callback_protected(void *user_data) {
 static const rb_data_type_t scalar_function_data_type = {
     "DuckDB/ScalarFunction",
     {mark, deallocate, memsize, compact},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void mark(void *ctx) {
     rubyDuckDBScalarFunction *p = (rubyDuckDBScalarFunction *)ctx;
-    rb_gc_mark(p->function_proc);
-    rb_gc_mark(p->bind_proc);
+    rb_gc_mark_movable(p->function_proc);
+    rb_gc_mark_movable(p->bind_proc);
 }
 
 static void deallocate(void * ctx) {
@@ -371,7 +371,7 @@ static VALUE scalar_function_set_function(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
 
-    p->function_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &p->function_proc, rb_block_proc());
 
     duckdb_scalar_function_set_extra_info(p->scalar_function, p, NULL);
     duckdb_scalar_function_set_function(p->scalar_function, scalar_function_callback);
@@ -398,7 +398,7 @@ static VALUE scalar_function__set_bind(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBScalarFunction, &scalar_function_data_type, p);
 
-    p->bind_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &p->bind_proc, rb_block_proc());
 
     duckdb_scalar_function_set_extra_info(p->scalar_function, p, NULL);
     duckdb_scalar_function_set_bind(p->scalar_function, scalar_function_bind_callback);
