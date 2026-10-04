@@ -124,5 +124,19 @@ module DuckDBTest
 
       assert_equal 100, @con.query('SELECT tenx(10)').first.first
     end
+
+    def test_functions_survive_compaction_before_register
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      set = DuckDB::ScalarFunctionSet.new(:twice)
+      set.add(
+        DuckDB::ScalarFunction.create(name: :twice, return_type: :integer, parameter_types: [:integer]) { |a| a * 2 }
+      )
+      GC.verify_compaction_references(expand_heap: true, toward: :empty)
+      @con.register_scalar_function_set(set)
+
+      assert_equal 42, @con.query('SELECT twice(21)').first.first
+    end
   end
 end
