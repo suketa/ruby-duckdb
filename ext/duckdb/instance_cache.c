@@ -4,6 +4,7 @@ VALUE cDuckDBInstanceCache;
 
 static void deallocate(void * ctx);
 static void mark(void *ctx);
+static void compact(void *ctx);
 static VALUE allocate(VALUE klass);
 static VALUE memoizable_path(VALUE vpath);
 static VALUE find_cached_wrapper(rubyDuckDBInstanceCache *ctx, VALUE vpath);
@@ -14,8 +15,8 @@ static VALUE instance_cache_destroy(VALUE self);
 
 static const rb_data_type_t instance_cache_data_type = {
     "DuckDB/InstanceCache",
-    {mark, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    {mark, deallocate, memsize, compact},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void * ctx) {
@@ -30,7 +31,13 @@ static void deallocate(void * ctx) {
 static void mark(void *ctx) {
     rubyDuckDBInstanceCache *p = (rubyDuckDBInstanceCache *)ctx;
 
-    rb_gc_mark(p->wrappers);
+    rb_gc_mark_movable(p->wrappers);
+}
+
+static void compact(void *ctx) {
+    rubyDuckDBInstanceCache *p = (rubyDuckDBInstanceCache *)ctx;
+
+    p->wrappers = rb_gc_location(p->wrappers);
 }
 
 static size_t memsize(const void *p) {
@@ -87,9 +94,10 @@ static VALUE instance_cache_initialize(VALUE self) {
         rb_raise(eDuckDBError, "Failed to create instance cache");
     }
 
-    ctx->wrappers = rb_funcall(rb_const_get(rb_const_get(rb_cObject, rb_intern("ObjectSpace")),
-                                            rb_intern("WeakMap")),
-                               rb_intern("new"), 0);
+    RB_OBJ_WRITE(self, &ctx->wrappers,
+                 rb_funcall(rb_const_get(rb_const_get(rb_cObject, rb_intern("ObjectSpace")),
+                                         rb_intern("WeakMap")),
+                            rb_intern("new"), 0));
 
     return self;
 }

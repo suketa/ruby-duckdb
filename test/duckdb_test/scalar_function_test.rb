@@ -551,6 +551,25 @@ module DuckDBTest
       assert_equal 30, result.first.first
     end
 
+    # function_proc and bind_proc must follow their Procs when GC.compact moves them.
+    def test_function_and_bind_procs_survive_compaction
+      skip 'GC.compact not available' unless GC.respond_to?(:compact)
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      bind_called = false
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'triple'
+      sf.add_parameter(DuckDB::LogicalType::INTEGER)
+      sf.return_type = DuckDB::LogicalType::INTEGER
+      sf.set_bind { |_bind_info| bind_called = true }
+      sf.set_function { |v| v * 3 }
+      GC.verify_compaction_references(expand_heap: true, toward: :empty)
+      @con.register_scalar_function(sf)
+
+      assert_equal [[21]], @con.query('SELECT triple(7)').to_a
+      assert bind_called
+    end
+
     def test_gc_compaction_with_table_scan
       skip 'GC.compact not available' unless GC.respond_to?(:compact)
 
