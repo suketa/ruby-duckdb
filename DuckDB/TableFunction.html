@@ -1119,7 +1119,7 @@
         rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
     }
 
-    ctx-&gt;bind_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &amp;ctx-&gt;bind_proc, rb_block_proc());
 
     duckdb_table_function_set_bind(ctx-&gt;table_function, table_function_bind_callback);
 
@@ -1183,7 +1183,7 @@
 
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
 
-    ctx-&gt;execute_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &amp;ctx-&gt;execute_proc, rb_block_proc());
     duckdb_table_function_set_function(ctx-&gt;table_function, table_function_execute_callback);
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
     /* Per-worker proxy threads for the execute path (DuckDB &gt;= 1.5.0). */
@@ -1255,7 +1255,7 @@
         rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
     }
 
-    ctx-&gt;init_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &amp;ctx-&gt;init_proc, rb_block_proc());
     duckdb_table_function_set_init(ctx-&gt;table_function, table_function_init_callback);
 
     rbduckdb_function_executor_ensure_started();
