@@ -50,6 +50,12 @@ static VALUE appender__clear_columns(VALUE self);
 static VALUE appender__close(VALUE self);
 static VALUE state_to_rbool(duckdb_state state);
 
+/*
+ * Keeps RUBY_TYPED_FREE_IMMEDIATELY although duckdb_appender_destroy flushes
+ * buffered rows (blocking I/O): freeing during sweep runs before the deferred
+ * Connection/Database free, so an unclosed appender still flushes into the
+ * table. Deferring it too would let the connection close first and lose rows.
+ */
 static const rb_data_type_t appender_data_type = {
     "DuckDB/Appender",
     {NULL, deallocate, memsize,},

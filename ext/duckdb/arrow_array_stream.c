@@ -13,7 +13,7 @@ typedef struct {
  * the Ruby DuckDB::ArrowArrayStream object is gone, so this context is
  * freed only by the stream release callback, and it holds a reference on
  * the result struct (rbduckdb_result_ref) until then. The release callback
- * must not call any Ruby API: it can run during GC sweep (via deallocate
+ * must not call any Ruby API: it can run during GC finalization (via deallocate
  * of an unconsumed stream) or from a non-Ruby thread.
  */
 typedef struct {
@@ -34,10 +34,14 @@ static int stream_get_next(struct ArrowArrayStream *stream, struct ArrowArray *o
 static const char *stream_get_last_error(struct ArrowArrayStream *stream);
 static void stream_release(struct ArrowArrayStream *stream);
 
+/*
+ * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
+ * during GC sweep: releasing the stream may destroy a streaming result (see result.c).
+ */
 static const rb_data_type_t arrow_array_stream_data_type = {
     "DuckDB/ArrowArrayStream",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
+    0, 0, RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

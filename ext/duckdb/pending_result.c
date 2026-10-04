@@ -12,10 +12,15 @@ static VALUE pending_result_execution_finished_p(VALUE self);
 static VALUE pending_result__state(VALUE self);
 static VALUE pending_result__execute_check_state(VALUE self);
 
+/*
+ * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
+ * during GC sweep: the pending result holds a ClientContext reference; dropping the last
+ * one rolls back an open transaction and may shut the database down.
+ */
 static const rb_data_type_t pending_result_data_type = {
     "DuckDB/PendingResult",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
+    0, 0, RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {
