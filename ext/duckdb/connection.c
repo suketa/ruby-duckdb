@@ -20,10 +20,15 @@ static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggre
 static VALUE connection__register_table_function(VALUE self, VALUE table_function);
 static VALUE connection__get_table_names(VALUE self, VALUE query, VALUE qualified);
 
+/*
+ * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
+ * during GC sweep: duckdb_disconnect rolls back an open transaction and may drop the
+ * last reference to the database (checkpoint on shutdown).
+ */
 static const rb_data_type_t connection_data_type = {
     "DuckDB/Connection",
     {mark, deallocate, memsize, compact},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
+    0, 0, RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

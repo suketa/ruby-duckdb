@@ -47,10 +47,15 @@ static VALUE prepared_statement__bind_uuid(VALUE self, VALUE vidx, VALUE val);
 static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale);
 static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val);
 
+/*
+ * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
+ * during GC sweep: the statement holds a ClientContext reference; dropping the last one
+ * rolls back an open transaction and may shut the database down.
+ */
 static const rb_data_type_t prepared_statement_data_type = {
     "DuckDB/PreparedStatement",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
+    0, 0, RUBY_TYPED_WB_PROTECTED
 };
 
 static void destroy_prepared_statement(rubyDuckDBPreparedStatement *p) {
