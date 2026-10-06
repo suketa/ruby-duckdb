@@ -13,10 +13,14 @@ static VALUE database__initialize(VALUE self, VALUE file, VALUE config);
 static VALUE database__connect(VALUE self);
 static VALUE database_close(VALUE self);
 
+/*
+ * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
+ * during GC sweep: duckdb_close may checkpoint to disk and joins worker threads.
+ */
 static const rb_data_type_t database_data_type = {
     "DuckDB/Database",
     {mark, deallocate, memsize, compact},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
+    0, 0, RUBY_TYPED_WB_PROTECTED
 };
 
 static void close_database(rubyDuckDB *p) {
@@ -32,7 +36,7 @@ static void close_database(rubyDuckDB *p) {
  * for us, and we wait for the worker.
  *
  * The GC free function calls close_database directly and cannot do this;
- * releasing the GVL mid-sweep is not allowed. A database reaching close via
+ * a free function must not release the GVL. A database reaching close via
  * the GC with callbacks still pending would deadlock the same way.
  */
 static void *close_database_without_gvl(void *ctx) {

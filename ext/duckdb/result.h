@@ -6,7 +6,7 @@
  * object holds one reference, and each exported Arrow stream holds another,
  * so the duckdb_result stays valid for consumers that outlive the Ruby
  * objects. rbduckdb_result_unref() must not call any Ruby API: it runs from
- * GC sweep (deallocate) and from Arrow stream release callbacks.
+ * GC finalization (deallocate) and from Arrow stream release callbacks.
  */
 struct _rubyDuckDBResult {
     duckdb_result result;

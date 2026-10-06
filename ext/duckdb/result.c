@@ -48,10 +48,15 @@ static VALUE vector_timestamp_tz(void* vector_data, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
 static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
 
+/*
+ * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
+ * during GC sweep: a streaming result holds a ClientContext reference; dropping the last
+ * one rolls back an open transaction and may shut the database down.
+ */
 static const rb_data_type_t result_data_type = {
     "DuckDB/Result",
     {NULL, deallocate, memsize,},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
+    0, 0, RUBY_TYPED_WB_PROTECTED
 };
 
 static void deallocate(void *ctx) {

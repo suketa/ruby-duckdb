@@ -30,14 +30,14 @@ static void table_function_local_init_callback(duckdb_init_info info);
 static const rb_data_type_t table_function_data_type = {
     "DuckDB/TableFunction",
     {mark, deallocate, memsize, compact},
-    0, 0, RUBY_TYPED_FREE_IMMEDIATELY
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
 
 static void mark(void *ctx) {
     rubyDuckDBTableFunction *p = (rubyDuckDBTableFunction *)ctx;
-    rb_gc_mark(p->bind_proc);
-    rb_gc_mark(p->init_proc);
-    rb_gc_mark(p->execute_proc);
+    rb_gc_mark_movable(p->bind_proc);
+    rb_gc_mark_movable(p->init_proc);
+    rb_gc_mark_movable(p->execute_proc);
 }
 
 static void deallocate(void *ctx) {
@@ -210,7 +210,7 @@ static VALUE table_function_bind(VALUE self) {
         rb_raise(eDuckDBError, "Table function is destroyed");
     }
 
-    ctx->bind_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &ctx->bind_proc, rb_block_proc());
 
     duckdb_table_function_set_bind(ctx->table_function, table_function_bind_callback);
 
@@ -286,7 +286,7 @@ static VALUE table_function_init(VALUE self) {
         rb_raise(eDuckDBError, "Table function is destroyed");
     }
 
-    ctx->init_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &ctx->init_proc, rb_block_proc());
     duckdb_table_function_set_init(ctx->table_function, table_function_init_callback);
 
     rbduckdb_function_executor_ensure_started();
@@ -359,7 +359,7 @@ static VALUE table_function_execute(VALUE self) {
 
     TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
 
-    ctx->execute_proc = rb_block_proc();
+    RB_OBJ_WRITE(self, &ctx->execute_proc, rb_block_proc());
     duckdb_table_function_set_function(ctx->table_function, table_function_execute_callback);
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
     /* Per-worker proxy threads for the execute path (DuckDB >= 1.5.0). */
