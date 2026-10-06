@@ -9,7 +9,7 @@ VALUE cDuckDBAggregateFunction;
  * VALUE returned from the user's init_proc and later passed to
  * finalize_proc.
  *
- * Protected from GC via rb_gc_register_mark_object on init.
+ * Protected from GC via rb_global_variable on init.
  */
 static VALUE g_aggregate_state_registry;
 
@@ -37,7 +37,7 @@ static unsigned long long g_next_state_id = 0;
  * reach state_id is the crash; membership here is the only test that does not.
  * See issue #1446.
  *
- * Protected from GC via rb_gc_register_mark_object on init.
+ * Protected from GC via rb_global_variable on init.
  */
 static VALUE g_aggregate_state_addresses;
 
@@ -983,8 +983,8 @@ void rbduckdb_init_aggregate_function(void) {
     rb_define_singleton_method(cDuckDBAggregateFunction, "_state_registry_size",
                                aggregate_function_s__state_registry_size, 0);
 
+    rb_global_variable(&g_aggregate_state_registry);
     g_aggregate_state_registry = rb_hash_new();
-    rb_gc_register_mark_object(g_aggregate_state_registry);
+    rb_global_variable(&g_aggregate_state_addresses);
     g_aggregate_state_addresses = rb_hash_new();
-    rb_gc_register_mark_object(g_aggregate_state_addresses);
 }
