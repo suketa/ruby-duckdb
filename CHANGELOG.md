@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+
+# 1.5.6.0 - 2026-10-11
 - bump up DuckDB 1.5.6 on CI.
 
 # 1.5.5.1 - 2026-08-29
