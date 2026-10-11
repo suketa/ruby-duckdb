@@ -36,9 +36,12 @@ module DuckDBTest
     # user's proc; Timeout::Error lands in the same place, but not on a schedule.
     def with_conversion_raising(message)
       original = DuckDB::Converter.method(:_to_date)
+      # remove_method first so Ruby doesn't warn "method redefined"
+      DuckDB::Converter.singleton_class.remove_method(:_to_date)
       DuckDB::Converter.define_singleton_method(:_to_date) { |*| raise message }
       yield
     ensure
+      DuckDB::Converter.singleton_class.remove_method(:_to_date)
       DuckDB::Converter.define_singleton_method(:_to_date, original)
     end
 
