@@ -48,6 +48,10 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { @con.query(invalid_sql) }
     end
 
+    def test_query_with_no_statements
+      assert_nil(@con.query('-- comment'))
+    end
+
     def test_async_query
       pending_result = @con.async_query('CREATE TABLE table1 (id INTEGER)')
 
@@ -242,6 +246,10 @@ module DuckDBTest
       results = stmts.map { |stmt| stmt.execute.to_a }
 
       assert_equal([[[1]], [[2]], [[3]]], results)
+    end
+
+    def test_extract_with_no_statements
+      assert_empty(@con.extract('-- comment'))
     end
 
     def test_extract_raises_error_with_invalid_sql
