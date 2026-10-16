@@ -75,6 +75,15 @@ rubyDuckDBConnection *rbduckdb_get_struct_connection(VALUE obj) {
     return ctx;
 }
 
+rubyDuckDBConnection *rbduckdb_get_open_struct_connection(VALUE obj) {
+    rubyDuckDBConnection *ctx = rbduckdb_get_struct_connection(obj);
+
+    if (!(ctx->con)) {
+        rb_raise(eDuckDBError, "Database connection closed");
+    }
+    return ctx;
+}
+
 VALUE rbduckdb_create_connection(VALUE oDuckDBDatabase) {
     rubyDuckDB *ctxdb;
     rubyDuckDBConnection *ctxcon;
@@ -203,12 +212,8 @@ static VALUE connection__query_sql(VALUE self, VALUE str) {
 
     VALUE result = rbduckdb_create_result();
 
-    TypedData_Get_Struct(self, rubyDuckDBConnection, &connection_data_type, ctx);
+    ctx = rbduckdb_get_open_struct_connection(self);
     ctxr = rbduckdb_get_struct_result(result);
-
-    if (!(ctx->con)) {
-        rb_raise(eDuckDBError, "Database connection closed");
-    }
 
     /* Extract C string before releasing GVL (StringValueCStr is a Ruby operation) */
     const char *sql = StringValueCStr(str);
@@ -235,11 +240,7 @@ static VALUE connection__get_table_names(VALUE self, VALUE query, VALUE qualifie
     rubyDuckDBConnection *ctx;
     duckdb_value table_names;
 
-    ctx = rbduckdb_get_struct_connection(self);
-
-    if (!(ctx->con)) {
-        rb_raise(eDuckDBError, "Database connection closed");
-    }
+    ctx = rbduckdb_get_open_struct_connection(self);
 
     table_names = duckdb_get_table_names(ctx->con, StringValueCStr(query), RTEST(qualified));
 

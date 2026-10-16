@@ -50,14 +50,19 @@ static VALUE extracted_statements__initialize(VALUE self, VALUE con, VALUE query
     }
 
     pquery = StringValuePtr(query);
-    pcon = rbduckdb_get_struct_connection(con);
+    pcon = rbduckdb_get_open_struct_connection(con);
     TypedData_Get_Struct(self, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
 
     ctx->num_statements = duckdb_extract_statements(pcon->con, pquery, &(ctx->extracted_statements));
 
-    if (ctx->num_statements == 0) {
-        error = duckdb_extract_statements_error(ctx->extracted_statements);
-        rb_raise(eDuckDBError, "%s", error ? error : "Failed to extract statements(Database connection closed?).");
+    /*
+     * duckdb_extract_statements returns 0 both on a parse error and when the
+     * query contains no statements (e.g. only a comment). Only the former
+     * sets an error message.
+     */
+    error = duckdb_extract_statements_error(ctx->extracted_statements);
+    if (error) {
+        rb_raise(eDuckDBError, "%s", error);
     }
 
     return self;

@@ -34,6 +34,22 @@ module DuckDBTest
       assert_match(/\AParser Error: syntax error at or near "INVALID"/, ex.message)
     end
 
+    def test_s_new_with_no_statements
+      ['-- comment', '/* comment */', '', '   ', ';'].each do |sql|
+        stmts = DuckDB::ExtractedStatements.new(@con, sql)
+
+        assert_equal 0, stmts.size, "#{sql.inspect} should have no statements"
+      end
+    end
+
+    def test_s_new_with_closed_connection
+      @con.disconnect
+      ex = assert_raises DuckDB::Error do
+        DuckDB::ExtractedStatements.new(@con, 'SELECT 1')
+      end
+      assert_match(/Database connection closed/, ex.message)
+    end
+
     def test_size
       stmts = DuckDB::ExtractedStatements.new(@con, 'SELECT 1; SELECT 2; SELECT 3')
 
