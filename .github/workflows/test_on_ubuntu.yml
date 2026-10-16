@@ -25,12 +25,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['3.3.12', '3.4.10', '4.0.7', 'head']
+        ruby: ['3.3.12', '3.4.10', '4.0.7', '4.1.0-preview1', 'head']
         duckdb: ['1.4.5', '1.5.6']
     env:
-      # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
+      # Released Bundler is broken on ruby-head and 4.1.0-preview1 due to ruby/ruby#16895.
       # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.
-      BUNDLER_VERSION: ${{ matrix.ruby == 'head' && '0' || '' }}
+      BUNDLER_VERSION: ${{ (matrix.ruby == 'head' || matrix.ruby == '4.1.0-preview1') && '0' || '' }}
 
     services:
       mysql:
