@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased # 1."
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. ExtractedStatements."
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. ExtractedStatements.">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 1.">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. ExtractedStatements.">
 
 
 
@@ -472,6 +472,9 @@
 <p>All notable changes to this project will be documented in this file.</p>
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
+<ul><li>
+<p>fix <a href="DuckDB/ExtractedStatements.html#method-c-new"><code>DuckDB::ExtractedStatements.new</code></a>, <code>Connection#query</code> and <code>Connection#extract</code> raising <code>Failed to extract statements(Database connection closed?).</code> for SQL that contains no statements, such as only a comment, whitespace or <code>;</code> (issue #1490). <code>ExtractedStatements#size</code> is now <code>0</code>, <code>Connection#query</code> returns <code>nil</code> and <code>Connection#extract</code> returns <code>[]</code>. Calling <code>ExtractedStatements.new</code> on a closed connection now raises <code>Database connection closed</code>.</p>
+</li></ul>
 
 <h1 id="label-1.5.6.0+-+2026-10-11"><a href="#label-1.5.6.0+-+2026-10-11">1.5.6.0 - 2026-10-11</a></h1>
 <ul><li>
