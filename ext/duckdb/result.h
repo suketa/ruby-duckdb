@@ -12,6 +12,8 @@ struct _rubyDuckDBResult {
     duckdb_result result;
     bool arrow_exported;
     rb_atomic_t refcount;
+    duckdb_logical_type *column_types;
+    idx_t column_types_count;
 };
 
 typedef struct _rubyDuckDBResult rubyDuckDBResult;
