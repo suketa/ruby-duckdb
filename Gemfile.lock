@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    duckdb (1.5.6.0)
+    duckdb (1.5.6.1)
       bigdecimal (>= 3.1.4)
 
 GEM
@@ -12,7 +12,7 @@ GEM
     csv (3.3.6)
     drb (2.2.3)
     fiddle (1.1.8)
-    json (3.0.2)
+    json (3.1.0)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
     minitest (6.0.6)
