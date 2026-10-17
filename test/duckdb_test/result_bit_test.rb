@@ -55,5 +55,17 @@ module DuckDBTest
 
       assert_equal([[nil]], ary)
     end
+
+    def test_result_bit_with_invalid_padding
+      @conn.execute('CREATE TABLE test (value BIT);')
+      stmt = @conn.prepare('INSERT INTO test VALUES (?);')
+      stmt.bind_value(1, DuckDB::Value.send(:_create_bit, "\x80\x01".b))
+      stmt.execute
+      result = @conn.execute('SELECT value FROM test;')
+
+      error = assert_raises(DuckDB::Error) { result.each.to_a }
+
+      assert_equal('invalid BIT value', error.message)
+    end
   end
 end

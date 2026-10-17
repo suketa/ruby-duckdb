@@ -26,6 +26,15 @@ module DuckDBTest
       assert_equal(bits, DuckDB::Value.create_bit(bits).to_ruby)
     end
 
+    def test_to_ruby_with_malformed_bit_raises_error
+      ["\x80\x01", "\x08\x01", "\x00", ''].each do |raw|
+        value = DuckDB::Value.send(:_create_bit, raw.b)
+        error = assert_raises(DuckDB::Error) { value.to_ruby }
+
+        assert_equal('invalid BIT value', error.message)
+      end
+    end
+
     def test_create_bit_with_invalid_characters_raises_argument_error
       assert_raises(ArgumentError) { DuckDB::Value.create_bit('01012') }
     end

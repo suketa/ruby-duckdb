@@ -642,16 +642,17 @@ static VALUE vector_bit(void* vector_data, idx_t row_idx) {
     VALUE str = Qnil;
 
     if(duckdb_string_is_inlined(s)) {
-        length = s.value.inlined.length - 1;
-        p = &s.value.inlined.inlined[1];
-        offset = s.value.inlined.inlined[0];
-        str = bytes_to_string(p, length, offset);
+        length = s.value.inlined.length;
+        p = s.value.inlined.inlined;
     } else {
-        length = s.value.pointer.length - 1;
-        p = &s.value.pointer.ptr[1];
-        offset = s.value.pointer.ptr[0];
-        str = bytes_to_string(p, length, offset);
+        length = s.value.pointer.length;
+        p = s.value.pointer.ptr;
     }
+    if (length < 2 || (unsigned char)p[0] > 7) {
+        rb_raise(eDuckDBError, "invalid BIT value");
+    }
+    offset = (unsigned char)p[0];
+    str = bytes_to_string(p + 1, length - 1, offset);
     return str;
 }
 
