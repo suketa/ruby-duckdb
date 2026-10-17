@@ -57,15 +57,37 @@ module DuckDBTest
     end
 
     def test_result_bit_with_invalid_padding
-      @conn.execute('CREATE TABLE test (value BIT);')
-      stmt = @conn.prepare('INSERT INTO test VALUES (?);')
-      stmt.bind_value(1, DuckDB::Value.send(:_create_bit, "\x80\x01".b))
-      stmt.execute
+      create_table_with_invalid_bit
       result = @conn.execute('SELECT value FROM test;')
 
       error = assert_raises(DuckDB::Error) { result.each.to_a }
 
       assert_equal('invalid BIT value', error.message)
+    end
+
+    def test_result_bit_with_invalid_padding_in_nested_types
+      create_table_with_invalid_bit
+
+      [
+        'SELECT [value, value] FROM test;',
+        'SELECT [value, value]::BIT[2] FROM test;',
+        'SELECT MAP {1: value} FROM test;',
+        "SELECT {'a': value} FROM test;",
+        'SELECT union_value(b := value) FROM test;'
+      ].each do |sql|
+        error = assert_raises(DuckDB::Error) { @conn.execute(sql).each.to_a }
+
+        assert_equal('invalid BIT value', error.message)
+      end
+    end
+
+    private
+
+    def create_table_with_invalid_bit
+      @conn.execute('CREATE TABLE test (value BIT);')
+      stmt = @conn.prepare('INSERT INTO test VALUES (?);')
+      stmt.bind_value(1, DuckDB::Value.send(:_create_bit, "\x80\x01".b))
+      stmt.execute
     end
   end
 end

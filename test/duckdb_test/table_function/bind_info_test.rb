@@ -101,6 +101,31 @@ module DuckDBTest
       assert_nil observed_parameter
     end
 
+    def test_bind_get_parameter_with_malformed_bit_raises_error
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_get_param_bad_bit'
+      table_function.add_parameter(DuckDB::LogicalType::BIT)
+
+      table_function.bind do |bind_info|
+        bind_info.get_parameter(0)
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init { |_init_info| nil }
+
+      table_function.execute do |_func_info, output|
+        output.size = 0
+      end
+
+      @conn.register_table_function(table_function)
+      stmt = @conn.prepare('SELECT * FROM test_get_param_bad_bit(?)')
+      stmt.bind_value(1, DuckDB::Value.send(:_create_bit, "\x80\x01".b))
+
+      error = assert_raises(DuckDB::Error) { stmt.execute }
+
+      assert_match(/invalid BIT value/, error.message)
+    end
+
     def test_bind_get_named_parameter
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_named_param'

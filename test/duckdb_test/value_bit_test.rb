@@ -35,6 +35,22 @@ module DuckDBTest
       end
     end
 
+    def test_to_ruby_with_malformed_bit_in_nested_value_raises_error
+      bit_type = DuckDB::LogicalType::BIT
+      bad = DuckDB::Value.send(:_create_bit, "\x80\x01".b)
+
+      [
+        DuckDB::Value.create_list(bit_type, [bad]),
+        DuckDB::Value.create_array(bit_type, [bad]),
+        DuckDB::Value.create_struct({ a: bit_type }, [bad]),
+        DuckDB::Value.create_map({ integer: bit_type }, { DuckDB::Value.create_int32(1) => bad })
+      ].each do |value|
+        error = assert_raises(DuckDB::Error) { value.to_ruby }
+
+        assert_equal('invalid BIT value', error.message)
+      end
+    end
+
     def test_create_bit_with_invalid_characters_raises_argument_error
       assert_raises(ArgumentError) { DuckDB::Value.create_bit('01012') }
     end

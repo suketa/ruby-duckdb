@@ -10,6 +10,7 @@ typedef struct _rubyDuckDBValue rubyDuckDBValue;
 void rbduckdb_init_value(void);
 VALUE rbduckdb_value_new(duckdb_value value);
 VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val);
+VALUE rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_value val);
 rubyDuckDBValue *rbduckdb_get_struct_value(VALUE obj);
 
 #endif

@@ -1,5 +1,10 @@
 #include "ruby-duckdb.h"
 
+struct vector_ref_arg {
+    duckdb_vector vec;
+    duckdb_logical_type logical_type;
+};
+
 VALUE cDuckDBValue;
 
 static void deallocate(void *);
@@ -37,6 +42,10 @@ static VALUE value_s__create_bit(VALUE klass, VALUE data);
 static VALUE value_s__create_bignum(VALUE klass, VALUE data, VALUE is_negative);
 static VALUE value_s_create_null(VALUE klass);
 static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value val);
+static VALUE convert_referenced_value(VALUE varg);
+static VALUE destroy_referencing_vector(VALUE varg);
+static VALUE convert_owned_value(VALUE varg);
+static VALUE destroy_owned_value(VALUE varg);
 static idx_t marshal_values(VALUE ary, duckdb_value **out, volatile VALUE *guard);
 static VALUE value_s__create_list(VALUE klass, VALUE ltype, VALUE values);
 static VALUE value_s__create_array(VALUE klass, VALUE ltype, VALUE values);
@@ -557,19 +566,43 @@ rubyDuckDBValue *rbduckdb_get_struct_value(VALUE obj) {
  * the C API has no direct duckdb_get_* accessors for.
  */
 static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value val) {
-    duckdb_vector vec = duckdb_create_vector(logical_type, 1);
-    VALUE result;
+    struct vector_ref_arg arg;
 
-    duckdb_vector_reference_value(vec, val);
-    result = rbduckdb_vector_value_at(vec, logical_type, 0);
-    duckdb_destroy_vector(&vec);
-    return result;
+    arg.vec = duckdb_create_vector(logical_type, 1);
+    arg.logical_type = logical_type;
+    duckdb_vector_reference_value(arg.vec, val);
+    return rb_ensure(convert_referenced_value, (VALUE)&arg, destroy_referencing_vector, (VALUE)&arg);
+}
+
+static VALUE convert_referenced_value(VALUE varg) {
+    struct vector_ref_arg *arg = (struct vector_ref_arg *)varg;
+
+    return rbduckdb_vector_value_at(arg->vec, arg->logical_type, 0);
+}
+
+static VALUE destroy_referencing_vector(VALUE varg) {
+    struct vector_ref_arg *arg = (struct vector_ref_arg *)varg;
+
+    duckdb_destroy_vector(&(arg->vec));
+    return Qnil;
+}
+
+static VALUE convert_owned_value(VALUE varg) {
+    return rbduckdb_duckdb_value_to_ruby(*(duckdb_value *)varg);
+}
+
+static VALUE destroy_owned_value(VALUE varg) {
+    duckdb_destroy_value((duckdb_value *)varg);
+    return Qnil;
+}
+
+VALUE rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_value val) {
+    return rb_ensure(convert_owned_value, (VALUE)&val, destroy_owned_value, (VALUE)&val);
 }
 
 VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
     duckdb_logical_type logical_type;
     duckdb_type type_id;
-    duckdb_value child_value;
     VALUE result;
     VALUE elem;
     VALUE key;
@@ -676,9 +709,7 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             size = duckdb_get_list_size(val);
             result = rb_ary_new_capa(size);
             for (i = 0; i < size; i++) {
-                child_value = duckdb_get_list_child(val, i);
-                elem = rbduckdb_duckdb_value_to_ruby(child_value);
-                duckdb_destroy_value(&child_value);
+                elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_list_child(val, i));
                 rb_ary_push(result, elem);
             }
             break;
@@ -687,23 +718,18 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             result = rb_hash_new();
             for (i = 0; i < size; i++) {
                 str = duckdb_struct_type_child_name(logical_type, i);
-                child_value = duckdb_get_struct_child(val, i);
-                elem = rbduckdb_duckdb_value_to_ruby(child_value);
-                duckdb_destroy_value(&child_value);
-                rb_hash_aset(result, ID2SYM(rb_intern(str)), elem);
+                key = ID2SYM(rb_intern(str));
                 duckdb_free(str);
+                elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_struct_child(val, i));
+                rb_hash_aset(result, key, elem);
             }
             break;
         case DUCKDB_TYPE_MAP:
             size = duckdb_get_map_size(val);
             result = rb_hash_new();
             for (i = 0; i < size; i++) {
-                child_value = duckdb_get_map_key(val, i);
-                key = rbduckdb_duckdb_value_to_ruby(child_value);
-                duckdb_destroy_value(&child_value);
-                child_value = duckdb_get_map_value(val, i);
-                elem = rbduckdb_duckdb_value_to_ruby(child_value);
-                duckdb_destroy_value(&child_value);
+                key = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_map_key(val, i));
+                elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_map_value(val, i));
                 rb_hash_aset(result, key, elem);
             }
             break;

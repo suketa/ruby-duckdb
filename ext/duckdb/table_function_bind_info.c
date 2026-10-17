@@ -76,18 +76,13 @@ static VALUE table_function_bind_info_get_parameter(VALUE self, VALUE index) {
     rubyDuckDBBindInfo *ctx;
     idx_t idx;
     duckdb_value param_value;
-    VALUE result;
 
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
 
     idx = NUM2ULL(index);
     param_value = duckdb_bind_get_parameter(ctx->bind_info, idx);
 
-    result = rbduckdb_duckdb_value_to_ruby(param_value);
-
-    duckdb_destroy_value(&param_value);
-
-    return result;
+    return rbduckdb_duckdb_value_to_ruby_and_destroy(param_value);
 }
 
 /*
@@ -102,7 +97,6 @@ static VALUE table_function_bind_info_get_named_parameter(VALUE self, VALUE name
     rubyDuckDBBindInfo *ctx;
     const char *param_name;
     duckdb_value param_value;
-    VALUE result;
 
     TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
 
@@ -114,11 +108,7 @@ static VALUE table_function_bind_info_get_named_parameter(VALUE self, VALUE name
         return Qnil;
     }
 
-    result = rbduckdb_duckdb_value_to_ruby(param_value);
-
-    duckdb_destroy_value(&param_value);
-
-    return result;
+    return rbduckdb_duckdb_value_to_ruby_and_destroy(param_value);
 }
 
 /*
