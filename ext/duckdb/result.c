@@ -3,6 +3,30 @@
 struct chunk_arg {
     duckdb_data_chunk chunk;
     idx_t col_count;
+    duckdb_logical_type *types;
+};
+
+struct owned_type_arg {
+    duckdb_vector vector;
+    duckdb_logical_type type;
+    idx_t bgn;
+    idx_t end;
+};
+
+struct struct_fields_arg {
+    duckdb_logical_type ty;
+    duckdb_vector vector;
+    idx_t row_idx;
+    duckdb_logical_type child_type;
+};
+
+struct map_entries_arg {
+    duckdb_vector key_vector;
+    duckdb_vector value_vector;
+    duckdb_logical_type key_type;
+    duckdb_logical_type value_type;
+    idx_t bgn;
+    idx_t end;
 };
 
 static VALUE cDuckDBResult;
@@ -14,6 +38,7 @@ static VALUE result_column_count(VALUE oDuckDBResult);
 static VALUE result_rows_changed(VALUE oDuckDBResult);
 static VALUE result_columns(VALUE oDuckDBResult);
 static VALUE destroy_data_chunk(VALUE arg);
+static duckdb_logical_type *result_column_types(rubyDuckDBResult *ctx);
 
 static VALUE result__chunk_stream(VALUE oDuckDBResult);
 static VALUE result_arrow_c_stream(VALUE oDuckDBResult);
@@ -46,7 +71,13 @@ static VALUE vector_bit(void* vector_data, idx_t row_idx);
 static VALUE vector_time_tz(void* vector_data, idx_t row_idx);
 static VALUE vector_timestamp_tz(void* vector_data, idx_t row_idx);
 static VALUE vector_uuid(void* vector_data, idx_t row_idx);
-static VALUE vector_value(duckdb_vector vector, idx_t row_idx);
+static VALUE convert_values_in_range(VALUE varg);
+static VALUE destroy_owned_type(VALUE varg);
+static VALUE vector_values_with_owned_type(duckdb_vector vector, duckdb_logical_type type, idx_t bgn, idx_t end);
+static VALUE convert_map_entries(VALUE varg);
+static VALUE destroy_map_types(VALUE varg);
+static VALUE convert_struct_fields(VALUE varg);
+static VALUE destroy_struct_child_type(VALUE varg);
 
 /*
  * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
@@ -80,7 +111,13 @@ void rbduckdb_result_ref(rubyDuckDBResult *ctx) {
 }
 
 void rbduckdb_result_unref(rubyDuckDBResult *ctx) {
+    idx_t col_idx;
+
     if (RUBY_ATOMIC_FETCH_SUB(ctx->refcount, 1) == 1) {
+        for (col_idx = 0; col_idx < ctx->column_types_count; col_idx++) {
+            duckdb_destroy_logical_type(&(ctx->column_types[col_idx]));
+        }
+        free(ctx->column_types);
         duckdb_destroy_result(&(ctx->result));
         free(ctx);
     }
@@ -176,6 +213,24 @@ static VALUE destroy_data_chunk(VALUE arg) {
     return Qnil;
 }
 
+static duckdb_logical_type *result_column_types(rubyDuckDBResult *ctx) {
+    idx_t col_idx;
+    idx_t column_count;
+
+    if (ctx->column_types == NULL) {
+        column_count = duckdb_column_count(&(ctx->result));
+        ctx->column_types = calloc(column_count + 1, sizeof(duckdb_logical_type));
+        if (ctx->column_types == NULL) {
+            rb_raise(rb_eNoMemError, "failed to allocate DuckDB::Result column types");
+        }
+        for (col_idx = 0; col_idx < column_count; col_idx++) {
+            ctx->column_types[col_idx] = duckdb_column_logical_type(&(ctx->result), col_idx);
+        }
+        ctx->column_types_count = column_count;
+    }
+    return ctx->column_types;
+}
+
 /* :nodoc: */
 static VALUE result__chunk_stream(VALUE oDuckDBResult) {
     rubyDuckDBResult *ctx;
@@ -186,6 +241,7 @@ static VALUE result__chunk_stream(VALUE oDuckDBResult) {
     RETURN_ENUMERATOR(oDuckDBResult, 0, 0);
 
     arg.col_count = duckdb_column_count(&(ctx->result));
+    arg.types = result_column_types(ctx);
 
     while((arg.chunk = duckdb_fetch_chunk(ctx->result)) != NULL) {
         rb_ensure(yield_rows, (VALUE)&arg, destroy_data_chunk, (VALUE)&arg);
@@ -208,7 +264,7 @@ static VALUE yield_rows(VALUE arg) {
         row = rb_ary_new2(p->col_count);
         for (col_idx = 0; col_idx < p->col_count; col_idx++) {
             vector = duckdb_data_chunk_get_vector(p->chunk, col_idx);
-            val = vector_value(vector, row_idx);
+            val = rbduckdb_vector_value_at(vector, p->types[col_idx], row_idx);
             rb_ary_store(row, col_idx, val);
         }
         rb_yield(row);
@@ -371,23 +427,11 @@ static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_id
 }
 
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
-    VALUE ary = Qnil;
-    VALUE value = Qnil;
-
-    duckdb_logical_type child_logical_type = duckdb_array_type_child_type(ty);
     idx_t size = duckdb_array_type_array_size(ty);
     idx_t bgn = row_idx * size;
-    idx_t end = bgn + size;
-	duckdb_vector child = duckdb_array_vector_get_child(vector);
+    duckdb_vector child = duckdb_array_vector_get_child(vector);
 
-    ary = rb_ary_new2(size);
-    for (idx_t i = bgn; i < end; ++i) {
-        value = rbduckdb_vector_value_at(child, child_logical_type, i);
-        rb_ary_store(ary, i - bgn, value);
-    }
-
-    duckdb_destroy_logical_type(&child_logical_type);
-    return ary;
+    return vector_values_with_owned_type(child, duckdb_array_type_child_type(ty), bgn, bgn + size);
 }
 
 VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index) {
@@ -519,93 +563,121 @@ VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element
 }
 
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void * vector_data, idx_t row_idx) {
-    VALUE ary = Qnil;
-    VALUE value = Qnil;
-    idx_t i;
-
-    duckdb_logical_type child_logical_type = duckdb_list_type_child_type(ty);
-
     duckdb_list_entry list_entry = ((duckdb_list_entry *)vector_data)[row_idx];
     idx_t bgn = list_entry.offset;
-    idx_t end = bgn + list_entry.length;
-    ary = rb_ary_new2(list_entry.length);
-
     duckdb_vector child = duckdb_list_vector_get_child(vector);
 
-    for (i = bgn; i < end; ++i) {
-        value = rbduckdb_vector_value_at(child, child_logical_type, i);
-        rb_ary_store(ary, i - bgn, value);
-    }
-    duckdb_destroy_logical_type(&child_logical_type);
-    return ary;
+    return vector_values_with_owned_type(child, duckdb_list_type_child_type(ty), bgn, bgn + list_entry.length);
 }
 
 static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx) {
-    VALUE hash = rb_hash_new();
-    VALUE key = Qnil;
-    VALUE value = Qnil;
-
-    duckdb_logical_type key_logical_type = duckdb_map_type_key_type(ty);
-    duckdb_logical_type value_logical_type = duckdb_map_type_value_type(ty);
-
+    struct map_entries_arg arg;
     duckdb_list_entry list_entry = ((duckdb_list_entry *)vector_data)[row_idx];
-
-    idx_t bgn = list_entry.offset;
-    idx_t end = bgn + list_entry.length;
-
     duckdb_vector child = duckdb_list_vector_get_child(vector);
-    duckdb_vector key_vector = duckdb_struct_vector_get_child(child, 0);
-    duckdb_vector value_vector = duckdb_struct_vector_get_child(child, 1);
 
-    for (idx_t i = bgn; i < end; ++i) {
-        key = rbduckdb_vector_value_at(key_vector, key_logical_type, i);
-        value = rbduckdb_vector_value_at(value_vector, value_logical_type, i);
+    arg.key_vector = duckdb_struct_vector_get_child(child, 0);
+    arg.value_vector = duckdb_struct_vector_get_child(child, 1);
+    arg.key_type = duckdb_map_type_key_type(ty);
+    arg.value_type = duckdb_map_type_value_type(ty);
+    arg.bgn = list_entry.offset;
+    arg.end = list_entry.offset + list_entry.length;
+
+    return rb_ensure(convert_map_entries, (VALUE)&arg, destroy_map_types, (VALUE)&arg);
+}
+
+static VALUE convert_map_entries(VALUE varg) {
+    struct map_entries_arg *arg = (struct map_entries_arg *)varg;
+    VALUE hash = rb_hash_new();
+    VALUE key;
+    VALUE value;
+
+    for (idx_t i = arg->bgn; i < arg->end; ++i) {
+        key = rbduckdb_vector_value_at(arg->key_vector, arg->key_type, i);
+        value = rbduckdb_vector_value_at(arg->value_vector, arg->value_type, i);
         rb_hash_aset(hash, key, value);
     }
-
-    duckdb_destroy_logical_type(&key_logical_type);
-    duckdb_destroy_logical_type(&value_logical_type);
     return hash;
 }
 
+static VALUE destroy_map_types(VALUE varg) {
+    struct map_entries_arg *arg = (struct map_entries_arg *)varg;
+
+    duckdb_destroy_logical_type(&(arg->key_type));
+    duckdb_destroy_logical_type(&(arg->value_type));
+    return Qnil;
+}
+
 static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
+    struct struct_fields_arg arg = {ty, vector, row_idx, NULL};
+
+    return rb_ensure(convert_struct_fields, (VALUE)&arg, destroy_struct_child_type, (VALUE)&arg);
+}
+
+static VALUE convert_struct_fields(VALUE varg) {
+    struct struct_fields_arg *arg = (struct struct_fields_arg *)varg;
     VALUE hash = rb_hash_new();
     VALUE value = Qnil;
     VALUE key = Qnil;
     duckdb_vector child;
-    duckdb_logical_type child_type;
     char *p;
 
-    idx_t child_count = duckdb_struct_type_child_count(ty);
+    idx_t child_count = duckdb_struct_type_child_count(arg->ty);
 
     for (idx_t i = 0; i < child_count; ++i) {
-        p = duckdb_struct_type_child_name(ty, i);
+        p = duckdb_struct_type_child_name(arg->ty, i);
         if (p) {
             key = ID2SYM(rb_intern_const(p));
-            child = duckdb_struct_vector_get_child(vector, i);
-            child_type = duckdb_struct_type_child_type(ty, i);
-            value = rbduckdb_vector_value_at(child, child_type, row_idx);
-            rb_hash_aset(hash, key, value);
-            duckdb_destroy_logical_type(&child_type);
             duckdb_free(p);
+            child = duckdb_struct_vector_get_child(arg->vector, i);
+            arg->child_type = duckdb_struct_type_child_type(arg->ty, i);
+            value = rbduckdb_vector_value_at(child, arg->child_type, arg->row_idx);
+            duckdb_destroy_logical_type(&(arg->child_type));
+            rb_hash_aset(hash, key, value);
         }
     }
 
     return hash;
 }
 
+static VALUE destroy_struct_child_type(VALUE varg) {
+    struct struct_fields_arg *arg = (struct struct_fields_arg *)varg;
+
+    duckdb_destroy_logical_type(&(arg->child_type));
+    return Qnil;
+}
+
 static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx){
-    VALUE value = Qnil;
     duckdb_vector type_vector = duckdb_struct_vector_get_child(vector, 0);
     void *data = duckdb_vector_get_data(type_vector);
     uint8_t index = ((int8_t *)data)[row_idx];
 
-    duckdb_logical_type  child_type = duckdb_union_type_member_type(ty, index);
+    duckdb_vector member_vector = duckdb_struct_vector_get_child(vector, index + 1);
+    VALUE values = vector_values_with_owned_type(member_vector, duckdb_union_type_member_type(ty, index), row_idx, row_idx + 1);
 
-    duckdb_vector vector_value = duckdb_struct_vector_get_child(vector, index + 1);
-    value = rbduckdb_vector_value_at(vector_value, child_type, row_idx);
-    duckdb_destroy_logical_type(&child_type);
-    return value;
+    return rb_ary_entry(values, 0);
+}
+
+static VALUE convert_values_in_range(VALUE varg) {
+    struct owned_type_arg *arg = (struct owned_type_arg *)varg;
+    VALUE ary = rb_ary_new2(arg->end - arg->bgn);
+
+    for (idx_t i = arg->bgn; i < arg->end; ++i) {
+        rb_ary_store(ary, i - arg->bgn, rbduckdb_vector_value_at(arg->vector, arg->type, i));
+    }
+    return ary;
+}
+
+static VALUE destroy_owned_type(VALUE varg) {
+    struct owned_type_arg *arg = (struct owned_type_arg *)varg;
+
+    duckdb_destroy_logical_type(&(arg->type));
+    return Qnil;
+}
+
+static VALUE vector_values_with_owned_type(duckdb_vector vector, duckdb_logical_type type, idx_t bgn, idx_t end) {
+    struct owned_type_arg arg = {vector, type, bgn, end};
+
+    return rb_ensure(convert_values_in_range, (VALUE)&arg, destroy_owned_type, (VALUE)&arg);
 }
 
 static VALUE str_concat_byte(VALUE str, unsigned char byte, int offset) {
@@ -696,18 +768,6 @@ static VALUE result_arrow_c_stream(VALUE oDuckDBResult) {
     stream = rbduckdb_create_arrow_array_stream(oDuckDBResult);
     ctx->arrow_exported = true;
     return stream;
-}
-
-static VALUE vector_value(duckdb_vector vector, idx_t row_idx) {
-    duckdb_logical_type ty;
-    VALUE obj = Qnil;
-
-    ty = duckdb_vector_get_column_type(vector);
-
-    obj = rbduckdb_vector_value_at(vector, ty, row_idx);
-
-    duckdb_destroy_logical_type(&ty);
-    return obj;
 }
 
 void rbduckdb_init_result(void) {
