@@ -100,8 +100,8 @@ module DuckDBTest
     def test_methods_after_destroy
       pending_result = @stmt.pending_prepared
       pending_result.destroy
-      pending_result.execute_task
 
+      assert_raises(DuckDB::Error) { pending_result.execute_task }
       assert_equal :error, pending_result.state
       assert_predicate pending_result, :execution_finished?
     end
@@ -111,7 +111,24 @@ module DuckDBTest
       pending_result.destroy
 
       assert_raises(DuckDB::Error) { pending_result.execute_pending }
-      assert_equal :error, pending_result.execute_check_state
+      assert_raises(DuckDB::Error) { pending_result.execute_check_state }
+    end
+
+    def test_destroy_after_execute_task
+      pending_result = @stmt.pending_prepared
+      3.times { pending_result.execute_task }
+      pending_result.destroy
+
+      assert_equal [[1]], @con.query('SELECT 1').to_a
+    end
+
+    def test_result_readable_after_destroy
+      pending_result = @stmt.pending_prepared
+      pending_result.execute_task while pending_result.state == :not_ready
+      result = pending_result.execute_pending
+      pending_result.destroy
+
+      assert_equal [[1]], result.to_a
     end
   end
 end

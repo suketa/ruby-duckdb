@@ -12,6 +12,7 @@ static VALUE pending_result_execute_pending(VALUE self);
 static VALUE pending_result_execution_finished_p(VALUE self);
 static VALUE pending_result__state(VALUE self);
 static VALUE pending_result__execute_check_state(VALUE self);
+static rubyDuckDBPendingResult *get_live_pending_result(VALUE self);
 
 /*
  * No RUBY_TYPED_FREE_IMMEDIATELY: deallocate can block, and must not run
@@ -29,6 +30,28 @@ static void deallocate(void *ctx) {
 
     duckdb_destroy_pending(&(p->pending_result));
     xfree(p);
+}
+
+/*
+ * Returns the struct, raising DuckDB::Error if the pending result was
+ * destroyed or never initialized.
+ */
+static rubyDuckDBPendingResult *get_live_pending_result(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
+    if (!ctx->pending_result) {
+        rb_raise(eDuckDBError, "pending result is already destroyed or not initialized");
+    }
+    return ctx;
+}
+
+/*
+ * duckdb_destroy_pending can block (cancelling the pipeline may run UDF
+ * teardown callbacks that need the GVL, or shut the database down), so it
+ * is called without the GVL. See database_close in database.c.
+ */
+static void *destroy_pending_without_gvl(void *ctx) {
+    duckdb_destroy_pending((duckdb_pending_result *)ctx);
+    return NULL;
 }
 
 static VALUE allocate(VALUE klass) {
@@ -78,11 +101,7 @@ static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
  *  pending_result.execute_task
  */
 static VALUE pending_result_execute_task(VALUE self) {
-    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
-    if (!ctx->pending_result) {
-        ctx->state = DUCKDB_PENDING_ERROR;
-        return Qnil;
-    }
+    rubyDuckDBPendingResult *ctx = get_live_pending_result(self);
     ctx->state = duckdb_pending_execute_task(ctx->pending_result);
     return Qnil;
 }
@@ -102,9 +121,7 @@ static VALUE pending_result_execute_task(VALUE self) {
  */
 static VALUE pending_result_destroy(VALUE self) {
     rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
-    if (ctx->pending_result) {
-        duckdb_destroy_pending(&(ctx->pending_result));
-    }
+    rb_thread_call_without_gvl(destroy_pending_without_gvl, &(ctx->pending_result), NULL, NULL);
     ctx->state = DUCKDB_PENDING_ERROR;
     return Qnil;
 }
@@ -129,12 +146,10 @@ static VALUE pending_result_execution_finished_p(VALUE self) {
 static VALUE pending_result_execute_pending(VALUE self) {
     rubyDuckDBPendingResult *ctx;
     rubyDuckDBResult *ctxr;
-    VALUE result = rbduckdb_create_result();
+    VALUE result;
 
-    TypedData_Get_Struct(self, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
-    if (!ctx->pending_result) {
-        rb_raise(eDuckDBError, "pending result is already destroyed or not initialized");
-    }
+    ctx = get_live_pending_result(self);
+    result = rbduckdb_create_result();
     ctxr = rbduckdb_get_struct_result(result);
     if (duckdb_execute_pending(ctx->pending_result, &(ctxr->result)) == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
@@ -150,10 +165,7 @@ static VALUE pending_result__state(VALUE self) {
 
 /* :nodoc: */
 static VALUE pending_result__execute_check_state(VALUE self) {
-    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
-    if (!ctx->pending_result) {
-        return INT2FIX(DUCKDB_PENDING_ERROR);
-    }
+    rubyDuckDBPendingResult *ctx = get_live_pending_result(self);
     return INT2FIX(duckdb_pending_execute_check_state(ctx->pending_result));
 }
 

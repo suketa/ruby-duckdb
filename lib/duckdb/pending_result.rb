@@ -18,6 +18,13 @@ module DuckDB
   #     pending_result.execute_task
   #   end
   #   result = pending_result.execute_pending
+  #
+  # Call +destroy+ to release a pending result without fetching it. On
+  # DuckDB >= 2.0 an unfetched pending result blocks its connection until it
+  # is destroyed. After +destroy+, +state+ (and +execution_finished?+) report
+  # :error, and +execute_task+, +execute_pending+ and +execute_check_state+
+  # raise DuckDB::Error. A DuckDB::Result already returned by
+  # +execute_pending+ stays readable.
   class PendingResult
     STATES = %i[ready not_ready error no_tasks].freeze # :nodoc:
 
