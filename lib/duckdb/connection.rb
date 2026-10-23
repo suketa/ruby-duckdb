@@ -84,10 +84,26 @@ module DuckDB
     #   pending_result.execute_task while pending_result.state == :not_ready
     #   result = pending_result.execute_pending
     #   result.each.first
+    #
+    # If a block is given, the block is executed with the DuckDB::PendingResult
+    # object, the block's value is returned, and the object is destroyed
+    # after the block.
+    #
+    #   con.async_query(sql, name: 'Dave', email: 'dave@example.com') do |pending|
+    #     pending.execute_task while pending.state == :not_ready
+    #     pending.execute_pending.each.first
+    #   end
     def async_query(sql, *args, **kwargs)
-      prepare(sql) do |stmt|
+      pending = prepare(sql) do |stmt|
         stmt.bind_args(*args, **kwargs)
         stmt.pending_prepared
+      end
+      return pending unless block_given?
+
+      begin
+        yield pending
+      ensure
+        pending.destroy
       end
     end
 

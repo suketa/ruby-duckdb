@@ -94,6 +94,33 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { @con.async_query(invalid_sql) }
     end
 
+    def test_async_query_with_block_returns_block_value
+      value = @con.async_query('SELECT 1') do |pending|
+        assert_instance_of(DuckDB::PendingResult, pending)
+        pending.execute_task while pending.state == :not_ready
+        pending.execute_pending.each.first
+      end
+
+      assert_equal([1], value)
+    end
+
+    def test_async_query_with_block_destroys_pending_result
+      @con.async_query('SELECT 1') { |pending| pending.execute_task while pending.state == :not_ready }
+
+      assert_equal([1], @con.query('SELECT 1').each.first)
+    end
+
+    def test_async_query_with_block_destroys_pending_result_on_error
+      assert_raises(RuntimeError) { @con.async_query('SELECT 1') { |_pending| raise 'boom' } }
+      assert_equal([1], @con.query('SELECT 1').each.first)
+    end
+
+    def test_async_query_with_block_and_invalid_sql
+      called = false
+      assert_raises(DuckDB::Error) { @con.async_query('CREATE TABLE table1 (') { called = true } }
+      refute(called)
+    end
+
     def test_execute
       @con.execute('CREATE TABLE t (col1 INTEGER, col2 STRING)')
 
