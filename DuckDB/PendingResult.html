@@ -508,6 +508,8 @@
       </summary>
       <ul class="nav-list" role="directory">
 
+        <li ><a href="#method-i-destroy">destroy</a></li>
+
         <li ><a href="#method-i-execute_check_state">execute_check_state</a></li>
 
         <li ><a href="#method-i-execute_pending">execute_pending</a></li>
@@ -582,6 +584,8 @@
 <span class="ruby-keyword">end</span>
 <span class="ruby-identifier">result</span> = <span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">execute_pending</span>
 </pre>
+
+<p>Call <code>destroy</code> to release a pending result without fetching it. On <a href="../DuckDB.html"><code>DuckDB</code></a> &gt;= 2.0 an unfetched pending result blocks its connection until it is destroyed. After <code>destroy</code>, <code>state</code> (and <a href="PendingResult.html#method-i-execution_finished-3F"><code>execution_finished?</code></a>) report :error, and <a href="PendingResult.html#method-i-execute_task"><code>execute_task</code></a>, <a href="PendingResult.html#method-i-execute_pending"><code>execute_pending</code></a> and <a href="PendingResult.html#method-i-execute_check_state"><code>execute_check_state</code></a> raise <a href="Error.html"><code>DuckDB::Error</code></a>. A <a href="Result.html"><code>DuckDB::Result</code></a> already returned by <a href="PendingResult.html#method-i-execute_pending"><code>execute_pending</code></a> stays readable.</p>
 
   </section>
 
@@ -681,6 +685,60 @@
        </header>
 
 
+      <div id="method-i-destroy" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-destroy" title="Link to this method">
+                  <span class="method-callseq">
+                    destroy &rarr; nil
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="destroy-source">
+            <pre class="c" data-language="c">static VALUE pending_result_destroy(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
+    rb_thread_call_without_gvl(destroy_pending_without_gvl, &amp;(ctx-&gt;pending_result), NULL, NULL);
+    ctx-&gt;state = DUCKDB_PENDING_ERROR;
+    return Qnil;
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Releases the pending result without executing it. Required on <a href="../DuckDB.html"><code>DuckDB</code></a> &gt;= 2.0.0, where an open pending result blocks the connection. Safe to call more than once.</p>
+
+<pre class="ruby"><span class="ruby-identifier">db</span> = <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">open</span>
+<span class="ruby-identifier">conn</span> = <span class="ruby-identifier">db</span>.<span class="ruby-identifier">connect</span>
+<span class="ruby-identifier">pending_result</span> = <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">async_query</span>(<span class="ruby-string">&quot;slow query&quot;</span>)
+<span class="ruby-identifier">pending_result</span>.<span class="ruby-identifier">destroy</span>
+<span class="ruby-identifier">conn</span>.<span class="ruby-identifier">query</span>(<span class="ruby-string">&quot;SELECT 1&quot;</span>)
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
       <div id="method-i-execute_check_state" class="method-detail anchor-link ">
         <div class="method-header">
 
@@ -700,7 +758,7 @@
             </details>
           </div>
           <div class="method-source-code" id="execute_check_state-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/pending_result.rb, line 48</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/pending_result.rb, line 55</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">execute_check_state</span>
   <span class="ruby-constant">STATES</span>[<span class="ruby-identifier">_execute_check_state</span>]
 <span class="ruby-keyword">end</span></pre>
@@ -754,9 +812,10 @@
             <pre class="c" data-language="c">static VALUE pending_result_execute_pending(VALUE self) {
     rubyDuckDBPendingResult *ctx;
     rubyDuckDBResult *ctxr;
-    VALUE result = rbduckdb_create_result();
+    VALUE result;
 
-    TypedData_Get_Struct(self, rubyDuckDBPendingResult, &amp;pending_result_data_type, ctx);
+    ctx = get_live_pending_result(self);
+    result = rbduckdb_create_result();
     ctxr = rbduckdb_get_struct_result(result);
     if (duckdb_execute_pending(ctx-&gt;pending_result, &amp;(ctxr-&gt;result)) == DuckDBError) {
         rb_raise(eDuckDBError, &quot;%s&quot;, duckdb_pending_error(ctx-&gt;pending_result));
@@ -812,7 +871,7 @@
           </div>
           <div class="method-source-code" id="execute_task-source">
             <pre class="c" data-language="c">static VALUE pending_result_execute_task(VALUE self) {
-    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
+    rubyDuckDBPendingResult *ctx = get_live_pending_result(self);
     ctx-&gt;state = duckdb_pending_execute_task(ctx-&gt;pending_result);
     return Qnil;
 }</pre>
@@ -902,7 +961,7 @@
             </details>
           </div>
           <div class="method-source-code" id="state-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/pending_result.rb, line 34</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/pending_result.rb, line 41</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">state</span>
   <span class="ruby-constant">STATES</span>[<span class="ruby-identifier">_state</span>]
 <span class="ruby-keyword">end</span></pre>
