@@ -83,5 +83,35 @@ module DuckDBTest
 
       assert_includes(%i[error ready], state)
     end
+
+    def test_destroy_releases_connection
+      @stmt.pending_prepared.destroy
+
+      assert_equal [[1]], @con.query('SELECT 1').to_a
+    end
+
+    def test_destroy_twice
+      pending_result = @stmt.pending_prepared
+      pending_result.destroy
+
+      assert_nil pending_result.destroy
+    end
+
+    def test_methods_after_destroy
+      pending_result = @stmt.pending_prepared
+      pending_result.destroy
+      pending_result.execute_task
+
+      assert_equal :error, pending_result.state
+      assert_predicate pending_result, :execution_finished?
+    end
+
+    def test_execute_pending_after_destroy
+      pending_result = @stmt.pending_prepared
+      pending_result.destroy
+
+      assert_raises(DuckDB::Error) { pending_result.execute_pending }
+      assert_equal :error, pending_result.execute_check_state
+    end
   end
 end

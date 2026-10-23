@@ -209,7 +209,7 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::PendingResult, pending)
       # DuckDB >= 2.0.0 rejects the next query while a pending result is open.
-      pending.execute_pending
+      pending.destroy
     end
 
     def test_bind_parameter_index

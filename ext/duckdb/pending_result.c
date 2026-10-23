@@ -7,6 +7,7 @@ static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE pending_result_initialize(int argc, VALUE *args, VALUE self);
 static VALUE pending_result_execute_task(VALUE self);
+static VALUE pending_result_destroy(VALUE self);
 static VALUE pending_result_execute_pending(VALUE self);
 static VALUE pending_result_execution_finished_p(VALUE self);
 static VALUE pending_result__state(VALUE self);
@@ -78,7 +79,33 @@ static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
  */
 static VALUE pending_result_execute_task(VALUE self) {
     rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
+    if (!ctx->pending_result) {
+        ctx->state = DUCKDB_PENDING_ERROR;
+        return Qnil;
+    }
     ctx->state = duckdb_pending_execute_task(ctx->pending_result);
+    return Qnil;
+}
+
+/*
+ * call-seq:
+ *   pending_result.destroy -> nil
+ *
+ * Releases the pending result without executing it. Required on DuckDB >= 2.0.0,
+ * where an open pending result blocks the connection. Safe to call more than once.
+ *
+ *  db = DuckDB::Database.open
+ *  conn = db.connect
+ *  pending_result = conn.async_query("slow query")
+ *  pending_result.destroy
+ *  conn.query("SELECT 1")
+ */
+static VALUE pending_result_destroy(VALUE self) {
+    rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
+    if (ctx->pending_result) {
+        duckdb_destroy_pending(&(ctx->pending_result));
+    }
+    ctx->state = DUCKDB_PENDING_ERROR;
     return Qnil;
 }
 
@@ -105,6 +132,9 @@ static VALUE pending_result_execute_pending(VALUE self) {
     VALUE result = rbduckdb_create_result();
 
     TypedData_Get_Struct(self, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
+    if (!ctx->pending_result) {
+        rb_raise(eDuckDBError, "pending result is already destroyed or not initialized");
+    }
     ctxr = rbduckdb_get_struct_result(result);
     if (duckdb_execute_pending(ctx->pending_result, &(ctxr->result)) == DuckDBError) {
         rb_raise(eDuckDBError, "%s", duckdb_pending_error(ctx->pending_result));
@@ -121,6 +151,9 @@ static VALUE pending_result__state(VALUE self) {
 /* :nodoc: */
 static VALUE pending_result__execute_check_state(VALUE self) {
     rubyDuckDBPendingResult *ctx = rbduckdb_get_struct_pending_result(self);
+    if (!ctx->pending_result) {
+        return INT2FIX(DUCKDB_PENDING_ERROR);
+    }
     return INT2FIX(duckdb_pending_execute_check_state(ctx->pending_result));
 }
 
@@ -139,6 +172,7 @@ void rbduckdb_init_pending_result(void) {
 
     rb_define_method(cDuckDBPendingResult, "initialize", pending_result_initialize, -1);
     rb_define_method(cDuckDBPendingResult, "execute_task", pending_result_execute_task, 0);
+    rb_define_method(cDuckDBPendingResult, "destroy", pending_result_destroy, 0);
     rb_define_method(cDuckDBPendingResult, "execute_pending", pending_result_execute_pending, 0);
     rb_define_method(cDuckDBPendingResult, "execution_finished?", pending_result_execution_finished_p, 0);
     rb_define_private_method(cDuckDBPendingResult, "_state", pending_result__state, 0);
