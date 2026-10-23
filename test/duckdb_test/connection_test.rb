@@ -127,7 +127,12 @@ module DuckDBTest
     end
 
     def test_async_execute_with_block_tolerates_explicit_destroy
-      assert_equal(:ok, @con.async_execute('SELECT 1') { |pending| pending.destroy; :ok })
+      result = @con.async_execute('SELECT 1') do |pending|
+        pending.destroy
+        :ok
+      end
+
+      assert_equal(:ok, result)
     end
 
     def test_async_query_with_block_and_invalid_sql
