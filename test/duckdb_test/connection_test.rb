@@ -105,14 +105,29 @@ module DuckDBTest
     end
 
     def test_async_query_with_block_destroys_pending_result
-      @con.async_query('SELECT 1') { |pending| pending.execute_task while pending.state == :not_ready }
+      captured = nil
+      @con.async_query('SELECT 1') do |pending|
+        captured = pending
+        pending.execute_task while pending.state == :not_ready
+      end
 
-      assert_equal([1], @con.query('SELECT 1').each.first)
+      assert_raises(DuckDB::Error) { captured.execute_pending }
     end
 
     def test_async_query_with_block_destroys_pending_result_on_error
-      assert_raises(RuntimeError) { @con.async_query('SELECT 1') { |_pending| raise 'boom' } }
-      assert_equal([1], @con.query('SELECT 1').each.first)
+      captured = nil
+      assert_raises(RuntimeError) do
+        @con.async_query('SELECT 1') do |pending|
+          captured = pending
+          raise 'boom'
+        end
+      end
+
+      assert_raises(DuckDB::Error) { captured.execute_pending }
+    end
+
+    def test_async_execute_with_block_tolerates_explicit_destroy
+      assert_equal(:ok, @con.async_execute('SELECT 1') { |pending| pending.destroy; :ok })
     end
 
     def test_async_query_with_block_and_invalid_sql

@@ -87,7 +87,7 @@ module DuckDB
     #
     # If a block is given, the block is executed with the DuckDB::PendingResult
     # object, the block's value is returned, and the object is destroyed
-    # after the block.
+    # after the block. The yielded PendingResult must not be used after the block.
     #
     #   con.async_query(sql, name: 'Dave', email: 'dave@example.com') do |pending|
     #     pending.execute_task while pending.state == :not_ready
