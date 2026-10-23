@@ -74,6 +74,9 @@ module DuckDBTest
     end
 
     def test_s_create_zero_param_aggregate
+      # DuckDB 2.0.0 passes a chunk of size 0 to a zero-argument C API aggregate's update.
+      skip 'zero-argument aggregate is broken on DuckDB 2.0.0' if ::DuckDBTest.duckdb_2_0_or_later?
+
       af = DuckDB::AggregateFunction.create(
         name: 'my_count',
         return_type: :bigint,

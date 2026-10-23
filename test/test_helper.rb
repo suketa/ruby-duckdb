@@ -12,7 +12,12 @@ module DuckDBTest
     Gem::Version.new(DuckDB::LIBRARY_VERSION)
   end
 
-  module_function :duckdb_library_version
+  # .release drops the prerelease part, so 2.0.0-dev counts as 2.0.0.
+  def duckdb_2_0_or_later?
+    duckdb_library_version.release >= Gem::Version.new('2.0.0')
+  end
+
+  module_function :duckdb_library_version, :duckdb_2_0_or_later?
 end
 
 require 'minitest/autorun'

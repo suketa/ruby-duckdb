@@ -163,6 +163,8 @@ module DuckDBTest
 
     def test_statement_type_copy_database
       skip 'DUCKDB_STATEMENT_TYPE_COPY_DATABASE requires DuckDB >= 1.5.5' if duckdb_before_1_5_5?
+      # DuckDB 2.0.0 expands COPY FROM DATABASE into PRAGMA statements only.
+      skip 'COPY FROM DATABASE has no COPY_DATABASE statement on DuckDB >= 2.0.0' if ::DuckDBTest.duckdb_2_0_or_later?
 
       @con.query("ATTACH ':memory:' AS db1")
       @con.query("ATTACH ':memory:' AS db2")
@@ -190,7 +192,7 @@ module DuckDBTest
       stmt.bind(1, 1)
       stmt.clear_bindings
       res = assert_raises(DuckDB::Error) { stmt.execute }
-      assert_match(/Values were not provided for the following prepared.*: 1/, res.message)
+      assert_match(/Values were not provided for the following (prepared|parameters).*: 1/, res.message)
     end
 
     def test_clear_bindings_with_named_parameter
@@ -198,7 +200,7 @@ module DuckDBTest
       stmt.bind(:id, 1)
       stmt.clear_bindings
       res = assert_raises(DuckDB::Error) { stmt.execute }
-      assert_match(/Values were not provided for the following prepared.*: id/, res.message)
+      assert_match(/Values were not provided for the following (prepared|parameters).*: id/, res.message)
     end
 
     def test_pending_prepared
@@ -206,6 +208,8 @@ module DuckDBTest
       pending = stmt.pending_prepared
 
       assert_instance_of(DuckDB::PendingResult, pending)
+      # DuckDB >= 2.0.0 rejects the next query while a pending result is open.
+      pending.execute_pending
     end
 
     def test_bind_parameter_index
