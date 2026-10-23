@@ -97,6 +97,11 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
+    /*
+     * Use calloc (not xcalloc): rbduckdb_result_unref frees the struct, and it
+     * can run from the Arrow stream release callback on a non-Ruby thread
+     * where xfree is unsafe.
+     */
     rubyDuckDBResult *ctx = calloc((size_t)1, sizeof(rubyDuckDBResult));
 
     if (ctx == NULL) {
@@ -219,6 +224,7 @@ static duckdb_logical_type *result_column_types(rubyDuckDBResult *ctx) {
 
     if (ctx->column_types == NULL) {
         column_count = duckdb_column_count(&(ctx->result));
+        /* Use calloc (not xcalloc): freed by rbduckdb_result_unref (see allocate). */
         ctx->column_types = calloc(column_count + 1, sizeof(duckdb_logical_type));
         if (ctx->column_types == NULL) {
             rb_raise(rb_eNoMemError, "failed to allocate DuckDB::Result column types");

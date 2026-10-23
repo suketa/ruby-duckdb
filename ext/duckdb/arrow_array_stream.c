@@ -62,8 +62,11 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBArrowArrayStream);
 }
 
-/* Context memory is managed with plain malloc/free because the release
- * callback may run outside Ruby's memory bookkeeping. */
+/*
+ * Use malloc/free (not xmalloc/xfree): the stream callbacks are invoked by
+ * Arrow consumers, possibly from a non-Ruby thread where xmalloc/xfree are
+ * unsafe.
+ */
 static void stream_set_error(arrowArrayStreamContext *ctx, const char *msg) {
     size_t len = strlen(msg) + 1;
 
@@ -96,6 +99,7 @@ static int stream_get_schema(struct ArrowArrayStream *stream, struct ArrowSchema
     idx_t i;
 
     column_count = duckdb_column_count(&(ctx->presult_ctx->result));
+    /* Use calloc (not xcalloc): see stream_set_error. */
     types = calloc((size_t)column_count, sizeof(duckdb_logical_type));
     names = calloc((size_t)column_count, sizeof(const char *));
     if (column_count > 0 && (types == NULL || names == NULL)) {
@@ -172,6 +176,10 @@ VALUE rbduckdb_create_arrow_array_stream(VALUE oDuckDBResult) {
     TypedData_Get_Struct(obj, rubyDuckDBArrowArrayStream, &arrow_array_stream_data_type, p);
     presult_ctx = rbduckdb_get_struct_result(oDuckDBResult);
 
+    /*
+     * Use calloc (not xcalloc): stream_release frees the context, possibly
+     * from a non-Ruby thread where xfree is unsafe.
+     */
     ctx = calloc((size_t)1, sizeof(arrowArrayStreamContext));
     if (ctx == NULL) {
         rb_raise(rb_eNoMemError, "failed to allocate ArrowArrayStream context");
