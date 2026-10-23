@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- bump Ruby to 4.0.9 on CI (Ubuntu and macOS).
 - add DuckDB 2.0.0 on CI.
 - add `DuckDB::PendingResult#destroy` (issue #1497).
 
