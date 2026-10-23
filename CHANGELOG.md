@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add DuckDB 2.0.0 on CI.
 
 # 1.5.6.1 - 2026-10-17
 - fix `DuckDB::ExtractedStatements.new`, `Connection#query` and `Connection#extract` raising `Failed to extract statements(Database connection closed?).` for SQL that contains no statements, such as only a comment, whitespace or `;` (issue #1490). `ExtractedStatements#size` is now `0`, `Connection#query` returns `nil` and `Connection#extract` returns `[]`. Calling `ExtractedStatements.new` on a closed connection now raises `Database connection closed`.
