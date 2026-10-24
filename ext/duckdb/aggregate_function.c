@@ -487,13 +487,7 @@ static VALUE update_process_rows(VALUE varg) {
      * a GC, and the earlier columns' objects must stay reachable. */
     VALUE args = rb_ary_new_capa((long)arg->col_count + 1);
 
-    arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
-    arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
-
-    for (j = 0; j < arg->col_count; j++) {
-        arg->input_vectors[j] = duckdb_data_chunk_get_vector(arg->input, j);
-        arg->input_types[j] = duckdb_vector_get_column_type(arg->input_vectors[j]);
-    }
+    rbduckdb_input_columns_load(arg->input, arg->col_count, &arg->input_vectors, &arg->input_types);
 
     for (i = 0; i < arg->row_count; i++) {
         ruby_aggregate_state *state = arg->constant_states ? states[0] : states[i];
@@ -557,17 +551,8 @@ static VALUE update_process_rows(VALUE varg) {
 
 static VALUE update_cleanup_callback(VALUE varg) {
     struct update_callback_arg *arg = (struct update_callback_arg *)varg;
-    idx_t j;
 
-    if (arg->input_types != NULL) {
-        for (j = 0; j < arg->col_count; j++) {
-            duckdb_destroy_logical_type(&arg->input_types[j]);
-        }
-        xfree(arg->input_types);
-    }
-    if (arg->input_vectors != NULL) {
-        xfree(arg->input_vectors);
-    }
+    rbduckdb_input_columns_free(arg->input_vectors, arg->input_types, arg->col_count);
 
     return Qnil;
 }
