@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ## Breaking Changes
 - remove `DuckDB::BindInfo`, `DuckDB::InitInfo` and `DuckDB::FunctionInfo` (deprecated aliases). Use `DuckDB::TableFunction::BindInfo`, `DuckDB::TableFunction::InitInfo` and `DuckDB::TableFunction::FunctionInfo`.
-- remove the positional config form `DuckDB::Database.open(path, config)`. Use `DuckDB::Database.open(path, config: config)`. `DuckDB::Database.open(nil, ...)` is no longer accepted; omit the path or pass `:memory`.
+- remove the positional config form `DuckDB::Database.open(path, config)`. Use `DuckDB::Database.open(path, config: config)`.
 - remove the 3-argument form `DuckDB::Appender.new(con, schema, table)`. Use `DuckDB::Appender.new(con, table, schema: schema)`.
 - `DuckDB::Appender.new`, `DuckDB::Connection#appender` and `DuckDB::TableDescription.new` no longer split dot-notation table names such as `'schema.table'`. A name containing a dot is used literally as the table name. Use the `schema:` and `catalog:` keyword arguments to qualify a table. Quoted names (`'"a.b"'` / `"'a.b'"`) still have their quotes stripped.
 - remove the private methods `DuckDB::Result#_enum_dictionary_size`, `#_enum_dictionary_value` and `#_column_type`. Use `columns[i].logical_type.dictionary_size`, `columns[i].logical_type.dictionary_value_at(j)` and `columns[i].send(:_type)`.
