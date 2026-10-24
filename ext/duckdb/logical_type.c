@@ -65,6 +65,36 @@ static duckdb_logical_type logical_type_of(VALUE self) {
     return ctx->logical_type;
 }
 
+static VALUE string_at(VALUE self, VALUE vidx, char *(*getter)(duckdb_logical_type, idx_t), const char *error_format, int utf8) {
+    VALUE str;
+    const char *cstr;
+    idx_t idx = NUM2ULL(vidx);
+
+    cstr = getter(logical_type_of(self), idx);
+    if (cstr == NULL) {
+        rb_raise(eDuckDBError, error_format, (unsigned long long)idx);
+    }
+    str = utf8 ? rb_utf8_str_new_cstr(cstr) : rb_str_new_cstr(cstr);
+    duckdb_free((void *)cstr);
+    return str;
+}
+
+static VALUE logical_type_at(VALUE self, VALUE vidx, duckdb_logical_type (*getter)(duckdb_logical_type, idx_t), const char *error_format) {
+    duckdb_logical_type found;
+    idx_t idx = NUM2ULL(vidx);
+
+    found = getter(logical_type_of(self), idx);
+    if (found == NULL) {
+        rb_raise(eDuckDBError, error_format, (unsigned long long)idx);
+    }
+
+    return rbduckdb_create_logical_type(found);
+}
+
+static VALUE wrapped_logical_type(VALUE self, duckdb_logical_type (*getter)(duckdb_logical_type)) {
+    return rbduckdb_create_logical_type(getter(logical_type_of(self)));
+}
+
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBLogicalType);
 }
@@ -140,17 +170,7 @@ static VALUE logical_type_child_count(VALUE self) {
  *
  */
 static VALUE logical_type_child_name_at(VALUE self, VALUE cidx) {
-    VALUE cname;
-    const char *child_name;
-    idx_t idx = NUM2ULL(cidx);
-
-    child_name = duckdb_struct_type_child_name(logical_type_of(self), idx);
-    if (child_name == NULL) {
-        rb_raise(eDuckDBError, "fail to get name of %llu child", (unsigned long long)idx);
-    }
-    cname = rb_str_new_cstr(child_name);
-    duckdb_free((void *)child_name);
-    return cname;
+    return string_at(self, cidx, duckdb_struct_type_child_name, "fail to get name of %llu child", 0);
 }
 
 /*
@@ -193,17 +213,7 @@ static VALUE logical_type_child_type(VALUE self) {
  *
  */
 static VALUE logical_type_child_type_at(VALUE self, VALUE cidx) {
-    duckdb_logical_type struct_child_type;
-    idx_t idx = NUM2ULL(cidx);
-
-    struct_child_type = duckdb_struct_type_child_type(logical_type_of(self), idx);
-    if (struct_child_type == NULL) {
-        rb_raise(eDuckDBError,
-                 "Failed to get the struct child type at index %llu",
-                 (unsigned long long)idx);
-    }
-
-    return rbduckdb_create_logical_type(struct_child_type);
+    return logical_type_at(self, cidx, duckdb_struct_type_child_type, "Failed to get the struct child type at index %llu");
 }
 
 /*
@@ -225,12 +235,7 @@ static VALUE logical_type_size(VALUE self) {
  *
  */
 static VALUE logical_type_key_type(VALUE self) {
-    duckdb_logical_type key_logical_type;
-    VALUE logical_type = Qnil;
-
-    key_logical_type = duckdb_map_type_key_type(logical_type_of(self));
-    logical_type = rbduckdb_create_logical_type(key_logical_type);
-    return logical_type;
+    return wrapped_logical_type(self, duckdb_map_type_key_type);
 }
 
 /*
@@ -241,12 +246,7 @@ static VALUE logical_type_key_type(VALUE self) {
  *
  */
 static VALUE logical_type_value_type(VALUE self) {
-    duckdb_logical_type value_logical_type;
-    VALUE logical_type = Qnil;
-
-    value_logical_type = duckdb_map_type_value_type(logical_type_of(self));
-    logical_type = rbduckdb_create_logical_type(value_logical_type);
-    return logical_type;
+    return wrapped_logical_type(self, duckdb_map_type_value_type);
 }
 
 /*
@@ -268,17 +268,7 @@ static VALUE logical_type_member_count(VALUE self) {
  *
  */
 static VALUE logical_type_member_name_at(VALUE self, VALUE midx) {
-    VALUE mname;
-    const char *member_name;
-    idx_t idx = NUM2ULL(midx);
-
-    member_name = duckdb_union_type_member_name(logical_type_of(self), idx);
-    if (member_name == NULL) {
-        rb_raise(eDuckDBError, "fail to get name of %llu member", (unsigned long long)idx);
-    }
-    mname = rb_str_new_cstr(member_name);
-    duckdb_free((void *)member_name);
-    return mname;
+    return string_at(self, midx, duckdb_union_type_member_name, "fail to get name of %llu member", 0);
 }
 
 /*
@@ -290,17 +280,7 @@ static VALUE logical_type_member_name_at(VALUE self, VALUE midx) {
  *
  */
 static VALUE logical_type_member_type_at(VALUE self, VALUE midx) {
-    duckdb_logical_type union_member_type;
-    idx_t idx = NUM2ULL(midx);
-
-    union_member_type = duckdb_union_type_member_type(logical_type_of(self), idx);
-    if (union_member_type == NULL) {
-        rb_raise(eDuckDBError,
-                 "Failed to get the union member type at index %llu",
-                 (unsigned long long)idx);
-    }
-
-    return rbduckdb_create_logical_type(union_member_type);
+    return logical_type_at(self, midx, duckdb_union_type_member_type, "Failed to get the union member type at index %llu");
 }
 
 /*
@@ -349,17 +329,7 @@ static VALUE logical_type_dictionary_size(VALUE self) {
  *
  */
 static VALUE logical_type_dictionary_value_at(VALUE self, VALUE didx) {
-    VALUE dvalue;
-    const char *dict_value;
-    idx_t idx = NUM2ULL(didx);
-
-    dict_value = duckdb_enum_dictionary_value(logical_type_of(self), idx);
-    if (dict_value == NULL) {
-        rb_raise(eDuckDBError, "fail to get dictionary value of %llu", (unsigned long long)idx);
-    }
-    dvalue = rb_utf8_str_new_cstr(dict_value);
-    duckdb_free((void *)dict_value);
-    return dvalue;
+    return string_at(self, didx, duckdb_enum_dictionary_value, "fail to get dictionary value of %llu", 1);
 }
 
 /*
