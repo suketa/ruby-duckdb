@@ -7,12 +7,9 @@ case "$MACHINE" in
     ARCH=amd64
     ;;
   "aarch64")
-    if printf '%s\n' '1.3.0' "$DUCKDB_VERSION" | sort -C -V; then
-      ARCH=arm64
-    else
-      ARCH=aarch64
-    fi
+    ARCH=arm64
     ;;
 esac
 
-wget -O duckdb.zip "https://github.com/duckdb/duckdb/releases/download/v$DUCKDB_VERSION/libduckdb-linux-$ARCH.zip"
+# DuckDB 2.0 ships duckdb-shared-libs-*.tar.gz instead of libduckdb-*.zip.
+wget -O duckdb.tar.gz "https://github.com/duckdb/duckdb/releases/download/v$DUCKDB_VERSION/duckdb-shared-libs-linux-$ARCH.tar.gz"
