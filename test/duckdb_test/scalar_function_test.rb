@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'open3'
 
 module DuckDBTest
   class ScalarFunctionTest < Minitest::Test
@@ -779,6 +780,61 @@ module DuckDBTest
       assert_equal expected, result.first.first
       assert_operator threads_seen.size, :>, 2,
                       'expected callbacks on per-worker proxy threads, not just caller + global executor'
+    end
+
+    # Per-worker proxy creation failure (#1513): when Thread.new fails inside
+    # the global executor, the half-built proxy must be released and the query
+    # must fall back to the global executor. The executor's ThreadGroup is
+    # frozen to make thread creation raise ThreadError; that cannot be undone,
+    # so the scenario runs in a child process. The leak itself is not
+    # observable from Ruby - this guards the failure path against crashes and
+    # hangs. Requires DuckDB >= 1.5.0 (duckdb_scalar_function_set_init).
+    def test_scalar_function_falls_back_when_proxy_thread_creation_fails
+      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+        skip 'per-worker proxy requires DuckDB >= 1.5.0'
+      end
+
+      script = <<~RUBY
+        require 'duckdb'
+        con = DuckDB::Database.open.connect
+        con.execute('SET threads=4')
+        con.execute('CREATE TABLE t AS SELECT range::INTEGER AS value FROM range(500000)')
+        seen = {}
+        sf = DuckDB::ScalarFunction.new
+        sf.name = 'triple'
+        sf.add_parameter(DuckDB::LogicalType::INTEGER)
+        sf.return_type = DuckDB::LogicalType::BIGINT
+        sf.set_function { |v| seen[Thread.current] = true; v * 3 }
+        con.register_scalar_function(sf)
+        con.execute('SELECT SUM(triple(value)) FROM t')
+        puts seen.size
+        seen.clear
+        group = ThreadGroup.new
+        (Thread.list - [Thread.main]).each { |t| group.add(t) }
+        group.freeze
+        puts con.execute('SELECT SUM(triple(value)) FROM t').first.first
+        puts seen.size
+      RUBY
+      lib = File.expand_path('../../lib', __dir__)
+      out = run_child_ruby(['-I', lib, '-e', script], timeout: 120)
+      threads_before, sum, threads_after = out.split.map(&:to_i)
+
+      # Positive control: without the frozen group the proxy path fires.
+      assert_operator threads_before, :>, 2, out
+      assert_equal 499_999 * 500_000 / 2 * 3, sum
+      assert_operator threads_after, :<=, 2, 'expected fallback to caller + global executor only'
+    end
+
+    # Runs ruby with args and returns its output. Fails if the child exits
+    # non-zero or outlives timeout (it is killed then).
+    def run_child_ruby(args, timeout:)
+      Open3.popen2e(RbConfig.ruby, *args) do |stdin, out, wait_thr|
+        stdin.close
+        Process.kill(:KILL, wait_thr.pid) unless wait_thr.join(timeout)
+        output = out.read
+        flunk "child ruby failed (#{wait_thr.value}):\n#{output}" unless wait_thr.value.success?
+        output
+      end
     end
 
     def test_scalar_function_with_symbol_return_type_and_params

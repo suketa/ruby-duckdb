@@ -76,6 +76,14 @@ static int g_executor_started = 0;
  */
 static VALUE g_proxy_threads = Qnil;
 
+/* Lazy-init g_proxy_threads. Must be called with the GVL. */
+static void proxy_threads_ensure(void) {
+    if (g_proxy_threads == Qnil) {
+        g_proxy_threads = rb_ary_new();
+        rb_global_variable(&g_proxy_threads);
+    }
+}
+
 /*
  * Replace embedded NUL bytes so the message can be handed to a C API.
  * Returns str unchanged when there is nothing to replace.
@@ -252,10 +260,7 @@ void rbduckdb_function_executor_ensure_started(void) {
     }
 #endif
 
-    if (g_proxy_threads == Qnil) {
-        g_proxy_threads = rb_ary_new();
-        rb_global_variable(&g_proxy_threads);
-    }
+    proxy_threads_ensure();
 
     g_executor_thread = rb_thread_create(executor_thread_func, NULL);
     rb_global_variable(&g_executor_thread);
@@ -496,12 +501,43 @@ static VALUE proxy_thread_func(void *data) {
     return rb_ensure(proxy_loop_body, (VALUE)data, proxy_cleanup, (VALUE)data);
 }
 
+/* Tear down the OS primitives and free the struct. The proxy thread must be gone. */
+static void proxy_free(struct worker_proxy *proxy) {
+#ifdef _MSC_VER
+    DeleteCriticalSection(&proxy->lock);
+#else
+    pthread_cond_destroy(&proxy->thread_exit_cond);
+    pthread_cond_destroy(&proxy->request_done_cond);
+    pthread_cond_destroy(&proxy->request_cond);
+    pthread_mutex_destroy(&proxy->lock);
+#endif
+
+    free(proxy);
+}
+
+static VALUE proxy_start_thread(VALUE data) {
+    struct worker_proxy *proxy = (struct worker_proxy *)data;
+
+    proxy->ruby_thread = rb_thread_create(proxy_thread_func, proxy);
+    rb_ary_push(g_proxy_threads, proxy->ruby_thread);
+    return Qnil;
+}
+
 struct worker_proxy *rbduckdb_worker_proxy_create(void) {
+    struct worker_proxy *proxy;
+    int state = 0;
+
+    /*
+     * Before allocating so a raise here leaks nothing; create runs with the
+     * GVL, so safe.
+     */
+    proxy_threads_ensure();
+
     /*
      * Use calloc (not xcalloc): rbduckdb_worker_proxy_destroy frees the struct
      * from a non-Ruby thread where xfree is unsafe.
      */
-    struct worker_proxy *proxy = calloc(1, sizeof(struct worker_proxy));
+    proxy = calloc(1, sizeof(struct worker_proxy));
     if (proxy == NULL) {
         rb_raise(rb_eNoMemError, "failed to allocate worker_proxy");
     }
@@ -523,17 +559,21 @@ struct worker_proxy *rbduckdb_worker_proxy_create(void) {
     pthread_cond_init(&proxy->thread_exit_cond, NULL);
 #endif
 
-    /*
-     * Lazy-init the GC-protection array so create never silently skips it (see
-     * the g_proxy_threads comment above); create runs with the GVL, so safe.
-     */
-    if (g_proxy_threads == Qnil) {
-        g_proxy_threads = rb_ary_new();
-        rb_global_variable(&g_proxy_threads);
+    rb_protect(proxy_start_thread, (VALUE)proxy, &state);
+    if (state) {
+        if (proxy->ruby_thread) {
+            /*
+             * The thread started but could not be registered (rb_ary_push
+             * raised NoMemError): stop and join it. Like any destroy, the join
+             * has no unblock function; see #1512 for the hang analysis.
+             */
+            rbduckdb_worker_proxy_destroy(proxy);
+        } else {
+            /* rb_thread_create raised: no thread ever touched the proxy. */
+            proxy_free(proxy);
+        }
+        rb_jump_tag(state);
     }
-
-    proxy->ruby_thread = rb_thread_create(proxy_thread_func, proxy);
-    rb_ary_push(g_proxy_threads, proxy->ruby_thread);
 
     return proxy;
 }
@@ -653,17 +693,7 @@ void rbduckdb_worker_proxy_destroy(void *data) {
         proxy_join_func(proxy);
     }
 
-    /* The proxy thread is gone; tear down OS primitives and free the struct. */
-#ifdef _MSC_VER
-    DeleteCriticalSection(&proxy->lock);
-#else
-    pthread_cond_destroy(&proxy->thread_exit_cond);
-    pthread_cond_destroy(&proxy->request_done_cond);
-    pthread_cond_destroy(&proxy->request_cond);
-    pthread_mutex_destroy(&proxy->lock);
-#endif
-
-    free(proxy);
+    proxy_free(proxy);
 }
 
 void rbduckdb_function_executor_dispatch_via_proxy(rbduckdb_function_callback_t cb, void *user_data, struct worker_proxy *proxy) {
