@@ -476,13 +476,16 @@ static VALUE logical_type_s__create_map_type(VALUE klass, VALUE key, VALUE value
 typedef duckdb_logical_type (*create_members_type_fn)(duckdb_logical_type *types, const char **names, idx_t count);
 
 static VALUE create_members_type(VALUE members, create_members_type_fn create_fn, const char *type_name) {
-    idx_t member_size = RHASH_SIZE(members);
+    idx_t member_size;
     duckdb_logical_type *member_types = NULL;
     const char **member_names = NULL;
     duckdb_logical_type new_type;
     VALUE types_buf;
     VALUE names_buf;
     VALUE keys;
+
+    Check_Type(members, T_HASH);
+    member_size = RHASH_SIZE(members);
 
     if (member_size == 0) {
         rb_raise(rb_eArgError, "members hash must not be empty");
@@ -505,6 +508,8 @@ static VALUE create_members_type(VALUE members, create_members_type_fn create_fn
 
     new_type = create_fn(member_types, member_names, member_size);
 
+    RB_GC_GUARD(members);
+    RB_GC_GUARD(keys);
     ALLOCV_END(types_buf);
     ALLOCV_END(names_buf);
 
@@ -530,12 +535,13 @@ static VALUE logical_type_s__create_enum_type(VALUE klass, VALUE members) {
     idx_t member_size = RARRAY_LEN(members);
     const char **member_names = NULL;
     duckdb_logical_type new_type;
+    VALUE names_buf;
 
     if (member_size == 0) {
         rb_raise(rb_eArgError, "members must not be empty");
     }
 
-    member_names = (const char **)xcalloc(member_size, sizeof(const char *));
+    member_names = ALLOCV_N(const char *, names_buf, member_size);
 
     for (idx_t i = 0; i < member_size; i++) {
         VALUE val = rb_ary_entry(members, (long)i);
@@ -544,7 +550,8 @@ static VALUE logical_type_s__create_enum_type(VALUE klass, VALUE members) {
 
     new_type = duckdb_create_enum_type(member_names, member_size);
 
-    xfree(member_names);
+    RB_GC_GUARD(members);
+    ALLOCV_END(names_buf);
 
     if (!new_type) {
         rb_raise(eDuckDBError, "Failed to create enum type");

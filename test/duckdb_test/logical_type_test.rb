@@ -505,18 +505,18 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_struct }
     end
 
-    def test_s_private_create_union_type_with_invalid_member
+    def test_s_private_create_members_type_with_invalid_member
       int = DuckDB::LogicalType::INTEGER
-      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_union_type, { 'a' => int }) }
-      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_union_type, { a: :integer }) }
-      assert_raises(ArgumentError) { DuckDB::LogicalType.send(:_create_union_type, {}) }
+      invalid_args = [[{ 'a' => int }, TypeError], [{ a: :integer }, TypeError], [[int], TypeError],
+                      [{}, ArgumentError]]
+
+      %i[_create_union_type _create_struct_type].product(invalid_args).each do |method_name, (arg, error)|
+        assert_raises(error) { DuckDB::LogicalType.send(method_name, arg) }
+      end
     end
 
-    def test_s_private_create_struct_type_with_invalid_member
-      int = DuckDB::LogicalType::INTEGER
-      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_struct_type, { 'a' => int }) }
-      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_struct_type, { a: :integer }) }
-      assert_raises(ArgumentError) { DuckDB::LogicalType.send(:_create_struct_type, {}) }
+    def test_s_private_create_enum_type_with_nul_member
+      assert_raises(ArgumentError) { DuckDB::LogicalType.send(:_create_enum_type, ['ok', "bad\0name"]) }
     end
 
     def test_s_create_enum
