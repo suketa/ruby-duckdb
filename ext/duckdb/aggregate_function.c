@@ -598,21 +598,37 @@ static void execute_update_callback_protected(void *user_data) {
     }
 }
 
+/*
+ * Shared preamble for update/combine/finalize callbacks: returns the context,
+ * or NULL (after setting a DuckDB error if the proc is missing).
+ * A missing proc is reached only if _set_init was called directly (bypassing
+ * the Ruby wrapper); raise rather than silently misbehave or SIGSEGV.
+ */
+static rubyDuckDBAggregateFunction *aggregate_ctx_with_proc(duckdb_function_info info,
+                                                            size_t proc_offset,
+                                                            const char *missing_msg) {
+    rubyDuckDBAggregateFunction *ctx;
+
+    ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
+    if (ctx == NULL) {
+        return NULL;
+    }
+    if (*(VALUE *)((char *)ctx + proc_offset) == Qnil) {
+        duckdb_aggregate_function_set_error(info, missing_msg);
+        return NULL;
+    }
+    return ctx;
+}
+
 static void update_callback(duckdb_function_info info,
                             duckdb_data_chunk input,
                             duckdb_aggregate_state *states) {
     rubyDuckDBAggregateFunction *ctx;
     struct update_callback_arg arg;
 
-    ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
+    ctx = aggregate_ctx_with_proc(info, offsetof(rubyDuckDBAggregateFunction, update_proc),
+                                  "update callback invoked with no update proc set");
     if (ctx == NULL) {
-        return;
-    }
-    if (ctx->update_proc == Qnil) {
-        /* Reached only if _set_init was called directly (bypassing the Ruby
-         * wrapper) without setting an update proc. Raise rather than silently
-         * leaving state unchanged. */
-        duckdb_aggregate_function_set_error(info, "update callback invoked with no update proc set");
         return;
     }
 
@@ -694,14 +710,9 @@ static void combine_callback(duckdb_function_info info,
     rubyDuckDBAggregateFunction *ctx;
     struct combine_callback_arg arg;
 
-    ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
+    ctx = aggregate_ctx_with_proc(info, offsetof(rubyDuckDBAggregateFunction, combine_proc),
+                                  "combine callback invoked with no combine proc set");
     if (ctx == NULL) {
-        return;
-    }
-    if (ctx->combine_proc == Qnil) {
-        /* Reached only if _set_init was called directly (bypassing the Ruby
-         * wrapper) without setting a combine proc. Raise rather than SIGSEGV. */
-        duckdb_aggregate_function_set_error(info, "combine callback invoked with no combine proc set");
         return;
     }
 
@@ -805,14 +816,9 @@ static void finalize_callback(duckdb_function_info info,
     rubyDuckDBAggregateFunction *ctx;
     struct finalize_callback_arg arg;
 
-    ctx = (rubyDuckDBAggregateFunction *)duckdb_aggregate_function_get_extra_info(info);
+    ctx = aggregate_ctx_with_proc(info, offsetof(rubyDuckDBAggregateFunction, finalize_proc),
+                                  "finalize callback invoked with no finalize proc set");
     if (ctx == NULL) {
-        return;
-    }
-    if (ctx->finalize_proc == Qnil) {
-        /* Reached only if _set_init was called directly (bypassing the Ruby
-         * wrapper) without setting a finalize proc. Raise rather than SIGSEGV. */
-        duckdb_aggregate_function_set_error(info, "finalize callback invoked with no finalize proc set");
         return;
     }
 
