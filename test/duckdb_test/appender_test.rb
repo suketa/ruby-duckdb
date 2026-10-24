@@ -1364,6 +1364,5 @@ module DuckDBTest
 
       assert_instance_of(DuckDB::Appender, appender)
     end
-
   end
 end

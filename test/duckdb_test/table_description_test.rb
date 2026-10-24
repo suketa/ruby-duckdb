@@ -118,7 +118,6 @@ module DuckDBTest
 
       assert_instance_of DuckDB::TableDescription, td
     end
-
   end
   end
 end
