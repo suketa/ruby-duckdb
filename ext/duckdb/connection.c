@@ -251,6 +251,17 @@ static VALUE connection__get_table_names(VALUE self, VALUE query, VALUE qualifie
     return rbduckdb_value_new(table_names);
 }
 
+static VALUE connection_check_registered(VALUE self, duckdb_state state, VALUE obj, const char *kind) {
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "Failed to register %s", kind);
+    }
+
+    /* Keep reference alive as long as the database can call it */
+    connection_retain_registered(self, obj);
+
+    return self;
+}
+
 /* :nodoc: */
 static VALUE connection__register_logical_type(VALUE self, VALUE logical_type) {
     rubyDuckDBConnection *ctxcon;
@@ -261,15 +272,7 @@ static VALUE connection__register_logical_type(VALUE self, VALUE logical_type) {
     ctxlt = rbduckdb_get_struct_logical_type(logical_type);
 
     state = duckdb_register_logical_type(ctxcon->con, ctxlt->logical_type, NULL);
-
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to register logical type");
-    }
-
-    /* Keep reference alive as long as the database can call it */
-    connection_retain_registered(self, logical_type);
-
-    return self;
+    return connection_check_registered(self, state, logical_type, "logical type");
 }
 
 /* :nodoc: */
@@ -282,15 +285,7 @@ static VALUE connection__register_scalar_function(VALUE self, VALUE scalar_funct
     ctxsf = rbduckdb_get_struct_scalar_function(scalar_function);
 
     state = duckdb_register_scalar_function(ctxcon->con, ctxsf->scalar_function);
-
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to register scalar function");
-    }
-
-    /* Keep reference alive as long as the database can call it */
-    connection_retain_registered(self, scalar_function);
-
-    return self;
+    return connection_check_registered(self, state, scalar_function, "scalar function");
 }
 
 /* :nodoc: */
@@ -303,15 +298,7 @@ static VALUE connection__register_scalar_function_set(VALUE self, VALUE scalar_f
     ctxsfs = rbduckdb_get_struct_scalar_function_set(scalar_function_set);
 
     state = duckdb_register_scalar_function_set(ctxcon->con, ctxsfs->scalar_function_set);
-
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to register scalar function set");
-    }
-
-    /* Keep reference alive as long as the database can call it */
-    connection_retain_registered(self, scalar_function_set);
-
-    return self;
+    return connection_check_registered(self, state, scalar_function_set, "scalar function set");
 }
 
 /* :nodoc: */
@@ -324,15 +311,7 @@ static VALUE connection__register_aggregate_function(VALUE self, VALUE aggregate
     ctxaf = rbduckdb_get_struct_aggregate_function(aggregate_function);
 
     state = duckdb_register_aggregate_function(ctxcon->con, ctxaf->aggregate_function);
-
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to register aggregate function");
-    }
-
-    /* Keep reference alive as long as the database can call it */
-    connection_retain_registered(self, aggregate_function);
-
-    return self;
+    return connection_check_registered(self, state, aggregate_function, "aggregate function");
 }
 
 /* :nodoc: */
@@ -345,15 +324,7 @@ static VALUE connection__register_aggregate_function_set(VALUE self, VALUE aggre
     ctxafs = rbduckdb_get_struct_aggregate_function_set(aggregate_function_set);
 
     state = duckdb_register_aggregate_function_set(ctxcon->con, ctxafs->aggregate_function_set);
-
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to register aggregate function set");
-    }
-
-    /* Keep reference alive as long as the database can call it */
-    connection_retain_registered(self, aggregate_function_set);
-
-    return self;
+    return connection_check_registered(self, state, aggregate_function_set, "aggregate function set");
 }
 
 static VALUE connection__register_table_function(VALUE self, VALUE table_function) {
@@ -365,15 +336,7 @@ static VALUE connection__register_table_function(VALUE self, VALUE table_functio
     ctxtf = rbduckdb_get_struct_table_function(table_function);
 
     state = duckdb_register_table_function(ctxcon->con, ctxtf->table_function);
-
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "Failed to register table function");
-    }
-
-    /* Keep reference alive as long as the database can call it */
-    connection_retain_registered(self, table_function);
-
-    return self;
+    return connection_check_registered(self, state, table_function, "table function");
 }
 
 void rbduckdb_init_connection(void) {
