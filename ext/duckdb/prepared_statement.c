@@ -253,140 +253,102 @@ static VALUE prepared_statement_clear_bindings(VALUE self) {
     return self;
 }
 
-static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
+static duckdb_prepared_statement bind_target(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
+    return ctx->prepared_statement;
+}
+
+static void raise_if_bind_failed(duckdb_state state, idx_t idx) {
+    if (state == DuckDBError) {
+        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
+    }
+}
+
+static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     if (val != Qtrue && val != Qfalse) {
         rb_raise(rb_eArgError, "binding value must be boolean");
     }
 
-    if (duckdb_bind_boolean(ctx->prepared_statement, idx, (val == Qtrue)) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_boolean(bind_target(self), idx, (val == Qtrue)), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int8_t i8val = (int8_t)NUM2INT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_int8(ctx->prepared_statement, idx, i8val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_int8(bind_target(self), idx, i8val), idx);
     return self;
 }
 
-
 static VALUE prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_int16(ctx->prepared_statement, idx, i16val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_int16(bind_target(self), idx, i16val), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int32_t i32val = NUM2INT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_int32(ctx->prepared_statement, idx, i32val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_int32(bind_target(self), idx, i32val), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_int64(ctx->prepared_statement, idx, i64val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_int64(bind_target(self), idx, i64val), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_float(ctx->prepared_statement, idx, (float)dbl) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_float(bind_target(self), idx, (float)dbl), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_double(ctx->prepared_statement, idx, dbl) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_double(bind_target(self), idx, dbl), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     const char *pstr;
     long len;
-
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     /* Pass the byte length: duckdb_bind_varchar stops at the first NUL, so an
      * embedded one stored a prefix of the String the caller had validated. */
     pstr = StringValuePtr(str);
     len = RSTRING_LEN(str);
 
-    if (duckdb_bind_varchar_length(ctx->prepared_statement, idx, pstr, (idx_t)len) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_varchar_length(bind_target(self), idx, pstr, (idx_t)len), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_blob(ctx->prepared_statement, idx, (const void *)StringValuePtr(blob), (idx_t)RSTRING_LEN(blob)) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_blob(bind_target(self), idx, (const void *)StringValuePtr(blob), (idx_t)RSTRING_LEN(blob)), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_null(VALUE self, VALUE vidx) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_null(ctx->prepared_statement, idx) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_null(bind_target(self), idx), idx);
     return self;
 }
 
@@ -491,91 +453,61 @@ static VALUE prepared_statement__param_type(VALUE self, VALUE vidx) {
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint8_t ui8val = (uint8_t)NUM2UINT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_uint8(ctx->prepared_statement, idx, ui8val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_uint8(bind_target(self), idx, ui8val), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint16_t ui16val = (uint16_t)NUM2UINT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_uint16(ctx->prepared_statement, idx, ui16val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_uint16(bind_target(self), idx, ui16val), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint32_t ui32val = (uint32_t)NUM2UINT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_uint32(ctx->prepared_statement, idx, ui32val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_uint32(bind_target(self), idx, ui32val), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
     uint64_t ui64val = (uint64_t)NUM2ULL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_uint64(ctx->prepared_statement, idx, ui64val) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_uint64(bind_target(self), idx, ui64val), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day) {
-    rubyDuckDBPreparedStatement *ctx;
     duckdb_date dt;
     idx_t idx = check_index(vidx);
 
     dt = rbduckdb_to_duckdb_date_from_value(year, month, day);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_date(ctx->prepared_statement, idx, dt) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_date(bind_target(self), idx, dt), idx);
 
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, VALUE min, VALUE sec, VALUE micros){
-    rubyDuckDBPreparedStatement *ctx;
     duckdb_time time;
 
     idx_t idx = check_index(vidx);
 
     time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, micros);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
-
-    if (duckdb_bind_time(ctx->prepared_statement, idx, time) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_time(bind_target(self), idx, time), idx);
 
     return self;
 }
@@ -583,62 +515,45 @@ static VALUE prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, V
 /* :nodoc: */
 static VALUE prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp;
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
     timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
-    if (duckdb_bind_timestamp(ctx->prepared_statement, idx, timestamp) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_timestamp(bind_target(self), idx, timestamp), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_timestamp_tz(VALUE self, VALUE vidx, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp_tz;
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
     timestamp_tz = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
-    if (duckdb_bind_timestamp_tz(ctx->prepared_statement, idx, timestamp_tz) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_timestamp_tz(bind_target(self), idx, timestamp_tz), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
-
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 
     rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
 
-    if (duckdb_bind_interval(ctx->prepared_statement, idx, interval) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_interval(bind_target(self), idx, interval), idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
     duckdb_hugeint hugeint;
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
 
-    if (duckdb_bind_hugeint(ctx->prepared_statement, idx, hugeint) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_hugeint(bind_target(self), idx, hugeint), idx);
 
     return self;
 }
@@ -646,16 +561,12 @@ static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lowe
 /* :nodoc: */
 static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE lower, VALUE upper) {
     duckdb_uhugeint uhugeint;
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     uhugeint.lower = NUM2ULL(lower);
     uhugeint.upper = NUM2ULL(upper);
 
-    if (duckdb_bind_uhugeint(ctx->prepared_statement, idx, uhugeint) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_uhugeint(bind_target(self), idx, uhugeint), idx);
 
     return self;
 }
@@ -664,54 +575,42 @@ static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE low
 static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lower, VALUE upper, VALUE width, VALUE scale) {
     duckdb_hugeint hugeint;
     duckdb_decimal decimal;
-    rubyDuckDBPreparedStatement *ctx;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
     decimal.value = hugeint;
     decimal.width = (uint8_t)NUM2UINT(width);
     decimal.scale = (uint8_t)NUM2UINT(scale);
 
-    if (duckdb_bind_decimal(ctx->prepared_statement, idx, decimal) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_decimal(bind_target(self), idx, decimal), idx);
 
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_uuid(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     duckdb_uhugeint uhugeint;
     duckdb_value uuid_val;
     duckdb_state state;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     rbduckdb_uuid_str_to_uhugeint(val, &uhugeint);
     uuid_val = duckdb_create_uuid(uhugeint);
-    state = duckdb_bind_value(ctx->prepared_statement, idx, uuid_val);
+    state = duckdb_bind_value(bind_target(self), idx, uuid_val);
     duckdb_destroy_value(&uuid_val);
-    if (state == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(state, idx);
     return self;
 }
 
 /* :nodoc: */
 static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
-    rubyDuckDBPreparedStatement *ctx;
     rubyDuckDBValue *val_ctx;
     idx_t idx = check_index(vidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     val_ctx = rbduckdb_get_struct_value(val);
 
-    if (duckdb_bind_value(ctx->prepared_statement, idx, val_ctx->value) == DuckDBError) {
-        rb_raise(eDuckDBError, "fail to bind %llu parameter", (unsigned long long)idx);
-    }
+    raise_if_bind_failed(duckdb_bind_value(bind_target(self), idx, val_ctx->value), idx);
     return self;
 }
 
