@@ -127,18 +127,5 @@ module DuckDBTest
 
       assert_equal 'block is required for execute', error.message
     end
-
-    def test_function_info_alias
-      assert_same DuckDB::TableFunction::FunctionInfo, DuckDB::FunctionInfo
-    end
-
-    def test_function_info_alias_deprecation_warning
-      DuckDB.send(:remove_const, :FunctionInfo) if DuckDB.const_defined?(:FunctionInfo, false)
-      warning = capture_io { DuckDB::FunctionInfo }.last
-
-      assert_match(/deprecated/, warning)
-    ensure
-      DuckDB.send(:remove_const, :FunctionInfo) if DuckDB.const_defined?(:FunctionInfo, false)
-    end
   end
 end
