@@ -600,17 +600,7 @@ void rbduckdb_worker_proxy_destroy(void *data) {
     if (proxy == NULL) return;
 
     /* Ask the proxy thread to stop. */
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
-    proxy->stop_requested = 1;
-    WakeConditionVariable(&proxy->request_cond);
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    proxy->stop_requested = 1;
-    pthread_cond_signal(&proxy->request_cond);
-    pthread_mutex_unlock(&proxy->lock);
-#endif
+    proxy_stop_func(proxy);
 
     /*
      * Wait until the proxy thread has fully exited. Before exiting it runs Ruby
