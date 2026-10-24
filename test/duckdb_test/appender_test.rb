@@ -39,6 +39,10 @@ module DuckDBTest
       assert_instance_of(DuckDB::Appender, appender)
     end
 
+    def test_s_new_with_nil_table
+      assert_raises(DuckDB::Error) { DuckDB::Appender.new(@con, nil) }
+    end
+
     def test_s_new_2arg
       create_table('id INT')
       appender = DuckDB::Appender.new(@con, table)

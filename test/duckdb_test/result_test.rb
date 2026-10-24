@@ -163,7 +163,6 @@ module DuckDBTest
 
     def test_column_type # rubocop:disable Minitest/MultipleAssertions
       assert_equal(1, @result.columns[0].send(:_type))
-      assert_equal(1, @result.columns[0].send(:_type))
       assert_equal(3, @result.columns[1].send(:_type))
       assert_equal(4, @result.columns[2].send(:_type))
       assert_equal(5, @result.columns[3].send(:_type))

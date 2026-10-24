@@ -26,6 +26,8 @@ module DuckDB
     end
 
     def initialize(con, table, schema: nil, catalog: nil)
+      raise DuckDB::Error, '2nd argument must be table name.' if table.nil?
+
       initialize_with_parsed_table(con, table, schema: schema, catalog: catalog)
     end
 

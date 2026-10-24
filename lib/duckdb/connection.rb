@@ -8,8 +8,6 @@ module DuckDB
   #   con = db.connect
   #   con.query(sql)
   class Connection
-    include DuckDB::TableNameParser
-
     # executes sql with args.
     # The first argument sql must be SQL string.
     # The rest arguments are parameters of SQL string.

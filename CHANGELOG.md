@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - remove the positional config form `DuckDB::Database.open(path, config)`. Use `DuckDB::Database.open(path, config: config)`.
 - remove the 3-argument form `DuckDB::Appender.new(con, schema, table)`. Use `DuckDB::Appender.new(con, table, schema: schema)`.
 - `DuckDB::Appender.new`, `DuckDB::Connection#appender` and `DuckDB::TableDescription.new` no longer split dot-notation table names such as `'schema.table'`. A name containing a dot is used literally as the table name. Use the `schema:` and `catalog:` keyword arguments to qualify a table. Quoted names (`'"a.b"'` / `"'a.b'"`) still have their quotes stripped.
-- remove the private methods `DuckDB::Result#_enum_dictionary_size`, `#_enum_dictionary_value` and `#_column_type`. Use `columns[i].logical_type.dictionary_size`, `columns[i].logical_type.dictionary_value_at(j)` and `columns[i].send(:_type)`.
+- remove the private methods `DuckDB::Result#_enum_dictionary_size`, `#_enum_dictionary_value` and `#_column_type`. Use `columns[i].logical_type.dictionary_size`, `columns[i].logical_type.dictionary_value_at(j)` and `columns[i].type`.
 - `DuckDB::PendingResult.new` takes exactly one argument (the prepared statement); the meaningless second argument was removed.
 
 # 1.5.6.1 - 2026-10-17
