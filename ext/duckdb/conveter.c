@@ -17,49 +17,8 @@ ID id__to_time_from_duckdb_timestamp_tz;
 ID id__to_infinity;
 ID id__decimal_to_unscaled;
 
-static VALUE infinite_date_value(duckdb_date date) {
-    if (duckdb_is_finite_date(date) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          INT2NUM(date.days)
-                         );
-    }
-    return Qnil;
-}
-
-static VALUE infinite_timestamp_value(duckdb_timestamp timestamp) {
-    if (duckdb_is_finite_timestamp(timestamp) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp.micros)
-                         );
-    }
-    return Qnil;
-}
-
-static VALUE infinite_timestamp_s_value(duckdb_timestamp_s timestamp_s) {
-    if (duckdb_is_finite_timestamp_s(timestamp_s) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp_s.seconds)
-                         );
-    }
-    return Qnil;
-}
-
-static VALUE infinite_timestamp_ms_value(duckdb_timestamp_ms timestamp_ms) {
-    if (duckdb_is_finite_timestamp_ms(timestamp_ms) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp_ms.millis)
-                         );
-    }
-    return Qnil;
-}
-
-static VALUE infinite_timestamp_ns_value(duckdb_timestamp_ns timestamp_ns) {
-    if (duckdb_is_finite_timestamp_ns(timestamp_ns) == false) {
-        return rb_funcall(mDuckDBConverter, id__to_infinity, 1,
-                          LL2NUM(timestamp_ns.nanos)
-                         );
-    }
-    return Qnil;
+static VALUE ruby_infinity(VALUE raw) {
+    return rb_funcall(mDuckDBConverter, id__to_infinity, 1, raw);
 }
 
 #define DUCKDB_UUID_SIGN_BIT 0x8000000000000000ULL
@@ -256,9 +215,8 @@ VALUE rbduckdb_uhugeint_to_ruby(duckdb_uhugeint h) {
 }
 
 VALUE rbduckdb_timestamp_s_to_ruby(duckdb_timestamp_s ts) {
-    VALUE obj = infinite_timestamp_s_value(ts);
-    if (obj != Qnil) {
-        return obj;
+    if (!duckdb_is_finite_timestamp_s(ts)) {
+        return ruby_infinity(LL2NUM(ts.seconds));
     }
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_s, 1,
                       LL2NUM(ts.seconds)
@@ -266,9 +224,8 @@ VALUE rbduckdb_timestamp_s_to_ruby(duckdb_timestamp_s ts) {
 }
 
 VALUE rbduckdb_timestamp_ms_to_ruby(duckdb_timestamp_ms ts) {
-    VALUE obj = infinite_timestamp_ms_value(ts);
-    if (obj != Qnil) {
-        return obj;
+    if (!duckdb_is_finite_timestamp_ms(ts)) {
+        return ruby_infinity(LL2NUM(ts.millis));
     }
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ms, 1,
                       LL2NUM(ts.millis)
@@ -276,9 +233,8 @@ VALUE rbduckdb_timestamp_ms_to_ruby(duckdb_timestamp_ms ts) {
 }
 
 VALUE rbduckdb_timestamp_ns_to_ruby(duckdb_timestamp_ns ts) {
-    VALUE obj = infinite_timestamp_ns_value(ts);
-    if (obj != Qnil) {
-        return obj;
+    if (!duckdb_is_finite_timestamp_ns(ts)) {
+        return ruby_infinity(LL2NUM(ts.nanos));
     }
     return rb_funcall(mDuckDBConverter, id__to_time_from_duckdb_timestamp_ns, 1,
                       LL2NUM(ts.nanos)
@@ -319,35 +275,35 @@ VALUE rbduckdb_time_to_ruby(duckdb_time t) {
 }
 
 VALUE rbduckdb_date_to_ruby(duckdb_date date) {
-    VALUE obj = infinite_date_value(date);
+    duckdb_date_struct date_st;
 
-    if (obj == Qnil) {
-        duckdb_date_struct date_st = duckdb_from_date(date);
-        obj = rb_funcall(mDuckDBConverter, id__to_date, 3,
-                         INT2FIX(date_st.year),
-                         INT2FIX(date_st.month),
-                         INT2FIX(date_st.day)
-                         );
+    if (!duckdb_is_finite_date(date)) {
+        return ruby_infinity(INT2NUM(date.days));
     }
-    return obj;
+    date_st = duckdb_from_date(date);
+    return rb_funcall(mDuckDBConverter, id__to_date, 3,
+                      INT2FIX(date_st.year),
+                      INT2FIX(date_st.month),
+                      INT2FIX(date_st.day)
+                      );
 }
 
 VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts) {
-    VALUE obj = infinite_timestamp_value(ts);
+    duckdb_timestamp_struct data_st;
 
-    if (obj == Qnil) {
-        duckdb_timestamp_struct data_st = duckdb_from_timestamp(ts);
-        obj = rb_funcall(mDuckDBConverter, id__to_time, 7,
-                         INT2FIX(data_st.date.year),
-                         INT2FIX(data_st.date.month),
-                         INT2FIX(data_st.date.day),
-                         INT2FIX(data_st.time.hour),
-                         INT2FIX(data_st.time.min),
-                         INT2FIX(data_st.time.sec),
-                         INT2NUM(data_st.time.micros)
-                         );
+    if (!duckdb_is_finite_timestamp(ts)) {
+        return ruby_infinity(LL2NUM(ts.micros));
     }
-    return obj;
+    data_st = duckdb_from_timestamp(ts);
+    return rb_funcall(mDuckDBConverter, id__to_time, 7,
+                      INT2FIX(data_st.date.year),
+                      INT2FIX(data_st.date.month),
+                      INT2FIX(data_st.date.day),
+                      INT2FIX(data_st.time.hour),
+                      INT2FIX(data_st.time.min),
+                      INT2FIX(data_st.time.sec),
+                      INT2NUM(data_st.time.micros)
+                      );
 }
 
 void rbduckdb_init_converter(void) {
