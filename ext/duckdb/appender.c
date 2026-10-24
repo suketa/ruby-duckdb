@@ -245,7 +245,6 @@ static VALUE appender__end_row(VALUE self) {
 
 /* :nodoc: */
 static VALUE appender__append_bool(VALUE self, VALUE val) {
-
     if (val != Qtrue && val != Qfalse) {
         rb_raise(rb_eArgError, "argument must be boolean");
     }
@@ -292,14 +291,12 @@ static VALUE appender__append_uint8(VALUE self, VALUE val) {
 static VALUE appender__append_uint16(VALUE self, VALUE val) {
     uint16_t ui16val = (uint16_t)NUM2UINT(val);
 
-
     return  state_to_rbool(duckdb_append_uint16(appender_of(self), ui16val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_uint32(VALUE self, VALUE val) {
     uint32_t ui32val = (uint32_t)NUM2UINT(val);
-
 
     return  state_to_rbool(duckdb_append_uint32(appender_of(self), ui32val));
 }
@@ -393,8 +390,6 @@ static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec,
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp;
 
-
-
     timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
     return state_to_rbool(duckdb_append_timestamp(appender_of(self), timestamp));
@@ -407,7 +402,6 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper) {
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
 
-
     return state_to_rbool(duckdb_append_hugeint(appender_of(self), hugeint));
 }
 
@@ -417,7 +411,6 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
 
     uhugeint.lower = NUM2ULL(lower);
     uhugeint.upper = NUM2ULL(upper);
-
 
     return state_to_rbool(duckdb_append_uhugeint(appender_of(self), uhugeint));
 }

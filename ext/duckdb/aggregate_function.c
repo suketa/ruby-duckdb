@@ -1,4 +1,3 @@
-#include <stddef.h>
 #include "ruby-duckdb.h"
 
 VALUE cDuckDBAggregateFunction;

@@ -253,7 +253,7 @@ static VALUE prepared_statement_clear_bindings(VALUE self) {
     return self;
 }
 
-static duckdb_prepared_statement bind_target(VALUE self) {
+static duckdb_prepared_statement prepared_statement_of(VALUE self) {
     rubyDuckDBPreparedStatement *ctx;
     TypedData_Get_Struct(self, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
     return ctx->prepared_statement;
@@ -272,7 +272,7 @@ static VALUE prepared_statement_bind_bool(VALUE self, VALUE vidx, VALUE val) {
         rb_raise(rb_eArgError, "binding value must be boolean");
     }
 
-    raise_if_bind_failed(duckdb_bind_boolean(bind_target(self), idx, (val == Qtrue)), idx);
+    raise_if_bind_failed(duckdb_bind_boolean(prepared_statement_of(self), idx, (val == Qtrue)), idx);
     return self;
 }
 
@@ -280,7 +280,7 @@ static VALUE prepared_statement_bind_int8(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     int8_t i8val = (int8_t)NUM2INT(val);
 
-    raise_if_bind_failed(duckdb_bind_int8(bind_target(self), idx, i8val), idx);
+    raise_if_bind_failed(duckdb_bind_int8(prepared_statement_of(self), idx, i8val), idx);
     return self;
 }
 
@@ -288,7 +288,7 @@ static VALUE prepared_statement_bind_int16(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     int16_t i16val = NUM2INT(val);
 
-    raise_if_bind_failed(duckdb_bind_int16(bind_target(self), idx, i16val), idx);
+    raise_if_bind_failed(duckdb_bind_int16(prepared_statement_of(self), idx, i16val), idx);
     return self;
 }
 
@@ -296,7 +296,7 @@ static VALUE prepared_statement_bind_int32(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     int32_t i32val = NUM2INT(val);
 
-    raise_if_bind_failed(duckdb_bind_int32(bind_target(self), idx, i32val), idx);
+    raise_if_bind_failed(duckdb_bind_int32(prepared_statement_of(self), idx, i32val), idx);
     return self;
 }
 
@@ -304,7 +304,7 @@ static VALUE prepared_statement_bind_int64(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     int64_t i64val = NUM2LL(val);
 
-    raise_if_bind_failed(duckdb_bind_int64(bind_target(self), idx, i64val), idx);
+    raise_if_bind_failed(duckdb_bind_int64(prepared_statement_of(self), idx, i64val), idx);
     return self;
 }
 
@@ -312,7 +312,7 @@ static VALUE prepared_statement_bind_float(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
-    raise_if_bind_failed(duckdb_bind_float(bind_target(self), idx, (float)dbl), idx);
+    raise_if_bind_failed(duckdb_bind_float(prepared_statement_of(self), idx, (float)dbl), idx);
     return self;
 }
 
@@ -320,7 +320,7 @@ static VALUE prepared_statement_bind_double(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     double dbl = NUM2DBL(val);
 
-    raise_if_bind_failed(duckdb_bind_double(bind_target(self), idx, dbl), idx);
+    raise_if_bind_failed(duckdb_bind_double(prepared_statement_of(self), idx, dbl), idx);
     return self;
 }
 
@@ -334,21 +334,21 @@ static VALUE prepared_statement_bind_varchar(VALUE self, VALUE vidx, VALUE str) 
     pstr = StringValuePtr(str);
     len = RSTRING_LEN(str);
 
-    raise_if_bind_failed(duckdb_bind_varchar_length(bind_target(self), idx, pstr, (idx_t)len), idx);
+    raise_if_bind_failed(duckdb_bind_varchar_length(prepared_statement_of(self), idx, pstr, (idx_t)len), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_blob(VALUE self, VALUE vidx, VALUE blob) {
     idx_t idx = check_index(vidx);
 
-    raise_if_bind_failed(duckdb_bind_blob(bind_target(self), idx, (const void *)StringValuePtr(blob), (idx_t)RSTRING_LEN(blob)), idx);
+    raise_if_bind_failed(duckdb_bind_blob(prepared_statement_of(self), idx, (const void *)StringValuePtr(blob), (idx_t)RSTRING_LEN(blob)), idx);
     return self;
 }
 
 static VALUE prepared_statement_bind_null(VALUE self, VALUE vidx) {
     idx_t idx = check_index(vidx);
 
-    raise_if_bind_failed(duckdb_bind_null(bind_target(self), idx), idx);
+    raise_if_bind_failed(duckdb_bind_null(prepared_statement_of(self), idx), idx);
     return self;
 }
 
@@ -456,7 +456,7 @@ static VALUE prepared_statement__bind_uint8(VALUE self, VALUE vidx, VALUE val) {
     idx_t idx = check_index(vidx);
     uint8_t ui8val = (uint8_t)NUM2UINT(val);
 
-    raise_if_bind_failed(duckdb_bind_uint8(bind_target(self), idx, ui8val), idx);
+    raise_if_bind_failed(duckdb_bind_uint8(prepared_statement_of(self), idx, ui8val), idx);
     return self;
 }
 
@@ -465,7 +465,7 @@ static VALUE prepared_statement__bind_uint16(VALUE self, VALUE vidx, VALUE val) 
     idx_t idx = check_index(vidx);
     uint16_t ui16val = (uint16_t)NUM2UINT(val);
 
-    raise_if_bind_failed(duckdb_bind_uint16(bind_target(self), idx, ui16val), idx);
+    raise_if_bind_failed(duckdb_bind_uint16(prepared_statement_of(self), idx, ui16val), idx);
     return self;
 }
 
@@ -474,7 +474,7 @@ static VALUE prepared_statement__bind_uint32(VALUE self, VALUE vidx, VALUE val) 
     idx_t idx = check_index(vidx);
     uint32_t ui32val = (uint32_t)NUM2UINT(val);
 
-    raise_if_bind_failed(duckdb_bind_uint32(bind_target(self), idx, ui32val), idx);
+    raise_if_bind_failed(duckdb_bind_uint32(prepared_statement_of(self), idx, ui32val), idx);
     return self;
 }
 
@@ -483,7 +483,7 @@ static VALUE prepared_statement__bind_uint64(VALUE self, VALUE vidx, VALUE val) 
     idx_t idx = check_index(vidx);
     uint64_t ui64val = (uint64_t)NUM2ULL(val);
 
-    raise_if_bind_failed(duckdb_bind_uint64(bind_target(self), idx, ui64val), idx);
+    raise_if_bind_failed(duckdb_bind_uint64(prepared_statement_of(self), idx, ui64val), idx);
     return self;
 }
 
@@ -494,7 +494,7 @@ static VALUE prepared_statement__bind_date(VALUE self, VALUE vidx, VALUE year, V
 
     dt = rbduckdb_to_duckdb_date_from_value(year, month, day);
 
-    raise_if_bind_failed(duckdb_bind_date(bind_target(self), idx, dt), idx);
+    raise_if_bind_failed(duckdb_bind_date(prepared_statement_of(self), idx, dt), idx);
 
     return self;
 }
@@ -507,7 +507,7 @@ static VALUE prepared_statement__bind_time(VALUE self, VALUE vidx, VALUE hour, V
 
     time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, micros);
 
-    raise_if_bind_failed(duckdb_bind_time(bind_target(self), idx, time), idx);
+    raise_if_bind_failed(duckdb_bind_time(prepared_statement_of(self), idx, time), idx);
 
     return self;
 }
@@ -519,7 +519,7 @@ static VALUE prepared_statement__bind_timestamp(VALUE self, VALUE vidx, VALUE ye
 
     timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
-    raise_if_bind_failed(duckdb_bind_timestamp(bind_target(self), idx, timestamp), idx);
+    raise_if_bind_failed(duckdb_bind_timestamp(prepared_statement_of(self), idx, timestamp), idx);
     return self;
 }
 
@@ -530,7 +530,7 @@ static VALUE prepared_statement__bind_timestamp_tz(VALUE self, VALUE vidx, VALUE
 
     timestamp_tz = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
-    raise_if_bind_failed(duckdb_bind_timestamp_tz(bind_target(self), idx, timestamp_tz), idx);
+    raise_if_bind_failed(duckdb_bind_timestamp_tz(prepared_statement_of(self), idx, timestamp_tz), idx);
     return self;
 }
 
@@ -541,7 +541,7 @@ static VALUE prepared_statement__bind_interval(VALUE self, VALUE vidx, VALUE mon
 
     rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
 
-    raise_if_bind_failed(duckdb_bind_interval(bind_target(self), idx, interval), idx);
+    raise_if_bind_failed(duckdb_bind_interval(prepared_statement_of(self), idx, interval), idx);
     return self;
 }
 
@@ -553,7 +553,7 @@ static VALUE prepared_statement__bind_hugeint(VALUE self, VALUE vidx, VALUE lowe
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
 
-    raise_if_bind_failed(duckdb_bind_hugeint(bind_target(self), idx, hugeint), idx);
+    raise_if_bind_failed(duckdb_bind_hugeint(prepared_statement_of(self), idx, hugeint), idx);
 
     return self;
 }
@@ -566,7 +566,7 @@ static VALUE prepared_statement__bind_uhugeint(VALUE self, VALUE vidx, VALUE low
     uhugeint.lower = NUM2ULL(lower);
     uhugeint.upper = NUM2ULL(upper);
 
-    raise_if_bind_failed(duckdb_bind_uhugeint(bind_target(self), idx, uhugeint), idx);
+    raise_if_bind_failed(duckdb_bind_uhugeint(prepared_statement_of(self), idx, uhugeint), idx);
 
     return self;
 }
@@ -583,7 +583,7 @@ static VALUE prepared_statement__bind_decimal(VALUE self, VALUE vidx, VALUE lowe
     decimal.width = (uint8_t)NUM2UINT(width);
     decimal.scale = (uint8_t)NUM2UINT(scale);
 
-    raise_if_bind_failed(duckdb_bind_decimal(bind_target(self), idx, decimal), idx);
+    raise_if_bind_failed(duckdb_bind_decimal(prepared_statement_of(self), idx, decimal), idx);
 
     return self;
 }
@@ -597,7 +597,7 @@ static VALUE prepared_statement__bind_uuid(VALUE self, VALUE vidx, VALUE val) {
 
     rbduckdb_uuid_str_to_uhugeint(val, &uhugeint);
     uuid_val = duckdb_create_uuid(uhugeint);
-    state = duckdb_bind_value(bind_target(self), idx, uuid_val);
+    state = duckdb_bind_value(prepared_statement_of(self), idx, uuid_val);
     duckdb_destroy_value(&uuid_val);
     raise_if_bind_failed(state, idx);
     return self;
@@ -610,7 +610,7 @@ static VALUE prepared_statement__bind_value(VALUE self, VALUE vidx, VALUE val) {
 
     val_ctx = rbduckdb_get_struct_value(val);
 
-    raise_if_bind_failed(duckdb_bind_value(bind_target(self), idx, val_ctx->value), idx);
+    raise_if_bind_failed(duckdb_bind_value(prepared_statement_of(self), idx, val_ctx->value), idx);
     return self;
 }
 

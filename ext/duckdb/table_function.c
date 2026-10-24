@@ -183,7 +183,7 @@ static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE lo
     return self;
 }
 
-static rubyDuckDBTableFunction *table_function_callback_setter_ctx(VALUE self, const char *block_msg) {
+static rubyDuckDBTableFunction *table_function_get_settable_ctx(VALUE self, const char *block_msg) {
     rubyDuckDBTableFunction *ctx;
 
     if (!rb_block_given_p()) {
@@ -217,7 +217,7 @@ static VALUE call_proc_with_one_arg(VALUE arg) {
  *   end
  */
 static VALUE table_function_bind(VALUE self) {
-    rubyDuckDBTableFunction *ctx = table_function_callback_setter_ctx(self, "block is required");
+    rubyDuckDBTableFunction *ctx = table_function_get_settable_ctx(self, "block is required");
 
     RB_OBJ_WRITE(self, &ctx->bind_proc, rb_block_proc());
 
@@ -278,7 +278,7 @@ static void table_function_bind_callback(duckdb_bind_info info) {
  *   end
  */
 static VALUE table_function_init(VALUE self) {
-    rubyDuckDBTableFunction *ctx = table_function_callback_setter_ctx(self, "block is required for init");
+    rubyDuckDBTableFunction *ctx = table_function_get_settable_ctx(self, "block is required for init");
 
     RB_OBJ_WRITE(self, &ctx->init_proc, rb_block_proc());
     duckdb_table_function_set_init(ctx->table_function, table_function_init_callback);
@@ -340,7 +340,7 @@ static void table_function_init_callback(duckdb_init_info info) {
  *   end
  */
 static VALUE table_function_execute(VALUE self) {
-    rubyDuckDBTableFunction *ctx = table_function_callback_setter_ctx(self, "block is required for execute");
+    rubyDuckDBTableFunction *ctx = table_function_get_settable_ctx(self, "block is required for execute");
 
     RB_OBJ_WRITE(self, &ctx->execute_proc, rb_block_proc());
     duckdb_table_function_set_function(ctx->table_function, table_function_execute_callback);
