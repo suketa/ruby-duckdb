@@ -22,8 +22,6 @@ static void table_function_init_callback(duckdb_init_info info);
 static VALUE table_function_execute(VALUE self);
 static void table_function_execute_callback(duckdb_function_info info, duckdb_data_chunk output);
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
-/* Thread detection (declared in function_executor.c); used to skip the proxy on Ruby threads. */
-extern int ruby_native_thread_p(void);
 static void table_function_local_init_callback(duckdb_init_info info);
 #endif
 
@@ -431,48 +429,16 @@ static void table_function_execute_callback(duckdb_function_info info, duckdb_da
 /*
  * Per-worker init for the execute path (DuckDB >= 1.5.0).
  *
- * DuckDB calls this once on each worker thread that will run the execute
- * callback. We create a per-worker proxy (allocating its Ruby thread under the
- * GVL via the global executor, since this runs on a non-Ruby thread) and store
- * it as thread-local init data. The execute callback then dispatches through it
- * instead of the shared global executor, so workers run callbacks concurrently.
- * DuckDB invokes rbduckdb_worker_proxy_destroy when the local state is freed.
+ * Runs once on each worker thread that will execute the callback. Creates the
+ * worker's proxy and stores it as thread-local init data, so the execute callback
+ * dispatches through it rather than the shared global executor. DuckDB calls
+ * rbduckdb_worker_proxy_destroy when the local state is freed.
  */
-struct create_proxy_callback_arg {
-    struct worker_proxy *proxy;
-};
-
-static VALUE create_proxy_callback(VALUE varg) {
-    struct create_proxy_callback_arg *arg = (struct create_proxy_callback_arg *)varg;
-    arg->proxy = rbduckdb_worker_proxy_create();
-    return Qnil;
-}
-
-/*
- * rbduckdb_worker_proxy_create may raise (NoMemError, Thread.new failure).
- * Swallow it: the proxy stays NULL, local_init sets no state, and the execute
- * callback falls back to the global executor.
- */
-static void create_proxy_callback_protected(void *user_data) {
-    int exception_state;
-
-    rb_protect(create_proxy_callback, (VALUE)user_data, &exception_state);
-    if (exception_state) {
-        rb_set_errinfo(Qnil);
-    }
-}
-
 static void table_function_local_init_callback(duckdb_init_info info) {
-    struct create_proxy_callback_arg arg;
+    struct worker_proxy *proxy = rbduckdb_worker_proxy_create_for_current_thread();
 
-    /* A Ruby calling thread runs the callback inline (Case 1/2); no proxy needed. */
-    if (ruby_native_thread_p()) return;
-
-    arg.proxy = NULL;
-    rbduckdb_function_executor_dispatch(create_proxy_callback_protected, &arg);
-
-    if (arg.proxy != NULL) {
-        duckdb_init_set_init_data(info, arg.proxy, rbduckdb_worker_proxy_destroy);
+    if (proxy != NULL) {
+        duckdb_init_set_init_data(info, proxy, rbduckdb_worker_proxy_destroy);
     }
 }
 #endif
