@@ -2955,13 +2955,11 @@
           </div>
           <div class="method-source-code" id="error_message-source">
             <pre class="c" data-language="c">static VALUE appender_error_message(VALUE self) {
-    rubyDuckDBAppender *ctx;
     duckdb_error_data error_data;
     const char *msg = NULL;
     VALUE rb_msg = Qnil;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &amp;appender_data_type, ctx);
 
-    error_data = duckdb_appender_error_data(ctx-&gt;appender);
+    error_data = duckdb_appender_error_data(appender_of(self));
     if (duckdb_error_data_has_error(error_data)) {
         msg = duckdb_error_data_message(error_data);
         rb_msg = rb_str_new2(msg);
