@@ -7,10 +7,9 @@ require_relative 'converter'
 module DuckDB
   # The DuckDB::Appender encapsulates DuckDB Appender.
   #
-  # The +table+ argument (2nd positional argument) supports dot-notation and quoting:
-  #
-  # - <tt>'schema.table'</tt> — interpreted as schema-qualified (deprecated; use +schema:+ instead)
-  # - <tt>'"schema.table"'</tt> or <tt>"'schema.table'"</tt> — treated as a literal table name containing a dot
+  # The +table+ argument (2nd positional argument) is used as a literal table name,
+  # even if it contains a dot. Use the +schema:+ and +catalog:+ keywords to qualify the table.
+  # Surrounding double or single quotes (<tt>'"a.b"'</tt> or <tt>"'a.b'"</tt>) are stripped.
   #
   #   require 'duckdb'
   #   db = DuckDB::Database.open

@@ -1338,55 +1338,17 @@ module DuckDBTest
       @con.query('DETACH ext_cat')
     end
 
-    def test_appender_dot_notation_parses_schema_and_table
-      create_table('id INT')
-      appender = nil
-      _, err = capture_io { appender = @con.appender('main.t') }
+    def test_s_new_with_unquoted_dotted_table_name_is_treated_as_literal
+      @con.execute('CREATE TABLE "a.b" (col1 INTEGER)')
+      appender = DuckDB::Appender.new(@con, 'a.b')
 
       assert_instance_of(DuckDB::Appender, appender)
-      assert_empty(err)
     end
 
-    def test_appender_3segment_dot_notation_parses_catalog_schema_table
-      @con.query("ATTACH ':memory:' AS ext_dot")
-      @con.query('CREATE TABLE ext_dot.main.t_dot (id INT)')
-      appender = nil
-      _, err = capture_io { appender = @con.appender('ext_dot.main.t_dot') }
+    def test_appender_with_unquoted_dotted_table_name_is_treated_as_literal
+      @con.execute('CREATE TABLE "a.b" (col1 INTEGER)')
 
-      assert_instance_of(DuckDB::Appender, appender)
-      assert_empty(err)
-    ensure
-      @con.query('DETACH ext_dot')
-    end
-
-    def test_appender_dot_notation_schema_keyword_overrides_dot_schema
-      @con.query('CREATE SCHEMA s_override; CREATE TABLE s_override.t_ovr (id INT)')
-      appender = nil
-      _, err = capture_io { appender = @con.appender('wrong.t_ovr', schema: 's_override') }
-
-      assert_instance_of(DuckDB::Appender, appender)
-      assert_empty(err)
-    end
-
-    def test_s_new_with_dot_notation_parses_schema_and_table
-      @con.query('CREATE SCHEMA s_dot; CREATE TABLE s_dot.t_dot (id INT)')
-      appender = nil
-      _, err = capture_io { appender = DuckDB::Appender.new(@con, 's_dot.t_dot') }
-
-      assert_instance_of(DuckDB::Appender, appender)
-      assert_includes(err, 'deprecated')
-      assert_includes(err, 'DuckDB::Appender.new')
-    end
-
-    def test_s_new_with_3segment_dot_notation_parses_catalog_schema_table
-      @con.query("ATTACH ':memory:' AS ext_new_dot")
-      @con.query('CREATE TABLE ext_new_dot.main.t_new_dot (id INT)')
-      appender = nil
-      _, err = capture_io { appender = DuckDB::Appender.new(@con, 'ext_new_dot.main.t_new_dot') }
-
-      assert_instance_of(DuckDB::Appender, appender)
-      assert_includes(err, 'deprecated')
-      assert_includes(err, 'DuckDB::Appender.new')
+      assert_instance_of(DuckDB::Appender, @con.appender('a.b'))
     end
 
     def test_s_new_with_double_quoted_table_name_is_treated_as_literal
@@ -1403,14 +1365,5 @@ module DuckDBTest
       assert_instance_of(DuckDB::Appender, appender)
     end
 
-    def test_s_new_dot_notation_schema_keyword_overrides_dot_schema
-      @con.query('CREATE SCHEMA s_new_ovr; CREATE TABLE s_new_ovr.t_new_ovr (id INT)')
-      appender = nil
-      _, err = capture_io { appender = DuckDB::Appender.new(@con, 'wrong.t_new_ovr', schema: 's_new_ovr') }
-
-      assert_instance_of(DuckDB::Appender, appender)
-      assert_includes(err, 'deprecated')
-      assert_includes(err, 'DuckDB::Appender.new')
-    end
   end
 end
