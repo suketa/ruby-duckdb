@@ -183,6 +183,27 @@ static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE lo
     return self;
 }
 
+static rubyDuckDBTableFunction *table_function_get_settable_ctx(VALUE self, const char *block_msg) {
+    rubyDuckDBTableFunction *ctx;
+
+    if (!rb_block_given_p()) {
+        rb_raise(rb_eArgError, "%s", block_msg);
+    }
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+
+    if (!ctx->table_function) {
+        rb_raise(eDuckDBError, "Table function is destroyed");
+    }
+
+    return ctx;
+}
+
+static VALUE call_proc_with_one_arg(VALUE arg) {
+    VALUE *args = (VALUE *)arg;
+    return rb_funcall(args[0], rb_intern("call"), 1, args[1]);
+}
+
 /*
  * call-seq:
  *   table_function.bind { |bind_info| ... } -> self
@@ -196,17 +217,7 @@ static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE lo
  *   end
  */
 static VALUE table_function_bind(VALUE self) {
-    rubyDuckDBTableFunction *ctx;
-
-    if (!rb_block_given_p()) {
-        rb_raise(rb_eArgError, "block is required");
-    }
-
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
-
-    if (!ctx->table_function) {
-        rb_raise(eDuckDBError, "Table function is destroyed");
-    }
+    rubyDuckDBTableFunction *ctx = table_function_get_settable_ctx(self, "block is required");
 
     RB_OBJ_WRITE(self, &ctx->bind_proc, rb_block_proc());
 
@@ -215,11 +226,6 @@ static VALUE table_function_bind(VALUE self) {
     rbduckdb_function_executor_ensure_started();
 
     return self;
-}
-
-static VALUE call_bind_proc(VALUE arg) {
-    VALUE *args = (VALUE *)arg;
-    return rb_funcall(args[0], rb_intern("call"), 1, args[1]);
 }
 
 struct bind_dispatch_arg {
@@ -238,7 +244,7 @@ static void execute_bind_callback_protected(void *user_data) {
     bind_info_ctx->bind_info = darg->info;
 
     VALUE call_args[2] = { darg->ctx->bind_proc, bind_info_obj };
-    rb_protect(call_bind_proc, (VALUE)call_args, &state);
+    rb_protect(call_proc_with_one_arg, (VALUE)call_args, &state);
 
     if (state) {
         VALUE msg = rbduckdb_pending_error_message();
@@ -272,17 +278,7 @@ static void table_function_bind_callback(duckdb_bind_info info) {
  *   end
  */
 static VALUE table_function_init(VALUE self) {
-    rubyDuckDBTableFunction *ctx;
-
-    if (!rb_block_given_p()) {
-        rb_raise(rb_eArgError, "block is required for init");
-    }
-
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
-
-    if (!ctx->table_function) {
-        rb_raise(eDuckDBError, "Table function is destroyed");
-    }
+    rubyDuckDBTableFunction *ctx = table_function_get_settable_ctx(self, "block is required for init");
 
     RB_OBJ_WRITE(self, &ctx->init_proc, rb_block_proc());
     duckdb_table_function_set_init(ctx->table_function, table_function_init_callback);
@@ -290,11 +286,6 @@ static VALUE table_function_init(VALUE self) {
     rbduckdb_function_executor_ensure_started();
 
     return self;
-}
-
-static VALUE call_init_proc(VALUE args_val) {
-    VALUE *args = (VALUE *)args_val;
-    return rb_funcall(args[0], rb_intern("call"), 1, args[1]);
 }
 
 struct init_dispatch_arg {
@@ -313,7 +304,7 @@ static void execute_init_callback_protected(void *user_data) {
     init_info_ctx->info = darg->info;
 
     VALUE call_args[2] = { darg->ctx->init_proc, init_info_obj };
-    rb_protect(call_init_proc, (VALUE)call_args, &state);
+    rb_protect(call_proc_with_one_arg, (VALUE)call_args, &state);
 
     if (state) {
         VALUE msg = rbduckdb_pending_error_message();
@@ -349,13 +340,7 @@ static void table_function_init_callback(duckdb_init_info info) {
  *   end
  */
 static VALUE table_function_execute(VALUE self) {
-    rubyDuckDBTableFunction *ctx;
-
-    if (!rb_block_given_p()) {
-        rb_raise(rb_eArgError, "block is required for execute");
-    }
-
-    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+    rubyDuckDBTableFunction *ctx = table_function_get_settable_ctx(self, "block is required for execute");
 
     RB_OBJ_WRITE(self, &ctx->execute_proc, rb_block_proc());
     duckdb_table_function_set_function(ctx->table_function, table_function_execute_callback);

@@ -886,8 +886,7 @@ static void maybe_set_functions(rubyDuckDBAggregateFunction *p) {
     rbduckdb_function_executor_ensure_started();
 }
 
-/* :nodoc: */
-static VALUE aggregate_function__set_init(VALUE self) {
+static VALUE aggregate_function_store_block_proc(VALUE self, size_t slot_offset) {
     rubyDuckDBAggregateFunction *p;
 
     if (!rb_block_given_p()) {
@@ -895,59 +894,31 @@ static VALUE aggregate_function__set_init(VALUE self) {
     }
 
     TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    RB_OBJ_WRITE(self, &p->init_proc, rb_block_proc());
+    RB_OBJ_WRITE(self, (VALUE *)((char *)p + slot_offset), rb_block_proc());
 
     maybe_set_functions(p);
 
     return self;
+}
+
+/* :nodoc: */
+static VALUE aggregate_function__set_init(VALUE self) {
+    return aggregate_function_store_block_proc(self, offsetof(rubyDuckDBAggregateFunction, init_proc));
 }
 
 /* :nodoc: */
 static VALUE aggregate_function__set_update(VALUE self) {
-    rubyDuckDBAggregateFunction *p;
-
-    if (!rb_block_given_p()) {
-        rb_raise(rb_eArgError, "block is required");
-    }
-
-    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    RB_OBJ_WRITE(self, &p->update_proc, rb_block_proc());
-
-    maybe_set_functions(p);
-
-    return self;
+    return aggregate_function_store_block_proc(self, offsetof(rubyDuckDBAggregateFunction, update_proc));
 }
 
 /* :nodoc: */
 static VALUE aggregate_function__set_combine(VALUE self) {
-    rubyDuckDBAggregateFunction *p;
-
-    if (!rb_block_given_p()) {
-        rb_raise(rb_eArgError, "block is required");
-    }
-
-    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    RB_OBJ_WRITE(self, &p->combine_proc, rb_block_proc());
-
-    maybe_set_functions(p);
-
-    return self;
+    return aggregate_function_store_block_proc(self, offsetof(rubyDuckDBAggregateFunction, combine_proc));
 }
 
 /* :nodoc: */
 static VALUE aggregate_function__set_finalize(VALUE self) {
-    rubyDuckDBAggregateFunction *p;
-
-    if (!rb_block_given_p()) {
-        rb_raise(rb_eArgError, "block is required");
-    }
-
-    TypedData_Get_Struct(self, rubyDuckDBAggregateFunction, &aggregate_function_data_type, p);
-    RB_OBJ_WRITE(self, &p->finalize_proc, rb_block_proc());
-
-    maybe_set_functions(p);
-
-    return self;
+    return aggregate_function_store_block_proc(self, offsetof(rubyDuckDBAggregateFunction, finalize_proc));
 }
 
 /* :nodoc: */

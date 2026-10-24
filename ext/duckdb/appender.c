@@ -78,6 +78,12 @@ static VALUE allocate(VALUE klass) {
     return TypedData_Wrap_Struct(klass, &appender_data_type, ctx);
 }
 
+static duckdb_appender appender_of(VALUE self) {
+    rubyDuckDBAppender *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
+    return ctx->appender;
+}
+
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBAppender);
 }
@@ -219,13 +225,11 @@ static VALUE appender__initialize_ext(VALUE self, VALUE con, VALUE catalog, VALU
  *   appender.error_message # => nil
  */
 static VALUE appender_error_message(VALUE self) {
-    rubyDuckDBAppender *ctx;
     duckdb_error_data error_data;
     const char *msg = NULL;
     VALUE rb_msg = Qnil;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    error_data = duckdb_appender_error_data(ctx->appender);
+    error_data = duckdb_appender_error_data(appender_of(self));
     if (duckdb_error_data_has_error(error_data)) {
         msg = duckdb_error_data_message(error_data);
         rb_msg = rb_str_new2(msg);
@@ -236,220 +240,159 @@ static VALUE appender_error_message(VALUE self) {
 
 /* :nodoc: */
 static VALUE appender__end_row(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_appender_end_row(ctx->appender));
+    return state_to_rbool(duckdb_appender_end_row(appender_of(self)));
 }
 
 /* :nodoc: */
 static VALUE appender__append_bool(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
     if (val != Qtrue && val != Qfalse) {
         rb_raise(rb_eArgError, "argument must be boolean");
     }
 
-    return state_to_rbool(duckdb_append_bool(ctx->appender, (val == Qtrue)));
+    return state_to_rbool(duckdb_append_bool(appender_of(self), (val == Qtrue)));
 }
 
 /* :nodoc: */
 static VALUE appender__append_int8(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     int8_t i8val = (int8_t)NUM2INT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_int8(ctx->appender, i8val));
+    return state_to_rbool(duckdb_append_int8(appender_of(self), i8val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_int16(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     int16_t i16val = (int16_t)NUM2INT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_int16(ctx->appender, i16val));
+    return state_to_rbool(duckdb_append_int16(appender_of(self), i16val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_int32(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     int32_t i32val = (int32_t)NUM2INT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_int32(ctx->appender, i32val));
+    return state_to_rbool(duckdb_append_int32(appender_of(self), i32val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_int64(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     int64_t i64val = (int64_t)NUM2LL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_int64(ctx->appender, i64val));
+    return state_to_rbool(duckdb_append_int64(appender_of(self), i64val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_uint8(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     uint8_t ui8val = (uint8_t)NUM2UINT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_uint8(ctx->appender, ui8val));
+    return state_to_rbool(duckdb_append_uint8(appender_of(self), ui8val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_uint16(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     uint16_t ui16val = (uint16_t)NUM2UINT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return  state_to_rbool(duckdb_append_uint16(ctx->appender, ui16val));
+    return  state_to_rbool(duckdb_append_uint16(appender_of(self), ui16val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_uint32(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     uint32_t ui32val = (uint32_t)NUM2UINT(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return  state_to_rbool(duckdb_append_uint32(ctx->appender, ui32val));
+    return  state_to_rbool(duckdb_append_uint32(appender_of(self), ui32val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_uint64(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     uint64_t ui64val = (uint64_t)NUM2ULL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_uint64(ctx->appender, ui64val));
+    return state_to_rbool(duckdb_append_uint64(appender_of(self), ui64val));
 }
 
 /* :nodoc: */
 static VALUE appender__append_float(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     float fval = (float)NUM2DBL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_float(ctx->appender, fval));
+    return state_to_rbool(duckdb_append_float(appender_of(self), fval));
 }
 
 /* :nodoc: */
 static VALUE appender__append_double(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     double dval = NUM2DBL(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_double(ctx->appender, dval));
+    return state_to_rbool(duckdb_append_double(appender_of(self), dval));
 }
 
 /* :nodoc: */
 static VALUE appender__append_varchar(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     /* Length-aware, as duckdb_append_varchar would stop at an embedded NUL. */
     char *pval = StringValuePtr(val);
     long len = RSTRING_LEN(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_varchar_length(ctx->appender, pval, (idx_t)len));
+    return state_to_rbool(duckdb_append_varchar_length(appender_of(self), pval, (idx_t)len));
 }
 
 /* :nodoc: */
 static VALUE appender__append_varchar_length(VALUE self, VALUE val, VALUE len) {
-    rubyDuckDBAppender *ctx;
 
     char *pval = StringValuePtr(val);
     idx_t length = (idx_t)NUM2ULL(len);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_varchar_length(ctx->appender, pval, length));
+    return state_to_rbool(duckdb_append_varchar_length(appender_of(self), pval, length));
 }
 
 /* :nodoc: */
 static VALUE appender__append_blob(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
 
     char *pval = StringValuePtr(val);
     idx_t length = (idx_t)RSTRING_LEN(val);
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_blob(ctx->appender, (void *)pval, length));
+    return state_to_rbool(duckdb_append_blob(appender_of(self), (void *)pval, length));
 }
 
 /* :nodoc: */
 static VALUE appender__append_null(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_null(ctx->appender));
+    return state_to_rbool(duckdb_append_null(appender_of(self)));
 }
 
 /* :nodoc: */
 static VALUE appender__append_default(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_default(ctx->appender));
+    return state_to_rbool(duckdb_append_default(appender_of(self)));
 }
 
 /* :nodoc: */
 static VALUE appender__append_date(VALUE self, VALUE year, VALUE month, VALUE day) {
     duckdb_date dt;
-    rubyDuckDBAppender *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     dt = rbduckdb_to_duckdb_date_from_value(year, month, day);
 
-    return state_to_rbool(duckdb_append_date(ctx->appender, dt));
+    return state_to_rbool(duckdb_append_date(appender_of(self), dt));
 }
 
 /* :nodoc: */
 static VALUE appender__append_interval(VALUE self, VALUE months, VALUE days, VALUE micros) {
     duckdb_interval interval;
-    rubyDuckDBAppender *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     rbduckdb_to_duckdb_interval_from_value(&interval, months, days, micros);
 
-    return state_to_rbool(duckdb_append_interval(ctx->appender, interval));
+    return state_to_rbool(duckdb_append_interval(appender_of(self), interval));
 }
 
 /* :nodoc: */
 static VALUE appender__append_time(VALUE self, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_time time;
-    rubyDuckDBAppender *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     time = rbduckdb_to_duckdb_time_from_value(hour, min, sec, micros);
 
-    return state_to_rbool(duckdb_append_time(ctx->appender, time));
+    return state_to_rbool(duckdb_append_time(appender_of(self), time));
 }
 
 /* :nodoc: */
 static VALUE appender__append_timestamp(VALUE self, VALUE year, VALUE month, VALUE day, VALUE hour, VALUE min, VALUE sec, VALUE micros) {
     duckdb_timestamp timestamp;
 
-    rubyDuckDBAppender *ctx;
-
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
     timestamp = rbduckdb_to_duckdb_timestamp_from_value(year, month, day, hour, min, sec, micros);
 
-    return state_to_rbool(duckdb_append_timestamp(ctx->appender, timestamp));
+    return state_to_rbool(duckdb_append_timestamp(appender_of(self), timestamp));
 }
 
 /* :nodoc: */
@@ -459,11 +402,7 @@ static VALUE appender__append_hugeint(VALUE self, VALUE lower, VALUE upper) {
     hugeint.lower = NUM2ULL(lower);
     hugeint.upper = NUM2LL(upper);
 
-    rubyDuckDBAppender *ctx;
-
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_hugeint(ctx->appender, hugeint));
+    return state_to_rbool(duckdb_append_hugeint(appender_of(self), hugeint));
 }
 
 /* :nodoc: */
@@ -473,102 +412,76 @@ static VALUE appender__append_uhugeint(VALUE self, VALUE lower, VALUE upper) {
     uhugeint.lower = NUM2ULL(lower);
     uhugeint.upper = NUM2ULL(upper);
 
-    rubyDuckDBAppender *ctx;
-
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_append_uhugeint(ctx->appender, uhugeint));
+    return state_to_rbool(duckdb_append_uhugeint(appender_of(self), uhugeint));
 }
 
 /* :nodoc: */
 static VALUE appender__append_uuid(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     duckdb_uhugeint uhugeint;
     duckdb_value uuid_val;
     duckdb_state state;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     rbduckdb_uuid_str_to_uhugeint(val, &uhugeint);
     uuid_val = duckdb_create_uuid(uhugeint);
-    state = duckdb_append_value(ctx->appender, uuid_val);
+    state = duckdb_append_value(appender_of(self), uuid_val);
     duckdb_destroy_value(&uuid_val);
     return state_to_rbool(state);
 }
 
 /* :nodoc: */
 static VALUE appender__append_value(VALUE self, VALUE val) {
-    rubyDuckDBAppender *ctx;
     rubyDuckDBValue *value_ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     value_ctx = rbduckdb_get_struct_value(val);
 
-    return state_to_rbool(duckdb_append_value(ctx->appender, value_ctx->value));
+    return state_to_rbool(duckdb_append_value(appender_of(self), value_ctx->value));
 }
 
 /* :nodoc: */
 static VALUE appender__append_data_chunk(VALUE self, VALUE chunk) {
-    rubyDuckDBAppender *ctx;
     rubyDuckDBDataChunk *chunk_ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     chunk_ctx = rbduckdb_get_struct_data_chunk(chunk);
 
-    return state_to_rbool(duckdb_append_data_chunk(ctx->appender, chunk_ctx->data_chunk));
+    return state_to_rbool(duckdb_append_data_chunk(appender_of(self), chunk_ctx->data_chunk));
 }
 
 /* :nodoc: */
 static VALUE appender__append_default_to_chunk(VALUE self, VALUE chunk, VALUE col, VALUE row) {
-    rubyDuckDBAppender *ctx;
     rubyDuckDBDataChunk *chunk_ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
     chunk_ctx = rbduckdb_get_struct_data_chunk(chunk);
 
-    return state_to_rbool(duckdb_append_default_to_chunk(ctx->appender, chunk_ctx->data_chunk, NUM2ULL(col), NUM2ULL(row)));
+    return state_to_rbool(duckdb_append_default_to_chunk(appender_of(self), chunk_ctx->data_chunk, NUM2ULL(col), NUM2ULL(row)));
 }
 
 /* :nodoc: */
 static VALUE appender__flush(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_appender_flush(ctx->appender));
+    return state_to_rbool(duckdb_appender_flush(appender_of(self)));
 }
 
 #ifdef HAVE_DUCKDB_H_GE_V1_5_0
 /* :nodoc: */
 static VALUE appender__clear(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_appender_clear(ctx->appender));
+    return state_to_rbool(duckdb_appender_clear(appender_of(self)));
 }
 #endif
 
 /* :nodoc: */
 static VALUE appender__add_column(VALUE self, VALUE name) {
     char *p = StringValuePtr(name);
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
 
-    return state_to_rbool(duckdb_appender_add_column(ctx->appender, p));
+    return state_to_rbool(duckdb_appender_add_column(appender_of(self), p));
 }
 
 /* :nodoc: */
 static VALUE appender__clear_columns(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_appender_clear_columns(ctx->appender));
+    return state_to_rbool(duckdb_appender_clear_columns(appender_of(self)));
 }
 
 /* :nodoc: */
 static VALUE appender__close(VALUE self) {
-    rubyDuckDBAppender *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBAppender, &appender_data_type, ctx);
-
-    return state_to_rbool(duckdb_appender_close(ctx->appender));
+    return state_to_rbool(duckdb_appender_close(appender_of(self)));
 }
 
 static VALUE state_to_rbool(duckdb_state state) {
