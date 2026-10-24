@@ -7,12 +7,57 @@
  *
  * See also: FFI gem's approach in ext/ffi_c/Function.c
  *   https://github.com/ffi/ffi/blob/master/ext/ffi_c/Function.c
+ *
+ * This portable sync layer is the only place in this file that splits on
+ * platform. Everything below is written once against these wrappers.
  */
 #ifdef _MSC_VER
 #include <windows.h>
+
+typedef CRITICAL_SECTION sync_mutex_t;
+typedef CONDITION_VARIABLE sync_cond_t;
+
+static void sync_mutex_init(sync_mutex_t *m) { InitializeCriticalSection(m); }
+static void sync_mutex_destroy(sync_mutex_t *m) { DeleteCriticalSection(m); }
+static void sync_lock(sync_mutex_t *m) { EnterCriticalSection(m); }
+static void sync_unlock(sync_mutex_t *m) { LeaveCriticalSection(m); }
+static void sync_cond_init(sync_cond_t *c) { InitializeConditionVariable(c); }
+/* A CONDITION_VARIABLE holds no resources and has no destroy call. */
+static void sync_cond_destroy(sync_cond_t *c) { (void)c; }
+static void sync_signal(sync_cond_t *c) { WakeConditionVariable(c); }
+static void sync_wait(sync_cond_t *c, sync_mutex_t *m) { SleepConditionVariableCS(c, m, INFINITE); }
 #else
 #include <pthread.h>
+
+typedef pthread_mutex_t sync_mutex_t;
+typedef pthread_cond_t sync_cond_t;
+
+static void sync_mutex_init(sync_mutex_t *m) { pthread_mutex_init(m, NULL); }
+static void sync_mutex_destroy(sync_mutex_t *m) { pthread_mutex_destroy(m); }
+static void sync_lock(sync_mutex_t *m) { pthread_mutex_lock(m); }
+static void sync_unlock(sync_mutex_t *m) { pthread_mutex_unlock(m); }
+static void sync_cond_init(sync_cond_t *c) { pthread_cond_init(c, NULL); }
+static void sync_cond_destroy(sync_cond_t *c) { pthread_cond_destroy(c); }
+static void sync_signal(sync_cond_t *c) { pthread_cond_signal(c); }
+static void sync_wait(sync_cond_t *c, sync_mutex_t *m) { pthread_cond_wait(c, m); }
 #endif
+
+/* Under m: set *flag and wake one waiter on c. */
+static void sync_set_and_signal(sync_mutex_t *m, sync_cond_t *c, volatile int *flag) {
+    sync_lock(m);
+    *flag = 1;
+    sync_signal(c);
+    sync_unlock(m);
+}
+
+/* Under m: block on c until *flag is set. */
+static void sync_wait_for_flag(sync_mutex_t *m, sync_cond_t *c, volatile int *flag) {
+    sync_lock(m);
+    while (!*flag) {
+        sync_wait(c, m);
+    }
+    sync_unlock(m);
+}
 
 /*
  * Thread detection functions (available since Ruby 2.3).
@@ -44,26 +89,19 @@ extern int ruby_native_thread_p(void);
 struct callback_request {
     rbduckdb_function_callback_t cb;
     void *user_data;
-    int done;
-#ifdef _MSC_VER
-    CRITICAL_SECTION done_lock;
-    CONDITION_VARIABLE done_cond;
-#else
-    pthread_mutex_t done_mutex;
-    pthread_cond_t done_cond;
-#endif
+    volatile int done;
+    sync_mutex_t done_lock;
+    sync_cond_t done_cond;
     struct callback_request *next;
 };
 
-/* Global executor state */
-#ifdef _MSC_VER
-static CRITICAL_SECTION g_executor_lock;
-static CONDITION_VARIABLE g_executor_cond;
+/*
+ * Global executor state. The lock and condvar are initialized once by
+ * rbduckdb_function_executor_ensure_started, before any worker can use them.
+ */
+static sync_mutex_t g_executor_lock;
+static sync_cond_t g_executor_cond;
 static int g_sync_initialized = 0;
-#else
-static pthread_mutex_t g_executor_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t g_executor_cond = PTHREAD_COND_INITIALIZER;
-#endif
 static struct callback_request *g_request_list = NULL;
 static VALUE g_executor_thread = Qnil;
 static int g_executor_started = 0;
@@ -133,7 +171,7 @@ VALUE rbduckdb_pending_error_message(void) {
 /* Data passed to the executor wait function */
 struct executor_wait_data {
     struct callback_request *request;
-    int stop;
+    volatile int stop;
 };
 
 /* Runs without GVL: blocks on condvar waiting for a callback request */
@@ -142,27 +180,15 @@ static void *executor_wait_func(void *data) {
 
     w->request = NULL;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&g_executor_lock);
+    sync_lock(&g_executor_lock);
     while (!w->stop && g_request_list == NULL) {
-        SleepConditionVariableCS(&g_executor_cond, &g_executor_lock, INFINITE);
+        sync_wait(&g_executor_cond, &g_executor_lock);
     }
     if (g_request_list != NULL) {
         w->request = g_request_list;
         g_request_list = g_request_list->next;
     }
-    LeaveCriticalSection(&g_executor_lock);
-#else
-    pthread_mutex_lock(&g_executor_mutex);
-    while (!w->stop && g_request_list == NULL) {
-        pthread_cond_wait(&g_executor_cond, &g_executor_mutex);
-    }
-    if (g_request_list != NULL) {
-        w->request = g_request_list;
-        g_request_list = g_request_list->next;
-    }
-    pthread_mutex_unlock(&g_executor_mutex);
-#endif
+    sync_unlock(&g_executor_lock);
 
     return NULL;
 }
@@ -171,17 +197,7 @@ static void *executor_wait_func(void *data) {
 static void executor_stop_func(void *data) {
     struct executor_wait_data *w = (struct executor_wait_data *)data;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&g_executor_lock);
-    w->stop = 1;
-    WakeConditionVariable(&g_executor_cond);
-    LeaveCriticalSection(&g_executor_lock);
-#else
-    pthread_mutex_lock(&g_executor_mutex);
-    w->stop = 1;
-    pthread_cond_signal(&g_executor_cond);
-    pthread_mutex_unlock(&g_executor_mutex);
-#endif
+    sync_set_and_signal(&g_executor_lock, &g_executor_cond, &w->stop);
 }
 
 /*
@@ -208,18 +224,7 @@ static VALUE request_run_body(VALUE varg) {
 static VALUE request_signal_done(VALUE varg) {
     struct callback_request *req = (struct callback_request *)varg;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&req->done_lock);
-    req->done = 1;
-    WakeConditionVariable(&req->done_cond);
-    LeaveCriticalSection(&req->done_lock);
-#else
-    pthread_mutex_lock(&req->done_mutex);
-    req->done = 1;
-    pthread_cond_signal(&req->done_cond);
-    pthread_mutex_unlock(&req->done_mutex);
-#endif
-
+    sync_set_and_signal(&req->done_lock, &req->done_cond, &req->done);
     return Qnil;
 }
 
@@ -252,13 +257,11 @@ static VALUE executor_thread_func(void *data) {
 void rbduckdb_function_executor_ensure_started(void) {
     if (g_executor_started) return;
 
-#ifdef _MSC_VER
     if (!g_sync_initialized) {
-        InitializeCriticalSection(&g_executor_lock);
-        InitializeConditionVariable(&g_executor_cond);
+        sync_mutex_init(&g_executor_lock);
+        sync_cond_init(&g_executor_cond);
         g_sync_initialized = 1;
     }
-#endif
 
     proxy_threads_ensure();
 
@@ -280,46 +283,21 @@ static void dispatch_callback_to_executor(rbduckdb_function_callback_t cb, void 
     req.done = 0;
     req.next = NULL;
 
-#ifdef _MSC_VER
-    InitializeCriticalSection(&req.done_lock);
-    InitializeConditionVariable(&req.done_cond);
+    sync_mutex_init(&req.done_lock);
+    sync_cond_init(&req.done_cond);
 
     /* Enqueue the request */
-    EnterCriticalSection(&g_executor_lock);
+    sync_lock(&g_executor_lock);
     req.next = g_request_list;
     g_request_list = &req;
-    WakeConditionVariable(&g_executor_cond);
-    LeaveCriticalSection(&g_executor_lock);
+    sync_signal(&g_executor_cond);
+    sync_unlock(&g_executor_lock);
 
     /* Wait for the executor to process our callback */
-    EnterCriticalSection(&req.done_lock);
-    while (!req.done) {
-        SleepConditionVariableCS(&req.done_cond, &req.done_lock, INFINITE);
-    }
-    LeaveCriticalSection(&req.done_lock);
+    sync_wait_for_flag(&req.done_lock, &req.done_cond, &req.done);
 
-    DeleteCriticalSection(&req.done_lock);
-#else
-    pthread_mutex_init(&req.done_mutex, NULL);
-    pthread_cond_init(&req.done_cond, NULL);
-
-    /* Enqueue the request */
-    pthread_mutex_lock(&g_executor_mutex);
-    req.next = g_request_list;
-    g_request_list = &req;
-    pthread_cond_signal(&g_executor_cond);
-    pthread_mutex_unlock(&g_executor_mutex);
-
-    /* Wait for the executor to process our callback */
-    pthread_mutex_lock(&req.done_mutex);
-    while (!req.done) {
-        pthread_cond_wait(&req.done_cond, &req.done_mutex);
-    }
-    pthread_mutex_unlock(&req.done_mutex);
-
-    pthread_cond_destroy(&req.done_cond);
-    pthread_mutex_destroy(&req.done_mutex);
-#endif
+    sync_cond_destroy(&req.done_cond);
+    sync_mutex_destroy(&req.done_lock);
 }
 
 /* Payload for rb_thread_call_with_gvl wrapper */
@@ -358,36 +336,21 @@ struct worker_proxy {
     volatile int has_request;
     volatile int request_done;
     volatile int thread_exited;
-#ifdef _MSC_VER
-    CRITICAL_SECTION lock;
-    CONDITION_VARIABLE request_cond;
-    CONDITION_VARIABLE request_done_cond;
-    CONDITION_VARIABLE thread_exit_cond;
-#else
-    pthread_mutex_t lock;
-    pthread_cond_t request_cond;
-    pthread_cond_t request_done_cond;
-    pthread_cond_t thread_exit_cond;
-#endif
+    sync_mutex_t lock;
+    sync_cond_t request_cond;
+    sync_cond_t request_done_cond;
+    sync_cond_t thread_exit_cond;
 };
 
 /* Runs without GVL: the proxy waits for a callback request */
 static void *proxy_wait_func(void *data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
+    sync_lock(&proxy->lock);
     while (!proxy->stop_requested && !proxy->has_request) {
-        SleepConditionVariableCS(&proxy->request_cond, &proxy->lock, INFINITE);
+        sync_wait(&proxy->request_cond, &proxy->lock);
     }
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    while (!proxy->stop_requested && !proxy->has_request) {
-        pthread_cond_wait(&proxy->request_cond, &proxy->lock);
-    }
-    pthread_mutex_unlock(&proxy->lock);
-#endif
+    sync_unlock(&proxy->lock);
 
     return NULL;
 }
@@ -396,17 +359,7 @@ static void *proxy_wait_func(void *data) {
 static void proxy_stop_func(void *data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
-    proxy->stop_requested = 1;
-    WakeConditionVariable(&proxy->request_cond);
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    proxy->stop_requested = 1;
-    pthread_cond_signal(&proxy->request_cond);
-    pthread_mutex_unlock(&proxy->lock);
-#endif
+    sync_set_and_signal(&proxy->lock, &proxy->request_cond, &proxy->stop_requested);
 }
 
 static VALUE proxy_run_body(VALUE data) {
@@ -419,19 +372,11 @@ static VALUE proxy_run_body(VALUE data) {
 static VALUE proxy_signal_done(VALUE data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
+    sync_lock(&proxy->lock);
     proxy->has_request = 0;
     proxy->request_done = 1;
-    WakeConditionVariable(&proxy->request_done_cond);
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    proxy->has_request = 0;
-    proxy->request_done = 1;
-    pthread_cond_signal(&proxy->request_done_cond);
-    pthread_mutex_unlock(&proxy->lock);
-#endif
+    sync_signal(&proxy->request_done_cond);
+    sync_unlock(&proxy->lock);
 
     return Qnil;
 }
@@ -481,18 +426,7 @@ static VALUE proxy_cleanup(VALUE data) {
      * Signal that this thread has finished and no longer touches the proxy
      * struct. Only after this may rbduckdb_worker_proxy_destroy free it.
      */
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
-    proxy->thread_exited = 1;
-    WakeConditionVariable(&proxy->thread_exit_cond);
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    proxy->thread_exited = 1;
-    pthread_cond_signal(&proxy->thread_exit_cond);
-    pthread_mutex_unlock(&proxy->lock);
-#endif
-
+    sync_set_and_signal(&proxy->lock, &proxy->thread_exit_cond, &proxy->thread_exited);
     return Qnil;
 }
 
@@ -503,14 +437,10 @@ static VALUE proxy_thread_func(void *data) {
 
 /* Tear down the OS primitives and free the struct. The proxy thread must be gone. */
 static void proxy_free(struct worker_proxy *proxy) {
-#ifdef _MSC_VER
-    DeleteCriticalSection(&proxy->lock);
-#else
-    pthread_cond_destroy(&proxy->thread_exit_cond);
-    pthread_cond_destroy(&proxy->request_done_cond);
-    pthread_cond_destroy(&proxy->request_cond);
-    pthread_mutex_destroy(&proxy->lock);
-#endif
+    sync_cond_destroy(&proxy->thread_exit_cond);
+    sync_cond_destroy(&proxy->request_done_cond);
+    sync_cond_destroy(&proxy->request_cond);
+    sync_mutex_destroy(&proxy->lock);
 
     free(proxy);
 }
@@ -547,17 +477,10 @@ struct worker_proxy *rbduckdb_worker_proxy_create(void) {
     proxy->request_done = 0;
     proxy->thread_exited = 0;
 
-#ifdef _MSC_VER
-    InitializeCriticalSection(&proxy->lock);
-    InitializeConditionVariable(&proxy->request_cond);
-    InitializeConditionVariable(&proxy->request_done_cond);
-    InitializeConditionVariable(&proxy->thread_exit_cond);
-#else
-    pthread_mutex_init(&proxy->lock, NULL);
-    pthread_cond_init(&proxy->request_cond, NULL);
-    pthread_cond_init(&proxy->request_done_cond, NULL);
-    pthread_cond_init(&proxy->thread_exit_cond, NULL);
-#endif
+    sync_mutex_init(&proxy->lock);
+    sync_cond_init(&proxy->request_cond);
+    sync_cond_init(&proxy->request_done_cond);
+    sync_cond_init(&proxy->thread_exit_cond);
 
     rb_protect(proxy_start_thread, (VALUE)proxy, &state);
     if (state) {
@@ -620,55 +543,22 @@ struct worker_proxy *rbduckdb_worker_proxy_create_for_current_thread(void) {
  * Called from the DuckDB worker thread (non-Ruby thread) that owns this proxy.
  */
 static void dispatch_callback_to_proxy(struct worker_proxy *proxy, rbduckdb_function_callback_t cb, void *user_data) {
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
+    sync_lock(&proxy->lock);
     proxy->cb = cb;
     proxy->user_data = user_data;
     proxy->request_done = 0;
     proxy->has_request = 1;
-    WakeConditionVariable(&proxy->request_cond);
-    LeaveCriticalSection(&proxy->lock);
+    sync_signal(&proxy->request_cond);
+    sync_unlock(&proxy->lock);
 
-    EnterCriticalSection(&proxy->lock);
-    while (!proxy->request_done) {
-        SleepConditionVariableCS(&proxy->request_done_cond, &proxy->lock, INFINITE);
-    }
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    proxy->cb = cb;
-    proxy->user_data = user_data;
-    proxy->request_done = 0;
-    proxy->has_request = 1;
-    pthread_cond_signal(&proxy->request_cond);
-    pthread_mutex_unlock(&proxy->lock);
-
-    pthread_mutex_lock(&proxy->lock);
-    while (!proxy->request_done) {
-        pthread_cond_wait(&proxy->request_done_cond, &proxy->lock);
-    }
-    pthread_mutex_unlock(&proxy->lock);
-#endif
+    sync_wait_for_flag(&proxy->lock, &proxy->request_done_cond, &proxy->request_done);
 }
 
 /* Blocks until the proxy thread has fully exited. Runs without the GVL. */
 static void *proxy_join_func(void *data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
 
-#ifdef _MSC_VER
-    EnterCriticalSection(&proxy->lock);
-    while (!proxy->thread_exited) {
-        SleepConditionVariableCS(&proxy->thread_exit_cond, &proxy->lock, INFINITE);
-    }
-    LeaveCriticalSection(&proxy->lock);
-#else
-    pthread_mutex_lock(&proxy->lock);
-    while (!proxy->thread_exited) {
-        pthread_cond_wait(&proxy->thread_exit_cond, &proxy->lock);
-    }
-    pthread_mutex_unlock(&proxy->lock);
-#endif
-
+    sync_wait_for_flag(&proxy->lock, &proxy->thread_exit_cond, &proxy->thread_exited);
     return NULL;
 }
 
