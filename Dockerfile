@@ -1,7 +1,7 @@
 ARG RUBY_VERSION=4.0.1
 FROM ruby:${RUBY_VERSION}
 
-ARG DUCKDB_VERSION=1.5.6
+ARG DUCKDB_VERSION=2.0.0
 ARG VALGRIND_VERSION=3.21.0
 
 RUN apt-get update -qq && \
@@ -11,7 +11,7 @@ RUN apt-get update -qq && \
 COPY getduckdb.sh .
 RUN ./getduckdb.sh
 
-RUN unzip duckdb.zip -d libduckdb && \
+RUN mkdir libduckdb && tar xzf duckdb.tar.gz -C libduckdb && \
     mv libduckdb/duckdb.* /usr/local/include && \
     mv libduckdb/libduckdb.so /usr/local/lib && \
     ldconfig /usr/local/lib
