@@ -6,7 +6,7 @@ module DuckDB
   #   require 'duckdb'
   #   config = DuckDB::Config.new
   #   config['default_order'] = 'DESC'
-  #   db = DuckDB::Database.open(nil, config)
+  #   db = DuckDB::Database.open(config: config)
   #   con = db.connect
   #   con.query('CREATE TABLE numbers (number INTEGER)')
   #   con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')
@@ -49,7 +49,7 @@ module DuckDB
     #   # config.set_config('default_order', 'DESC')
     #   config['default_order'] = 'DESC'
     #
-    #   db = DuckDB::Database.open(nil, config)
+    #   db = DuckDB::Database.open(config: config)
     #   con = db.connect
     #   con.query('CREATE TABLE numbers (number INTEGER)')
     #   con.query('INSERT INTO numbers VALUES (2), (1), (4), (3)')

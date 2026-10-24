@@ -251,7 +251,7 @@ require 'duckdb'
 config = DuckDB::Config.new
 config['default_order'] = 'DESC'
 
-db = DuckDB::Database.open(nil, config)
+db = DuckDB::Database.open(config: config)
 
 con = db.connect
 con.query('CREATE TABLE numbers (number INTEGER)')
