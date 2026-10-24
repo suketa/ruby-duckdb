@@ -59,6 +59,12 @@ static VALUE allocate(VALUE klass) {
     return TypedData_Wrap_Struct(klass, &logical_type_data_type, ctx);
 }
 
+static duckdb_logical_type logical_type_of(VALUE self) {
+    rubyDuckDBLogicalType *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
+    return ctx->logical_type;
+}
+
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBLogicalType);
 }
@@ -90,9 +96,7 @@ static VALUE logical_type_initialize(VALUE self, VALUE type_id_arg) {
 
 /* :nodoc: */
 static VALUE logical_type__type(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_get_type_id(ctx->logical_type));
+    return INT2FIX(duckdb_get_type_id(logical_type_of(self)));
 }
 
 /*
@@ -103,9 +107,7 @@ static VALUE logical_type__type(VALUE self) {
  *
  */
 static VALUE logical_type_width(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_decimal_width(ctx->logical_type));
+    return INT2FIX(duckdb_decimal_width(logical_type_of(self)));
 }
 
 /*
@@ -116,9 +118,7 @@ static VALUE logical_type_width(VALUE self) {
  *
  */
 static VALUE logical_type_scale(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_decimal_scale(ctx->logical_type));
+    return INT2FIX(duckdb_decimal_scale(logical_type_of(self)));
 }
 
 /*
@@ -129,9 +129,7 @@ static VALUE logical_type_scale(VALUE self) {
  *
  */
 static VALUE logical_type_child_count(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_struct_type_child_count(ctx->logical_type));
+    return INT2FIX(duckdb_struct_type_child_count(logical_type_of(self)));
 }
 
 /*
@@ -142,14 +140,11 @@ static VALUE logical_type_child_count(VALUE self) {
  *
  */
 static VALUE logical_type_child_name_at(VALUE self, VALUE cidx) {
-    rubyDuckDBLogicalType *ctx;
     VALUE cname;
     const char *child_name;
     idx_t idx = NUM2ULL(cidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    child_name = duckdb_struct_type_child_name(ctx->logical_type, idx);
+    child_name = duckdb_struct_type_child_name(logical_type_of(self), idx);
     if (child_name == NULL) {
         rb_raise(eDuckDBError, "fail to get name of %llu child", (unsigned long long)idx);
     }
@@ -166,22 +161,20 @@ static VALUE logical_type_child_name_at(VALUE self, VALUE cidx) {
  *
  */
 static VALUE logical_type_child_type(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_logical_type child_logical_type;
     VALUE logical_type = Qnil;
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    type_id = duckdb_get_type_id(ctx->logical_type);
+    type_id = duckdb_get_type_id(logical_type_of(self));
 
     switch(type_id) {
         case DUCKDB_TYPE_LIST:
         case DUCKDB_TYPE_MAP:
-            child_logical_type = duckdb_list_type_child_type(ctx->logical_type);
+            child_logical_type = duckdb_list_type_child_type(logical_type_of(self));
             logical_type = rbduckdb_create_logical_type(child_logical_type);
             break;
         case DUCKDB_TYPE_ARRAY:
-            child_logical_type = duckdb_array_type_child_type(ctx->logical_type);
+            child_logical_type = duckdb_array_type_child_type(logical_type_of(self));
             logical_type = rbduckdb_create_logical_type(child_logical_type);
             break;
         default:
@@ -199,13 +192,10 @@ static VALUE logical_type_child_type(VALUE self) {
  *
  */
 static VALUE logical_type_child_type_at(VALUE self, VALUE cidx) {
-    rubyDuckDBLogicalType *ctx;
     duckdb_logical_type struct_child_type;
     idx_t idx = NUM2ULL(cidx);
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    struct_child_type = duckdb_struct_type_child_type(ctx->logical_type, idx);
+    struct_child_type = duckdb_struct_type_child_type(logical_type_of(self), idx);
     if (struct_child_type == NULL) {
         rb_raise(eDuckDBError,
                  "Failed to get the struct child type at index %llu",
@@ -223,9 +213,7 @@ static VALUE logical_type_child_type_at(VALUE self, VALUE cidx) {
  *
  */
 static VALUE logical_type_size(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_array_type_array_size(ctx->logical_type));
+    return INT2FIX(duckdb_array_type_array_size(logical_type_of(self)));
 }
 
 /*
@@ -236,12 +224,10 @@ static VALUE logical_type_size(VALUE self) {
  *
  */
 static VALUE logical_type_key_type(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
     duckdb_logical_type key_logical_type;
     VALUE logical_type = Qnil;
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    key_logical_type = duckdb_map_type_key_type(ctx->logical_type);
+    key_logical_type = duckdb_map_type_key_type(logical_type_of(self));
     logical_type = rbduckdb_create_logical_type(key_logical_type);
     return logical_type;
 }
@@ -254,12 +240,10 @@ static VALUE logical_type_key_type(VALUE self) {
  *
  */
 static VALUE logical_type_value_type(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
     duckdb_logical_type value_logical_type;
     VALUE logical_type = Qnil;
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    value_logical_type = duckdb_map_type_value_type(ctx->logical_type);
+    value_logical_type = duckdb_map_type_value_type(logical_type_of(self));
     logical_type = rbduckdb_create_logical_type(value_logical_type);
     return logical_type;
 }
@@ -272,9 +256,7 @@ static VALUE logical_type_value_type(VALUE self) {
  *
  */
 static VALUE logical_type_member_count(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_union_type_member_count(ctx->logical_type));
+    return INT2FIX(duckdb_union_type_member_count(logical_type_of(self)));
 }
 
 /*
@@ -285,14 +267,11 @@ static VALUE logical_type_member_count(VALUE self) {
  *
  */
 static VALUE logical_type_member_name_at(VALUE self, VALUE midx) {
-    rubyDuckDBLogicalType *ctx;
     VALUE mname;
     const char *member_name;
     idx_t idx = NUM2ULL(midx);
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    member_name = duckdb_union_type_member_name(ctx->logical_type, idx);
+    member_name = duckdb_union_type_member_name(logical_type_of(self), idx);
     if (member_name == NULL) {
         rb_raise(eDuckDBError, "fail to get name of %llu member", (unsigned long long)idx);
     }
@@ -310,13 +289,10 @@ static VALUE logical_type_member_name_at(VALUE self, VALUE midx) {
  *
  */
 static VALUE logical_type_member_type_at(VALUE self, VALUE midx) {
-    rubyDuckDBLogicalType *ctx;
     duckdb_logical_type union_member_type;
     idx_t idx = NUM2ULL(midx);
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    union_member_type = duckdb_union_type_member_type(ctx->logical_type, idx);
+    union_member_type = duckdb_union_type_member_type(logical_type_of(self), idx);
     if (union_member_type == NULL) {
         rb_raise(eDuckDBError,
                  "Failed to get the union member type at index %llu",
@@ -334,19 +310,16 @@ static VALUE logical_type_member_type_at(VALUE self, VALUE midx) {
  *
  */
 static VALUE logical_type__internal_type(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
     duckdb_type type_id;
     duckdb_type internal_type_id;
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    type_id = duckdb_get_type_id(ctx->logical_type);
+    type_id = duckdb_get_type_id(logical_type_of(self));
     switch (type_id) {
         case DUCKDB_TYPE_DECIMAL:
-            internal_type_id = duckdb_decimal_internal_type(ctx->logical_type);
+            internal_type_id = duckdb_decimal_internal_type(logical_type_of(self));
             break;
         case DUCKDB_TYPE_ENUM:
-            internal_type_id = duckdb_enum_internal_type(ctx->logical_type);
+            internal_type_id = duckdb_enum_internal_type(logical_type_of(self));
             break;
         default:
             internal_type_id = DUCKDB_TYPE_INVALID;
@@ -363,9 +336,7 @@ static VALUE logical_type__internal_type(VALUE self) {
  *
  */
 static VALUE logical_type_dictionary_size(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    return INT2FIX(duckdb_enum_dictionary_size(ctx->logical_type));
+    return INT2FIX(duckdb_enum_dictionary_size(logical_type_of(self)));
 }
 
 /*
@@ -376,14 +347,11 @@ static VALUE logical_type_dictionary_size(VALUE self) {
  *
  */
 static VALUE logical_type_dictionary_value_at(VALUE self, VALUE didx) {
-    rubyDuckDBLogicalType *ctx;
     VALUE dvalue;
     const char *dict_value;
     idx_t idx = NUM2ULL(didx);
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    dict_value = duckdb_enum_dictionary_value(ctx->logical_type, idx);
+    dict_value = duckdb_enum_dictionary_value(logical_type_of(self), idx);
     if (dict_value == NULL) {
         rb_raise(eDuckDBError, "fail to get dictionary value of %llu", (unsigned long long)idx);
     }
@@ -400,13 +368,10 @@ static VALUE logical_type_dictionary_value_at(VALUE self, VALUE didx) {
  *
  */
 static VALUE logical_type_get_alias(VALUE self) {
-    rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias;
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-
-    _alias = duckdb_logical_type_get_alias(ctx->logical_type);
+    _alias = duckdb_logical_type_get_alias(logical_type_of(self));
     if (_alias != NULL) {
         alias = rb_utf8_str_new_cstr(_alias);
     }
@@ -422,12 +387,10 @@ static VALUE logical_type_get_alias(VALUE self) {
  *
  */
 static VALUE logical_type_set_alias(VALUE self, VALUE aname) {
-    rubyDuckDBLogicalType *ctx;
     VALUE alias = Qnil;
     const char *_alias = StringValuePtr(aname);
 
-    TypedData_Get_Struct(self, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
-    duckdb_logical_type_set_alias(ctx->logical_type, _alias);
+    duckdb_logical_type_set_alias(logical_type_of(self), _alias);
     if (_alias != NULL) {
         alias = rb_utf8_str_new_cstr(_alias);
     }
