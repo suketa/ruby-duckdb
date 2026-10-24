@@ -47,20 +47,10 @@ static VALUE result__return_type(VALUE oDuckDBResult);
 static VALUE result__statement_type(VALUE oDuckDBResult);
 static VALUE result__enum_internal_type(VALUE oDuckDBResult, VALUE col_idx);
 
-static VALUE vector_date(void *vector_data, idx_t row_idx);
-static VALUE vector_timestamp(void* vector_data, idx_t row_idx);
-static VALUE vector_time(void* vector_data, idx_t row_idx);
-static VALUE vector_interval(void* vector_data, idx_t row_idx);
 static VALUE vector_blob(void* vector_data, idx_t row_idx);
 static VALUE vector_varchar(void* vector_data, idx_t row_idx);
-static VALUE vector_hugeint(void* vector_data, idx_t row_idx);
-static VALUE vector_uhugeint(void* vector_data, idx_t row_idx);
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 
-static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx);
-static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx);
-static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx);
-static VALUE vector_time_ns(void* vector_data, idx_t row_idx);
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx);
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx);
 static VALUE vector_list(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx);
@@ -311,46 +301,14 @@ VALUE rbduckdb_create_result(void) {
     return allocate(cDuckDBResult);
 }
 
-static VALUE vector_date(void *vector_data, idx_t row_idx) {
-    return rbduckdb_date_to_ruby(((duckdb_date *)vector_data)[row_idx]);
-}
-
-static VALUE vector_timestamp(void* vector_data, idx_t row_idx) {
-    return rbduckdb_timestamp_to_ruby(((duckdb_timestamp *)vector_data)[row_idx]);
-}
-
-static VALUE vector_time(void* vector_data, idx_t row_idx) {
-    return rbduckdb_time_to_ruby(((duckdb_time *)vector_data)[row_idx]);
-}
-
-static VALUE vector_interval(void* vector_data, idx_t row_idx) {
-    return rbduckdb_interval_to_ruby(((duckdb_interval *)vector_data)[row_idx]);
-}
-
 static VALUE vector_blob(void* vector_data, idx_t row_idx) {
     duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
-    if(duckdb_string_is_inlined(s)) {
-        return rb_str_new(s.value.inlined.inlined, s.value.inlined.length);
-    } else {
-        return rb_str_new(s.value.pointer.ptr, s.value.pointer.length);
-    }
+    return rb_str_new(duckdb_string_t_data(&s), duckdb_string_t_length(s));
 }
 
 static VALUE vector_varchar(void* vector_data, idx_t row_idx) {
     duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
-    if(duckdb_string_is_inlined(s)) {
-        return rb_utf8_str_new(s.value.inlined.inlined, s.value.inlined.length);
-    } else {
-        return rb_utf8_str_new(s.value.pointer.ptr, s.value.pointer.length);
-    }
-}
-
-static VALUE vector_hugeint(void* vector_data, idx_t row_idx) {
-    return rbduckdb_hugeint_to_ruby(((duckdb_hugeint *)vector_data)[row_idx]);
-}
-
-static VALUE vector_uhugeint(void* vector_data, idx_t row_idx) {
-    return rbduckdb_uhugeint_to_ruby(((duckdb_uhugeint *)vector_data)[row_idx]);
+    return rb_utf8_str_new(duckdb_string_t_data(&s), duckdb_string_t_length(s));
 }
 
 static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
@@ -389,26 +347,6 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
                       upper,
                       lower
                       );
-}
-
-
-
-static VALUE vector_timestamp_s(void* vector_data, idx_t row_idx) {
-    return rbduckdb_timestamp_s_to_ruby(((duckdb_timestamp_s *)vector_data)[row_idx]);
-}
-
-
-static VALUE vector_timestamp_ms(void* vector_data, idx_t row_idx) {
-    return rbduckdb_timestamp_ms_to_ruby(((duckdb_timestamp_ms *)vector_data)[row_idx]);
-}
-
-
-static VALUE vector_timestamp_ns(void* vector_data, idx_t row_idx) {
-    return rbduckdb_timestamp_ns_to_ruby(((duckdb_timestamp_ns *)vector_data)[row_idx]);
-}
-
-static VALUE vector_time_ns(void* vector_data, idx_t row_idx) {
-    return rbduckdb_time_ns_to_ruby(((duckdb_time_ns *)vector_data)[row_idx]);
 }
 
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
@@ -492,22 +430,22 @@ VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element
             obj = DBL2NUM((((double *) vector_data)[index]));
             break;
         case DUCKDB_TYPE_TIMESTAMP:
-            obj = vector_timestamp(vector_data, index);
+            obj = rbduckdb_timestamp_to_ruby(((duckdb_timestamp *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_DATE:
-            obj = vector_date(vector_data, index);
+            obj = rbduckdb_date_to_ruby(((duckdb_date *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_TIME:
-            obj = vector_time(vector_data, index);
+            obj = rbduckdb_time_to_ruby(((duckdb_time *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_INTERVAL:
-            obj = vector_interval(vector_data, index);
+            obj = rbduckdb_interval_to_ruby(((duckdb_interval *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_HUGEINT:
-            obj = vector_hugeint(vector_data, index);
+            obj = rbduckdb_hugeint_to_ruby(((duckdb_hugeint *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_UHUGEINT:
-            obj = vector_uhugeint(vector_data, index);
+            obj = rbduckdb_uhugeint_to_ruby(((duckdb_uhugeint *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_VARCHAR:
             obj = vector_varchar(vector_data, index);
@@ -519,16 +457,16 @@ VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element
             obj = vector_decimal(element_type, vector_data, index);
             break;
         case DUCKDB_TYPE_TIMESTAMP_S:
-            obj = vector_timestamp_s(vector_data, index);
+            obj = rbduckdb_timestamp_s_to_ruby(((duckdb_timestamp_s *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_TIMESTAMP_MS:
-            obj = vector_timestamp_ms(vector_data, index);
+            obj = rbduckdb_timestamp_ms_to_ruby(((duckdb_timestamp_ms *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_TIMESTAMP_NS:
-            obj = vector_timestamp_ns(vector_data, index);
+            obj = rbduckdb_timestamp_ns_to_ruby(((duckdb_timestamp_ns *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_TIME_NS:
-            obj = vector_time_ns(vector_data, index);
+            obj = rbduckdb_time_ns_to_ruby(((duckdb_time_ns *)vector_data)[index]);
             break;
         case DUCKDB_TYPE_ENUM:
             obj = vector_enum(element_type, vector_data, index);
@@ -703,7 +641,7 @@ static VALUE str_concat_byte(VALUE str, unsigned char byte, int offset) {
     return rb_str_cat(str, p, 8 - offset);
 }
 
-static VALUE bytes_to_string(char *bytes, uint32_t length, int offset) {
+static VALUE bytes_to_string(const char *bytes, uint32_t length, int offset) {
     VALUE str = rb_str_new_literal("");
     str = str_concat_byte(str, bytes[0], offset);
     for (uint32_t i = 1; i < length; i++) {
@@ -714,18 +652,11 @@ static VALUE bytes_to_string(char *bytes, uint32_t length, int offset) {
 
 static VALUE vector_bit(void* vector_data, idx_t row_idx) {
     duckdb_string_t s = (((duckdb_string_t *)vector_data)[row_idx]);
-    char *p;
+    const char *p = duckdb_string_t_data(&s);
+    uint32_t length = duckdb_string_t_length(s);
     int offset;
-    uint32_t length;
     VALUE str = Qnil;
 
-    if(duckdb_string_is_inlined(s)) {
-        length = s.value.inlined.length;
-        p = s.value.inlined.inlined;
-    } else {
-        length = s.value.pointer.length;
-        p = s.value.pointer.ptr;
-    }
     if (length < 2 || (unsigned char)p[0] > 7) {
         rb_raise(eDuckDBError, "invalid BIT value");
     }
