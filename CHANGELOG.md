@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 - add `DuckDB::PendingResult#destroy` (issue #1497).
 - add block form to `DuckDB::Connection#async_query` that destroys the `DuckDB::PendingResult` after the block (issue #1498).
 
+## Breaking Changes
+- remove `DuckDB::BindInfo`, `DuckDB::InitInfo` and `DuckDB::FunctionInfo` (deprecated aliases). Use `DuckDB::TableFunction::BindInfo`, `DuckDB::TableFunction::InitInfo` and `DuckDB::TableFunction::FunctionInfo`.
+- remove the positional config form `DuckDB::Database.open(path, config)`. Use `DuckDB::Database.open(path, config: config)`. `DuckDB::Database.open(nil, ...)` is no longer accepted; omit the path or pass `:memory`.
+- remove the 3-argument form `DuckDB::Appender.new(con, schema, table)`. Use `DuckDB::Appender.new(con, table, schema: schema)`.
+- `DuckDB::Appender.new`, `DuckDB::Connection#appender` and `DuckDB::TableDescription.new` no longer split dot-notation table names such as `'schema.table'`. A name containing a dot is used literally as the table name. Use the `schema:` and `catalog:` keyword arguments to qualify a table. Quoted names (`'"a.b"'` / `"'a.b'"`) still have their quotes stripped.
+- remove the private methods `DuckDB::Result#_enum_dictionary_size`, `#_enum_dictionary_value` and `#_column_type`. Use `columns[i].logical_type.dictionary_size`, `columns[i].logical_type.dictionary_value_at(j)` and `columns[i].send(:_type)`.
+- `DuckDB::PendingResult.new` takes exactly one argument (the prepared statement); the meaningless second argument was removed.
+
 # 1.5.6.1 - 2026-10-17
 - fix `DuckDB::ExtractedStatements.new`, `Connection#query` and `Connection#extract` raising `Failed to extract statements(Database connection closed?).` for SQL that contains no statements, such as only a comment, whitespace or `;` (issue #1490). `ExtractedStatements#size` is now `0`, `Connection#query` returns `nil` and `Connection#extract` returns `[]`. Calling `ExtractedStatements.new` on a closed connection now raises `Database connection closed`.
 
