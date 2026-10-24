@@ -163,18 +163,19 @@ static VALUE logical_type_child_name_at(VALUE self, VALUE cidx) {
 static VALUE logical_type_child_type(VALUE self) {
     duckdb_type type_id;
     duckdb_logical_type child_logical_type;
+    duckdb_logical_type lt = logical_type_of(self);
     VALUE logical_type = Qnil;
 
-    type_id = duckdb_get_type_id(logical_type_of(self));
+    type_id = duckdb_get_type_id(lt);
 
     switch(type_id) {
         case DUCKDB_TYPE_LIST:
         case DUCKDB_TYPE_MAP:
-            child_logical_type = duckdb_list_type_child_type(logical_type_of(self));
+            child_logical_type = duckdb_list_type_child_type(lt);
             logical_type = rbduckdb_create_logical_type(child_logical_type);
             break;
         case DUCKDB_TYPE_ARRAY:
-            child_logical_type = duckdb_array_type_child_type(logical_type_of(self));
+            child_logical_type = duckdb_array_type_child_type(lt);
             logical_type = rbduckdb_create_logical_type(child_logical_type);
             break;
         default:
@@ -312,14 +313,15 @@ static VALUE logical_type_member_type_at(VALUE self, VALUE midx) {
 static VALUE logical_type__internal_type(VALUE self) {
     duckdb_type type_id;
     duckdb_type internal_type_id;
+    duckdb_logical_type lt = logical_type_of(self);
 
-    type_id = duckdb_get_type_id(logical_type_of(self));
+    type_id = duckdb_get_type_id(lt);
     switch (type_id) {
         case DUCKDB_TYPE_DECIMAL:
-            internal_type_id = duckdb_decimal_internal_type(logical_type_of(self));
+            internal_type_id = duckdb_decimal_internal_type(lt);
             break;
         case DUCKDB_TYPE_ENUM:
-            internal_type_id = duckdb_enum_internal_type(logical_type_of(self));
+            internal_type_id = duckdb_enum_internal_type(lt);
             break;
         default:
             internal_type_id = DUCKDB_TYPE_INVALID;
