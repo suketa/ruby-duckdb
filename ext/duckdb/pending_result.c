@@ -5,7 +5,7 @@ static VALUE cDuckDBPendingResult;
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
-static VALUE pending_result_initialize(int argc, VALUE *args, VALUE self);
+static VALUE pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement);
 static VALUE pending_result_execute_task(VALUE self);
 static VALUE pending_result_destroy(VALUE self);
 static VALUE pending_result_execute_pending(VALUE self);
@@ -64,15 +64,8 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBPendingResult);
 }
 
-static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
-    VALUE oDuckDBPreparedStatement;
-    VALUE streaming_p = Qfalse;
+static VALUE pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement) {
     duckdb_state state;
-
-    if (argc == 2) {
-        rb_warn("The second argument of `DuckDB::PendingResult#new` is now meaningless. The result is the same when it is set to true.");
-    }
-    rb_scan_args(argc, argv, "11", &oDuckDBPreparedStatement, &streaming_p);
 
     if (rb_obj_is_kind_of(oDuckDBPreparedStatement, cDuckDBPreparedStatement) != Qtrue) {
         rb_raise(rb_eTypeError, "1st argument must be DuckDB::PreparedStatement");
@@ -182,7 +175,7 @@ void rbduckdb_init_pending_result(void) {
     cDuckDBPendingResult = rb_define_class_under(mDuckDB, "PendingResult", rb_cObject);
     rb_define_alloc_func(cDuckDBPendingResult, allocate);
 
-    rb_define_method(cDuckDBPendingResult, "initialize", pending_result_initialize, -1);
+    rb_define_method(cDuckDBPendingResult, "initialize", pending_result_initialize, 1);
     rb_define_method(cDuckDBPendingResult, "execute_task", pending_result_execute_task, 0);
     rb_define_method(cDuckDBPendingResult, "destroy", pending_result_destroy, 0);
     rb_define_method(cDuckDBPendingResult, "execute_pending", pending_result_execute_pending, 0);

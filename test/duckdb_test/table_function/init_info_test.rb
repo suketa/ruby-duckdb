@@ -185,18 +185,5 @@ module DuckDBTest
 
       assert_nil observed_bind_data
     end
-
-    def test_init_info_alias
-      assert_same DuckDB::TableFunction::InitInfo, DuckDB::InitInfo
-    end
-
-    def test_init_info_alias_deprecation_warning
-      DuckDB.send(:remove_const, :InitInfo) if DuckDB.const_defined?(:InitInfo, false)
-      warning = capture_io { DuckDB::InitInfo }.last
-
-      assert_match(/deprecated/, warning)
-    ensure
-      DuckDB.send(:remove_const, :InitInfo) if DuckDB.const_defined?(:InitInfo, false)
-    end
   end
 end

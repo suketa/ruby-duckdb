@@ -59,21 +59,7 @@ module DuckDB
 
       @default_timezone = value
     end
-
-    def const_missing(name)
-      deprecated = DEPRECATED_CONSTANTS[name]
-      return super unless deprecated
-
-      warn "DuckDB::#{name} is deprecated. Use #{deprecated} instead.", uplevel: 1
-      const_set(name, deprecated.split('::').reduce(Object) { |mod, part| mod.const_get(part) })
-    end
   end
-
-  DEPRECATED_CONSTANTS = {
-    BindInfo: 'DuckDB::TableFunction::BindInfo',
-    InitInfo: 'DuckDB::TableFunction::InitInfo',
-    FunctionInfo: 'DuckDB::TableFunction::FunctionInfo'
-  }.freeze
 
   # Default to local time to preserve existing behavior unless explicitly
   # configured otherwise.

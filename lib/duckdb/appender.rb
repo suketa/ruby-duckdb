@@ -7,10 +7,9 @@ require_relative 'converter'
 module DuckDB
   # The DuckDB::Appender encapsulates DuckDB Appender.
   #
-  # The +table+ argument (2nd positional argument) supports dot-notation and quoting:
-  #
-  # - <tt>'schema.table'</tt> — interpreted as schema-qualified (deprecated; use +schema:+ instead)
-  # - <tt>'"schema.table"'</tt> or <tt>"'schema.table'"</tt> — treated as a literal table name containing a dot
+  # The +table+ argument (2nd positional argument) is used as a literal table name,
+  # even if it contains a dot. Use the +schema:+ and +catalog:+ keywords to qualify the table.
+  # Surrounding double or single quotes (<tt>'"a.b"'</tt> or <tt>"'a.b'"</tt>) are stripped.
   #
   #   require 'duckdb'
   #   db = DuckDB::Database.open
@@ -26,13 +25,10 @@ module DuckDB
       alias from_query create_query
     end
 
-    def initialize(con, table_or_schema, table = nil, schema: nil, catalog: nil)
-      if table
-        warn_deprecated_3arg
-        _initialize(con, table_or_schema, table)
-      else
-        initialize_with_parsed_table(con, table_or_schema, schema: schema, catalog: catalog)
-      end
+    def initialize(con, table, schema: nil, catalog: nil)
+      raise DuckDB::Error, '2nd argument must be table name.' if table.nil?
+
+      initialize_with_parsed_table(con, table, schema: schema, catalog: catalog)
     end
 
     # :call-seq:
@@ -800,14 +796,6 @@ module DuckDB
     end
 
     private
-
-    def warn_deprecated_3arg # :nodoc:
-      warn(
-        'DuckDB::Appender.new(con, schema, table) is deprecated. ' \
-        'Use DuckDB::Appender.new(con, table, schema: schema) instead.',
-        category: :deprecated
-      )
-    end
 
     def initialize_with_parsed_table(con, table_name, schema:, catalog:) # :nodoc:
       table_name, schema, catalog = parse_table_name(table_name, schema, catalog)

@@ -182,18 +182,5 @@ module DuckDBTest
 
       assert_equal table_function, result
     end
-
-    def test_bind_info_alias
-      assert_same DuckDB::TableFunction::BindInfo, DuckDB::BindInfo
-    end
-
-    def test_bind_info_alias_deprecation_warning
-      DuckDB.send(:remove_const, :BindInfo) if DuckDB.const_defined?(:BindInfo, false)
-      warning = capture_io { DuckDB::BindInfo }.last
-
-      assert_match(/deprecated/, warning)
-    ensure
-      DuckDB.send(:remove_const, :BindInfo) if DuckDB.const_defined?(:BindInfo, false)
-    end
   end
 end

@@ -28,9 +28,9 @@ module DuckDB
       # +con+ must be a DuckDB::Connection. +table+ is the table name (String).
       # Optionally pass +schema:+ and/or +catalog:+ to qualify the table.
       #
-      # The +table+ argument supports dot-notation and quoting:
-      # - <tt>'schema.table'</tt> — interpreted as schema-qualified (deprecated; use +schema:+ instead)
-      # - <tt>'"a.b"'</tt> or <tt>"'a.b'"</tt> — treated as a literal table name containing a dot
+      # The +table+ argument is used as a literal table name, even if it contains a dot.
+      # Use +schema:+ and +catalog:+ to qualify the table. Surrounding double or single
+      # quotes (<tt>'"a.b"'</tt> or <tt>"'a.b'"</tt>) are stripped.
       #
       # Raises DuckDB::Error if the connection is invalid, the table name is nil,
       # or the table (or schema/catalog) does not exist.

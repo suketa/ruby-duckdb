@@ -312,7 +312,7 @@ module DuckDBTest
     def test_appender_with_schema
       @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (col1 INTEGER, col2 STRING)')
 
-      assert_instance_of(DuckDB::Appender, @con.appender('a.b'))
+      assert_instance_of(DuckDB::Appender, @con.appender('b', schema: 'a'))
     end
 
     def test_appender_with_double_quoted_table_name
