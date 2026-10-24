@@ -473,20 +473,24 @@ static VALUE logical_type_s__create_map_type(VALUE klass, VALUE key, VALUE value
     return rbduckdb_create_logical_type(new_type);
 }
 
-/* :nodoc: */
-static VALUE logical_type_s__create_union_type(VALUE klass, VALUE members) {
+typedef duckdb_logical_type (*create_members_type_fn)(duckdb_logical_type *types, const char **names, idx_t count);
+
+static VALUE create_members_type(VALUE members, create_members_type_fn create_fn, const char *type_name) {
     idx_t member_size = RHASH_SIZE(members);
     duckdb_logical_type *member_types = NULL;
     const char **member_names = NULL;
     duckdb_logical_type new_type;
+    VALUE types_buf;
+    VALUE names_buf;
     VALUE keys;
 
     if (member_size == 0) {
         rb_raise(rb_eArgError, "members hash must not be empty");
     }
 
-    member_types = (duckdb_logical_type *)xcalloc(member_size, sizeof(duckdb_logical_type));
-    member_names = (const char **)xcalloc(member_size, sizeof(const char *));
+    /* GC-managed buffers are released even if reading a member raises. */
+    member_types = ALLOCV_N(duckdb_logical_type, types_buf, member_size);
+    member_names = ALLOCV_N(const char *, names_buf, member_size);
 
     keys = rb_funcall(members, rb_intern("keys"), 0);
 
@@ -499,54 +503,26 @@ static VALUE logical_type_s__create_union_type(VALUE klass, VALUE members) {
         member_types[i] = type_ctx->logical_type;
     }
 
-    new_type = duckdb_create_union_type(member_types, member_names, member_size);
+    new_type = create_fn(member_types, member_names, member_size);
 
-    xfree(member_types);
-    xfree(member_names);
+    ALLOCV_END(types_buf);
+    ALLOCV_END(names_buf);
 
     if (!new_type) {
-        rb_raise(eDuckDBError, "Failed to create union type");
+        rb_raise(eDuckDBError, "Failed to create %s type", type_name);
     }
 
     return rbduckdb_create_logical_type(new_type);
 }
 
 /* :nodoc: */
+static VALUE logical_type_s__create_union_type(VALUE klass, VALUE members) {
+    return create_members_type(members, duckdb_create_union_type, "union");
+}
+
+/* :nodoc: */
 static VALUE logical_type_s__create_struct_type(VALUE klass, VALUE members) {
-    idx_t member_size = RHASH_SIZE(members);
-    duckdb_logical_type *member_types = NULL;
-    const char **member_names = NULL;
-    duckdb_logical_type new_type;
-    VALUE keys;
-
-    if (member_size == 0) {
-        rb_raise(rb_eArgError, "members hash must not be empty");
-    }
-
-    member_types = (duckdb_logical_type *)xcalloc(member_size, sizeof(duckdb_logical_type));
-    member_names = (const char **)xcalloc(member_size, sizeof(const char *));
-
-    keys = rb_funcall(members, rb_intern("keys"), 0);
-
-    for (idx_t i = 0; i < member_size; i++) {
-        VALUE key = rb_ary_entry(keys, (long)i);
-        VALUE val = rb_hash_aref(members, key);
-        rubyDuckDBLogicalType *type_ctx = rbduckdb_get_struct_logical_type(val);
-
-        member_names[i] = rb_id2name(SYM2ID(key));
-        member_types[i] = type_ctx->logical_type;
-    }
-
-    new_type = duckdb_create_struct_type(member_types, member_names, member_size);
-
-    xfree(member_types);
-    xfree(member_names);
-
-    if (!new_type) {
-        rb_raise(eDuckDBError, "Failed to create struct type");
-    }
-
-    return rbduckdb_create_logical_type(new_type);
+    return create_members_type(members, duckdb_create_struct_type, "struct");
 }
 
 /* :nodoc: */

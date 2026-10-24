@@ -505,6 +505,20 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_struct }
     end
 
+    def test_s_private_create_union_type_with_invalid_member
+      int = DuckDB::LogicalType::INTEGER
+      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_union_type, { 'a' => int }) }
+      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_union_type, { a: :integer }) }
+      assert_raises(ArgumentError) { DuckDB::LogicalType.send(:_create_union_type, {}) }
+    end
+
+    def test_s_private_create_struct_type_with_invalid_member
+      int = DuckDB::LogicalType::INTEGER
+      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_struct_type, { 'a' => int }) }
+      assert_raises(TypeError) { DuckDB::LogicalType.send(:_create_struct_type, { a: :integer }) }
+      assert_raises(ArgumentError) { DuckDB::LogicalType.send(:_create_struct_type, {}) }
+    end
+
     def test_s_create_enum
       enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
 
