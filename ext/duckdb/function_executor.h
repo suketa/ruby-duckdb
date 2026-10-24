@@ -73,6 +73,16 @@ struct worker_proxy;
 struct worker_proxy *rbduckdb_worker_proxy_create(void);
 
 /*
+ * Create a per-worker proxy for the calling DuckDB worker thread, for use from
+ * a per-worker init callback. Returns NULL when called from a Ruby thread (the
+ * callback then runs inline, no proxy needed) or when creation failed (the
+ * exception is swallowed; callers fall back to the global executor). The caller
+ * stores the proxy as its state, with rbduckdb_worker_proxy_destroy as the
+ * destructor.
+ */
+struct worker_proxy *rbduckdb_worker_proxy_create_for_current_thread(void);
+
+/*
  * Destroy a per-worker proxy. The signature matches duckdb_delete_callback_t so
  * it can be handed directly to DuckDB. Safe to call from a non-Ruby thread: it
  * touches only OS primitives and frees memory allocated with calloc.

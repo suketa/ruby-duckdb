@@ -538,6 +538,43 @@ struct worker_proxy *rbduckdb_worker_proxy_create(void) {
     return proxy;
 }
 
+struct create_proxy_callback_arg {
+    struct worker_proxy *proxy;
+};
+
+static VALUE create_proxy_callback(VALUE varg) {
+    struct create_proxy_callback_arg *arg = (struct create_proxy_callback_arg *)varg;
+    arg->proxy = rbduckdb_worker_proxy_create();
+    return Qnil;
+}
+
+/*
+ * rbduckdb_worker_proxy_create may raise (NoMemError, Thread.new failure),
+ * and the executor runs callbacks unprotected - a raise would longjmp past
+ * its done-signaling and block the waiting DuckDB worker forever. Swallow
+ * the exception instead: the proxy stays NULL and the caller falls back to
+ * the global executor.
+ */
+static void create_proxy_callback_protected(void *user_data) {
+    int exception_state;
+
+    rb_protect(create_proxy_callback, (VALUE)user_data, &exception_state);
+    if (exception_state) {
+        rb_set_errinfo(Qnil);
+    }
+}
+
+struct worker_proxy *rbduckdb_worker_proxy_create_for_current_thread(void) {
+    struct create_proxy_callback_arg arg;
+
+    /* A Ruby calling thread runs the callback inline (Case 1/2); no proxy needed. */
+    if (ruby_native_thread_p()) return NULL;
+
+    arg.proxy = NULL;
+    rbduckdb_function_executor_dispatch(create_proxy_callback_protected, &arg);
+    return arg.proxy;
+}
+
 /*
  * Hand a callback to a proxy and block until it completes.
  * Called from the DuckDB worker thread (non-Ruby thread) that owns this proxy.
