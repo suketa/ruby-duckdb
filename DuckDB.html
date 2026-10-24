@@ -496,8 +496,6 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li class="calls-super" ><a href="#method-c-const_missing">const_missing</a></li>
-
         <li ><a href="#method-c-default_timezone-3D">default_timezone=</a></li>
 
         <li ><a href="#method-c-library_version">library_version</a></li>
@@ -589,14 +587,6 @@
         </dd>
 
 
-        <dt id="DEPRECATED_CONSTANTS">DEPRECATED_CONSTANTS</dt>
-
-        <dd>
-
-          
-        </dd>
-
-
         <dt id="LIBRARY_VERSION">LIBRARY_VERSION</dt>
 
         <dd>
@@ -671,57 +661,6 @@
        <header>
          <h3 id="public-class-methods"><a href="#public-class-methods">Public Class Methods</a></h3>
        </header>
-
-
-      <div id="method-c-const_missing" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-c-const_missing" title="Link to this method">
-                <span class="method-name">const_missing</span>
-                <span class="method-args">(name)</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="const_missing-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb.rb, line 63</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">const_missing</span>(<span class="ruby-identifier">name</span>)
-  <span class="ruby-identifier">deprecated</span> = <span class="ruby-constant">DEPRECATED_CONSTANTS</span>[<span class="ruby-identifier">name</span>]
-  <span class="ruby-keyword">return</span> <span class="ruby-keyword">super</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">deprecated</span>
-
-  <span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;DuckDB::#{name} is deprecated. Use #{deprecated} instead.&quot;</span>, <span class="ruby-value">uplevel:</span> <span class="ruby-value">1</span>
-  <span class="ruby-identifier">const_set</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">deprecated</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;::&#39;</span>).<span class="ruby-identifier">reduce</span>(<span class="ruby-constant">Object</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">mod</span>, <span class="ruby-identifier">part</span><span class="ruby-operator">|</span> <span class="ruby-identifier">mod</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">part</span>) })
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          
-
-
-            <div class="method-calls-super">
-              Calls superclass method
-              
-            </div>
-
-        </div>
-
-
-
-
-
-      </div>
 
 
       <div id="method-c-default_timezone-3D" class="method-detail anchor-link ">

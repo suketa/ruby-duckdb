@@ -664,12 +664,7 @@
 
 <p><code>con</code> must be a <a href="Connection.html"><code>DuckDB::Connection</code></a>. <code>table</code> is the table name (String). Optionally pass <code>schema:</code> and/or <code>catalog:</code> to qualify the table.</p>
 
-<p>The <code>table</code> argument supports dot-notation and quoting:</p>
-<ul><li>
-<p><code>&#39;schema.table&#39;</code> — interpreted as schema-qualified (deprecated; use <code>schema:</code> instead)</p>
-</li><li>
-<p><code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code> — treated as a literal table name containing a dot</p>
-</li></ul>
+<p>The <code>table</code> argument is used as a literal table name, even if it contains a dot. Use <code>schema:</code> and <code>catalog:</code> to qualify the table. Surrounding double or single quotes (<code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code>) are stripped.</p>
 
 <p>Raises <a href="Error.html"><code>DuckDB::Error</code></a> if the connection is invalid, the table name is nil, or the table (or schema/catalog) does not exist.</p>
 

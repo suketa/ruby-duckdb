@@ -574,7 +574,7 @@
 <pre>require &#39;duckdb&#39;
 config = DuckDB::Config.new
 config[&#39;default_order&#39;] = &#39;DESC&#39;
-db = DuckDB::Database.open(nil, config)
+db = DuckDB::Database.open(config: config)
 con = db.connect
 con.query(&#39;CREATE TABLE numbers (number INTEGER)&#39;)
 con.query(&#39;INSERT INTO numbers VALUES (2), (1), (4), (3)&#39;)
@@ -872,7 +872,7 @@ r.first.first # =&gt; 4</pre>
 # config.set_config(&#39;default_order&#39;, &#39;DESC&#39;)
 config[&#39;default_order&#39;] = &#39;DESC&#39;
 
-db = DuckDB::Database.open(nil, config)
+db = DuckDB::Database.open(config: config)
 con = db.connect
 con.query(&#39;CREATE TABLE numbers (number INTEGER)&#39;)
 con.query(&#39;INSERT INTO numbers VALUES (2), (1), (4), (3)&#39;)

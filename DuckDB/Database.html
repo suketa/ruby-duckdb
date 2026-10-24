@@ -667,7 +667,7 @@
             <div class="method-heading">
               <a href="#method-c-open" title="Link to this method">
                 <span class="method-name">open</span>
-                <span class="method-args">(path = :memory, *args, config: nil) { |db| ... }</span>
+                <span class="method-args">(path = :memory, config: nil) { |db| ... }</span>
               </a>
             </div>
 
@@ -681,9 +681,7 @@
           </div>
           <div class="method-source-code" id="open-source">
             <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/database.rb, line 53</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">open</span>(<span class="ruby-identifier">path</span> = <span class="ruby-value">:memory</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>)
-  <span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">_handle_deprecated_open_args</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">config</span>)
-
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">open</span>(<span class="ruby-identifier">path</span> = <span class="ruby-value">:memory</span>, <span class="ruby-value">config:</span> <span class="ruby-keyword">nil</span>)
   <span class="ruby-identifier">db</span> = <span class="ruby-identifier">new</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value">config:</span> <span class="ruby-identifier">config</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">db</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
 
@@ -812,7 +810,7 @@
             </details>
           </div>
           <div class="method-source-code" id="connect-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/database.rb, line 103</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/database.rb, line 86</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">connect</span>
   <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">_connect</span>
   <span class="ruby-keyword">return</span> <span class="ruby-identifier">conn</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>

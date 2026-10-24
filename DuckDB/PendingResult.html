@@ -615,7 +615,7 @@
             <div class="method-heading">
               <a href="#method-c-new" title="Link to this method">
                 <span class="method-name">new</span>
-                <span class="method-args">(p1, p2 = v2)</span>
+                <span class="method-args">(p1)</span>
               </a>
             </div>
 
@@ -628,15 +628,8 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="c" data-language="c">static VALUE pending_result_initialize(int argc, VALUE *argv, VALUE self) {
-    VALUE oDuckDBPreparedStatement;
-    VALUE streaming_p = Qfalse;
+            <pre class="c" data-language="c">static VALUE pending_result_initialize(VALUE self, VALUE oDuckDBPreparedStatement) {
     duckdb_state state;
-
-    if (argc == 2) {
-        rb_warn(&quot;The second argument of `DuckDB::PendingResult#new` is now meaningless. The result is the same when it is set to true.&quot;);
-    }
-    rb_scan_args(argc, argv, &quot;11&quot;, &amp;oDuckDBPreparedStatement, &amp;streaming_p);
 
     if (rb_obj_is_kind_of(oDuckDBPreparedStatement, cDuckDBPreparedStatement) != Qtrue) {
         rb_raise(rb_eTypeError, &quot;1st argument must be DuckDB::PreparedStatement&quot;);

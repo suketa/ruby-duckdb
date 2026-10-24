@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="module DuckDB::TableNameParser: TableDescription. tt&gt;&#39;schema."
+      content="module DuckDB::TableNameParser: TableDescription. tt&gt;&#39;&quot;a."
     >
 
 
@@ -28,7 +28,7 @@
 
 
 
-    <meta property="og:description" content="TableDescription. tt&gt;&#39;schema.">
+    <meta property="og:description" content="TableDescription. tt&gt;&#39;&quot;a.">
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-    <meta name="twitter:description" content="TableDescription. tt&gt;&#39;schema.">
+    <meta name="twitter:description" content="TableDescription. tt&gt;&#39;&quot;a.">
 
 
 
@@ -508,12 +508,7 @@
     
 <p><a href="TableNameParser.html"><code>DuckDB::TableNameParser</code></a> provides shared table name parsing for classes that accept a table name argument, such as <a href="Appender.html"><code>DuckDB::Appender</code></a> and <a href="TableDescription.html"><code>DuckDB::TableDescription</code></a>.</p>
 
-<p>It handles:</p>
-<ul><li>
-<p>Dot-notation: <code>&#39;schema.table&#39;</code> is split into schema and table (deprecated).</p>
-</li><li>
-<p>Quoting: <code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code> strips the quotes and treats the name literally.</p>
-</li></ul>
+<p>It handles quoting: <code>&#39;&quot;a.b&quot;&#39;</code> or <code>&quot;&#39;a.b&#39;&quot;</code> strips the quotes and treats the name literally. A name containing a dot (e.g. <code>&#39;a.b&#39;</code>) is used as-is, as a literal table name; it is never split into schema and table. Use the <code>schema:</code> and <code>catalog:</code> keyword arguments to qualify a table.</p>
 
   </section>
 

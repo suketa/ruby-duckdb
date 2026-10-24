@@ -482,6 +482,21 @@
 <p>add block form to <a href="DuckDB/Connection.html#method-i-async_query"><code>DuckDB::Connection#async_query</code></a> that destroys the <a href="DuckDB/PendingResult.html"><code>DuckDB::PendingResult</code></a> after the block (issue #1498).</p>
 </li></ul>
 
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
+<ul><li>
+<p>remove <code>DuckDB::BindInfo</code>, <code>DuckDB::InitInfo</code> and <code>DuckDB::FunctionInfo</code> (deprecated aliases). Use <code>DuckDB::TableFunction::BindInfo</code>, <a href="DuckDB/TableFunction/InitInfo.html"><code>DuckDB::TableFunction::InitInfo</code></a> and <a href="DuckDB/TableFunction/FunctionInfo.html"><code>DuckDB::TableFunction::FunctionInfo</code></a>.</p>
+</li><li>
+<p>remove the positional config form <a href="DuckDB/Database.html#method-c-open"><code>DuckDB::Database.open(path, config)</code></a>. Use <code>DuckDB::Database.open(path, config: config)</code>.</p>
+</li><li>
+<p>remove the 3-argument form <a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new(con, schema, table)</code></a>. Use <code>DuckDB::Appender.new(con, table, schema: schema)</code>.</p>
+</li><li>
+<p><a href="DuckDB/Appender.html#method-c-new"><code>DuckDB::Appender.new</code></a>, <a href="DuckDB/Connection.html#method-i-appender"><code>DuckDB::Connection#appender</code></a> and <a href="DuckDB/TableDescription.html#method-c-new"><code>DuckDB::TableDescription.new</code></a> no longer split dot-notation table names such as <code>&#39;schema.table&#39;</code>. A name containing a dot is used literally as the table name. Use the <code>schema:</code> and <code>catalog:</code> keyword arguments to qualify a table. Quoted names (<code>&#39;&quot;a.b&quot;&#39;</code> / <code>&quot;&#39;a.b&#39;&quot;</code>) still have their quotes stripped.</p>
+</li><li>
+<p>remove the private methods <code>DuckDB::Result#_enum_dictionary_size</code>, _enum_dictionary_value and _column_type. Use <code>columns[i].logical_type.dictionary_size</code>, <code>columns[i].logical_type.dictionary_value_at(j)</code> and <code>columns[i].type</code>.</p>
+</li><li>
+<p><a href="DuckDB/PendingResult.html#method-c-new"><code>DuckDB::PendingResult.new</code></a> takes exactly one argument (the prepared statement); the meaningless second argument was removed.</p>
+</li></ul>
+
 <h1 id="label-1.5.6.1+-+2026-10-17"><a href="#label-1.5.6.1+-+2026-10-17">1.5.6.1 - 2026-10-17</a></h1>
 <ul><li>
 <p>fix <a href="DuckDB/ExtractedStatements.html#method-c-new"><code>DuckDB::ExtractedStatements.new</code></a>, <code>Connection#query</code> and <code>Connection#extract</code> raising <code>Failed to extract statements(Database connection closed?).</code> for SQL that contains no statements, such as only a comment, whitespace or <code>;</code> (issue #1490). <code>ExtractedStatements#size</code> is now <code>0</code>, <code>Connection#query</code> returns <code>nil</code> and <code>Connection#extract</code> returns <code>[]</code>. Calling <code>ExtractedStatements.new</code> on a closed connection now raises <code>Database connection closed</code>.</p>
