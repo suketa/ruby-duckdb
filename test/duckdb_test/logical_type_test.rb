@@ -473,6 +473,10 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_union }
     end
 
+    def test_s_create_union_with_string_key
+      assert_raises(TypeError) { DuckDB::LogicalType.create_union(**{ 'a' => DuckDB::LogicalType::INTEGER }) }
+    end
+
     def test_s_create_struct_with_logical_type
       struct_type = DuckDB::LogicalType.create_struct(
         name: DuckDB::LogicalType::VARCHAR,
@@ -505,6 +509,10 @@ module DuckDBTest
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_struct }
     end
 
+    def test_s_create_struct_with_string_key
+      assert_raises(TypeError) { DuckDB::LogicalType.create_struct(**{ 'a' => DuckDB::LogicalType::INTEGER }) }
+    end
+
     def test_s_create_enum
       enum_type = DuckDB::LogicalType.create_enum('happy', 'sad', 'neutral')
 
@@ -535,6 +543,10 @@ module DuckDBTest
 
     def test_s_create_enum_with_no_values
       assert_raises(ArgumentError) { DuckDB::LogicalType.create_enum }
+    end
+
+    def test_s_create_enum_with_nul_member
+      assert_raises(ArgumentError) { DuckDB::LogicalType.create_enum('ok', "bad\0name") }
     end
 
     def test_s_create_decimal
