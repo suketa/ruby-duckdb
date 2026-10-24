@@ -26,13 +26,8 @@ module DuckDB
       alias from_query create_query
     end
 
-    def initialize(con, table_or_schema, table = nil, schema: nil, catalog: nil)
-      if table
-        warn_deprecated_3arg
-        _initialize(con, table_or_schema, table)
-      else
-        initialize_with_parsed_table(con, table_or_schema, schema: schema, catalog: catalog)
-      end
+    def initialize(con, table, schema: nil, catalog: nil)
+      initialize_with_parsed_table(con, table, schema: schema, catalog: catalog)
     end
 
     # :call-seq:
@@ -800,14 +795,6 @@ module DuckDB
     end
 
     private
-
-    def warn_deprecated_3arg # :nodoc:
-      warn(
-        'DuckDB::Appender.new(con, schema, table) is deprecated. ' \
-        'Use DuckDB::Appender.new(con, table, schema: schema) instead.',
-        category: :deprecated
-      )
-    end
 
     def initialize_with_parsed_table(con, table_name, schema:, catalog:) # :nodoc:
       table_name, schema, catalog = parse_table_name(table_name, schema, catalog)

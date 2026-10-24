@@ -48,11 +48,11 @@ module DuckDBTest
 
     def test_s_new_with_schema
       @con.execute('CREATE SCHEMA a; CREATE TABLE a.b (id INT);')
-      appender = DuckDB::Appender.new(@con, 'a', 'b')
+      appender = DuckDB::Appender.new(@con, 'b', schema: 'a')
 
       assert_instance_of(DuckDB::Appender, appender)
 
-      assert_raises(DuckDB::Error) { appender = DuckDB::Appender.new(@con, 'b', 'b') }
+      assert_raises(DuckDB::Error) { DuckDB::Appender.new(@con, 'b', schema: 'b') }
     end
 
     def test_s_new_with_keyword_schema
@@ -292,7 +292,7 @@ module DuckDBTest
 
     def test_append_data_chunk
       create_table('id BIGINT, value VARCHAR')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::BIGINT, DuckDB::LogicalType::VARCHAR])
 
       chunk.set_value(0, 0, 42)
@@ -309,7 +309,7 @@ module DuckDBTest
 
     def test_append_default_to_chunk
       create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
 
       appender.append_default_to_chunk(chunk, 1, 0)
@@ -327,7 +327,7 @@ module DuckDBTest
 
     def test_append_default_to_chunk_with_invalid_chunk
       create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
 
       assert_raises(ArgumentError) do
         appender.append_default_to_chunk('not a chunk', 1, 0)
@@ -336,7 +336,7 @@ module DuckDBTest
 
     def test_append_default_to_chunk_with_col_out_of_bounds
       create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
 
       assert_raises(DuckDB::Error) do
@@ -346,7 +346,7 @@ module DuckDBTest
 
     def test_append_default_to_chunk_with_row_out_of_bounds
       create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
 
       assert_raises(DuckDB::Error) do
@@ -357,7 +357,7 @@ module DuckDBTest
     def test_append_default_to_chunk_without_default
       # col 0 (name VARCHAR) has no DEFAULT - appends NULL, no error
       create_table('name VARCHAR, enabled BOOLEAN DEFAULT TRUE')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
 
       appender.append_default_to_chunk(chunk, 0, 0)
@@ -373,7 +373,7 @@ module DuckDBTest
       # NOT NULL column with no DEFAULT: append_default_to_chunk appends NULL without error,
       # but DuckDB::Error is raised at close (flush) time
       create_table('name VARCHAR NOT NULL, enabled BOOLEAN DEFAULT TRUE')
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::BOOLEAN])
 
       appender.append_default_to_chunk(chunk, 0, 0) # no error here
@@ -390,7 +390,7 @@ module DuckDBTest
       # random() is non-foldable, so DuckDB::Error is raised
       @con.execute('CREATE SEQUENCE seq START 1')
       create_table("name VARCHAR, seq_val INTEGER DEFAULT nextval('seq')")
-      appender = DuckDB::Appender.new(@con, '', table)
+      appender = DuckDB::Appender.new(@con, table)
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR, DuckDB::LogicalType::INTEGER])
 
       assert_raises(DuckDB::Error) do
@@ -1336,13 +1336,6 @@ module DuckDBTest
       assert_instance_of(DuckDB::Appender, appender)
     ensure
       @con.query('DETACH ext_cat')
-    end
-
-    def test_s_new_3arg_emits_deprecation_warning
-      create_table('id INT')
-      _, err = capture_io { DuckDB::Appender.new(@con, nil, table) }
-
-      assert_includes(err, 'deprecated')
     end
 
     def test_appender_dot_notation_parses_schema_and_table
