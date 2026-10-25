@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- raise `RangeError` instead of aborting the process when an out-of-range date or timestamp is passed to `bind_date`, `bind_timestamp`, `bind_timestamp_tz`, `Appender#append_date`, `Appender#append_timestamp`, `DuckDB::Value.create_date`, `DuckDB::Value.create_timestamp*`, or returned from a UDF.
 
 # 2.0.0.0 - 2026-10-24
 - bump Ruby to 4.0.9 on CI (Ubuntu and macOS).
