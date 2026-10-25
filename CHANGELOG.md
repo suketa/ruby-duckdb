@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- raise `RangeError` instead of aborting the process when a result contains a TIMESTAMP value before `-9223372022400000000` microseconds (near INT64_MIN).
 
 # 2.0.0.0 - 2026-10-24
 - bump Ruby to 4.0.9 on CI (Ubuntu and macOS).

@@ -294,6 +294,13 @@ VALUE rbduckdb_timestamp_to_ruby(duckdb_timestamp ts) {
     if (!duckdb_is_finite_timestamp(ts)) {
         return ruby_infinity(LL2NUM(ts.micros));
     }
+    /*
+     * duckdb_from_timestamp throws a C++ exception below this value
+     * (days * MICROS_PER_DAY overflows int64), which would abort the process.
+     */
+    if (ts.micros < -9223372022400000000LL) {
+        rb_raise(rb_eRangeError, "timestamp out of range: %lld microseconds", (long long)ts.micros);
+    }
     data_st = duckdb_from_timestamp(ts);
     return rb_funcall(mDuckDBConverter, id__to_time, 7,
                       INT2FIX(data_st.date.year),
