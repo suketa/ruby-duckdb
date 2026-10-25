@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- `DuckDB::PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) raises `ArgumentError` when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.
 - raise `RangeError` instead of aborting the process when a result contains a TIMESTAMP value before `-9223372022400000000` microseconds (near INT64_MIN).
 - raise `RangeError` instead of aborting the process when an out-of-range date or timestamp is passed to `bind_date`, `bind_timestamp`, `bind_timestamp_tz`, `Appender#append_date`, `Appender#append_timestamp`, `DuckDB::Value.create_date`, `DuckDB::Value.create_timestamp*`, or returned from a UDF.
 
