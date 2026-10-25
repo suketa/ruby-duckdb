@@ -103,41 +103,15 @@ module DuckDB
 
       def matched_to_i(matched) # :nodoc:
         sign = to_sign(matched)
-        sec = to_sec(matched)
+        year, month, day, hour, min, sec = %i[year month day hour min sec].map { |k| matched[k].to_i }
         usec = to_usec(matched)
         usec *= -1 if sec.negative?
-        value = [
-          to_year(matched), to_month(matched), to_day(matched), to_hour(matched), to_min(matched), sec, usec
-        ]
+        value = [year, month, day, hour, min, sec, usec]
         sign.positive? ? value : value.map { |v| v * sign }
       end
 
       def to_sign(matched) # :nodoc:
         matched[:negativ] == '-' ? -1 : 1
-      end
-
-      def to_year(matched) # :nodoc:
-        matched[:year].to_i
-      end
-
-      def to_month(matched) # :nodoc:
-        matched[:month].to_i
-      end
-
-      def to_day(matched) # :nodoc:
-        matched[:day].to_i
-      end
-
-      def to_hour(matched) # :nodoc:
-        matched[:hour].to_i
-      end
-
-      def to_min(matched) # :nodoc:
-        matched[:min].to_i
-      end
-
-      def to_sec(matched) # :nodoc:
-        matched[:sec].to_i
       end
 
       def to_usec(matched) # :nodoc:

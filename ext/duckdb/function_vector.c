@@ -219,3 +219,29 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             break;
     }
 }
+
+void rbduckdb_input_columns_load(duckdb_data_chunk input, idx_t n, duckdb_vector **vectors, duckdb_logical_type **types) {
+    idx_t j;
+
+    *vectors = ALLOC_N(duckdb_vector, n);
+    *types = ALLOC_N(duckdb_logical_type, n);
+
+    for (j = 0; j < n; j++) {
+        (*vectors)[j] = duckdb_data_chunk_get_vector(input, j);
+        (*types)[j] = duckdb_vector_get_column_type((*vectors)[j]);
+    }
+}
+
+void rbduckdb_input_columns_free(duckdb_vector *vectors, duckdb_logical_type *types, idx_t n) {
+    idx_t j;
+
+    if (types != NULL) {
+        for (j = 0; j < n; j++) {
+            duckdb_destroy_logical_type(&types[j]);
+        }
+        xfree(types);
+    }
+    if (vectors != NULL) {
+        xfree(vectors);
+    }
+}

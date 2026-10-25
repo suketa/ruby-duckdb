@@ -246,15 +246,8 @@ static VALUE process_rows(VALUE varg) {
      * a GC, and the earlier columns' objects must stay reachable. */
     VALUE args = rb_ary_new_capa((long)arg->col_count);
 
-    /* Allocate arrays to hold input vectors and their types */
-    arg->input_vectors = ALLOC_N(duckdb_vector, arg->col_count);
-    arg->input_types = ALLOC_N(duckdb_logical_type, arg->col_count);
-
     /* Get all input vectors and their types */
-    for (j = 0; j < arg->col_count; j++) {
-        arg->input_vectors[j] = duckdb_data_chunk_get_vector(arg->input, j);
-        arg->input_types[j] = duckdb_vector_get_column_type(arg->input_vectors[j]);
-    }
+    rbduckdb_input_columns_load(arg->input, arg->col_count, &arg->input_vectors, &arg->input_types);
 
     /* Process each row */
     for (i = 0; i < arg->row_count; i++) {
@@ -277,23 +270,9 @@ static VALUE process_rows(VALUE varg) {
 
 static VALUE cleanup_callback(VALUE varg) {
     struct callback_arg *arg = (struct callback_arg *)varg;
-    idx_t j;
 
-    /* Destroy all logical types */
-    if (arg->input_types != NULL) {
-        for (j = 0; j < arg->col_count; j++) {
-            duckdb_destroy_logical_type(&arg->input_types[j]);
-        }
-    }
+    rbduckdb_input_columns_free(arg->input_vectors, arg->input_types, arg->col_count);
     duckdb_destroy_logical_type(&arg->output_type);
-
-    /* Free allocated memory */
-    if (arg->input_types != NULL) {
-        xfree(arg->input_types);
-    }
-    if (arg->input_vectors != NULL) {
-        xfree(arg->input_vectors);
-    }
 
     return Qnil;
 }
