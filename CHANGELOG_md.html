@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased - raise `RangeError` instead of aborting the process when a"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) rais"
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased - raise `RangeError` instead of aborting the process when a">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) rais">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased - raise `RangeError` instead of aborting the process when a">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) rais">
 
 
 
@@ -473,6 +473,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p><a href="DuckDB/PreparedStatement.html#method-i-bind_decimal"><code>DuckDB::PreparedStatement#bind_decimal</code></a> (and bind with a <code>BigDecimal</code>) raises <code>ArgumentError</code> when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.</p>
+</li><li>
 <p>raise <code>RangeError</code> instead of aborting the process when a result contains a TIMESTAMP value before <code>-9223372022400000000</code> microseconds (near INT64_MIN).</p>
 </li><li>
 <p>raise <code>RangeError</code> instead of aborting the process when an out-of-range date or timestamp is passed to <code>bind_date</code>, <code>bind_timestamp</code>, <code>bind_timestamp_tz</code>, <code>Appender#append_date</code>, <code>Appender#append_timestamp</code>, <a href="DuckDB/Value.html#method-c-create_date"><code>DuckDB::Value.create_date</code></a>, <a href="DuckDB/Value.html#method-c-create_timestamp"><code>DuckDB::Value.create_timestamp*</code></a>, or returned from a UDF.</p>

@@ -818,7 +818,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 367</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 372</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">index</span>
   <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
@@ -1087,6 +1087,11 @@
   <span class="ruby-identifier">decimal</span> = <span class="ruby-identifier">_parse_deciaml</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span> = <span class="ruby-identifier">decimal_to_hugeint</span>(<span class="ruby-identifier">decimal</span>)
   <span class="ruby-identifier">width</span> = <span class="ruby-identifier">_decimal_width</span>(<span class="ruby-identifier">decimal</span>)
+  <span class="ruby-comment"># _bind_decimal narrows width to uint8, and DuckDB aborts on a mismatched width.</span>
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">RANGE_DECIMAL_WIDTH</span>.<span class="ruby-identifier">cover?</span>(<span class="ruby-identifier">width</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;value out of range for DECIMAL width (#{RANGE_DECIMAL_WIDTH})&quot;</span>
+  <span class="ruby-keyword">end</span>
+
   <span class="ruby-identifier">_bind_decimal</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">lower</span>, <span class="ruby-identifier">upper</span>, <span class="ruby-identifier">width</span>, <span class="ruby-identifier">decimal</span>.<span class="ruby-identifier">scale</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -2095,7 +2100,7 @@
             </details>
           </div>
           <div class="method-source-code" id="bind_value-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 349</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/prepared_statement.rb, line 354</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">bind_value</span>(<span class="ruby-identifier">index</span>, <span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;2nd argument must be DuckDB::Value&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Value</span>)
 
