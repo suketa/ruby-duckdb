@@ -12,6 +12,7 @@ module DuckDBTest
     end
 
     def teardown
+      @con.close
       @db.close
     end
 

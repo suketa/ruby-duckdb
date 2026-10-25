@@ -146,6 +146,11 @@ module DuckDBTest
       @columns = result.columns
     end
 
+    def teardown
+      @con.close
+      @db.close
+    end
+
     def test_singleton_method_defined
       SINGLETON_METHOD_NAMES.each do |method_name|
         logical_type = DuckDB::LogicalType.send(method_name)

@@ -9,6 +9,11 @@ module DuckDBTest
       @con = @db.connect
     end
 
+    def teardown
+      @con.close
+      @db.close
+    end
+
     def test_query
       assert_instance_of(DuckDB::Result, @con.query('CREATE TABLE table1 (id INTEGER)'))
     end
