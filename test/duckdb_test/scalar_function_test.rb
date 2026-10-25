@@ -825,6 +825,48 @@ module DuckDBTest
       assert_operator threads_after, :<=, 2, 'expected fallback to caller + global executor only'
     end
 
+    # Per-worker proxy killed mid-query (#1512): the first callback starts a
+    # thread that kills its own proxy once it is idle waiting for the next
+    # request. The worker must not wait forever on the dead proxy; the query
+    # must finish via the global executor. Runs in a child process so a hang
+    # is killed by the timeout instead of blocking the suite. Requires
+    # DuckDB >= 1.5.0 (duckdb_scalar_function_set_init).
+    def test_scalar_function_survives_killed_proxy_thread
+      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.0')
+        skip 'per-worker proxy requires DuckDB >= 1.5.0'
+      end
+
+      script = <<~RUBY
+        require 'duckdb'
+        con = DuckDB::Database.open.connect
+        con.execute('SET threads=4')
+        con.execute('CREATE TABLE t AS SELECT range::INTEGER AS value FROM range(2000000)')
+        caller_thread = Thread.current
+        killer = nil
+        sf = DuckDB::ScalarFunction.new
+        sf.name = 'triple'
+        sf.add_parameter(DuckDB::LogicalType::INTEGER)
+        sf.return_type = DuckDB::LogicalType::BIGINT
+        sf.set_function do |v|
+          if killer.nil? && Thread.current != caller_thread
+            proxy = Thread.current
+            # "sleep" here means blocked without the GVL in proxy_wait_func.
+            killer = Thread.new { Thread.pass until proxy.status == 'sleep'; proxy.kill }
+          end
+          v * 3
+        end
+        con.register_scalar_function(sf)
+        puts con.execute('SELECT SUM(triple(value)) FROM t').first.first
+        puts killer.nil? ? 'no proxy' : 'killed'
+      RUBY
+      lib = File.expand_path('../../lib', __dir__)
+      out = run_child_ruby(['-I', lib, '-e', script], timeout: 60)
+      sum, status = out.split
+
+      assert_equal 'killed', status, out
+      assert_equal (1_999_999 * 2_000_000 / 2 * 3).to_s, sum
+    end
+
     # Runs ruby with args and returns its output. Fails if the child exits
     # non-zero or outlives timeout (it is killed then).
     def run_child_ruby(args, timeout:)

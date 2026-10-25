@@ -342,17 +342,23 @@ struct worker_proxy {
     sync_cond_t thread_exit_cond;
 };
 
-/* Runs without GVL: the proxy waits for a callback request */
+/*
+ * Runs without GVL: the proxy waits for a callback request. Returns non-NULL
+ * if the request should run, NULL if the proxy should stop. The flags are
+ * read here, under the lock, so the caller never reads them unlocked.
+ */
 static void *proxy_wait_func(void *data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
+    int run;
 
     sync_lock(&proxy->lock);
     while (!proxy->stop_requested && !proxy->has_request) {
         sync_wait(&proxy->request_cond, &proxy->lock);
     }
+    run = !proxy->stop_requested;
     sync_unlock(&proxy->lock);
 
-    return NULL;
+    return run ? proxy : NULL;
 }
 
 /* Unblock function for the proxy thread (VM shutdown or Thread#kill) */
@@ -389,19 +395,13 @@ static VALUE proxy_run(VALUE data) {
 static VALUE proxy_loop_body(VALUE data) {
     struct worker_proxy *proxy = (struct worker_proxy *)data;
 
-    while (!proxy->stop_requested) {
-        /* Release the GVL and wait for a request */
-        rb_thread_call_without_gvl(proxy_wait_func, proxy, proxy_stop_func, proxy);
+    /* Release the GVL and wait for a request */
+    while (rb_thread_call_without_gvl(proxy_wait_func, proxy, proxy_stop_func, proxy) != NULL) {
+        int state = 0;
 
-        if (proxy->stop_requested) break;
-
-        if (proxy->has_request) {
-            int state = 0;
-
-            rb_protect(proxy_run, data, &state);
-            if (state) {
-                discard_callback_exception(state);
-            }
+        rb_protect(proxy_run, data, &state);
+        if (state) {
+            discard_callback_exception(state);
         }
     }
 
@@ -425,8 +425,14 @@ static VALUE proxy_cleanup(VALUE data) {
     /*
      * Signal that this thread has finished and no longer touches the proxy
      * struct. Only after this may rbduckdb_worker_proxy_destroy free it.
+     * Also wake a worker waiting on a request this thread will never run
+     * (e.g. Thread#kill while idle, #1512); it falls back to the executor.
      */
-    sync_set_and_signal(&proxy->lock, &proxy->thread_exit_cond, &proxy->thread_exited);
+    sync_lock(&proxy->lock);
+    proxy->thread_exited = 1;
+    sync_signal(&proxy->thread_exit_cond);
+    sync_signal(&proxy->request_done_cond);
+    sync_unlock(&proxy->lock);
     return Qnil;
 }
 
@@ -541,17 +547,30 @@ struct worker_proxy *rbduckdb_worker_proxy_create_for_current_thread(void) {
 /*
  * Hand a callback to a proxy and block until it completes.
  * Called from the DuckDB worker thread (non-Ruby thread) that owns this proxy.
+ * If the proxy thread has exited (or exits before running the request), the
+ * callback goes to the global executor instead.
  */
 static void dispatch_callback_to_proxy(struct worker_proxy *proxy, rbduckdb_function_callback_t cb, void *user_data) {
+    int done;
+
     sync_lock(&proxy->lock);
-    proxy->cb = cb;
-    proxy->user_data = user_data;
     proxy->request_done = 0;
-    proxy->has_request = 1;
-    sync_signal(&proxy->request_cond);
+    if (!proxy->thread_exited) {
+        proxy->cb = cb;
+        proxy->user_data = user_data;
+        proxy->has_request = 1;
+        sync_signal(&proxy->request_cond);
+        while (!proxy->request_done && !proxy->thread_exited) {
+            sync_wait(&proxy->request_done_cond, &proxy->lock);
+        }
+        proxy->has_request = 0;
+    }
+    done = proxy->request_done;
     sync_unlock(&proxy->lock);
 
-    sync_wait_for_flag(&proxy->lock, &proxy->request_done_cond, &proxy->request_done);
+    if (!done) {
+        dispatch_callback_to_executor(cb, user_data);
+    }
 }
 
 /* Blocks until the proxy thread has fully exited. Runs without the GVL. */
