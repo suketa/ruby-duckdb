@@ -795,7 +795,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/interval.rb, line 156</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/interval.rb, line 130</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-value">interval_months:</span> <span class="ruby-value">0</span>, <span class="ruby-value">interval_days:</span> <span class="ruby-value">0</span>, <span class="ruby-value">interval_micros:</span> <span class="ruby-value">0</span>)
   <span class="ruby-ivar">@interval_months</span> = <span class="ruby-identifier">interval_months</span>
   <span class="ruby-ivar">@interval_days</span> = <span class="ruby-identifier">interval_days</span>
@@ -912,7 +912,7 @@ DuckDB::Interval.to_interval(interval)
             </details>
           </div>
           <div class="method-source-code" id="3D-3D-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/interval.rb, line 162</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/interval.rb, line 136</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">==</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Interval</span>) <span class="ruby-operator">&amp;&amp;</span>
     <span class="ruby-ivar">@interval_months</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">interval_months</span> <span class="ruby-operator">&amp;&amp;</span>
@@ -957,7 +957,7 @@ DuckDB::Interval.to_interval(interval)
             </details>
           </div>
           <div class="method-source-code" id="eql-3F-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/interval.rb, line 169</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/interval.rb, line 143</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">eql?</span>(<span class="ruby-identifier">other</span>)
   <span class="ruby-keyword">self</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>
 <span class="ruby-keyword">end</span></pre>
