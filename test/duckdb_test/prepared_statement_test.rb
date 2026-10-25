@@ -579,6 +579,21 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { stmt.bind_decimal(2, BigDecimal('98765.4321')) }
     end
 
+    # Width 258 used to wrap to 2 in uint8, and DuckDB aborted the process.
+    def test_bind_decimal_with_too_large_width
+      stmt = @con.prepare('SELECT $1')
+
+      e = assert_raises(ArgumentError) { stmt.bind_decimal(1, '9.9999e-253') }
+      assert_match(/DECIMAL width/, e.message)
+    end
+
+    # Width 261 used to wrap to 5 and silently bind 0.0001.
+    def test_bind_with_too_large_width_bigdecimal
+      stmt = @con.prepare('SELECT $1')
+
+      assert_raises(ArgumentError) { stmt.bind(1, BigDecimal('1e-260')) }
+    end
+
     def test_bind_decimal_with_invalid_value
       stmt = DuckDB::PreparedStatement.new(@con, 'SELECT * FROM a WHERE col_decimal = $1')
 

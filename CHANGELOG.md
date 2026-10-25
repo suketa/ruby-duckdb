@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- `DuckDB::PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) raises `ArgumentError` when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.
 
 # 2.0.0.0 - 2026-10-24
 - bump Ruby to 4.0.9 on CI (Ubuntu and macOS).

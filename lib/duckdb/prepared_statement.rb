@@ -332,6 +332,11 @@ module DuckDB
       decimal = _parse_deciaml(value)
       lower, upper = decimal_to_hugeint(decimal)
       width = _decimal_width(decimal)
+      # _bind_decimal narrows width to uint8, and DuckDB aborts on a mismatched width.
+      unless RANGE_DECIMAL_WIDTH.cover?(width)
+        raise ArgumentError, "value out of range for DECIMAL width (#{RANGE_DECIMAL_WIDTH})"
+      end
+
       _bind_decimal(index, lower, upper, width, decimal.scale)
     end
 
