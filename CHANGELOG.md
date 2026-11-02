@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- Recognize VARIANT column metadata as `:variant`. Result enumeration now raises `DuckDB::Error` for unsupported non-NULL VARIANT values instead of warning and returning `nil`, including nested values. SQL NULL still converts to `nil`. This does not add VARIANT decoding or undo side effects of an already executed SQL statement.
 
 # 2.0.0.1 - 2026-10-25
 - `DuckDB::PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) raises `ArgumentError` when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.

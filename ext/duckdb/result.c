@@ -498,6 +498,11 @@ VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element
         case DUCKDB_TYPE_TIMESTAMP_TZ:
             obj = vector_timestamp_tz(vector_data, index);
             break;
+#ifdef HAVE_CONST_DUCKDB_TYPE_VARIANT
+        case DUCKDB_TYPE_VARIANT:
+            rb_raise(eDuckDBError, "VARIANT result conversion is not supported");
+            break;
+#endif
         default:
             rb_warn("Unknown type %d", type_id);
             obj = Qnil;

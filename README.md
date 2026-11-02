@@ -318,6 +318,22 @@ write/read Arrow IPC files through DuckDB's
 [arrow community extension](https://duckdb.org/community_extensions/extensions/arrow.html)
 (`COPY ... TO 'data.arrows'` / `read_arrow(...)`).
 
+## Unsupported VARIANT result conversion
+
+`Column#type` reports `:variant` for a VARIANT column. Enumerating a result
+raises `DuckDB::Error` when it reaches a non-NULL VARIANT value. The same rule
+applies to VARIANT values nested in maps, structs, lists, arrays, and unions.
+SQL NULL values still become `nil`.
+
+This prevents unsupported non-NULL VARIANT values from appearing as Ruby `nil`.
+It does not add VARIANT decoding. The separate `Value#to_ruby` API retains
+its documented behavior for unsupported types.
+
+The SQL statement executes before result enumeration. For example,
+`COPY ... RETURN_STATS` can finish writing its file before conversion of its
+VARIANT-valued metadata raises an error. A conversion error does not mean that
+the statement's side effects were rolled back.
+
 ## Versioning and DuckDB support
 
 The first three digits of the gem version track the DuckDB release that the

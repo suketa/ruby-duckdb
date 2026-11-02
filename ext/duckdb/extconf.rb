@@ -71,6 +71,7 @@ end
 dir_config('duckdb')
 
 check_duckdb_header('duckdb.h', DUCKDB_REQUIRED_VERSION)
+have_const('DUCKDB_TYPE_VARIANT', 'duckdb.h')
 check_duckdb_library('duckdb', 'duckdb_appender_create_query', DUCKDB_REQUIRED_VERSION)
 
 # check duckdb >= 1.5.0
