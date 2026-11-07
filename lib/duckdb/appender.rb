@@ -756,17 +756,20 @@ module DuckDB
     #   appender.append('Alice')
     #   appender.end_row
     # The Ruby type -> DuckDB type decision is made by RubyTypeInference,
-    # which also holds PreparedStatement#bind's table.
-    def append(value) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+    # which also holds PreparedStatement#bind's table. Integer and String
+    # are the most common values in a bulk load, so they are matched here
+    # first, without the extra call; the rules are the same as
+    # RubyTypeInference.for_append (ruby_type_inference_test.rb and
+    # appender_test.rb check both).
+    def append(value) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+      case value
+      when Integer then return append_integer_value(value)
+      when String then return append_string_value(value)
+      end
+
       case RubyTypeInference.for_append(value)
       when :null then append_null
       when :double then append_double(value)
-      when :smallint then append_int16(value)
-      when :integer then append_int32(value)
-      when :bigint then append_int64(value)
-      when :hugeint then append_hugeint(value)
-      when :blob then append_blob(value)
-      when :varchar then append_varchar(value)
       when :boolean then append_bool(value)
       when :timestamp then append_timestamp(value)
       when :date then append_date(value)
@@ -806,6 +809,23 @@ module DuckDB
     def raise_appender_error(default_message) # :nodoc:
       message = error_message
       raise DuckDB::Error, message || default_message
+    end
+
+    def append_integer_value(value) # :nodoc:
+      case value
+      when RANGE_INT16 then append_int16(value)
+      when RANGE_INT32 then append_int32(value)
+      when RANGE_INT64 then append_int64(value)
+      else append_hugeint(value)
+      end
+    end
+
+    def append_string_value(value) # :nodoc:
+      if value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
+        append_blob(value)
+      else
+        append_varchar(value)
+      end
     end
 
     def to_time(value) # :nodoc:
