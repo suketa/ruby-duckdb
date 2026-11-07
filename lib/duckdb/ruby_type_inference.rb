@@ -9,9 +9,13 @@ module DuckDB
   # (#for_append).
   #
   # Both decision tables live here, side by side, so that every difference
-  # between the two is visible in one place. The differences are kept as
-  # they are for now (they are part of the current public behaviour) and
-  # are marked with "DIFF"; converging them is a separate, breaking change.
+  # between the two is visible in one place. The differences are intended
+  # and marked with "DIFF":
+  #
+  # * bind is used by most users, so it converts values for convenience
+  #   (e.g. Time/Date as VARCHAR, BigDecimal as DECIMAL).
+  # * append is for bulk loading, so it passes values through with as
+  #   little conversion as possible, favouring insert speed.
   #
   # #for_bind and #for_append return a type tag, or nil when the value is
   # not supported. Each caller maps the tag to its own bind_* / append_*

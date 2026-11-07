@@ -5,8 +5,8 @@ require 'test_helper'
 module DuckDBTest
   # Documents how an untyped Ruby object is mapped to a DuckDB type by
   # PreparedStatement#bind and Appender#append. Both use the same
-  # inference module; the rows where the two columns differ are the
-  # current (intentionally unchanged) differences.
+  # inference module; the rows where the two columns differ are intended
+  # (bind converts for convenience, append favours insert speed).
   class RubyTypeInferenceTest < Minitest::Test
     INFERENCE = DuckDB.const_get(:RubyTypeInference)
 
