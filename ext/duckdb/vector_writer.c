@@ -113,10 +113,7 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             VALUE str = rb_obj_as_string(value);
             const char *str_ptr = StringValuePtr(str);
             idx_t str_len = RSTRING_LEN(str);
-            /*
-             * Mark the row valid first: DuckDB sets it to NULL itself when
-             * the string is not valid UTF-8, and that must not be undone.
-             */
+            /* Mark the row valid (it may have been NULL before). */
             set_row_valid(vector, index);
             duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
             return;
@@ -158,7 +155,9 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             }
             /* An instant: microseconds since the Unix epoch, honoring utc_offset. */
             secs = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0));
-            if (!scale_add(secs, 1000000, NUM2LL(rb_funcall(value, rb_intern("usec"), 0)), &ts.micros)) {
+            /* INT64_MAX and -INT64_MAX are DuckDB's infinity and -infinity sentinels. */
+            if (!scale_add(secs, 1000000, NUM2LL(rb_funcall(value, rb_intern("usec"), 0)), &ts.micros) ||
+                ts.micros == INT64_MAX || ts.micros == -INT64_MAX) {
                 rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_TZ");
             }
             ((duckdb_timestamp *)vector_data)[index] = ts;

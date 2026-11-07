@@ -239,7 +239,9 @@ static VALUE memory_helper_s_write_float(VALUE self, VALUE ptr, VALUE index, VAL
  *   DuckDB::MemoryHelper.write_timestamp(ptr, index, value) -> nil
  *
  * Writes a DuckDB timestamp to raw memory.
- * +value+ must be a Ruby Time object.
+ * +value+ must be a Ruby Time object. It is converted to the local time zone
+ * first, unlike DuckDB::DataChunk#set_value, which stores the wall-clock
+ * components of the Time as-is.
  *
  *   ptr = vector.get_data
  *   DuckDB::MemoryHelper.write_timestamp(ptr, 0, Time.new(2024, 3, 15, 10, 30, 45))

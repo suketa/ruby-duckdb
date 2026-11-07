@@ -119,13 +119,29 @@ module DuckDBTest
 
     def test_timestamp_tz_boundaries
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_TZ])
-      max = Time.at(9_223_372_036_854, 775_807, :usec, in: 'UTC')
+      # INT64_MAX and -INT64_MAX microseconds are DuckDB's +/-infinity sentinels.
+      max = Time.at(9_223_372_036_854, 775_806, :usec, in: 'UTC')
       min = Time.at(-9_223_372_036_855, 224_192, :usec, in: 'UTC')
 
       chunk.set_value(0, 0, max)
       chunk.set_value(0, 0, min)
       assert_raises(RangeError) { chunk.set_value(0, 0, max + Rational(1, 1_000_000)) }
       assert_raises(RangeError) { chunk.set_value(0, 0, min - Rational(1, 1_000_000)) }
+      assert_raises(RangeError) { chunk.set_value(0, 0, min + Rational(1, 1_000_000)) }
+    end
+
+    def test_data_chunk_set_value_negative_column_index_message
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+
+      error = assert_raises(IndexError) { chunk.set_value(-1, 0, 1) }
+      assert_equal 'column index -1 out of range', error.message
+    end
+
+    def test_data_chunk_set_value_negative_row_index_message
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+
+      error = assert_raises(IndexError) { chunk.set_value(0, -1, 1) }
+      assert_equal 'row index -1 out of range', error.message
     end
 
     def test_timestamp_ns_out_of_range_raises
@@ -151,7 +167,7 @@ module DuckDBTest
     end
 
     def test_data_chunk_set_value_invalid_utf8_stays_null
-      # Before 2.0, DuckDB stores invalid UTF-8 as is and the append fails instead.
+      # Before 1.5.6, DuckDB stores invalid UTF-8 as is and the append fails instead.
       if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.6')
         skip 'NULL for invalid UTF-8 requires DuckDB >= 1.5.6'
       end

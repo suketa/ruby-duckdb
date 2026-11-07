@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - STRUCT field names containing non-ASCII characters are now returned as UTF-8 `Symbol`s in query results and `DuckDB::Value#to_ruby` (issue #1545).
 - internal: move the DuckDB vector → Ruby conversion out of `result.c` into `vector_reader.c`, make `DuckDB::Value#to_ruby` use it for every type, and rename `conveter.c` to `converter.c` (issue #1545).
 - `DuckDB::DataChunk#set_value` (TableFunction output, `Appender#append_data_chunk`) now uses the same C writer as ScalarFunction/AggregateFunction return values, so it accepts the same types: HUGEINT, UHUGEINT, UUID, DECIMAL, TIME, TIME_NS, TIME_TZ, INTERVAL and TIMESTAMP_S/MS/NS are newly supported. It is also about 4x faster and raises `IndexError` for an out-of-range column or row index instead of writing out of bounds (issue #1543).
+- ScalarFunction/AggregateFunction return values for a DATE column accept any object that responds to `year`, `month` and `day`, not only `Date` (issue #1543).
 - fix TIMESTAMP_NS return values of ScalarFunction dropping the sub-microsecond part of the `Time` (issue #1543).
 - internal: rename `function_vector.c` to `vector_writer.c` (issue #1543).
 

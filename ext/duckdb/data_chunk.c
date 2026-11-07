@@ -55,7 +55,8 @@ static VALUE allocate(VALUE klass) {
 }
 
 static size_t memsize(const void *p) {
-    return sizeof(rubyDuckDBDataChunk);
+    const rubyDuckDBDataChunk *ctx = p;
+    return sizeof(rubyDuckDBDataChunk) + ctx->column_types_count * sizeof(duckdb_logical_type);
 }
 
 rubyDuckDBDataChunk *rbduckdb_get_struct_data_chunk(VALUE obj) {
@@ -262,6 +263,12 @@ static VALUE data_chunk_set_value(VALUE self, VALUE col_idx, VALUE row_idx, VALU
 
     if (!ctx->data_chunk) {
         rb_raise(eDuckDBError, "data chunk is not initialized");
+    }
+    if (NUM2LL(col_idx) < 0) {
+        rb_raise(rb_eIndexError, "column index %"PRIsVALUE" out of range", rb_inspect(col_idx));
+    }
+    if (NUM2LL(row_idx) < 0) {
+        rb_raise(rb_eIndexError, "row index %"PRIsVALUE" out of range", rb_inspect(row_idx));
     }
     col = NUM2ULL(col_idx);
     row = NUM2ULL(row_idx);
