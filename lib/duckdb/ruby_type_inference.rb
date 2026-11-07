@@ -64,7 +64,8 @@ module DuckDB
     end
 
     def subclass_tags(value)
-      TABLE.find { |klass, _| value.is_a?(klass) }&.last
+      # Same matching as a `case value when Klass` (the dispatch this replaced).
+      TABLE.find { |klass, _| klass === value }&.last # rubocop:disable Style/CaseEquality
     end
 
     def blob?(value)
