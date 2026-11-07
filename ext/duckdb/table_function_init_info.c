@@ -83,9 +83,15 @@ static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_thre
  * call-seq:
  *   init_info.column_count -> Integer
  *
- * Returns the number of projected result columns for this scan.
- * Without projection pushdown this equals the number of result columns
- * added in the bind callback.
+ * Returns the number of columns DuckDB needs from this scan, including
+ * columns used only in filters (e.g. +score+ in
+ * <code>SELECT name FROM f() WHERE score > 0</code>). A column selected more
+ * than once is counted once, and a query that references no column
+ * (e.g. <code>SELECT count(*)</code>) still reports one column.
+ * With DuckDB::TableFunction#supports_projection_pushdown= set to +true+,
+ * the output chunk passed to the execute callback holds exactly these
+ * columns. Otherwise the output chunk still holds every result column added
+ * in the bind callback.
  *
  *   init_info.column_count # => 2
  */
@@ -102,9 +108,9 @@ static VALUE table_function_init_info_column_count(VALUE self) {
  *   init_info.column_index(index) -> Integer
  *
  * Returns the column index of the projected result column at +index+
- * (0 <= +index+ < column_count). Without projection pushdown the projected
- * columns mirror the columns added in the bind callback, so this returns
- * +index+ itself.
+ * (0 <= +index+ < column_count), i.e. the position of that column among the
+ * columns added in the bind callback. With projection pushdown enabled, the
+ * +index+-th vector of the output chunk corresponds to this column.
  *
  *   init_info.column_index(0) # => 0
  */

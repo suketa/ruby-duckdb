@@ -15,6 +15,7 @@ static VALUE table_function_initialize(VALUE self);
 static VALUE table_function_set_name(VALUE self, VALUE name);
 static VALUE table_function_add_parameter(VALUE self, VALUE logical_type);
 static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE logical_type);
+static VALUE table_function_set_supports_projection_pushdown(VALUE self, VALUE pushdown);
 static VALUE table_function_bind(VALUE self);
 static void table_function_bind_callback(duckdb_bind_info info);
 static VALUE table_function_init(VALUE self);
@@ -181,6 +182,35 @@ static VALUE table_function_add_named_parameter(VALUE self, VALUE name, VALUE lo
     duckdb_table_function_add_named_parameter(ctx->table_function, param_name, ctx_logical_type->logical_type);
 
     return self;
+}
+
+/*
+ * call-seq:
+ *   table_function.supports_projection_pushdown = bool -> bool
+ *
+ * Sets whether the table function supports projection pushdown.
+ *
+ * When +true+, DuckDB passes only the columns referenced by the query to the
+ * table function. The output chunk given to the execute callback then holds
+ * just those columns, in the order reported by
+ * DuckDB::TableFunction::InitInfo#column_count and
+ * DuckDB::TableFunction::InitInfo#column_index.
+ * When +false+ (the default), the output chunk holds every result column.
+ *
+ *   tf.supports_projection_pushdown = true
+ */
+static VALUE table_function_set_supports_projection_pushdown(VALUE self, VALUE pushdown) {
+    rubyDuckDBTableFunction *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &table_function_data_type, ctx);
+
+    if (!ctx->table_function) {
+        rb_raise(eDuckDBError, "Table function is destroyed");
+    }
+
+    duckdb_table_function_supports_projection_pushdown(ctx->table_function, RTEST(pushdown));
+
+    return pushdown;
 }
 
 static rubyDuckDBTableFunction *table_function_get_settable_ctx(VALUE self, const char *block_msg) {
@@ -446,6 +476,7 @@ void rbduckdb_init_table_function(void) {
     rb_define_method(cDuckDBTableFunction, "name=", table_function_set_name, 1);
     rb_define_method(cDuckDBTableFunction, "add_parameter", table_function_add_parameter, 1);
     rb_define_method(cDuckDBTableFunction, "add_named_parameter", table_function_add_named_parameter, 2);
+    rb_define_method(cDuckDBTableFunction, "supports_projection_pushdown=", table_function_set_supports_projection_pushdown, 1);
     rb_define_method(cDuckDBTableFunction, "bind", table_function_bind, 0);
     rb_define_method(cDuckDBTableFunction, "init", table_function_init, 0);
     rb_define_method(cDuckDBTableFunction, "execute", table_function_execute, 0);
