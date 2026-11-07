@@ -100,18 +100,25 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
         case DUCKDB_TYPE_TIMESTAMP_NS: {
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
             duckdb_timestamp_ns ts_ns;
+            if (ts.micros > INT64_MAX / 1000 || ts.micros < INT64_MIN / 1000) {
+                rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_NS");
+            }
             ts_ns.nanos = ts.micros * 1000 + NUM2LL(rb_funcall(value, rb_intern("nsec"), 0)) % 1000;
             ((duckdb_timestamp_ns *)vector_data)[index] = ts_ns;
             break;
         }
         case DUCKDB_TYPE_TIMESTAMP_TZ: {
             duckdb_timestamp ts;
+            int64_t secs;
             if (!rb_obj_is_kind_of(value, rb_cTime)) {
                 rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP_TZ");
             }
             /* An instant: microseconds since the Unix epoch, honoring utc_offset. */
-            ts.micros = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0)) * 1000000LL
-                        + NUM2LL(rb_funcall(value, rb_intern("usec"), 0));
+            secs = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0));
+            if (secs > INT64_MAX / 1000000LL - 1 || secs < INT64_MIN / 1000000LL + 1) {
+                rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_TZ");
+            }
+            ts.micros = secs * 1000000LL + NUM2LL(rb_funcall(value, rb_intern("usec"), 0));
             ((duckdb_timestamp *)vector_data)[index] = ts;
             break;
         }
@@ -224,6 +231,15 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
         default:
             rb_raise(rb_eArgError, "Unsupported type for writing a value: DuckDB type id %d", (int)type_id);
             break;
+    }
+
+    /*
+     * A cell may have been set to NULL earlier (e.g. a reused DataChunk), so
+     * mark it valid again once the value has been written successfully.
+     */
+    validity = duckdb_vector_get_validity(vector);
+    if (validity != NULL) {
+        duckdb_validity_set_row_valid(validity, index);
     }
 }
 

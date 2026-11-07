@@ -87,6 +87,36 @@ module DuckDBTest
       assert_equal expected, as_varchar(:timestamp_ns, NS_TIME, 'tsns_nanos')
     end
 
+    def test_data_chunk_set_value_replaces_null
+      @con.execute('CREATE TABLE t_null (i INTEGER)')
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      chunk.set_value(0, 0, nil)
+      chunk.set_value(0, 0, 42)
+      chunk.size = 1
+      appender = DuckDB::Appender.new(@con, 't_null')
+      appender.append_data_chunk(chunk)
+      appender.close
+
+      assert_equal [[42]], @con.query('SELECT i FROM t_null').to_a
+    end
+
+    def test_timestamp_tz_out_of_range_raises
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'far_future_tz'
+      sf.return_type = :timestamp_tz
+      sf.add_parameter(:integer)
+      sf.set_function { |_| Time.utc(300_000, 1, 1) }
+      @con.register_scalar_function(sf)
+
+      assert_raises(DuckDB::Error) { @con.query('SELECT far_future_tz(1)') }
+    end
+
+    def test_timestamp_ns_out_of_range_raises
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_NS])
+
+      assert_raises(RangeError) { chunk.set_value(0, 0, Time.utc(2300, 1, 1)) }
+    end
+
     def test_data_chunk_set_value_raises_for_out_of_range_row
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
 
