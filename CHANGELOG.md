@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - ScalarFunction/AggregateFunction return values for a DATE column accept any object that responds to `year`, `month` and `day`, not only `Date` (issue #1543).
 - fix TIMESTAMP_NS return values of ScalarFunction dropping the sub-microsecond part of the `Time` (issue #1543).
 - internal: rename `function_vector.c` to `vector_writer.c` (issue #1543).
+- internal: move the "untyped Ruby object -> DuckDB type" decision tables of `PreparedStatement#bind` and `Appender#append` into one private module, `DuckDB::RubyTypeInference` (`Appender#append` keeps a fast path for Integer/String), with their current differences marked. No behaviour change (issue #1544).
 
 ## Breaking Changes
 - `DuckDB::DataChunk#set_value` for a TIMESTAMP column now stores the wall-clock components of the `Time` as-is (like `bind_timestamp`, `Appender#append_timestamp` and ScalarFunction), instead of converting it to the local time zone first. `Time.utc(2024, 1, 1, 0, 0, 0)` is stored as `2024-01-01 00:00:00` regardless of `TZ` (issue #1543).
