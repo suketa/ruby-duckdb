@@ -133,10 +133,63 @@ static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_id
 
 static VALUE vector_array(duckdb_logical_type ty, duckdb_vector vector, idx_t row_idx) {
     idx_t size = duckdb_array_type_array_size(ty);
-    idx_t bgn = row_idx * size;
+    idx_t bgn;
     duckdb_vector child = duckdb_array_vector_get_child(vector);
 
+    if (size != 0 && row_idx > (((idx_t)-1) - size) / size) {
+        rb_raise(eDuckDBError, "ARRAY offset out of range");
+    }
+    bgn = row_idx * size;
+
     return vector_values_with_owned_type(child, duckdb_array_type_child_type(ty), bgn, bgn + size);
+}
+
+/*
+ * Whether rbduckdb_vector_value_at converts values of this type id.
+ * Callers that should stay silent on other types (e.g. Value#to_ruby)
+ * check this first instead of hitting the "Unknown type" warning.
+ */
+bool rbduckdb_vector_reader_supports(duckdb_type type_id) {
+    switch(type_id) {
+        case DUCKDB_TYPE_BOOLEAN:
+        case DUCKDB_TYPE_TINYINT:
+        case DUCKDB_TYPE_SMALLINT:
+        case DUCKDB_TYPE_INTEGER:
+        case DUCKDB_TYPE_BIGINT:
+        case DUCKDB_TYPE_UTINYINT:
+        case DUCKDB_TYPE_USMALLINT:
+        case DUCKDB_TYPE_UINTEGER:
+        case DUCKDB_TYPE_UBIGINT:
+        case DUCKDB_TYPE_FLOAT:
+        case DUCKDB_TYPE_DOUBLE:
+        case DUCKDB_TYPE_TIMESTAMP:
+        case DUCKDB_TYPE_DATE:
+        case DUCKDB_TYPE_TIME:
+        case DUCKDB_TYPE_INTERVAL:
+        case DUCKDB_TYPE_HUGEINT:
+        case DUCKDB_TYPE_UHUGEINT:
+        case DUCKDB_TYPE_VARCHAR:
+        case DUCKDB_TYPE_BLOB:
+        case DUCKDB_TYPE_DECIMAL:
+        case DUCKDB_TYPE_TIMESTAMP_S:
+        case DUCKDB_TYPE_TIMESTAMP_MS:
+        case DUCKDB_TYPE_TIMESTAMP_NS:
+        case DUCKDB_TYPE_TIME_NS:
+        case DUCKDB_TYPE_ENUM:
+        case DUCKDB_TYPE_LIST:
+        case DUCKDB_TYPE_STRUCT:
+        case DUCKDB_TYPE_MAP:
+        case DUCKDB_TYPE_ARRAY:
+        case DUCKDB_TYPE_UUID:
+        case DUCKDB_TYPE_UNION:
+        case DUCKDB_TYPE_BIT:
+        case DUCKDB_TYPE_BIGNUM:
+        case DUCKDB_TYPE_TIME_TZ:
+        case DUCKDB_TYPE_TIMESTAMP_TZ:
+            return true;
+        default:
+            return false;
+    }
 }
 
 VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index) {
@@ -357,9 +410,13 @@ static VALUE destroy_struct_child_type(VALUE varg) {
 static VALUE vector_union(duckdb_logical_type ty, duckdb_vector vector, void* vector_data, idx_t row_idx){
     duckdb_vector type_vector = duckdb_struct_vector_get_child(vector, 0);
     void *data = duckdb_vector_get_data(type_vector);
-    uint8_t index = ((int8_t *)data)[row_idx];
+    uint8_t index = ((uint8_t *)data)[row_idx];
+    duckdb_vector member_vector;
 
-    duckdb_vector member_vector = duckdb_struct_vector_get_child(vector, index + 1);
+    if (index >= duckdb_union_type_member_count(ty)) {
+        rb_raise(eDuckDBError, "invalid UNION tag %u", (unsigned int)index);
+    }
+    member_vector = duckdb_struct_vector_get_child(vector, index + 1);
     VALUE values = vector_values_with_owned_type(member_vector, duckdb_union_type_member_type(ty, index), row_idx, row_idx + 1);
 
     return rb_ary_entry(values, 0);
@@ -445,11 +502,21 @@ static VALUE vector_bignum(void* vector_data, idx_t row_idx) {
     char *bytes;
     VALUE result;
 
+    uint32_t header;
+
     if (length < 4) {
         rb_raise(eDuckDBError, "invalid BIGNUM value");
     }
     is_negative = (p[0] & 0x80) == 0;
+    /* 3-byte header: sign bit + byte count, all bits inverted for negatives. */
+    header = ((uint32_t)p[0] << 16) | ((uint32_t)p[1] << 8) | (uint32_t)p[2];
+    if (is_negative) {
+        header = ~header & 0xFFFFFF;
+    }
     length -= 3;
+    if ((header & 0x7FFFFF) != length) {
+        rb_raise(eDuckDBError, "invalid BIGNUM value");
+    }
     buf = rb_str_new(NULL, length);
     bytes = RSTRING_PTR(buf);
     for (i = 0; i < length; i++) {

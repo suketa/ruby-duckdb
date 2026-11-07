@@ -604,12 +604,18 @@ VALUE rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_value val) {
 }
 
 VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
+    duckdb_logical_type type;
+
     if (duckdb_is_null_value(val)) {
         return Qnil;
     }
 
     /* logical_type from duckdb_get_value_type is borrowed and must not be destroyed */
-    return to_ruby_via_vector(duckdb_get_value_type(val), val);
+    type = duckdb_get_value_type(val);
+    if (!rbduckdb_vector_reader_supports(duckdb_get_type_id(type))) {
+        return Qnil;
+    }
+    return to_ruby_via_vector(type, val);
 }
 
 /*
