@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased # 2."
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. aggregate function arguments) being returned as `nil` with an &quot;Unknown"
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 2.">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. aggregate function arguments) being returned as `nil` with an &quot;Unknown">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased # 2.">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. aggregate function arguments) being returned as `nil` with an &quot;Unknown">
 
 
 
@@ -472,6 +472,17 @@
 <p>All notable changes to this project will be documented in this file.</p>
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
+<ul><li>
+<p>fix BIGNUM values in query results (and scalar/aggregate function arguments) being returned as <code>nil</code> with an “Unknown type” warning; they are now converted to <code>Integer</code> (issue #1545).</p>
+</li><li>
+<p><a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> (and table function parameters / <code>Expression#fold</code>) now returns VARCHAR values as UTF-8 <code>String</code>, the same as query results (issue #1545).</p>
+</li><li>
+<p>fix ENUM values with more than 255 members being returned as <code>nil</code> in query results, function arguments and <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> (issue #1545).</p>
+</li><li>
+<p>STRUCT field names containing non-ASCII characters are now returned as UTF-8 <code>Symbol</code>s in query results and <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> (issue #1545).</p>
+</li><li>
+<p>internal: move the <a href="DuckDB.html"><code>DuckDB</code></a> vector → Ruby conversion out of <a href="ext/duckdb/result_c.html">result.c</a> into <a href="ext/duckdb/vector_reader_c.html">vector_reader.c</a>, make <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> use it for every type, and rename <code>conveter.c</code> to <a href="ext/duckdb/converter_c.html">converter.c</a> (issue #1545).</p>
+</li></ul>
 
 <h1 id="label-2.0.0.1+-+2026-10-25"><a href="#label-2.0.0.1+-+2026-10-25">2.0.0.1 - 2026-10-25</a></h1>
 <ul><li>
