@@ -134,6 +134,11 @@ module DuckDBTest
     end
 
     def test_data_chunk_set_value_invalid_utf8_stays_null
+      # Before 2.0, DuckDB stores invalid UTF-8 as is and the append fails instead.
+      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('2.0.0')
+        skip 'NULL for invalid UTF-8 requires DuckDB >= 2.0.0'
+      end
+
       @con.execute('CREATE TABLE t_utf8 (s VARCHAR)')
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR])
       chunk.set_value(0, 0, nil)
