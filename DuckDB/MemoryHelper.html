@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the DuckDB::MemoryHelper module"
+      content="module DuckDB::MemoryHelper: MemoryHelper writes primitive values directly to raw vector memory (Vector#get_data). it does no bounds checking and is not used by ruby-duckdb itself"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for DuckDB::MemoryHelper module - API reference and code examples"
-    >
+    <meta property="og:description" content="MemoryHelper writes primitive values directly to raw vector memory (Vector#get_data). it does no bounds checking and is not used by ruby-duckdb itself">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for DuckDB::MemoryHelper module - API reference and code examples"
-    >
+    <meta name="twitter:description" content="MemoryHelper writes primitive values directly to raw vector memory (Vector#get_data). it does no bounds checking and is not used by ruby-duckdb itself">
 
 
 
@@ -557,6 +551,8 @@
 
   <section class="description">
     
+<p><a href="MemoryHelper.html"><code>DuckDB::MemoryHelper</code></a> writes primitive values directly to raw vector memory (<a href="Vector.html#method-i-get_data"><code>Vector#get_data</code></a>). It is a low-level escape hatch: it does no bounds checking and is not used by ruby-duckdb itself. Prefer <a href="DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a>, which converts values by the column’s logical type the same way <a href="ScalarFunction.html"><code>ScalarFunction</code></a> return values are converted.</p>
+
   </section>
 
 
@@ -1021,7 +1017,7 @@
         <div class="method-description">
 
 
-          <p>Writes a <a href="../DuckDB.html"><code>DuckDB</code></a> timestamp to raw memory. <code>value</code> must be a Ruby Time object.</p>
+          <p>Writes a <a href="../DuckDB.html"><code>DuckDB</code></a> timestamp to raw memory. <code>value</code> must be a Ruby Time object. It is converted to the local time zone first, unlike <a href="DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a>, which stores the wall-clock components of the Time as-is.</p>
 
 <pre class="ruby"><span class="ruby-identifier">ptr</span> = <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">get_data</span>
 <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp</span>(<span class="ruby-identifier">ptr</span>, <span class="ruby-value">0</span>, <span class="ruby-constant">Time</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">2024</span>, <span class="ruby-value">3</span>, <span class="ruby-value">15</span>, <span class="ruby-value">10</span>, <span class="ruby-value">30</span>, <span class="ruby-value">45</span>))
@@ -1060,7 +1056,7 @@
           </div>
           <div class="method-source-code" id="write_timestamp_tz-source">
             <pre class="c" data-language="c">static VALUE memory_helper_s_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
-    duckdb_time_tz *data;
+    duckdb_timestamp *data;
     idx_t idx;
     int64_t secs;
     int32_t usecs;
@@ -1071,12 +1067,12 @@
         rb_raise(rb_eTypeError, &quot;Expected Time object for TIMESTAMP_TZ&quot;);
     }
 
-    data = (duckdb_time_tz *)NUM2ULL(ptr);
+    data = (duckdb_timestamp *)NUM2ULL(ptr);
     idx = (idx_t)NUM2ULL(index);
 
     secs = NUM2LL(rb_funcall(value, rb_intern(&quot;to_i&quot;), 0));
     usecs = NUM2INT(rb_funcall(value, rb_intern(&quot;usec&quot;), 0));
-    data[idx].bits = (uint64_t)(secs * 1000000LL + usecs);
+    data[idx].micros = secs * 1000000LL + usecs;
 
     return Qnil;
 }</pre>

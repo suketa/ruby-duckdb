@@ -648,6 +648,7 @@
 
     Check_Type(logical_types, T_ARRAY);
 
+    free_column_types(ctx);
     if (ctx-&gt;owned &amp;&amp; ctx-&gt;data_chunk) {
         duckdb_destroy_data_chunk(&amp;(ctx-&gt;data_chunk));
         ctx-&gt;owned = false;
@@ -842,12 +843,9 @@
             </details>
           </div>
           <div class="method-source-code" id="reset-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 103</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 38</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">reset</span>
   <span class="ruby-identifier">_reset</span>
-  <span class="ruby-comment"># duckdb_data_chunk_reset may invalidate previously returned data pointers,</span>
-  <span class="ruby-comment"># so drop the cache; vector/type caches remain valid across resets.</span>
-  <span class="ruby-ivar">@data_cache</span> = <span class="ruby-keyword">nil</span>
   <span class="ruby-keyword">self</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -874,12 +872,15 @@
       <div id="method-i-set_value" class="method-detail anchor-link ">
         <div class="method-header">
 
-            <div class="method-heading">
-              <a href="#method-i-set_value" title="Link to this method">
-                <span class="method-name">set_value</span>
-                <span class="method-args">(col_idx, row_idx, value)</span>
-              </a>
-            </div>
+
+              <div class="method-heading">
+                <a href="#method-i-set_value" title="Link to this method">
+                  <span class="method-callseq">
+                    set_value(col_idx, row_idx, value) &rarr; value
+                  </span>
+                </a>
+              </div>
+
 
         </div>
 
@@ -890,56 +891,40 @@
             </details>
           </div>
           <div class="method-source-code" id="set_value-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/data_chunk.rb, line 48</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">set_value</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">vector</span> = <span class="ruby-identifier">cached_vector</span>(<span class="ruby-identifier">col_idx</span>)
-  <span class="ruby-identifier">type_id</span> = <span class="ruby-identifier">cached_type_id</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>)
+            <pre class="c" data-language="c">static VALUE data_chunk_set_value(VALUE self, VALUE col_idx, VALUE row_idx, VALUE value) {
+    rubyDuckDBDataChunk *ctx;
+    idx_t col;
+    idx_t row;
+    duckdb_vector vector;
+    duckdb_logical_type type;
 
-  <span class="ruby-comment"># Handle NULL</span>
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">set_validity</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-keyword">false</span>)
-    <span class="ruby-keyword">return</span> <span class="ruby-identifier">value</span>
-  <span class="ruby-keyword">end</span>
+    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &amp;data_chunk_data_type, ctx);
 
-  <span class="ruby-keyword">case</span> <span class="ruby-identifier">type_id</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:boolean</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_boolean</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:tinyint</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_tinyint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:smallint</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_smallint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:integer</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_integer</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:bigint</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_bigint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:utinyint</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_utinyint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:usmallint</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_usmallint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:uinteger</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_uinteger</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:ubigint</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_ubigint</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:float</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_float</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:double</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_double</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:varchar</span>
-    <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:blob</span>
-    <span class="ruby-identifier">vector</span>.<span class="ruby-identifier">assign_string_element_len</span>(<span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp_tz</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_timestamp_tz</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-value">:date</span>
-    <span class="ruby-constant">MemoryHelper</span>.<span class="ruby-identifier">write_date</span>(<span class="ruby-identifier">cached_data</span>(<span class="ruby-identifier">col_idx</span>, <span class="ruby-identifier">vector</span>), <span class="ruby-identifier">row_idx</span>, <span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unsupported type for DataChunk#set_value: #{type_id} for value `#{value.inspect}`&quot;</span>
-  <span class="ruby-keyword">end</span>
+    if (!ctx-&gt;data_chunk) {
+        rb_raise(eDuckDBError, &quot;data chunk is not initialized&quot;);
+    }
+    if (NUM2LL(col_idx) &lt; 0) {
+        rb_raise(rb_eIndexError, &quot;column index %&quot;PRIsVALUE&quot; out of range&quot;, rb_inspect(col_idx));
+    }
+    if (NUM2LL(row_idx) &lt; 0) {
+        rb_raise(rb_eIndexError, &quot;row index %&quot;PRIsVALUE&quot; out of range&quot;, rb_inspect(row_idx));
+    }
+    col = NUM2ULL(col_idx);
+    row = NUM2ULL(row_idx);
+    if (col &gt;= duckdb_data_chunk_get_column_count(ctx-&gt;data_chunk)) {
+        rb_raise(rb_eIndexError, &quot;column index %llu out of range&quot;, (unsigned long long)col);
+    }
+    if (row &gt;= duckdb_vector_size()) {
+        rb_raise(rb_eIndexError, &quot;row index %llu out of range (vector size is %llu)&quot;,
+                 (unsigned long long)row, (unsigned long long)duckdb_vector_size());
+    }
 
-  <span class="ruby-identifier">value</span>
-<span class="ruby-keyword">end</span></pre>
+    vector = duckdb_data_chunk_get_vector(ctx-&gt;data_chunk, col);
+    type = column_type(ctx, col);
+    rbduckdb_vector_set_value_at(vector, type, row, value);
+
+    return value;
+}</pre>
           </div>
 
 
@@ -947,26 +932,14 @@
         <div class="method-description">
 
 
-          <p>Sets a value at the specified column and row index. Type conversion is automatic based on the column’s logical type.</p>
+          <p>Sets a value at the specified column and row index. The value is converted according to the column’s logical type, the same way a <a href="ScalarFunction.html"><code>ScalarFunction</code></a> return value is converted. <code>nil</code> sets NULL.</p>
 
-<p>@param col_idx [Integer] <a href="Column.html"><code>Column</code></a> index (0-based) @param row_idx [Integer] Row index (0-based) @param value [Object] <a href="Value.html"><code>Value</code></a> to set (Integer, Float, String, Time, Date, nil) @return [Object] The value that was set</p>
-
-<p>@example Set integer value</p>
-
-<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">0</span>, <span class="ruby-value">42</span>)
+<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">0</span>, <span class="ruby-value">42</span>)       <span class="ruby-comment"># column 0, row 0</span>
+<span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">1</span>, <span class="ruby-value">0</span>, <span class="ruby-string">&#39;Alice&#39;</span>)  <span class="ruby-comment"># column 1, row 0</span>
+<span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">1</span>, <span class="ruby-keyword">nil</span>)      <span class="ruby-comment"># NULL</span>
 </pre>
 
-<p>@example Set string value</p>
-
-<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">1</span>, <span class="ruby-value">0</span>, <span class="ruby-string">&#39;hello&#39;</span>)
-</pre>
-
-<p>@example Set NULL value</p>
-
-<pre class="ruby"><span class="ruby-identifier">output</span>.<span class="ruby-identifier">set_value</span>(<span class="ruby-value">0</span>, <span class="ruby-value">1</span>, <span class="ruby-keyword">nil</span>)
-</pre>
-
-<p>rubocop:disable-next Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
+<p>Raises IndexError if <code>col_idx</code> or <code>row_idx</code> is out of range, and ArgumentError if the column type is not supported.</p>
 
 
         </div>

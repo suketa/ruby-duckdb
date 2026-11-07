@@ -482,6 +482,21 @@
 <p>STRUCT field names containing non-ASCII characters are now returned as UTF-8 <code>Symbol</code>s in query results and <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> (issue #1545).</p>
 </li><li>
 <p>internal: move the <a href="DuckDB.html"><code>DuckDB</code></a> vector → Ruby conversion out of <a href="ext/duckdb/result_c.html">result.c</a> into <a href="ext/duckdb/vector_reader_c.html">vector_reader.c</a>, make <a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> use it for every type, and rename <code>conveter.c</code> to <a href="ext/duckdb/converter_c.html">converter.c</a> (issue #1545).</p>
+</li><li>
+<p><a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> (TableFunction output, <code>Appender#append_data_chunk</code>) now uses the same C writer as ScalarFunction/AggregateFunction return values, so it accepts the same types: HUGEINT, UHUGEINT, UUID, DECIMAL, TIME, TIME_NS, TIME_TZ, INTERVAL and TIMESTAMP_S/MS/NS are newly supported. It is also about 4x faster and raises <code>IndexError</code> for an out-of-range column or row index instead of writing out of bounds (issue #1543).</p>
+</li><li>
+<p>ScalarFunction/AggregateFunction return values for a DATE column accept any object that responds to <code>year</code>, <code>month</code> and <code>day</code>, not only <code>Date</code> (issue #1543).</p>
+</li><li>
+<p>fix TIMESTAMP_NS return values of ScalarFunction dropping the sub-microsecond part of the <code>Time</code> (issue #1543).</p>
+</li><li>
+<p>internal: rename <code>function_vector.c</code> to <a href="ext/duckdb/vector_writer_c.html">vector_writer.c</a> (issue #1543).</p>
+</li></ul>
+
+<h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>
+<ul><li>
+<p><a href="DuckDB/DataChunk.html#method-i-set_value"><code>DuckDB::DataChunk#set_value</code></a> for a TIMESTAMP column now stores the wall-clock components of the <code>Time</code> as-is (like <code>bind_timestamp</code>, <code>Appender#append_timestamp</code> and ScalarFunction), instead of converting it to the local time zone first. <code>Time.utc(2024, 1, 1, 0, 0, 0)</code> is stored as <code>2024-01-01 00:00:00</code> regardless of <code>TZ</code> (issue #1543).</p>
+</li><li>
+<p>ScalarFunction/AggregateFunction return values for a TIMESTAMP_TZ column now honor the <code>Time</code>‘s <code>utc_offset</code> (store the instant, like <code>DataChunk#set_value</code> and <code>bind_timestamp_tz</code>). Previously the wall-clock components were stored as if they were UTC (issue #1543).</p>
 </li></ul>
 
 <h1 id="label-2.0.0.1+-+2026-10-25"><a href="#label-2.0.0.1+-+2026-10-25">2.0.0.1 - 2026-10-25</a></h1>
