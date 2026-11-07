@@ -23,6 +23,5 @@ void rbduckdb_result_ref(rubyDuckDBResult *ctx);
 void rbduckdb_result_unref(rubyDuckDBResult *ctx);
 void rbduckdb_init_result(void);
 VALUE rbduckdb_create_result(void);
-VALUE rbduckdb_vector_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index);
 
 #endif
