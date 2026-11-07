@@ -29,10 +29,10 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBExtractedStatements *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBExtractedStatements));
+    rubyDuckDBExtractedStatements *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBExtractedStatements, &extract_statements_data_type, ctx);
     ctx->num_statements = 0;
-
-    return TypedData_Wrap_Struct(klass, &extract_statements_data_type, ctx);
+    return obj;
 }
 
 static size_t memsize(const void *p) {

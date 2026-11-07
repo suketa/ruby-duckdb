@@ -103,8 +103,8 @@ static void compact(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBAggregateFunction *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBAggregateFunction));
-    return TypedData_Wrap_Struct(klass, &aggregate_function_data_type, ctx);
+    rubyDuckDBAggregateFunction *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBAggregateFunction, &aggregate_function_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

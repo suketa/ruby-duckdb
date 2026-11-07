@@ -74,8 +74,8 @@ static void deallocate(void * ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBAppender *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBAppender));
-    return TypedData_Wrap_Struct(klass, &appender_data_type, ctx);
+    rubyDuckDBAppender *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBAppender, &appender_data_type, ctx);
 }
 
 static duckdb_appender appender_of(VALUE self) {

@@ -33,8 +33,8 @@ static void compact(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBAggregateFunctionSet *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBAggregateFunctionSet));
-    VALUE obj = TypedData_Wrap_Struct(klass, &aggregate_function_set_data_type, ctx);
+    rubyDuckDBAggregateFunctionSet *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBAggregateFunctionSet, &aggregate_function_set_data_type, ctx);
     RB_OBJ_WRITE(obj, &ctx->functions, rb_ary_new());
     return obj;
 }
