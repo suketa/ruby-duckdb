@@ -35,7 +35,7 @@ module DuckDBTest
       interval: 'INTERVAL 3 DAY',
       uuid: "'6ba7b810-9dad-11d1-80b4-00c04fd430c8'::UUID",
       enum: "'x'::ENUM('x', 'y')",
-      # more than 256 members: stored as USMALLINT
+      # more than 255 members: stored as USMALLINT
       large_enum: "'m299'::ENUM(#{(0...300).map { |i| "'m#{i}'" }.join(', ')})",
       bit: "'101'::BIT",
       bignum: '123456789012345678901234567890123456789::BIGNUM',
