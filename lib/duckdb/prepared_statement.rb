@@ -384,43 +384,22 @@ module DuckDB
 
     private
 
-    # rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/MethodLength
-    def bind_with_index(index, value)
-      case value
-      when NilClass
-        bind_null(index)
-      when Float
-        bind_double(index, value)
-      when Integer
-        bind_integer_value(index, value)
-      when String
-        bind_string_value(index, value)
-      when TrueClass, FalseClass
-        bind_bool(index, value)
-      when Time
-        bind_varchar(index, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
-      when Date
-        bind_varchar(index, value.strftime('%Y-%m-%d'))
-      when BigDecimal
-        bind_decimal(index, value)
+    # The Ruby type -> DuckDB type decision is made by RubyTypeInference,
+    # which also holds Appender#append's table.
+    def bind_with_index(index, value) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      case RubyTypeInference.for_bind(value)
+      when :null then bind_null(index)
+      when :double then bind_double(index, value)
+      when :bigint then bind_int64(index, value)
+      when :integer_as_varchar then bind_varchar(index, value.to_s)
+      when :blob then bind_blob(index, value)
+      when :varchar then bind_varchar(index, value)
+      when :boolean then bind_bool(index, value)
+      when :time_as_varchar then bind_varchar(index, value.strftime('%Y-%m-%d %H:%M:%S.%N'))
+      when :date_as_varchar then bind_varchar(index, value.strftime('%Y-%m-%d'))
+      when :decimal then bind_decimal(index, value)
       else
         raise(DuckDB::Error, "not supported type `#{value}` (#{value.class})")
-      end
-    end
-
-    def bind_integer_value(index, value)
-      if RANGE_INT64.cover?(value)
-        bind_int64(index, value)
-      else
-        bind_varchar(index, value.to_s)
-      end
-    end
-
-    def bind_string_value(index, value)
-      if blob?(value)
-        bind_blob(index, value)
-      else
-        bind_varchar(index, value)
       end
     end
 
@@ -429,10 +408,6 @@ module DuckDB
 
       i = bind_parameter_index(name)
       bind_with_index(i, value)
-    end
-
-    def blob?(value)
-      value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
     end
   end
 end
