@@ -45,9 +45,10 @@ static size_t memsize(const void *p) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBInstanceCache *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBInstanceCache));
+    rubyDuckDBInstanceCache *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBInstanceCache, &instance_cache_data_type, ctx);
     ctx->wrappers = Qnil;
-    return TypedData_Wrap_Struct(klass, &instance_cache_data_type, ctx);
+    return obj;
 }
 
 /*

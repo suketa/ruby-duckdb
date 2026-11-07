@@ -22,8 +22,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBScalarFunctionBindInfo *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBScalarFunctionBindInfo));
-    return TypedData_Wrap_Struct(klass, &scalar_function_bind_info_data_type, ctx);
+    rubyDuckDBScalarFunctionBindInfo *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

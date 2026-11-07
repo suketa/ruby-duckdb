@@ -50,8 +50,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBDataChunk *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBDataChunk));
-    return TypedData_Wrap_Struct(klass, &data_chunk_data_type, ctx);
+    rubyDuckDBDataChunk *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

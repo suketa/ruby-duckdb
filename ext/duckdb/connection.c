@@ -49,9 +49,10 @@ static void compact(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBConnection *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConnection));
+    rubyDuckDBConnection *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBConnection, &connection_data_type, ctx);
     ctx->database = Qnil;
-    return TypedData_Wrap_Struct(klass, &connection_data_type, ctx);
+    return obj;
 }
 
 /* Anchors obj to this connection's database so it outlives the connection. */

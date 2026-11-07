@@ -24,8 +24,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBClientContext *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBClientContext));
-    return TypedData_Wrap_Struct(klass, &client_context_data_type, ctx);
+    rubyDuckDBClientContext *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBClientContext, &client_context_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {
