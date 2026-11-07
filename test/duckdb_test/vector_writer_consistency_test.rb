@@ -117,6 +117,37 @@ module DuckDBTest
       assert_raises(RangeError) { chunk.set_value(0, 0, Time.utc(2300, 1, 1)) }
     end
 
+    def test_timestamp_ns_upper_boundary
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_NS])
+      max = Time.at(9_223_372_036, 854_775_807, :nsec, in: 'UTC')
+
+      chunk.set_value(0, 0, max)
+      assert_raises(RangeError) { chunk.set_value(0, 0, max + Rational(1, 1_000_000_000)) }
+    end
+
+    def test_timestamp_ns_lower_boundary
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_NS])
+      min = Time.at(-9_223_372_037, 145_224_192, :nsec, in: 'UTC')
+
+      chunk.set_value(0, 0, min)
+      assert_raises(RangeError) { chunk.set_value(0, 0, min - Rational(1, 1_000_000_000)) }
+    end
+
+    def test_data_chunk_set_value_invalid_utf8_stays_null
+      @con.execute('CREATE TABLE t_utf8 (s VARCHAR)')
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::VARCHAR])
+      chunk.set_value(0, 0, nil)
+      chunk.set_value(0, 0, "\xFF".b)
+      chunk.set_value(0, 1, 'ok')
+      chunk.set_value(0, 1, "\xFF".b)
+      chunk.size = 2
+      appender = DuckDB::Appender.new(@con, 't_utf8')
+      appender.append_data_chunk(chunk)
+      appender.close
+
+      assert_equal [[nil], [nil]], @con.query('SELECT s FROM t_utf8').to_a
+    end
+
     def test_data_chunk_set_value_raises_for_out_of_range_row
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
 

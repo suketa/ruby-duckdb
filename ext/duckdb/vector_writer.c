@@ -1,5 +1,38 @@
 #include "ruby-duckdb.h"
 
+static void set_row_valid(duckdb_vector vector, idx_t index) {
+    uint64_t *validity = duckdb_vector_get_validity(vector);
+    if (validity != NULL) {
+        duckdb_validity_set_row_valid(validity, index);
+    }
+}
+
+/*
+ * nanos = micros * 1000 + sub_micro (0..999), or 0 when the result does not
+ * fit in int64_t. Near INT64_MIN the product alone can overflow while the
+ * sum still fits, so that case is computed from micros + 1.
+ */
+static int micros_to_nanos(int64_t micros, int64_t sub_micro, int64_t *nanos) {
+    int64_t high;
+
+    if (micros > (INT64_MAX - sub_micro) / 1000) {
+        return 0;
+    }
+    if (micros >= INT64_MIN / 1000) {
+        *nanos = micros * 1000 + sub_micro;
+        return 1;
+    }
+    if (micros < INT64_MIN / 1000 - 1) {
+        return 0;
+    }
+    high = (micros + 1) * 1000;
+    if (high - INT64_MIN < 1000 - sub_micro) {
+        return 0;
+    }
+    *nanos = high - (1000 - sub_micro);
+    return 1;
+}
+
 void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value) {
     duckdb_type type_id;
     void* vector_data;
@@ -68,15 +101,25 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             VALUE str = rb_obj_as_string(value);
             const char *str_ptr = StringValuePtr(str);
             idx_t str_len = RSTRING_LEN(str);
+            /*
+             * Mark the row valid first: DuckDB sets it to NULL itself when
+             * the string is not valid UTF-8, and that must not be undone.
+             */
+            set_row_valid(vector, index);
             duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
-            break;
+            return;
         }
         case DUCKDB_TYPE_BLOB: {
             VALUE str = rb_obj_as_string(value);
             const char *str_ptr = StringValuePtr(str);
             idx_t str_len = RSTRING_LEN(str);
+            /*
+             * Mark the row valid first: DuckDB sets it to NULL itself when
+             * the string is not valid UTF-8, and that must not be undone.
+             */
+            set_row_valid(vector, index);
             duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
-            break;
+            return;
         }
         case DUCKDB_TYPE_TIMESTAMP: {
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
@@ -100,10 +143,10 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
         case DUCKDB_TYPE_TIMESTAMP_NS: {
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
             duckdb_timestamp_ns ts_ns;
-            if (ts.micros > INT64_MAX / 1000 || ts.micros < INT64_MIN / 1000) {
+            int64_t sub_micro = NUM2LL(rb_funcall(value, rb_intern("nsec"), 0)) % 1000;
+            if (!micros_to_nanos(ts.micros, sub_micro, &ts_ns.nanos)) {
                 rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_NS");
             }
-            ts_ns.nanos = ts.micros * 1000 + NUM2LL(rb_funcall(value, rb_intern("nsec"), 0)) % 1000;
             ((duckdb_timestamp_ns *)vector_data)[index] = ts_ns;
             break;
         }
@@ -237,10 +280,7 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
      * A cell may have been set to NULL earlier (e.g. a reused DataChunk), so
      * mark it valid again once the value has been written successfully.
      */
-    validity = duckdb_vector_get_validity(vector);
-    if (validity != NULL) {
-        duckdb_validity_set_row_valid(validity, index);
-    }
+    set_row_valid(vector, index);
 }
 
 void rbduckdb_input_columns_load(duckdb_data_chunk input, idx_t n, duckdb_vector **vectors, duckdb_logical_type **types) {
