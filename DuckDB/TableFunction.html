@@ -528,6 +528,8 @@
 
         <li ><a href="#method-i-set_name">set_name</a></li>
 
+        <li ><a href="#method-i-supports_projection_pushdown-3D">supports_projection_pushdown=</a></li>
+
       </ul>
     </details>
   </div>
@@ -1357,6 +1359,65 @@
         <div class="aliases">
           Also aliased as: <a href="TableFunction.html#method-i-name-3D">name=</a>
         </div>
+
+
+
+      </div>
+
+
+      <div id="method-i-supports_projection_pushdown-3D" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-supports_projection_pushdown-3D" title="Link to this method">
+                  <span class="method-callseq">
+                    supports_projection_pushdown = bool &rarr; bool
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="supports_projection_pushdown-3D-source">
+            <pre class="c" data-language="c">static VALUE table_function_set_supports_projection_pushdown(VALUE self, VALUE pushdown) {
+    rubyDuckDBTableFunction *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBTableFunction, &amp;table_function_data_type, ctx);
+
+    if (!ctx-&gt;table_function) {
+        rb_raise(eDuckDBError, &quot;Table function is destroyed&quot;);
+    }
+
+    duckdb_table_function_supports_projection_pushdown(ctx-&gt;table_function, RTEST(pushdown));
+
+    return pushdown;
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Sets whether the table function supports projection pushdown.</p>
+
+<p>When <code>true</code>, <a href="../DuckDB.html"><code>DuckDB</code></a> passes only the columns referenced by the query to the table function. The output chunk given to the execute callback then holds just those columns, in the order reported by <a href="TableFunction/InitInfo.html#method-i-column_count"><code>DuckDB::TableFunction::InitInfo#column_count</code></a> and <a href="TableFunction/InitInfo.html#method-i-column_index"><code>DuckDB::TableFunction::InitInfo#column_index</code></a>. When <code>false</code> (the default), the output chunk holds every result column.</p>
+
+<pre class="ruby"><span class="ruby-identifier">tf</span>.<span class="ruby-identifier">supports_projection_pushdown</span> = <span class="ruby-keyword">true</span>
+</pre>
+
+
+        </div>
+
+
 
 
 

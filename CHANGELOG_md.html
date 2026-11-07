@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. aggregate function arguments) being returned as `nil` with an &quot;Unknown"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. TableFunction#supports_projection_pushdown=` to enable projection push"
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. aggregate function arguments) being returned as `nil` with an &quot;Unknown">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. TableFunction#supports_projection_pushdown=` to enable projection push">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. aggregate function arguments) being returned as `nil` with an &quot;Unknown">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. TableFunction#supports_projection_pushdown=` to enable projection push">
 
 
 
@@ -473,6 +473,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>add <a href="DuckDB/TableFunction.html#method-i-supports_projection_pushdown-3D"><code>DuckDB::TableFunction#supports_projection_pushdown=</code></a> to enable projection pushdown. When enabled, the output chunk passed to the execute callback holds only the columns referenced by the query, as reported by <code>InitInfo#column_count</code> / <code>InitInfo#column_index</code> (issue #1539).</p>
+</li><li>
 <p>fix BIGNUM values in query results (and scalar/aggregate function arguments) being returned as <code>nil</code> with an “Unknown type” warning; they are now converted to <code>Integer</code> (issue #1545).</p>
 </li><li>
 <p><a href="DuckDB/Value.html#method-i-to_ruby"><code>DuckDB::Value#to_ruby</code></a> (and table function parameters / <code>Expression#fold</code>) now returns VARCHAR values as UTF-8 <code>String</code>, the same as query results (issue #1545).</p>

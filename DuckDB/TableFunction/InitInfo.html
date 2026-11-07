@@ -686,7 +686,7 @@
         <div class="method-description">
 
 
-          <p>Returns the number of projected result columns for this scan. Without projection pushdown this equals the number of result columns added in the bind callback.</p>
+          <p>Returns the number of columns <a href="../../DuckDB.html"><code>DuckDB</code></a> needs from this scan, including columns used only in filters (e.g. <code>score</code> in <code>SELECT name FROM f() WHERE score &gt; 0</code>). A column selected more than once is counted once, and a query that references no column (e.g. <code>SELECT count(*)</code>) still reports one column. With <a href="../TableFunction.html#method-i-supports_projection_pushdown-3D"><code>DuckDB::TableFunction#supports_projection_pushdown=</code></a> set to <code>true</code>, the output chunk passed to the execute callback holds exactly these columns. Otherwise the output chunk still holds every result column added in the bind callback.</p>
 
 <pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">column_count</span> <span class="ruby-comment"># =&gt; 2</span>
 </pre>
@@ -737,7 +737,7 @@
         <div class="method-description">
 
 
-          <p>Returns the column index of the projected result column at <code>index</code> (0 &lt;= <code>index</code> &lt; <a href="InitInfo.html#method-i-column_count"><code>column_count</code></a>). Without projection pushdown the projected columns mirror the columns added in the bind callback, so this returns <code>index</code> itself.</p>
+          <p>Returns the column index of the projected result column at <code>index</code> (0 &lt;= <code>index</code> &lt; <a href="InitInfo.html#method-i-column_count"><code>column_count</code></a>), i.e. the position of that column among the columns added in the bind callback. With projection pushdown enabled, the <code>index</code>-th vector of the output chunk corresponds to this column.</p>
 
 <pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">column_index</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; 0</span>
 </pre>
