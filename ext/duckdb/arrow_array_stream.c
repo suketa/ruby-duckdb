@@ -54,8 +54,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBArrowArrayStream *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBArrowArrayStream));
-    return TypedData_Wrap_Struct(klass, &arrow_array_stream_data_type, ctx);
+    rubyDuckDBArrowArrayStream *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBArrowArrayStream, &arrow_array_stream_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

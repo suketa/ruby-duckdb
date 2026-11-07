@@ -39,8 +39,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBArrowConvertedSchema *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBArrowConvertedSchema));
-    return TypedData_Wrap_Struct(klass, &arrow_converted_schema_data_type, ctx);
+    rubyDuckDBArrowConvertedSchema *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBArrowConvertedSchema, &arrow_converted_schema_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

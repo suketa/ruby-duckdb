@@ -106,8 +106,8 @@ static void compact(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBScalarFunction *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBScalarFunction));
-    return TypedData_Wrap_Struct(klass, &scalar_function_data_type, ctx);
+    rubyDuckDBScalarFunction *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBScalarFunction, &scalar_function_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

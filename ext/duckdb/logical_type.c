@@ -55,8 +55,8 @@ rubyDuckDBLogicalType *rbduckdb_get_struct_logical_type(VALUE obj) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBLogicalType *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBLogicalType));
-    return TypedData_Wrap_Struct(klass, &logical_type_data_type, ctx);
+    rubyDuckDBLogicalType *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBLogicalType, &logical_type_data_type, ctx);
 }
 
 static duckdb_logical_type logical_type_of(VALUE self) {

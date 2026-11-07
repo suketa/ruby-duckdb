@@ -24,8 +24,8 @@ static void deallocate(void * ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBConfig *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBConfig));
-    return TypedData_Wrap_Struct(klass, &config_data_type, ctx);
+    rubyDuckDBConfig *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBConfig, &config_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

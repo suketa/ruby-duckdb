@@ -25,8 +25,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBExpression *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBExpression));
-    return TypedData_Wrap_Struct(klass, &expression_data_type, ctx);
+    rubyDuckDBExpression *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBExpression, &expression_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

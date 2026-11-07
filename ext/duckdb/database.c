@@ -72,8 +72,8 @@ static size_t memsize(const void *p) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDB *ctx = xcalloc((size_t)1, sizeof(rubyDuckDB));
-    VALUE obj = TypedData_Wrap_Struct(klass, &database_data_type, ctx);
+    rubyDuckDB *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDB, &database_data_type, ctx);
     ctx->cached_path = Qnil;
     ctx->cache_wrappers = Qnil;
     RB_OBJ_WRITE(obj, &ctx->registered_functions, rb_ary_new());
