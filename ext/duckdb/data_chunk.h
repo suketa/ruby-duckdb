@@ -4,6 +4,9 @@
 struct _rubyDuckDBDataChunk {
     duckdb_data_chunk data_chunk;
     bool owned;
+    /* Lazily loaded column types for set_value; destroyed with the chunk. */
+    duckdb_logical_type *column_types;
+    idx_t column_types_count;
 };
 
 typedef struct _rubyDuckDBDataChunk rubyDuckDBDataChunk;
