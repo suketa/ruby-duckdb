@@ -21,6 +21,7 @@
 #include "./database.h"
 #include "./connection.h"
 #include "./result.h"
+#include "./vector_reader.h"
 #include "./column.h"
 #include "./logical_type.h"
 #include "./prepared_statement.h"

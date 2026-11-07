@@ -561,9 +561,9 @@ rubyDuckDBValue *rbduckdb_get_struct_value(VALUE obj) {
 
 /*
  * Converts a duckdb_value to Ruby by referencing it into a one-element
- * vector and reusing the vector read path, so Value#to_ruby returns the
- * same Ruby object a query result produces for that type. Used for types
- * the C API has no direct duckdb_get_* accessors for.
+ * vector and reusing the vector reader (rbduckdb_vector_value_at), so
+ * Value#to_ruby returns the same Ruby object a query result produces for
+ * that type.
  */
 static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value val) {
     struct vector_ref_arg arg;
@@ -601,167 +601,12 @@ VALUE rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_value val) {
 }
 
 VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
-    duckdb_logical_type logical_type;
-    duckdb_type type_id;
-    VALUE result;
-    VALUE elem;
-    VALUE key;
-    char *str;
-    idx_t i;
-    idx_t size;
-
     if (duckdb_is_null_value(val)) {
         return Qnil;
     }
 
     /* logical_type from duckdb_get_value_type is borrowed and must not be destroyed */
-    logical_type = duckdb_get_value_type(val);
-    type_id = duckdb_get_type_id(logical_type);
-
-    switch (type_id) {
-        case DUCKDB_TYPE_BOOLEAN:
-            result = duckdb_get_bool(val) ? Qtrue : Qfalse;
-            break;
-        case DUCKDB_TYPE_TINYINT:
-            result = INT2FIX(duckdb_get_int8(val));
-            break;
-        case DUCKDB_TYPE_SMALLINT:
-            result = INT2FIX(duckdb_get_int16(val));
-            break;
-        case DUCKDB_TYPE_INTEGER:
-            result = INT2NUM(duckdb_get_int32(val));
-            break;
-        case DUCKDB_TYPE_BIGINT:
-            result = LL2NUM(duckdb_get_int64(val));
-            break;
-        case DUCKDB_TYPE_HUGEINT:
-            result = rbduckdb_hugeint_to_ruby(duckdb_get_hugeint(val));
-            break;
-        case DUCKDB_TYPE_UHUGEINT:
-            result = rbduckdb_uhugeint_to_ruby(duckdb_get_uhugeint(val));
-            break;
-        case DUCKDB_TYPE_UTINYINT:
-            result = INT2FIX(duckdb_get_uint8(val));
-            break;
-        case DUCKDB_TYPE_USMALLINT:
-            result = INT2FIX(duckdb_get_uint16(val));
-            break;
-        case DUCKDB_TYPE_UINTEGER:
-            result = UINT2NUM(duckdb_get_uint32(val));
-            break;
-        case DUCKDB_TYPE_UBIGINT:
-            result = ULL2NUM(duckdb_get_uint64(val));
-            break;
-        case DUCKDB_TYPE_FLOAT:
-            result = DBL2NUM(duckdb_get_float(val));
-            break;
-        case DUCKDB_TYPE_DOUBLE:
-            result = DBL2NUM(duckdb_get_double(val));
-            break;
-        case DUCKDB_TYPE_TIMESTAMP:
-            result = rbduckdb_timestamp_to_ruby(duckdb_get_timestamp(val));
-            break;
-        case DUCKDB_TYPE_DATE:
-            result = rbduckdb_date_to_ruby(duckdb_get_date(val));
-            break;
-        case DUCKDB_TYPE_TIME:
-            result = rbduckdb_time_to_ruby(duckdb_get_time(val));
-            break;
-        case DUCKDB_TYPE_INTERVAL:
-            result = rbduckdb_interval_to_ruby(duckdb_get_interval(val));
-            break;
-        case DUCKDB_TYPE_TIMESTAMP_S:
-            result = rbduckdb_timestamp_s_to_ruby(duckdb_get_timestamp_s(val));
-            break;
-        case DUCKDB_TYPE_TIMESTAMP_MS:
-            result = rbduckdb_timestamp_ms_to_ruby(duckdb_get_timestamp_ms(val));
-            break;
-        case DUCKDB_TYPE_TIMESTAMP_NS:
-            result = rbduckdb_timestamp_ns_to_ruby(duckdb_get_timestamp_ns(val));
-            break;
-        case DUCKDB_TYPE_TIME_NS:
-            result = rbduckdb_time_ns_to_ruby(duckdb_get_time_ns(val));
-            break;
-        case DUCKDB_TYPE_TIME_TZ:
-            result = rbduckdb_time_tz_to_ruby(duckdb_get_time_tz(val));
-            break;
-        case DUCKDB_TYPE_TIMESTAMP_TZ:
-            result = rbduckdb_timestamp_tz_to_ruby(duckdb_get_timestamp_tz(val));
-            break;
-        case DUCKDB_TYPE_VARCHAR:
-            str = duckdb_get_varchar(val);
-            result = rb_str_new_cstr(str);
-            duckdb_free(str);
-            break;
-        case DUCKDB_TYPE_UUID:
-            result = rbduckdb_uuid_uhugeint_to_ruby(duckdb_get_uuid(val));
-            break;
-        case DUCKDB_TYPE_ENUM:
-            str = duckdb_enum_dictionary_value(logical_type, duckdb_get_enum_value(val));
-            if (str == NULL) {
-                result = Qnil;
-                break;
-            }
-            result = rb_utf8_str_new_cstr(str);
-            duckdb_free(str);
-            break;
-        case DUCKDB_TYPE_LIST:
-            size = duckdb_get_list_size(val);
-            result = rb_ary_new_capa(size);
-            for (i = 0; i < size; i++) {
-                elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_list_child(val, i));
-                rb_ary_push(result, elem);
-            }
-            break;
-        case DUCKDB_TYPE_STRUCT:
-            size = duckdb_struct_type_child_count(logical_type);
-            result = rb_hash_new_capa((long)size);
-            for (i = 0; i < size; i++) {
-                str = duckdb_struct_type_child_name(logical_type, i);
-                key = ID2SYM(rb_intern(str));
-                duckdb_free(str);
-                elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_struct_child(val, i));
-                rb_hash_aset(result, key, elem);
-            }
-            break;
-        case DUCKDB_TYPE_MAP:
-            size = duckdb_get_map_size(val);
-            result = rb_hash_new_capa((long)size);
-            for (i = 0; i < size; i++) {
-                key = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_map_key(val, i));
-                elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_map_value(val, i));
-                rb_hash_aset(result, key, elem);
-            }
-            break;
-        case DUCKDB_TYPE_ARRAY:
-        case DUCKDB_TYPE_UNION:
-        case DUCKDB_TYPE_BIT:
-        case DUCKDB_TYPE_DECIMAL:
-            result = to_ruby_via_vector(logical_type, val);
-            break;
-        case DUCKDB_TYPE_BLOB: {
-            duckdb_blob blob = duckdb_get_blob(val);
-
-            result = rb_str_new((const char *)blob.data, blob.size);
-            duckdb_free(blob.data);
-            break;
-        }
-        case DUCKDB_TYPE_BIGNUM: {
-            duckdb_bignum bignum = duckdb_get_bignum(val);
-
-            result = rb_integer_unpack(bignum.data, bignum.size, 1, 0, INTEGER_PACK_BIG_ENDIAN);
-            duckdb_free(bignum.data);
-            if (bignum.is_negative) {
-                result = rb_funcall(result, rb_intern("-@"), 0);
-            }
-            break;
-        }
-        default:
-            result = Qnil;
-            break;
-    }
-
-    return result;
+    return to_ruby_via_vector(duckdb_get_value_type(val), val);
 }
 
 /*
