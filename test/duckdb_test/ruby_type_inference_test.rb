@@ -37,14 +37,13 @@ module DuckDBTest
       symbol: [:sym, nil, nil]
     }.freeze
 
+    # The append column is also checked end-to-end through Appender#append
+    # in appender_test.rb (integer range boundaries, strings/blobs, nil,
+    # Date and Time); see the tests below for Interval and BigDecimal.
     MATRIX.each do |name, (value, bind_tag, append_tag)|
       define_method(:"test_infer_#{name}") do
-        assert_equal [bind_tag, append_tag], [INFERENCE.infer(value, :bind), INFERENCE.infer(value, :append)]
+        assert_equal [bind_tag, append_tag], [INFERENCE.for_bind(value), INFERENCE.for_append(value)]
       end
-    end
-
-    def test_infer_rejects_unknown_target
-      assert_raises(ArgumentError) { INFERENCE.infer(1, :unknown) }
     end
 
     def test_constant_is_private

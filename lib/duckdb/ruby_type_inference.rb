@@ -4,24 +4,21 @@ require 'bigdecimal'
 require 'date'
 
 module DuckDB
-  # :nodoc: all
-  #
   # Decides which DuckDB type an untyped Ruby object becomes when it is
-  # passed to PreparedStatement#bind (target +:bind+) or Appender#append
-  # (target +:append+).
+  # passed to PreparedStatement#bind (#for_bind) or Appender#append
+  # (#for_append).
   #
   # Both decision tables live here, side by side, so that every difference
   # between the two is visible in one place. The differences are kept as
   # they are for now (they are part of the current public behaviour) and
   # are marked with "DIFF"; converging them is a separate, breaking change.
   #
-  # #infer returns a type tag, or nil when the value is not supported.
-  # Each caller maps the tag to its own bind_* / append_* method.
-  module RubyTypeInference
-    TARGET_INDEX = { bind: 0, append: 1 }.freeze
-
-    # Ruby class => [tag for :bind, tag for :append]. Looked up by the exact
-    # class first, then with is_a? in order (so DateTime matches Date).
+  # #for_bind and #for_append return a type tag, or nil when the value is
+  # not supported. Each caller maps the tag to its own bind_* / append_*
+  # method.
+  module RubyTypeInference # :nodoc: all
+    # Ruby class => [tag for bind, tag for append]. Looked up by the exact
+    # class first, then with `===` in order (so DateTime matches Date).
     # Integer and String depend on the value and are handled separately.
     TABLE = {
       NilClass => %i[null null],
@@ -37,53 +34,48 @@ module DuckDB
       DuckDB::Interval => [nil, :interval]
     }.freeze
 
+    # One hash per caller, so each lookup is a single fetch.
+    BIND_TABLE = TABLE.transform_values(&:first).freeze
+    APPEND_TABLE = TABLE.transform_values(&:last).freeze
+
     module_function
 
-    def infer(value, target)
-      infer_at(value, TARGET_INDEX.fetch(target) { raise ArgumentError, "unknown target #{target.inspect}" })
-    end
-
-    # Same as infer(value, :bind), without the target lookup.
-    def for_bind(value)
-      infer_at(value, 0)
-    end
-
-    # Same as infer(value, :append), without the target lookup (Appender#append is a hot path).
-    def for_append(value)
-      infer_at(value, 1)
-    end
-
-    def infer_at(value, column)
-      case value
-      when Integer then integer_type(value, column)
-      when String then blob?(value) ? :blob : :varchar
-      else
-        tags = TABLE[value.class] || subclass_tags(value)
-        tags && tags[column]
-      end
-    end
-
-    def subclass_tags(value)
-      # Same matching as a `case value when Klass` (the dispatch this replaced).
-      TABLE.find { |klass, _| klass === value }&.last # rubocop:disable Style/CaseEquality
-    end
-
-    def blob?(value)
-      value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
-    end
-
     # DIFF: bind uses BIGINT for every Integer in the int64 range and
-    # VARCHAR beyond it; append picks the smallest of SMALLINT/INTEGER/BIGINT
-    # and HUGEINT beyond int64.
-    def integer_type(value, column)
-      return Converter::RANGE_INT64.cover?(value) ? :bigint : :integer_as_varchar if column.zero?
-
-      if Converter::RANGE_INT16.cover?(value) then :smallint
-      elsif Converter::RANGE_INT32.cover?(value) then :integer
-      elsif Converter::RANGE_INT64.cover?(value) then :bigint
-      else :hugeint
+    # VARCHAR beyond it; append (below) picks the smallest of
+    # SMALLINT/INTEGER/BIGINT and HUGEINT beyond int64.
+    def for_bind(value)
+      case value
+      when Integer then Converter::RANGE_INT64.cover?(value) ? :bigint : :integer_as_varchar
+      when String then string_type(value)
+      else BIND_TABLE[value.class] || subclass_tag(BIND_TABLE, value)
       end
     end
+
+    # Appender#append is a hot path, so this is kept to a single case.
+    def for_append(value)
+      case value
+      when Integer
+        if Converter::RANGE_INT16.cover?(value) then :smallint
+        elsif Converter::RANGE_INT32.cover?(value) then :integer
+        elsif Converter::RANGE_INT64.cover?(value) then :bigint
+        else :hugeint
+        end
+      when String then string_type(value)
+      else APPEND_TABLE[value.class] || subclass_tag(APPEND_TABLE, value)
+      end
+    end
+
+    def string_type(value)
+      value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY ? :blob : :varchar
+    end
+
+    # For subclasses, and for classes whose tag is nil (not supported).
+    def subclass_tag(table, value)
+      # Same matching as a `case value when Klass` (the dispatch this replaced).
+      table.find { |klass, _| klass === value }&.last # rubocop:disable Style/CaseEquality
+    end
+
+    private_class_method :string_type, :subclass_tag
   end
 
   private_constant :RubyTypeInference
