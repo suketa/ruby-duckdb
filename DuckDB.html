@@ -682,7 +682,7 @@
             </details>
           </div>
           <div class="method-source-code" id="default_timezone-3D-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb.rb, line 57</span>
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb.rb, line 58</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">default_timezone=</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&#39;DuckDB.default_timezone must be either :utc or :local.&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-node">%i[local utc]</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">value</span>)
 

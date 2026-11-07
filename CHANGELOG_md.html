@@ -490,6 +490,8 @@
 <p>fix TIMESTAMP_NS return values of ScalarFunction dropping the sub-microsecond part of the <code>Time</code> (issue #1543).</p>
 </li><li>
 <p>internal: rename <code>function_vector.c</code> to <a href="ext/duckdb/vector_writer_c.html">vector_writer.c</a> (issue #1543).</p>
+</li><li>
+<p>internal: move the “untyped Ruby object -&gt; <a href="DuckDB.html"><code>DuckDB</code></a> type” decision tables of <code>PreparedStatement#bind</code> and <code>Appender#append</code> into one private module, <code>DuckDB::RubyTypeInference</code> (<code>Appender#append</code> keeps a fast path for Integer/String), with their current differences marked. No behaviour change (issue #1544).</p>
 </li></ul>
 
 <h2 id="label-Breaking+Changes"><a href="#label-Breaking+Changes">Breaking Changes</a></h2>

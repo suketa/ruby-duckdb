@@ -979,25 +979,20 @@
             </details>
           </div>
           <div class="method-source-code" id="append-source">
-            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 759</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>)
+            <pre class="ruby" data-language="ruby"><span class="ruby-comment"># File lib/duckdb/appender.rb, line 764</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">append</span>(<span class="ruby-identifier">value</span>) <span class="ruby-comment"># rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength</span>
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">value</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">NilClass</span>
-    <span class="ruby-identifier">append_null</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">Float</span>
-    <span class="ruby-identifier">append_double</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
-    <span class="ruby-identifier">append_integer_value</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span>
-    <span class="ruby-identifier">append_string_value</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">TrueClass</span>, <span class="ruby-constant">FalseClass</span>
-    <span class="ruby-identifier">append_bool</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">Time</span>
-    <span class="ruby-identifier">append_timestamp</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">Date</span>
-    <span class="ruby-identifier">append_date</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">when</span> <span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Interval</span>
-    <span class="ruby-identifier">append_interval</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span> <span class="ruby-keyword">then</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">append_integer_value</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span> <span class="ruby-keyword">then</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">append_string_value</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">case</span> <span class="ruby-constant">RubyTypeInference</span>.<span class="ruby-identifier">for_append</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:null</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">append_null</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:double</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">append_double</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:boolean</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">append_bool</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:timestamp</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">append_timestamp</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:date</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">append_date</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-keyword">when</span> <span class="ruby-value">:interval</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">append_interval</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-keyword">else</span>
     <span class="ruby-identifier">raise</span>(<span class="ruby-constant">DuckDB</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;not supported type #{value} (#{value.class})&quot;</span>)
   <span class="ruby-keyword">end</span>
@@ -1021,7 +1016,7 @@
 <span class="ruby-identifier">appender</span>.<span class="ruby-identifier">end_row</span>
 </pre>
 
-<p>rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/MethodLength</p>
+<p>The Ruby type -&gt; <a href="../DuckDB.html"><code>DuckDB</code></a> type decision is made by RubyTypeInference, which also holds <a href="PreparedStatement.html#method-i-bind"><code>PreparedStatement#bind</code></a>‘s table. Integer and String are the most common values in a bulk load, so they are matched here first, without the extra call; the rules are the same as RubyTypeInference.for_append (ruby_type_inference_test.rb and appender_test.rb check both).</p>
 
 
         </div>
