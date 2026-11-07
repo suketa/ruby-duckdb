@@ -73,8 +73,8 @@ static void deallocate(void * ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBValue *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBValue));
-    return TypedData_Wrap_Struct(klass, &value_data_type, ctx);
+    rubyDuckDBValue *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBValue, &value_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {
@@ -715,7 +715,7 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             break;
         case DUCKDB_TYPE_STRUCT:
             size = duckdb_struct_type_child_count(logical_type);
-            result = rb_hash_new();
+            result = rb_hash_new_capa((long)size);
             for (i = 0; i < size; i++) {
                 str = duckdb_struct_type_child_name(logical_type, i);
                 key = ID2SYM(rb_intern(str));
@@ -726,7 +726,7 @@ VALUE rbduckdb_duckdb_value_to_ruby(duckdb_value val) {
             break;
         case DUCKDB_TYPE_MAP:
             size = duckdb_get_map_size(val);
-            result = rb_hash_new();
+            result = rb_hash_new_capa((long)size);
             for (i = 0; i < size; i++) {
                 key = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_map_key(val, i));
                 elem = rbduckdb_duckdb_value_to_ruby_and_destroy(duckdb_get_map_value(val, i));

@@ -531,7 +531,7 @@ static VALUE vector_map(duckdb_logical_type ty, duckdb_vector vector, void* vect
 
 static VALUE convert_map_entries(VALUE varg) {
     struct map_entries_arg *arg = (struct map_entries_arg *)varg;
-    VALUE hash = rb_hash_new();
+    VALUE hash = rb_hash_new_capa((long)(arg->end - arg->bgn));
     VALUE key;
     VALUE value;
 
@@ -559,13 +559,13 @@ static VALUE vector_struct(duckdb_logical_type ty, duckdb_vector vector, idx_t r
 
 static VALUE convert_struct_fields(VALUE varg) {
     struct struct_fields_arg *arg = (struct struct_fields_arg *)varg;
-    VALUE hash = rb_hash_new();
+    idx_t child_count = duckdb_struct_type_child_count(arg->ty);
+    VALUE hash = rb_hash_new_capa((long)child_count);
     VALUE value = Qnil;
     VALUE key = Qnil;
     duckdb_vector child;
     char *p;
 
-    idx_t child_count = duckdb_struct_type_child_count(arg->ty);
 
     for (idx_t i = 0; i < child_count; ++i) {
         p = duckdb_struct_type_child_name(arg->ty, i);

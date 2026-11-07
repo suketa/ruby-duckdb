@@ -33,8 +33,8 @@ static void compact(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBScalarFunctionSet *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBScalarFunctionSet));
-    VALUE obj = TypedData_Wrap_Struct(klass, &scalar_function_set_data_type, ctx);
+    rubyDuckDBScalarFunctionSet *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBScalarFunctionSet, &scalar_function_set_data_type, ctx);
     RB_OBJ_WRITE(obj, &ctx->functions, rb_ary_new());
     return obj;
 }

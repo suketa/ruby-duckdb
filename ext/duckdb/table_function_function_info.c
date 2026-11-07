@@ -20,8 +20,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBFunctionInfo *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBFunctionInfo));
-    return TypedData_Wrap_Struct(klass, &function_info_data_type, ctx);
+    rubyDuckDBFunctionInfo *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {

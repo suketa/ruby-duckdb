@@ -55,9 +55,10 @@ static void *destroy_pending_without_gvl(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBPendingResult *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBPendingResult));
+    rubyDuckDBPendingResult *ctx;
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBPendingResult, &pending_result_data_type, ctx);
     ctx->state = DUCKDB_PENDING_RESULT_NOT_READY;
-    return TypedData_Wrap_Struct(klass, &pending_result_data_type, ctx);
+    return obj;
 }
 
 static size_t memsize(const void *p) {

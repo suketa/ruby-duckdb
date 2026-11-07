@@ -73,8 +73,8 @@ static void deallocate(void *ctx) {
 }
 
 static VALUE allocate(VALUE klass) {
-    rubyDuckDBPreparedStatement *ctx = xcalloc((size_t)1, sizeof(rubyDuckDBPreparedStatement));
-    return TypedData_Wrap_Struct(klass, &prepared_statement_data_type, ctx);
+    rubyDuckDBPreparedStatement *ctx;
+    return TypedData_Make_Struct(klass, rubyDuckDBPreparedStatement, &prepared_statement_data_type, ctx);
 }
 
 static size_t memsize(const void *p) {
