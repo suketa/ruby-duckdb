@@ -755,25 +755,22 @@ module DuckDB
     #   appender.append(1)
     #   appender.append('Alice')
     #   appender.end_row
-    # rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/MethodLength
-    def append(value)
-      case value
-      when NilClass
-        append_null
-      when Float
-        append_double(value)
-      when Integer
-        append_integer_value(value)
-      when String
-        append_string_value(value)
-      when TrueClass, FalseClass
-        append_bool(value)
-      when Time
-        append_timestamp(value)
-      when Date
-        append_date(value)
-      when DuckDB::Interval
-        append_interval(value)
+    # The Ruby type -> DuckDB type decision is made by RubyTypeInference,
+    # which also holds PreparedStatement#bind's table.
+    def append(value) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      case RubyTypeInference.for_append(value)
+      when :null then append_null
+      when :double then append_double(value)
+      when :smallint then append_int16(value)
+      when :integer then append_int32(value)
+      when :bigint then append_int64(value)
+      when :hugeint then append_hugeint(value)
+      when :blob then append_blob(value)
+      when :varchar then append_varchar(value)
+      when :boolean then append_bool(value)
+      when :timestamp then append_timestamp(value)
+      when :date then append_date(value)
+      when :interval then append_interval(value)
       else
         raise(DuckDB::Error, "not supported type #{value} (#{value.class})")
       end
@@ -809,27 +806,6 @@ module DuckDB
     def raise_appender_error(default_message) # :nodoc:
       message = error_message
       raise DuckDB::Error, message || default_message
-    end
-
-    def blob?(value) # :nodoc:
-      value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
-    end
-
-    def append_integer_value(value) # :nodoc:
-      case value
-      when RANGE_INT16
-        append_int16(value)
-      when RANGE_INT32
-        append_int32(value)
-      when RANGE_INT64
-        append_int64(value)
-      else
-        append_hugeint(value)
-      end
-    end
-
-    def append_string_value(value) # :nodoc:
-      blob?(value) ? append_blob(value) : append_varchar(value)
     end
 
     def to_time(value) # :nodoc:

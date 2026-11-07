@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- internal: move the "untyped Ruby object -> DuckDB type" decision tables of `PreparedStatement#bind` and `Appender#append` into one private module, `DuckDB::RubyTypeInference`, with their current differences marked. No behaviour change (issue #1544).
 
 # 2.0.0.1 - 2026-10-25
 - `DuckDB::PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) raises `ArgumentError` when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.
