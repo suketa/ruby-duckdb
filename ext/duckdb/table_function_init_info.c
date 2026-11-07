@@ -83,7 +83,11 @@ static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_thre
  * call-seq:
  *   init_info.column_count -> Integer
  *
- * Returns the number of result columns the query references.
+ * Returns the number of columns DuckDB needs from this scan, including
+ * columns used only in filters (e.g. +score+ in
+ * <code>SELECT name FROM f() WHERE score > 0</code>). A column selected more
+ * than once is counted once, and a query that references no column
+ * (e.g. <code>SELECT count(*)</code>) still reports one column.
  * With DuckDB::TableFunction#supports_projection_pushdown= set to +true+,
  * the output chunk passed to the execute callback holds exactly these
  * columns. Otherwise the output chunk still holds every result column added

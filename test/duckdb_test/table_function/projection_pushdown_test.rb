@@ -41,6 +41,14 @@ module DuckDBTest
       assert_equal [[90, 'Alice']], result
     end
 
+    def test_query_returns_all_columns_in_selected_order_when_enabled
+      register_table_function('pushdown_on_reordered', pushdown: true)
+
+      result = @connection.query('SELECT score, name, id FROM pushdown_on_reordered()').to_a
+
+      assert_equal [[90, 'Alice', 1]], result
+    end
+
     def test_output_has_all_columns_by_default
       observed = register_table_function('pushdown_default', pushdown: nil)
 
@@ -62,9 +70,11 @@ module DuckDBTest
     # Registers a table function with columns id, name and score that returns
     # a single row (ROW).
     #
-    # The execute block fills the output chunk according to its shape: when the
-    # chunk holds every column the whole row is written, otherwise only the
-    # columns DuckDB requested in the init stage are written, in that order.
+    # The execute block shows how to fill the output chunk:
+    # - with projection pushdown enabled, the i-th vector holds the column
+    #   reported by init_info.column_index(i), so columns are written in the
+    #   order DuckDB requested them in the init stage;
+    # - otherwise, every column is written in bind order.
     #
     # Returns a Hash that is filled with what the callbacks observed.
     def register_table_function(name, pushdown:)
@@ -90,7 +100,7 @@ module DuckDBTest
         if done
           output.size = 0
         else
-          cols = output.column_count == COLUMNS.size ? COLUMNS : observed[:projected]
+          cols = pushdown ? observed[:projected] : COLUMNS
           cols.each_with_index { |col, i| output.set_value(i, 0, ROW[col]) }
           output.size = 1
           done = true
