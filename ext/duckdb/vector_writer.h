@@ -1,12 +1,20 @@
-#ifndef RUBY_DUCKDB_FUNCTION_VECTOR_H
-#define RUBY_DUCKDB_FUNCTION_VECTOR_H
+#ifndef RUBY_DUCKDB_VECTOR_WRITER_H
+#define RUBY_DUCKDB_VECTOR_WRITER_H
 
 /*
- * Shared vector-write helper for UDF callbacks.
+ * Ruby value -> DuckDB vector cell writer.
  *
  * Converts a Ruby VALUE to the appropriate DuckDB type and writes it
- * into a result vector at the given index.  Used by both ScalarFunction
- * and AggregateFunction finalize paths.
+ * into a vector at the given index.  This is the single place that
+ * decides how a Ruby object is written into a vector: ScalarFunction
+ * and AggregateFunction output, DataChunk#set_value (TableFunction
+ * output, Appender#append_data_chunk) all go through it.
+ *
+ * TIMESTAMP (and TIMESTAMP_S/MS/NS) stores the wall-clock components of
+ * the Time as-is, like PreparedStatement#bind_timestamp and
+ * Appender#append_timestamp.  TIMESTAMP_TZ stores the instant
+ * (microseconds since the Unix epoch), so the Time's utc_offset is
+ * taken into account.
  */
 
 /*
@@ -16,7 +24,7 @@
  * which conversion is applied.  If `value` is Qnil the row is marked
  * invalid (NULL).
  *
- * Raises rb_eArgError for unsupported types - callers that cannot
+ * Raises ArgumentError for unsupported types - callers that cannot
  * tolerate longjmp should wrap the call in rb_protect.
  */
 void rbduckdb_vector_set_value_at(duckdb_vector vector,
