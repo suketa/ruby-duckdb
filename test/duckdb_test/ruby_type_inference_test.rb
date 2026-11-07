@@ -53,8 +53,9 @@ module DuckDBTest
 
     # The DuckDB type PreparedStatement#bind sends, observed through
     # the type of an untyped `SELECT ?`.
+    # nil is left out: the type DuckDB gives an untyped NULL parameter
+    # differs by version (INTEGER before 2.0, SQLNULL from 2.0).
     BIND_RESULT_TYPES = {
-      nil: [nil, :sqlnull],
       float: [1.5, :double],
       integer: [42, :bigint],
       huge_integer: [2**70, :varchar],
@@ -74,6 +75,15 @@ module DuckDBTest
 
           assert_equal type, stmt.execute.columns.first.type
         end
+      end
+    end
+
+    def test_bind_nil_binds_null
+      with_connection do |con|
+        stmt = con.prepare('SELECT ?')
+        stmt.bind(1, nil)
+
+        assert_nil stmt.execute.first.first
       end
     end
 
