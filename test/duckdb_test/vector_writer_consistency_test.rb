@@ -111,6 +111,23 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { @con.query('SELECT far_future_tz(1)') }
     end
 
+    def test_data_chunk_timestamp_tz_out_of_range_raises
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_TZ])
+
+      assert_raises(RangeError) { chunk.set_value(0, 0, Time.utc(300_000, 1, 1)) }
+    end
+
+    def test_timestamp_tz_boundaries
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_TZ])
+      max = Time.at(9_223_372_036_854, 775_807, :usec, in: 'UTC')
+      min = Time.at(-9_223_372_036_855, 224_192, :usec, in: 'UTC')
+
+      chunk.set_value(0, 0, max)
+      chunk.set_value(0, 0, min)
+      assert_raises(RangeError) { chunk.set_value(0, 0, max + Rational(1, 1_000_000)) }
+      assert_raises(RangeError) { chunk.set_value(0, 0, min - Rational(1, 1_000_000)) }
+    end
+
     def test_timestamp_ns_out_of_range_raises
       chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::TIMESTAMP_NS])
 
@@ -135,8 +152,8 @@ module DuckDBTest
 
     def test_data_chunk_set_value_invalid_utf8_stays_null
       # Before 2.0, DuckDB stores invalid UTF-8 as is and the append fails instead.
-      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('2.0.0')
-        skip 'NULL for invalid UTF-8 requires DuckDB >= 2.0.0'
+      if ::DuckDBTest.duckdb_library_version < Gem::Version.new('1.5.6')
+        skip 'NULL for invalid UTF-8 requires DuckDB >= 1.5.6'
       end
 
       @con.execute('CREATE TABLE t_utf8 (s VARCHAR)')

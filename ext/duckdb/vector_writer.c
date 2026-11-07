@@ -8,28 +8,28 @@ static void set_row_valid(duckdb_vector vector, idx_t index) {
 }
 
 /*
- * nanos = micros * 1000 + sub_micro (0..999), or 0 when the result does not
- * fit in int64_t. Near INT64_MIN the product alone can overflow while the
- * sum still fits, so that case is computed from micros + 1.
+ * *out = value * factor + sub (0 <= sub < factor), or 0 when the result does
+ * not fit in int64_t. Near INT64_MIN the product alone can overflow while the
+ * sum still fits, so that case is computed from value + 1.
  */
-static int micros_to_nanos(int64_t micros, int64_t sub_micro, int64_t *nanos) {
+static int scale_add(int64_t value, int64_t factor, int64_t sub, int64_t *out) {
     int64_t high;
 
-    if (micros > (INT64_MAX - sub_micro) / 1000) {
+    if (value > (INT64_MAX - sub) / factor) {
         return 0;
     }
-    if (micros >= INT64_MIN / 1000) {
-        *nanos = micros * 1000 + sub_micro;
+    if (value >= INT64_MIN / factor) {
+        *out = value * factor + sub;
         return 1;
     }
-    if (micros < INT64_MIN / 1000 - 1) {
+    if (value < INT64_MIN / factor - 1) {
         return 0;
     }
-    high = (micros + 1) * 1000;
-    if (high - INT64_MIN < 1000 - sub_micro) {
+    high = (value + 1) * factor;
+    if (high - INT64_MIN < factor - sub) {
         return 0;
     }
-    *nanos = high - (1000 - sub_micro);
+    *out = high - (factor - sub);
     return 1;
 }
 
@@ -144,7 +144,7 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
             duckdb_timestamp_ns ts_ns;
             int64_t sub_micro = NUM2LL(rb_funcall(value, rb_intern("nsec"), 0)) % 1000;
-            if (!micros_to_nanos(ts.micros, sub_micro, &ts_ns.nanos)) {
+            if (!scale_add(ts.micros, 1000, sub_micro, &ts_ns.nanos)) {
                 rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_NS");
             }
             ((duckdb_timestamp_ns *)vector_data)[index] = ts_ns;
@@ -158,10 +158,9 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             }
             /* An instant: microseconds since the Unix epoch, honoring utc_offset. */
             secs = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0));
-            if (secs > INT64_MAX / 1000000LL - 1 || secs < INT64_MIN / 1000000LL + 1) {
+            if (!scale_add(secs, 1000000, NUM2LL(rb_funcall(value, rb_intern("usec"), 0)), &ts.micros)) {
                 rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_TZ");
             }
-            ts.micros = secs * 1000000LL + NUM2LL(rb_funcall(value, rb_intern("usec"), 0));
             ((duckdb_timestamp *)vector_data)[index] = ts;
             break;
         }
