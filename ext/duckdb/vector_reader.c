@@ -1,4 +1,5 @@
 #include "ruby-duckdb.h"
+#include "ruby/encoding.h"
 
 /*
  * Converts a cell of a DuckDB vector to a Ruby object.
@@ -104,21 +105,28 @@ static VALUE vector_decimal(duckdb_logical_type ty, void* vector_data, idx_t row
 
 static VALUE vector_enum(duckdb_logical_type ty, void* vector_data, idx_t row_idx) {
     duckdb_type type = duckdb_enum_internal_type(ty);
-    uint8_t index;
+    idx_t index;
     char *p;
     VALUE value = Qnil;
 
     switch(type) {
         case DUCKDB_TYPE_UTINYINT:
             index = ((uint8_t *) vector_data)[row_idx];
-            p = duckdb_enum_dictionary_value(ty, index);
-            if (p) {
-                value = rb_utf8_str_new_cstr(p);
-                duckdb_free(p);
-            }
+            break;
+        case DUCKDB_TYPE_USMALLINT:
+            index = ((uint16_t *) vector_data)[row_idx];
+            break;
+        case DUCKDB_TYPE_UINTEGER:
+            index = ((uint32_t *) vector_data)[row_idx];
             break;
         default:
             rb_warn("Unknown enum internal type %d", type);
+            return Qnil;
+    }
+    p = duckdb_enum_dictionary_value(ty, index);
+    if (p) {
+        value = rb_utf8_str_new_cstr(p);
+        duckdb_free(p);
     }
     return value;
 }
@@ -326,7 +334,7 @@ static VALUE convert_struct_fields(VALUE varg) {
     for (idx_t i = 0; i < child_count; ++i) {
         p = duckdb_struct_type_child_name(arg->ty, i);
         if (p) {
-            key = ID2SYM(rb_intern_const(p));
+            key = ID2SYM(rb_intern3(p, (long)strlen(p), rb_utf8_encoding()));
             duckdb_free(p);
             child = duckdb_struct_vector_get_child(arg->vector, i);
             arg->child_type = duckdb_struct_type_child_type(arg->ty, i);

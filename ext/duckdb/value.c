@@ -569,6 +569,9 @@ static VALUE to_ruby_via_vector(duckdb_logical_type logical_type, duckdb_value v
     struct vector_ref_arg arg;
 
     arg.vec = duckdb_create_vector(logical_type, 1);
+    if (arg.vec == NULL) {
+        rb_raise(eDuckDBError, "failed to create a vector to convert the value");
+    }
     arg.logical_type = logical_type;
     duckdb_vector_reference_value(arg.vec, val);
     return rb_ensure(convert_referenced_value, (VALUE)&arg, destroy_referencing_vector, (VALUE)&arg);

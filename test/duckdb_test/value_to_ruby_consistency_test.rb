@@ -35,16 +35,21 @@ module DuckDBTest
       interval: 'INTERVAL 3 DAY',
       uuid: "'6ba7b810-9dad-11d1-80b4-00c04fd430c8'::UUID",
       enum: "'x'::ENUM('x', 'y')",
+      # more than 256 members: stored as USMALLINT
+      large_enum: "'m299'::ENUM(#{(0...300).map { |i| "'m#{i}'" }.join(', ')})",
       bit: "'101'::BIT",
       bignum: '123456789012345678901234567890123456789::BIGNUM',
       negative_bignum: '(-123456789012345678901234567890123456789)::BIGNUM',
       list: '[1, 2, 3]',
       array: '[1, 2]::INTEGER[2]',
       struct: "{'a': 1, 'b': 'x'}",
+      struct_with_utf8_key: "{'café': 1}",
       map: "MAP {'k': 2}",
       union: '1::UNION(i INTEGER, s VARCHAR)',
       nested: "[{'a': [1, NULL]}]"
     }.freeze
+
+    TIME_OF_DAY_TYPES = %i[time time_tz].freeze
 
     def setup
       @db = DuckDB::Database.open
@@ -58,6 +63,7 @@ module DuckDBTest
 
     LITERALS.each do |name, literal|
       define_method(:"test_#{name}") do
+        @type_name = name
         expected = @con.query("SELECT #{literal}").first.first
         actual = fold(literal, name)
 
@@ -83,11 +89,19 @@ module DuckDBTest
       value
     end
 
+    # TIME and TIMETZ become a Time on today's date, so two conversions
+    # that straddle midnight would differ only in the date.
+    def comparable(value)
+      return value unless TIME_OF_DAY_TYPES.include?(@type_name)
+
+      [value.hour, value.min, value.sec, value.nsec, value.utc_offset]
+    end
+
     def assert_same_ruby_value(expected, actual)
       refute_nil expected
 
       assert_equal expected.class, actual.class
-      assert_equal expected, actual
+      assert_equal comparable(expected), comparable(actual)
       assert_equal expected.encoding, actual.encoding if expected.is_a?(String)
     end
   end
