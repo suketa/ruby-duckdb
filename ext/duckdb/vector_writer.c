@@ -100,18 +100,25 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
         case DUCKDB_TYPE_TIMESTAMP_NS: {
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
             duckdb_timestamp_ns ts_ns;
-            ts_ns.nanos = ts.micros * 1000;
+            ts_ns.nanos = ts.micros * 1000 + NUM2LL(rb_funcall(value, rb_intern("nsec"), 0)) % 1000;
             ((duckdb_timestamp_ns *)vector_data)[index] = ts_ns;
             break;
         }
         case DUCKDB_TYPE_TIMESTAMP_TZ: {
-            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
+            duckdb_timestamp ts;
+            if (!rb_obj_is_kind_of(value, rb_cTime)) {
+                rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP_TZ");
+            }
+            /* An instant: microseconds since the Unix epoch, honoring utc_offset. */
+            ts.micros = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0)) * 1000000LL
+                        + NUM2LL(rb_funcall(value, rb_intern("usec"), 0));
             ((duckdb_timestamp *)vector_data)[index] = ts;
             break;
         }
         case DUCKDB_TYPE_DATE: {
-            VALUE date_class = rb_const_get(rb_cObject, rb_intern("Date"));
-            if (!rb_obj_is_kind_of(value, date_class)) {
+            if (!rb_respond_to(value, rb_intern("year")) ||
+                !rb_respond_to(value, rb_intern("month")) ||
+                !rb_respond_to(value, rb_intern("day"))) {
                 rb_raise(rb_eTypeError, "Expected Date object for DATE");
             }
 
@@ -215,7 +222,7 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             break;
         }
         default:
-            rb_raise(rb_eArgError, "Unsupported return type for function");
+            rb_raise(rb_eArgError, "Unsupported type for writing a value: DuckDB type id %d", (int)type_id);
             break;
     }
 }

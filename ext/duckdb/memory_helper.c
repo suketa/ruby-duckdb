@@ -274,7 +274,7 @@ static VALUE memory_helper_s_write_timestamp(VALUE self, VALUE ptr, VALUE index,
  *   DuckDB::MemoryHelper.write_timestamp_tz(ptr, 0, Time.new(2024, 3, 15, 10, 30, 45, '+00:00'))
  */
 static VALUE memory_helper_s_write_timestamp_tz(VALUE self, VALUE ptr, VALUE index, VALUE value) {
-    duckdb_time_tz *data;
+    duckdb_timestamp *data;
     idx_t idx;
     int64_t secs;
     int32_t usecs;
@@ -285,12 +285,12 @@ static VALUE memory_helper_s_write_timestamp_tz(VALUE self, VALUE ptr, VALUE ind
         rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP_TZ");
     }
 
-    data = (duckdb_time_tz *)NUM2ULL(ptr);
+    data = (duckdb_timestamp *)NUM2ULL(ptr);
     idx = (idx_t)NUM2ULL(index);
 
     secs = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0));
     usecs = NUM2INT(rb_funcall(value, rb_intern("usec"), 0));
-    data[idx].bits = (uint64_t)(secs * 1000000LL + usecs);
+    data[idx].micros = secs * 1000000LL + usecs;
 
     return Qnil;
 }
@@ -312,6 +312,17 @@ static VALUE memory_helper_s_write_date(VALUE self, VALUE ptr, VALUE index, VALU
 }
 
 void rbduckdb_init_memory_helper(void) {
+#if 0
+    VALUE mDuckDB = rb_define_module("DuckDB");
+#endif
+    /*
+     * DuckDB::MemoryHelper writes primitive values directly to raw vector
+     * memory (Vector#get_data). It is a low-level escape hatch: it does no
+     * bounds checking and is not used by ruby-duckdb itself.
+     * Prefer DuckDB::DataChunk#set_value, which converts values by the
+     * column's logical type the same way ScalarFunction return values are
+     * converted.
+     */
     mDuckDBMemoryHelper = rb_define_module_under(mDuckDB, "MemoryHelper");
 
     rb_define_singleton_method(mDuckDBMemoryHelper, "write_bigint", memory_helper_s_write_bigint, 3);

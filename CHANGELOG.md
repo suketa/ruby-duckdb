@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- `DuckDB::DataChunk#set_value` (TableFunction output, `Appender#append_data_chunk`) now uses the same C writer as ScalarFunction/AggregateFunction return values, so it accepts the same types: HUGEINT, UHUGEINT, UUID, DECIMAL, TIME, TIME_NS, TIME_TZ, INTERVAL and TIMESTAMP_S/MS/NS are newly supported. It is also about 4x faster and raises `IndexError` for an out-of-range column or row index instead of writing out of bounds (issue #1543).
+- fix TIMESTAMP_NS return values of ScalarFunction dropping the sub-microsecond part of the `Time` (issue #1543).
+- internal: rename `function_vector.c` to `vector_writer.c` (issue #1543).
+
+## Breaking Changes
+- `DuckDB::DataChunk#set_value` for a TIMESTAMP column now stores the wall-clock components of the `Time` as-is (like `bind_timestamp`, `Appender#append_timestamp` and ScalarFunction), instead of converting it to the local time zone first. `Time.utc(2024, 1, 1, 0, 0, 0)` is stored as `2024-01-01 00:00:00` regardless of `TZ` (issue #1543).
+- ScalarFunction/AggregateFunction return values for a TIMESTAMP_TZ column now honor the `Time`'s `utc_offset` (store the instant, like `DataChunk#set_value` and `bind_timestamp_tz`). Previously the wall-clock components were stored as if they were UTC (issue #1543).
 
 # 2.0.0.1 - 2026-10-25
 - `DuckDB::PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) raises `ArgumentError` when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.
