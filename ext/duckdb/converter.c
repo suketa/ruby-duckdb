@@ -95,12 +95,6 @@ VALUE rbduckdb_uuid_to_ruby(duckdb_hugeint h) {
     return rb_utf8_str_new(buf, 36);
 }
 
-VALUE rbduckdb_uuid_uhugeint_to_ruby(duckdb_uhugeint h) {
-    char buf[36];
-    uuid_to_str(h.upper, h.lower, buf);
-    return rb_utf8_str_new(buf, 36);
-}
-
 // Returns the nibble value (0-15) for a hex character, or -1 if invalid.
 static int hex_nibble(unsigned char c)
 {
