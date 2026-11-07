@@ -51,22 +51,27 @@ module DuckDB
       end
     end
 
-    # Appender#append is a hot path, so this is kept to a single case.
+    # Appender#append matches Integer and String itself before calling
+    # this (for speed); a change to those two branches must be made there too.
     def for_append(value)
       case value
-      when Integer
+      when Integer # duplicated in Appender#append_integer_value; change both
         if Converter::RANGE_INT16.cover?(value) then :smallint
         elsif Converter::RANGE_INT32.cover?(value) then :integer
         elsif Converter::RANGE_INT64.cover?(value) then :bigint
         else :hugeint
         end
-      when String then string_type(value)
+      when String then string_type(value) # duplicated in Appender#append_string_value; change both
       else APPEND_TABLE[value.class] || subclass_tag(APPEND_TABLE, value)
       end
     end
 
     def string_type(value)
-      value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY ? :blob : :varchar
+      if value.instance_of?(DuckDB::Blob) || value.encoding == Encoding::BINARY
+        :blob
+      else
+        :varchar
+      end
     end
 
     # For subclasses, and for classes whose tag is nil (not supported).

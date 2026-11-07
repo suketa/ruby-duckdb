@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - fix ENUM values with more than 255 members being returned as `nil` in query results, function arguments and `DuckDB::Value#to_ruby` (issue #1545).
 - STRUCT field names containing non-ASCII characters are now returned as UTF-8 `Symbol`s in query results and `DuckDB::Value#to_ruby` (issue #1545).
 - internal: move the DuckDB vector → Ruby conversion out of `result.c` into `vector_reader.c`, make `DuckDB::Value#to_ruby` use it for every type, and rename `conveter.c` to `converter.c` (issue #1545).
-- internal: move the "untyped Ruby object -> DuckDB type" decision tables of `PreparedStatement#bind` and `Appender#append` into one private module, `DuckDB::RubyTypeInference`, with their current differences marked. No behaviour change (issue #1544).
+- internal: move the "untyped Ruby object -> DuckDB type" decision tables of `PreparedStatement#bind` and `Appender#append` into one private module, `DuckDB::RubyTypeInference` (`Appender#append` keeps a fast path for Integer/String), with their current differences marked. No behaviour change (issue #1544).
 
 # 2.0.0.1 - 2026-10-25
 - `DuckDB::PreparedStatement#bind_decimal` (and `#bind` with a `BigDecimal`) raises `ArgumentError` when the DECIMAL width is out of range (1..38), instead of aborting the process or binding a wrong value.
