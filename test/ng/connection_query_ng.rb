@@ -16,10 +16,13 @@ db.close
 
 file_last_saved1 = File.mtime(temp_file)
 
-i = 0
-while file_last_saved1 == File.mtime(temp_file) && i < 5000
+# Poll for up to 1 second of wall-clock time rather than a fixed number of
+# iterations. Ruby master on Windows sleeps ~8ms for `sleep 0.0001`, which
+# turned 5000 iterations into 40s+ and blew the CI test-step timeout.
+deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 1.0
+while file_last_saved1 == File.mtime(temp_file) &&
+      Process.clock_gettime(Process::CLOCK_MONOTONIC) < deadline
   sleep 0.0001
-  i += 1
 end
 
 file_last_saved2 = File.mtime(temp_file)
