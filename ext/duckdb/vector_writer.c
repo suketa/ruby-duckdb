@@ -1,5 +1,38 @@
 #include "ruby-duckdb.h"
 
+static void set_row_valid(duckdb_vector vector, idx_t index) {
+    uint64_t *validity = duckdb_vector_get_validity(vector);
+    if (validity != NULL) {
+        duckdb_validity_set_row_valid(validity, index);
+    }
+}
+
+/*
+ * *out = value * factor + sub (0 <= sub < factor), or 0 when the result does
+ * not fit in int64_t. Near INT64_MIN the product alone can overflow while the
+ * sum still fits, so that case is computed from value + 1.
+ */
+static int scale_add(int64_t value, int64_t factor, int64_t sub, int64_t *out) {
+    int64_t high;
+
+    if (value > (INT64_MAX - sub) / factor) {
+        return 0;
+    }
+    if (value >= INT64_MIN / factor) {
+        *out = value * factor + sub;
+        return 1;
+    }
+    if (value < INT64_MIN / factor - 1) {
+        return 0;
+    }
+    high = (value + 1) * factor;
+    if (high - INT64_MIN < factor - sub) {
+        return 0;
+    }
+    *out = high - (factor - sub);
+    return 1;
+}
+
 void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type element_type, idx_t index, VALUE value) {
     duckdb_type type_id;
     void* vector_data;
@@ -68,15 +101,22 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             VALUE str = rb_obj_as_string(value);
             const char *str_ptr = StringValuePtr(str);
             idx_t str_len = RSTRING_LEN(str);
+            /*
+             * Mark the row valid first: DuckDB sets it to NULL itself when
+             * the string is not valid UTF-8, and that must not be undone.
+             */
+            set_row_valid(vector, index);
             duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
-            break;
+            return;
         }
         case DUCKDB_TYPE_BLOB: {
             VALUE str = rb_obj_as_string(value);
             const char *str_ptr = StringValuePtr(str);
             idx_t str_len = RSTRING_LEN(str);
+            /* Mark the row valid (it may have been NULL before). */
+            set_row_valid(vector, index);
             duckdb_vector_assign_string_element_len(vector, index, str_ptr, str_len);
-            break;
+            return;
         }
         case DUCKDB_TYPE_TIMESTAMP: {
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
@@ -100,18 +140,33 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
         case DUCKDB_TYPE_TIMESTAMP_NS: {
             duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
             duckdb_timestamp_ns ts_ns;
-            ts_ns.nanos = ts.micros * 1000;
+            int64_t sub_micro = NUM2LL(rb_funcall(value, rb_intern("nsec"), 0)) % 1000;
+            if (!scale_add(ts.micros, 1000, sub_micro, &ts_ns.nanos)) {
+                rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_NS");
+            }
             ((duckdb_timestamp_ns *)vector_data)[index] = ts_ns;
             break;
         }
         case DUCKDB_TYPE_TIMESTAMP_TZ: {
-            duckdb_timestamp ts = rbduckdb_to_duckdb_timestamp_from_time_value(value);
+            duckdb_timestamp ts;
+            int64_t secs;
+            if (!rb_obj_is_kind_of(value, rb_cTime)) {
+                rb_raise(rb_eTypeError, "Expected Time object for TIMESTAMP_TZ");
+            }
+            /* An instant: microseconds since the Unix epoch, honoring utc_offset. */
+            secs = NUM2LL(rb_funcall(value, rb_intern("to_i"), 0));
+            /* INT64_MAX and -INT64_MAX are DuckDB's infinity and -infinity sentinels. */
+            if (!scale_add(secs, 1000000, NUM2LL(rb_funcall(value, rb_intern("usec"), 0)), &ts.micros) ||
+                ts.micros == INT64_MAX || ts.micros == -INT64_MAX) {
+                rb_raise(rb_eRangeError, "timestamp out of range for TIMESTAMP_TZ");
+            }
             ((duckdb_timestamp *)vector_data)[index] = ts;
             break;
         }
         case DUCKDB_TYPE_DATE: {
-            VALUE date_class = rb_const_get(rb_cObject, rb_intern("Date"));
-            if (!rb_obj_is_kind_of(value, date_class)) {
+            if (!rb_respond_to(value, rb_intern("year")) ||
+                !rb_respond_to(value, rb_intern("month")) ||
+                !rb_respond_to(value, rb_intern("day"))) {
                 rb_raise(rb_eTypeError, "Expected Date object for DATE");
             }
 
@@ -215,9 +270,15 @@ void rbduckdb_vector_set_value_at(duckdb_vector vector, duckdb_logical_type elem
             break;
         }
         default:
-            rb_raise(rb_eArgError, "Unsupported return type for function");
+            rb_raise(rb_eArgError, "Unsupported type for writing a value: DuckDB type id %d", (int)type_id);
             break;
     }
+
+    /*
+     * A cell may have been set to NULL earlier (e.g. a reused DataChunk), so
+     * mark it valid again once the value has been written successfully.
+     */
+    set_row_valid(vector, index);
 }
 
 void rbduckdb_input_columns_load(duckdb_data_chunk input, idx_t n, duckdb_vector **vectors, duckdb_logical_type **types) {

@@ -372,9 +372,11 @@ module DuckDBTest
       result = @conn.query('SELECT * FROM test_set_value_timestamp()')
       rows = result.each.to_a
 
+      # TIMESTAMP keeps the wall-clock components of the Time as-is,
+      # the same as ScalarFunction, bind_timestamp and append_timestamp.
       assert_equal 2, rows.length
-      assert_equal time1.utc, rows[0].first.utc
-      assert_equal time2.utc, rows[1].first.utc
+      assert_equal [2024, 3, 15, 10, 30, 45], time_parts(rows[0].first)
+      assert_equal [2000, 1, 1, 0, 0, 0], time_parts(rows[1].first)
     end
 
     # Test 13: DataChunk#set_value with TIMESTAMP_TZ
@@ -438,18 +440,23 @@ module DuckDBTest
       assert_equal 0, data_chunk.size
     end
 
-    def test_reset_clears_data_cache
-      data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+    def test_set_value_after_reset
+      @conn.execute('CREATE TABLE t_reset (i INTEGER, s VARCHAR)')
+      data_chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER, DuckDB::LogicalType::VARCHAR])
       data_chunk.set_value(0, 0, 42)
-
-      # Sanity check: @data_cache is populated after set_value
-      refute_nil data_chunk.instance_variable_get(:@data_cache)
+      data_chunk.set_value(1, 0, 'before')
+      data_chunk.size = 1
 
       data_chunk.reset
+      data_chunk.set_value(0, 0, 7)
+      data_chunk.set_value(1, 0, 'after reset')
+      data_chunk.size = 1
 
-      # After reset, cached data pointers are invalid per DuckDB C API contract
-      # and must be cleared so next set_value re-fetches them.
-      assert_nil data_chunk.instance_variable_get(:@data_cache)
+      appender = DuckDB::Appender.new(@conn, 't_reset')
+      appender.append_data_chunk(data_chunk)
+      appender.close
+
+      assert_equal [[7, 'after reset']], @conn.query('SELECT * FROM t_reset').to_a
     end
 
     def test_reset_is_idempotent
@@ -502,6 +509,12 @@ module DuckDBTest
 
       assert_equal([[1, 'Alice'], [2, 'Bob'], [3, 'Carol']],
                    @conn.query('SELECT * FROM t ORDER BY id').to_a)
+    end
+
+    private
+
+    def time_parts(time)
+      [time.year, time.month, time.day, time.hour, time.min, time.sec]
     end
   end
 end
