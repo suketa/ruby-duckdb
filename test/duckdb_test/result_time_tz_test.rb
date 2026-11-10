@@ -7,7 +7,6 @@ module DuckDBTest
     def setup
       @db = DuckDB::Database.open
       @conn = @db.connect
-      @conn.execute('INSTALL icu;')
       @conn.execute('LOAD icu;')
     end
 

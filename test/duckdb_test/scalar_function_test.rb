@@ -1778,7 +1778,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_timestamp_tz_return_type
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00'), ('2024-12-25 23:59:59+00')")
@@ -1799,7 +1799,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_timestamp_tz_parameter_type
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00'), ('2024-12-25 23:59:59+00')")
@@ -1820,7 +1820,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_timestamp_tz_varargs_type
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMPTZ, ts2 TIMESTAMPTZ)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00', '2024-06-15 12:00:00+00')")
@@ -1840,7 +1840,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_timestamp_tz_default_null_handling
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
 
       sf = DuckDB::ScalarFunction.new
@@ -1857,7 +1857,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_create_with_timestamp_tz_symbol
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts TIMESTAMPTZ)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00'), ('2024-12-25 23:59:59+00')")
@@ -1878,7 +1878,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_timestamp_tz_null_handling_true
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
 
       sf = DuckDB::ScalarFunction.create(
@@ -1896,7 +1896,7 @@ module DuckDBTest
     end
 
     def test_scalar_function_timestamp_tz_multiple_parameters
-      @con.execute('INSTALL icu; LOAD icu;')
+      @con.execute('LOAD icu;')
       @con.execute("SET TimeZone='UTC'")
       @con.execute('CREATE TABLE test_table (ts1 TIMESTAMPTZ, ts2 TIMESTAMPTZ)')
       @con.execute("INSERT INTO test_table VALUES ('2024-01-15 10:30:00+00', '2024-06-15 12:00:00+00')")
