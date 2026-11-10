@@ -19,7 +19,6 @@ module DuckDBTest
     UUID = SecureRandom.uuid
     ENUM_SQL = "CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');"
     LOAD_ICU = 'LOAD icu;'
-    INSTALL_ICU = 'INSTALL icu;'
     long_bits = '11111111111111111111111111111111111110101010101010101010101010101010101010101011100000000'
     timetz_expected = Time.parse(Time.now.strftime('%Y-%m-%d 12:34:56.123456+04:30'))
 
@@ -135,7 +134,6 @@ module DuckDBTest
     end
 
     def prepare_timezone(timezone)
-      @con.query(INSTALL_ICU)
       @con.query(LOAD_ICU)
       @con.query("SET TimeZone=\"#{timezone}\";")
     end
