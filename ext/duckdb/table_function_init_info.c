@@ -10,6 +10,7 @@ static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_thre
 static VALUE table_function_init_info_column_count(VALUE self);
 static VALUE table_function_init_info_column_index(VALUE self, VALUE index);
 static VALUE table_function_init_info_bind_data(VALUE self);
+static VALUE table_function_init_info_set_init_data(VALUE self, VALUE data);
 
 static const rb_data_type_t init_info_data_type = {
     "DuckDB/TableFunctionInitInfo",
@@ -139,6 +140,36 @@ static VALUE table_function_init_info_bind_data(VALUE self) {
     return rbduckdb_function_data_lookup(duckdb_init_get_bind_data(ctx->info));
 }
 
+/*
+ * call-seq:
+ *   init_info.init_data = data
+ *
+ * Stores an arbitrary Ruby object as the table function's global init data.
+ * The same object can be retrieved during execution with
+ * DuckDB::TableFunction::FunctionInfo#init_data, and is kept alive until
+ * DuckDB frees the init data at the end of the scan. Useful for keeping scan
+ * state (e.g. a cursor or remaining rows) across execute calls.
+ *
+ * The init data is shared by every thread that executes the table function.
+ *
+ *   init_info.init_data = { offset: 0 }
+ */
+static VALUE table_function_init_info_set_init_data(VALUE self, VALUE data) {
+    rubyDuckDBInitInfo *ctx;
+    void *handle;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+
+    if (ctx->init_data_handle != NULL) {
+        rbduckdb_function_data_release(ctx->init_data_handle);
+    }
+    handle = rbduckdb_function_data_register(data);
+    ctx->init_data_handle = handle;
+    duckdb_init_set_init_data(ctx->info, handle, rbduckdb_function_data_destroy);
+
+    return self;
+}
+
 void rbduckdb_init_table_function_init_info(void) {
 #if 0
     VALUE mDuckDB = rb_define_module("DuckDB");
@@ -152,4 +183,5 @@ void rbduckdb_init_table_function_init_info(void) {
     rb_define_method(cDuckDBTableFunctionInitInfo, "column_count", table_function_init_info_column_count, 0);
     rb_define_method(cDuckDBTableFunctionInitInfo, "column_index", table_function_init_info_column_index, 1);
     rb_define_method(cDuckDBTableFunctionInitInfo, "bind_data", table_function_init_info_bind_data, 0);
+    rb_define_method(cDuckDBTableFunctionInitInfo, "init_data=", table_function_init_info_set_init_data, 1);
 }

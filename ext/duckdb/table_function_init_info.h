@@ -3,6 +3,7 @@
 
 struct _rubyDuckDBInitInfo {
     duckdb_init_info info;
+    void *init_data_handle;
 };
 
 typedef struct _rubyDuckDBInitInfo rubyDuckDBInitInfo;

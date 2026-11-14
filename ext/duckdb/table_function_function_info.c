@@ -6,6 +6,7 @@ static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
 static VALUE table_function_function_info_bind_data(VALUE self);
+static VALUE table_function_function_info_init_data(VALUE self);
 static VALUE table_function_function_info_set_error(VALUE self, VALUE error);
 
 static const rb_data_type_t function_info_data_type = {
@@ -56,6 +57,23 @@ static VALUE table_function_function_info_bind_data(VALUE self) {
 
 /*
  * call-seq:
+ *   function_info.init_data -> object or nil
+ *
+ * Returns the object stored during the init phase with
+ * DuckDB::TableFunction::InitInfo#init_data=, or nil if none was set.
+ *
+ *   state = function_info.init_data
+ */
+static VALUE table_function_function_info_init_data(VALUE self) {
+    rubyDuckDBFunctionInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
+
+    return rbduckdb_function_data_lookup(duckdb_function_get_init_data(ctx->info));
+}
+
+/*
+ * call-seq:
  *   function_info.set_error(error_message) -> self
  *
  * Sets an error message for the function execution.
@@ -83,5 +101,6 @@ void rbduckdb_init_table_function_function_info(void) {
     rb_define_alloc_func(cDuckDBTableFunctionFunctionInfo, allocate);
 
     rb_define_method(cDuckDBTableFunctionFunctionInfo, "bind_data", table_function_function_info_bind_data, 0);
+    rb_define_method(cDuckDBTableFunctionFunctionInfo, "init_data", table_function_function_info_init_data, 0);
     rb_define_method(cDuckDBTableFunctionFunctionInfo, "set_error", table_function_function_info_set_error, 1);
 }
