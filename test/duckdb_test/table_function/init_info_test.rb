@@ -185,5 +185,26 @@ module DuckDBTest
 
       assert_nil observed_bind_data
     end
+
+    def test_init_info_init_data_setter
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_setter'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      assigned = nil
+      table_function.init do |init_info|
+        assigned = (init_info.init_data = { token: 'init-data' })
+      end
+
+      table_function.execute { |_func_info, output| output.size = 0 }
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_data_setter()').each.to_a
+
+      assert_equal({ token: 'init-data' }, assigned)
+    end
   end
 end
