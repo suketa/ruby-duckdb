@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+- add `DuckDB::TableFunction::InitInfo#init_data=` to store an arbitrary Ruby object as a custom table function's global init data (issue #1554).
+- add `DuckDB::TableFunction::FunctionInfo#init_data` to retrieve, during execution, the object stored by `InitInfo#init_data=` (issue #1555).
 - add `DuckDB::TableFunction#supports_projection_pushdown=` to enable projection pushdown. When enabled, the output chunk passed to the execute callback holds only the columns referenced by the query, as reported by `InitInfo#column_count` / `InitInfo#column_index` (issue #1539).
 - fix BIGNUM values in query results (and scalar/aggregate function arguments) being returned as `nil` with an "Unknown type" warning; they are now converted to `Integer` (issue #1545).
 - `DuckDB::Value#to_ruby` (and table function parameters / `Expression#fold`) now returns VARCHAR values as UTF-8 `String`, the same as query results (issue #1545).

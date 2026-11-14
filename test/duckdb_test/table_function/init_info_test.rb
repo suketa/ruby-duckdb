@@ -185,5 +185,52 @@ module DuckDBTest
 
       assert_nil observed_bind_data
     end
+
+    def test_init_info_init_data_setter_returns_self
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_setter'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      init_info_obj = nil
+      returned = nil
+      table_function.init do |init_info|
+        init_info_obj = init_info
+        returned = init_info.public_send(:init_data=, { token: 'init-data' })
+      end
+
+      table_function.execute { |_func_info, output| output.size = 0 }
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_data_setter()').each.to_a
+
+      assert_same init_info_obj, returned
+    end
+
+    def test_init_info_used_after_init_callback_raises
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_info_stale'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      saved_init_info = nil
+      table_function.init do |init_info|
+        saved_init_info = init_info
+        init_info.init_data = { token: 'stale' }
+      end
+
+      table_function.execute { |_func_info, output| output.size = 0 }
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_info_stale()').each.to_a
+
+      assert_raises(DuckDB::Error) { saved_init_info.init_data = { token: 'late' } }
+      assert_raises(DuckDB::Error) { saved_init_info.bind_data }
+      assert_raises(DuckDB::Error) { saved_init_info.column_count }
+    end
   end
 end

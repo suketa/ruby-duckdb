@@ -127,5 +127,162 @@ module DuckDBTest
 
       assert_equal 'block is required for execute', error.message
     end
+
+    def test_init_data_round_trip
+      skip 'GC.compact hangs on Windows in parallel test execution' if Gem.win_platform?
+
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init do |init_info|
+        init_info.init_data = { token: 'init-round-trip', n: 7 }
+        GC.compact
+      end
+
+      observed_init_data = nil
+      table_function.execute do |func_info, output|
+        observed_init_data = func_info.init_data
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_data()').each.to_a
+
+      assert_equal({ token: 'init-round-trip', n: 7 }, observed_init_data)
+    end
+
+    def test_init_data_last_set_wins
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_overwrite'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init do |init_info|
+        init_info.init_data = { which: 'first' }
+        init_info.init_data = { which: 'second' }
+      end
+
+      observed_init_data = nil
+      table_function.execute do |func_info, output|
+        observed_init_data = func_info.init_data
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_data_overwrite()').each.to_a
+
+      assert_equal({ which: 'second' }, observed_init_data)
+    end
+
+    def test_init_data_nil_when_unset
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_unset'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init { |_init_info| nil }
+
+      observed_init_data = :unset
+      table_function.execute do |func_info, output|
+        observed_init_data = func_info.init_data
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_init_data_unset()').each.to_a
+
+      assert_nil observed_init_data
+    end
+
+    def test_init_data_keeps_scan_state_across_execute_calls
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_scan_state'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init do |init_info|
+        init_info.init_data = { remaining: [1, 2, 3] }
+      end
+
+      table_function.execute do |func_info, output|
+        state = func_info.init_data
+        value = state[:remaining].shift
+        if value
+          output.set_value(0, 0, value)
+          output.size = 1
+        else
+          output.size = 0
+        end
+      end
+
+      @connection.register_table_function(table_function)
+      rows = @connection.query('SELECT * FROM test_init_data_scan_state()').each.to_a
+
+      assert_equal [[1], [2], [3]], rows
+    end
+
+    def test_init_data_is_independent_per_scan
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_per_scan'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+        bind_info.bind_data = { rows: [1, 2, 3] }
+      end
+
+      table_function.init { |init_info| init_info.init_data = { pos: 0 } }
+
+      table_function.execute do |func_info, output|
+        state = func_info.init_data
+        rows = func_info.bind_data[:rows]
+        if state[:pos] < rows.size
+          output.set_value(0, 0, rows[state[:pos]])
+          state[:pos] += 1
+          output.size = 1
+        else
+          output.size = 0
+        end
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SET threads=1')
+      sql = 'SELECT * FROM test_init_data_per_scan() a POSITIONAL JOIN test_init_data_per_scan() b'
+      rows = @connection.query(sql).each.to_a
+
+      assert_equal [[1, 1], [2, 2], [3, 3]], rows
+    end
+
+    def test_function_info_used_after_execute_callback_raises
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_function_info_stale'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init { |init_info| init_info.init_data = { token: 'stale' } }
+
+      saved_func_info = nil
+      table_function.execute do |func_info, output|
+        saved_func_info = func_info
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_function_info_stale()').each.to_a
+
+      assert_raises(DuckDB::Error) { saved_func_info.init_data }
+      assert_raises(DuckDB::Error) { saved_func_info.bind_data }
+    end
   end
 end
