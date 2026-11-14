@@ -231,6 +231,37 @@ module DuckDBTest
       assert_equal [[1], [2], [3]], rows
     end
 
+    def test_init_data_is_independent_per_scan
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_init_data_per_scan'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+        bind_info.bind_data = { rows: [1, 2, 3] }
+      end
+
+      table_function.init { |init_info| init_info.init_data = { pos: 0 } }
+
+      table_function.execute do |func_info, output|
+        state = func_info.init_data
+        rows = func_info.bind_data[:rows]
+        if state[:pos] < rows.size
+          output.set_value(0, 0, rows[state[:pos]])
+          state[:pos] += 1
+          output.size = 1
+        else
+          output.size = 0
+        end
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SET threads=1')
+      sql = 'SELECT * FROM test_init_data_per_scan() a POSITIONAL JOIN test_init_data_per_scan() b'
+      rows = @connection.query(sql).each.to_a
+
+      assert_equal [[1, 1], [2, 2], [3, 3]], rows
+    end
+
     def test_function_info_used_after_execute_callback_raises
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_function_info_stale'
