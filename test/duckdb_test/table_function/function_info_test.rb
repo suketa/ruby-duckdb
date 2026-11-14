@@ -145,7 +145,6 @@ module DuckDBTest
 
       observed_init_data = nil
       table_function.execute do |func_info, output|
-        GC.compact
         observed_init_data = func_info.init_data
         output.size = 0
       end
@@ -230,6 +229,29 @@ module DuckDBTest
       rows = @connection.query('SELECT * FROM test_init_data_scan_state()').each.to_a
 
       assert_equal [[1], [2], [3]], rows
+    end
+
+    def test_function_info_used_after_execute_callback_raises
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_function_info_stale'
+
+      table_function.bind do |bind_info|
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+
+      table_function.init { |init_info| init_info.init_data = { token: 'stale' } }
+
+      saved_func_info = nil
+      table_function.execute do |func_info, output|
+        saved_func_info = func_info
+        output.size = 0
+      end
+
+      @connection.register_table_function(table_function)
+      @connection.query('SELECT * FROM test_function_info_stale()').each.to_a
+
+      assert_raises(DuckDB::Error) { saved_func_info.init_data }
+      assert_raises(DuckDB::Error) { saved_func_info.bind_data }
     end
   end
 end

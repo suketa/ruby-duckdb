@@ -335,6 +335,8 @@ static void execute_init_callback_protected(void *user_data) {
 
     VALUE call_args[2] = { darg->ctx->init_proc, init_info_obj };
     rb_protect(call_proc_with_one_arg, (VALUE)call_args, &state);
+    /* duckdb_init_info is only valid during the callback. */
+    init_info_ctx->info = NULL;
 
     if (state) {
         VALUE msg = rbduckdb_pending_error_message();
@@ -413,6 +415,8 @@ static void execute_execute_callback_protected(void *user_data) {
 
     VALUE call_args[3] = { darg->ctx->execute_proc, func_info_obj, data_chunk_obj };
     rb_protect(call_execute_proc, (VALUE)call_args, &state);
+    /* duckdb_function_info is only valid during the callback. */
+    func_info_ctx->info = NULL;
 
     if (state) {
         VALUE msg = rbduckdb_pending_error_message();

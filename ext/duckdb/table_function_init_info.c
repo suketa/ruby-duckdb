@@ -39,6 +39,21 @@ rubyDuckDBInitInfo *rbduckdb_get_struct_init_info(VALUE obj) {
 }
 
 /*
+ * Returns the struct for +self+, raising DuckDB::Error if the underlying
+ * DuckDB info is no longer valid (i.e. the object is used after the init
+ * callback has returned).
+ */
+static rubyDuckDBInitInfo *get_valid_init_info(VALUE self) {
+    rubyDuckDBInitInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    if (ctx->info == NULL) {
+        rb_raise(eDuckDBError, "DuckDB::TableFunction::InitInfo can only be used inside the init callback");
+    }
+    return ctx;
+}
+
+/*
  * call-seq:
  *   init_info.set_error(error_message) -> self
  *
@@ -51,7 +66,7 @@ static VALUE table_function_init_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBInitInfo *ctx;
     const char *error_msg;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     error_msg = StringValueCStr(error);
     duckdb_init_set_error(ctx->info, error_msg);
@@ -73,7 +88,7 @@ static VALUE table_function_init_info_set_error(VALUE self, VALUE error) {
 static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_threads) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     duckdb_init_set_max_threads(ctx->info, NUM2ULL(max_threads));
 
@@ -99,7 +114,7 @@ static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_thre
 static VALUE table_function_init_info_column_count(VALUE self) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     return ULL2NUM(duckdb_init_get_column_count(ctx->info));
 }
@@ -118,7 +133,7 @@ static VALUE table_function_init_info_column_count(VALUE self) {
 static VALUE table_function_init_info_column_index(VALUE self, VALUE index) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     return ULL2NUM(duckdb_init_get_column_index(ctx->info, NUM2ULL(index)));
 }
@@ -135,7 +150,7 @@ static VALUE table_function_init_info_column_index(VALUE self, VALUE index) {
 static VALUE table_function_init_info_bind_data(VALUE self) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     return rbduckdb_function_data_lookup(duckdb_init_get_bind_data(ctx->info));
 }
@@ -151,14 +166,20 @@ static VALUE table_function_init_info_bind_data(VALUE self) {
  * state (e.g. a cursor or remaining rows) across execute calls.
  *
  * The init data is shared by every thread that executes the table function.
+ * When DuckDB::TableFunction::InitInfo#max_threads= is greater than 1, the
+ * execute callback may run on several threads at once, so guard any mutation
+ * of the shared object (e.g. with a Mutex).
  *
- *   init_info.init_data = { offset: 0 }
+ * Must be called inside the init callback; using the InitInfo object after
+ * the callback has returned raises DuckDB::Error.
+ *
+ *   init_info.init_data = { offset: 0, lock: Mutex.new }
  */
 static VALUE table_function_init_info_set_init_data(VALUE self, VALUE data) {
     rubyDuckDBInitInfo *ctx;
     void *handle;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     if (ctx->init_data_handle != NULL) {
         rbduckdb_function_data_release(ctx->init_data_handle);

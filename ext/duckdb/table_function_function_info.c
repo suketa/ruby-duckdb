@@ -36,6 +36,21 @@ rubyDuckDBFunctionInfo *rbduckdb_get_struct_function_info(VALUE obj) {
 }
 
 /*
+ * Returns the struct for +self+, raising DuckDB::Error if the underlying
+ * DuckDB info is no longer valid (i.e. the object is used after the execute
+ * callback has returned).
+ */
+static rubyDuckDBFunctionInfo *get_valid_function_info(VALUE self) {
+    rubyDuckDBFunctionInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
+    if (ctx->info == NULL) {
+        rb_raise(eDuckDBError, "DuckDB::TableFunction::FunctionInfo can only be used inside the execute callback");
+    }
+    return ctx;
+}
+
+/*
  * call-seq:
  *   function_info.bind_data -> object or nil
  *
@@ -48,7 +63,7 @@ static VALUE table_function_function_info_bind_data(VALUE self) {
     rubyDuckDBFunctionInfo *ctx;
     void *bind_data;
 
-    TypedData_Get_Struct(self, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
+    ctx = get_valid_function_info(self);
 
     bind_data = duckdb_function_get_bind_data(ctx->info);
 
@@ -67,7 +82,7 @@ static VALUE table_function_function_info_bind_data(VALUE self) {
 static VALUE table_function_function_info_init_data(VALUE self) {
     rubyDuckDBFunctionInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
+    ctx = get_valid_function_info(self);
 
     return rbduckdb_function_data_lookup(duckdb_function_get_init_data(ctx->info));
 }
@@ -85,7 +100,7 @@ static VALUE table_function_function_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBFunctionInfo *ctx;
     const char *error_msg;
 
-    TypedData_Get_Struct(self, rubyDuckDBFunctionInfo, &function_info_data_type, ctx);
+    ctx = get_valid_function_info(self);
 
     error_msg = StringValueCStr(error);
     duckdb_function_set_error(ctx->info, error_msg);
