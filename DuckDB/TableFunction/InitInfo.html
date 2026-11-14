@@ -495,6 +495,8 @@
 
         <li ><a href="#method-i-column_index">column_index</a></li>
 
+        <li ><a href="#method-i-init_data-3D">init_data=</a></li>
+
         <li ><a href="#method-i-max_threads-3D">max_threads=</a></li>
 
         <li ><a href="#method-i-set_error">set_error</a></li>
@@ -624,7 +626,7 @@
             <pre class="c" data-language="c">static VALUE table_function_init_info_bind_data(VALUE self) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     return rbduckdb_function_data_lookup(duckdb_init_get_bind_data(ctx-&gt;info));
 }</pre>
@@ -675,7 +677,7 @@
             <pre class="c" data-language="c">static VALUE table_function_init_info_column_count(VALUE self) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     return ULL2NUM(duckdb_init_get_column_count(ctx-&gt;info));
 }</pre>
@@ -726,7 +728,7 @@
             <pre class="c" data-language="c">static VALUE table_function_init_info_column_index(VALUE self, VALUE index) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     return ULL2NUM(duckdb_init_get_column_index(ctx-&gt;info, NUM2ULL(index)));
 }</pre>
@@ -740,6 +742,69 @@
           <p>Returns the column index of the projected result column at <code>index</code> (0 &lt;= <code>index</code> &lt; <a href="InitInfo.html#method-i-column_count"><code>column_count</code></a>), i.e. the position of that column among the columns added in the bind callback. With projection pushdown enabled, the <code>index</code>-th vector of the output chunk corresponds to this column.</p>
 
 <pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">column_index</span>(<span class="ruby-value">0</span>) <span class="ruby-comment"># =&gt; 0</span>
+</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-init_data-3D" class="method-detail anchor-link ">
+        <div class="method-header">
+
+
+              <div class="method-heading">
+                <a href="#method-i-init_data-3D" title="Link to this method">
+                  <span class="method-callseq">
+                    init_data = data
+                  </span>
+                </a>
+              </div>
+
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="init_data-3D-source">
+            <pre class="c" data-language="c">static VALUE table_function_init_info_set_init_data(VALUE self, VALUE data) {
+    rubyDuckDBInitInfo *ctx;
+    void *handle;
+
+    ctx = get_valid_init_info(self);
+
+    if (ctx-&gt;init_data_handle != NULL) {
+        rbduckdb_function_data_release(ctx-&gt;init_data_handle);
+    }
+    handle = rbduckdb_function_data_register(data);
+    ctx-&gt;init_data_handle = handle;
+    duckdb_init_set_init_data(ctx-&gt;info, handle, rbduckdb_function_data_destroy);
+
+    return self;
+}</pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Stores an arbitrary Ruby object as the table function’s global init data. The same object can be retrieved during execution with <a href="FunctionInfo.html#method-i-init_data"><code>DuckDB::TableFunction::FunctionInfo#init_data</code></a>, and is kept alive until <a href="../../DuckDB.html"><code>DuckDB</code></a> frees the init data at the end of the scan. Useful for keeping scan state (e.g. a cursor or remaining rows) across execute calls.</p>
+
+<p>The init data is shared by every thread that executes the table function. When <a href="InitInfo.html#method-i-max_threads-3D"><code>DuckDB::TableFunction::InitInfo#max_threads=</code></a> is greater than 1, the execute callback may run on several threads at once, so guard any mutation of the shared object (e.g. with a Mutex).</p>
+
+<p>Must be called inside the init callback; using the <a href="InitInfo.html"><code>InitInfo</code></a> object after the callback has returned raises <a href="../Error.html"><code>DuckDB::Error</code></a>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">init_info</span>.<span class="ruby-identifier">init_data</span> = { <span class="ruby-value">offset:</span> <span class="ruby-value">0</span>, <span class="ruby-value">lock:</span> <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span> }
 </pre>
 
 
@@ -818,7 +883,7 @@
     rubyDuckDBInitInfo *ctx;
     const char *error_msg;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     error_msg = StringValueCStr(error);
     duckdb_init_set_error(ctx-&gt;info, error_msg);
@@ -880,7 +945,7 @@
             <pre class="c" data-language="c">static VALUE table_function_init_info_set_max_threads(VALUE self, VALUE max_threads) {
     rubyDuckDBInitInfo *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBInitInfo, &amp;init_info_data_type, ctx);
+    ctx = get_valid_init_info(self);
 
     duckdb_init_set_max_threads(ctx-&gt;info, NUM2ULL(max_threads));
 
