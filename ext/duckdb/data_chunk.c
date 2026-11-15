@@ -84,14 +84,10 @@ duckdb_data_chunk rbduckdb_get_valid_data_chunk(VALUE obj) {
 }
 
 /*
- * Detaches +obj+ from its DuckDB chunk. Used for the output chunk passed to a
- * TableFunction execute callback, which DuckDB owns and which is only valid
- * while the callback runs. Vectors obtained from +obj+ become invalid too.
+ * Releases the chunk held by +ctx+ (destroying it only if owned) and bumps
+ * the generation so that Vectors obtained from it become invalid.
  */
-void rbduckdb_data_chunk_invalidate(VALUE obj) {
-    rubyDuckDBDataChunk *ctx;
-
-    TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+static void detach_data_chunk(rubyDuckDBDataChunk *ctx) {
     free_column_types(ctx);
     if (ctx->owned && ctx->data_chunk) {
         duckdb_destroy_data_chunk(&(ctx->data_chunk));
@@ -102,9 +98,21 @@ void rbduckdb_data_chunk_invalidate(VALUE obj) {
 }
 
 /*
+ * Detaches +obj+ from its DuckDB chunk. Used for the output chunk passed to a
+ * TableFunction execute callback, which DuckDB owns and which is only valid
+ * while the callback runs. Vectors obtained from +obj+ become invalid too.
+ */
+void rbduckdb_data_chunk_invalidate(VALUE obj) {
+    rubyDuckDBDataChunk *ctx;
+
+    TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    detach_data_chunk(ctx);
+}
+
+/*
  * Returns true if +obj+ still holds the same chunk it held at +generation+.
  */
-bool rbduckdb_data_chunk_is_current(VALUE obj, unsigned long generation) {
+bool rbduckdb_data_chunk_is_current(VALUE obj, uint64_t generation) {
     rubyDuckDBDataChunk *ctx;
 
     TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
@@ -137,22 +145,23 @@ static VALUE data_chunk_initialize(int argc, VALUE *argv, VALUE self) {
 
     Check_Type(logical_types, T_ARRAY);
 
-    free_column_types(ctx);
-    if (ctx->owned && ctx->data_chunk) {
-        duckdb_destroy_data_chunk(&(ctx->data_chunk));
+    if (ctx->data_chunk && !ctx->owned) {
+        rb_raise(eDuckDBError, "cannot re-initialize a DuckDB::DataChunk owned by DuckDB");
     }
+
+    /* Validate every element before touching the current chunk or allocating. */
+    for (i = 0; i < RARRAY_LEN(logical_types); i++) {
+        rbduckdb_get_struct_logical_type(rb_ary_entry(logical_types, i));
+    }
+
     /* Vectors from the previous chunk must not be used any more. */
-    ctx->data_chunk = NULL;
-    ctx->owned = false;
-    ctx->generation++;
+    detach_data_chunk(ctx);
 
     column_count = (idx_t)RARRAY_LEN(logical_types);
     types = ALLOC_N(duckdb_logical_type, column_count);
 
-    for (i = 0; i < RARRAY_LEN(logical_types); i++) {
-        VALUE logical_type = rb_ary_entry(logical_types, i);
-        rubyDuckDBLogicalType *logical_type_ctx = rbduckdb_get_struct_logical_type(logical_type);
-        types[i] = logical_type_ctx->logical_type;
+    for (i = 0; i < (long)column_count; i++) {
+        types[i] = rbduckdb_get_struct_logical_type(rb_ary_entry(logical_types, i))->logical_type;
     }
 
     ctx->data_chunk = duckdb_create_data_chunk(types, column_count);
@@ -217,9 +226,9 @@ static VALUE data_chunk_set_size(VALUE self, VALUE size) {
     rubyDuckDBDataChunk *ctx;
     idx_t sz;
 
-    ctx = get_valid_data_chunk(self);
-
+    /* Convert arguments first: to_int may run Ruby code. */
     sz = NUM2ULL(size);
+    ctx = get_valid_data_chunk(self);
     duckdb_data_chunk_set_size(ctx->data_chunk, sz);
 
     return size;
@@ -232,15 +241,24 @@ static VALUE data_chunk_set_size(VALUE self, VALUE size) {
  * Gets the vector at the specified column index.
  *
  *   vector = data_chunk.get_vector(0)
+ *
+ * Raises IndexError if +col_idx+ is out of range. The returned vector raises
+ * DuckDB::Error once the data chunk is no longer valid.
  */
 static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx) {
     rubyDuckDBDataChunk *ctx;
     idx_t idx;
     duckdb_vector vector;
 
-    ctx = get_valid_data_chunk(self);
-
+    /* Convert arguments first: to_int may run Ruby code. */
+    if (NUM2LL(col_idx) < 0) {
+        rb_raise(rb_eIndexError, "column index %"PRIsVALUE" out of range", rb_inspect(col_idx));
+    }
     idx = NUM2ULL(col_idx);
+    ctx = get_valid_data_chunk(self);
+    if (idx >= duckdb_data_chunk_get_column_count(ctx->data_chunk)) {
+        rb_raise(rb_eIndexError, "column index %llu out of range", (unsigned long long)idx);
+    }
     vector = duckdb_data_chunk_get_vector(ctx->data_chunk, idx);
 
     return rbduckdb_vector_new(self, ctx->generation, vector);
@@ -301,8 +319,7 @@ static VALUE data_chunk_set_value(VALUE self, VALUE col_idx, VALUE row_idx, VALU
     duckdb_vector vector;
     duckdb_logical_type type;
 
-    ctx = get_valid_data_chunk(self);
-
+    /* Convert arguments first: to_int may run Ruby code. */
     if (NUM2LL(col_idx) < 0) {
         rb_raise(rb_eIndexError, "column index %"PRIsVALUE" out of range", rb_inspect(col_idx));
     }
@@ -311,6 +328,7 @@ static VALUE data_chunk_set_value(VALUE self, VALUE col_idx, VALUE row_idx, VALU
     }
     col = NUM2ULL(col_idx);
     row = NUM2ULL(row_idx);
+    ctx = get_valid_data_chunk(self);
     if (col >= duckdb_data_chunk_get_column_count(ctx->data_chunk)) {
         rb_raise(rb_eIndexError, "column index %llu out of range", (unsigned long long)col);
     }

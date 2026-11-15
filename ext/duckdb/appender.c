@@ -446,9 +446,12 @@ static VALUE appender__append_data_chunk(VALUE self, VALUE chunk) {
 
 /* :nodoc: */
 static VALUE appender__append_default_to_chunk(VALUE self, VALUE chunk, VALUE col, VALUE row) {
+    /* Convert arguments first: to_int may run Ruby code. */
+    idx_t col_idx = NUM2ULL(col);
+    idx_t row_idx = NUM2ULL(row);
     duckdb_data_chunk data_chunk = rbduckdb_get_valid_data_chunk(chunk);
 
-    return state_to_rbool(duckdb_append_default_to_chunk(appender_of(self), data_chunk, NUM2ULL(col), NUM2ULL(row)));
+    return state_to_rbool(duckdb_append_default_to_chunk(appender_of(self), data_chunk, col_idx, row_idx));
 }
 
 /* :nodoc: */

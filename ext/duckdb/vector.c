@@ -46,7 +46,7 @@ static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBVector);
 }
 
-VALUE rbduckdb_vector_new(VALUE data_chunk, unsigned long data_chunk_generation, duckdb_vector vector) {
+VALUE rbduckdb_vector_new(VALUE data_chunk, uint64_t data_chunk_generation, duckdb_vector vector) {
     rubyDuckDBVector *ctx;
     VALUE obj = allocate(cDuckDBVector);
 
@@ -130,10 +130,10 @@ static VALUE vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
     idx_t idx;
     const char *string_val;
 
-    ctx = get_valid_vector(self);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     idx = NUM2ULL(index);
     string_val = StringValueCStr(str);
+    ctx = get_valid_vector(self);
 
     duckdb_vector_assign_string_element(ctx->vector, idx, string_val);
 
@@ -155,11 +155,11 @@ static VALUE vector_assign_string_element_len(VALUE self, VALUE index, VALUE str
     const char *string_val;
     idx_t str_len;
 
-    ctx = get_valid_vector(self);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     idx = NUM2ULL(index);
     string_val = StringValuePtr(str);
     str_len = RSTRING_LEN(str);
+    ctx = get_valid_vector(self);
 
     duckdb_vector_assign_string_element_len(ctx->vector, idx, string_val, str_len);
 
@@ -201,9 +201,9 @@ static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid) {
     idx_t idx;
     uint64_t *validity;
 
-    ctx = get_valid_vector(self);
-
+    /* Convert arguments first: to_int may run Ruby code. */
     idx = NUM2ULL(index);
+    ctx = get_valid_vector(self);
 
     if (RTEST(valid)) {
         // Setting to valid - ensure validity mask exists and set bit

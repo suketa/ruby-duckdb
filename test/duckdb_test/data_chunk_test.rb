@@ -554,16 +554,51 @@ module DuckDBTest
     end
 
     def test_vector_from_user_owned_data_chunk_keeps_chunk_alive
-      vector = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER]).get_vector(0)
+      vector = vector_of_unreferenced_data_chunk
       GC.start
+      GC.compact if GC.respond_to?(:compact)
 
       assert_equal :integer, vector.logical_type.type
+    end
+
+    def test_get_vector_with_out_of_range_index_raises_index_error
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+
+      assert_raises(IndexError) { chunk.get_vector(1) }
+      assert_raises(IndexError) { chunk.get_vector(-1) }
+    end
+
+    def test_initialize_with_invalid_type_keeps_current_chunk
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      vector = chunk.get_vector(0)
+
+      assert_raises(TypeError) { chunk.send(:initialize, [DuckDB::LogicalType::VARCHAR, 'oops']) }
+      assert_equal 1, chunk.column_count
+      assert_equal :integer, vector.logical_type.type
+    end
+
+    def test_reinitialize_execute_output_raises
+      error = nil
+      table_function = stale_output_table_function('test_reinit_output') do |output|
+        output.send(:initialize, [DuckDB::LogicalType::VARCHAR])
+      rescue DuckDB::Error => e
+        error = e
+      end
+
+      @conn.register_table_function(table_function)
+      @conn.query('SELECT * FROM test_reinit_output()').each.to_a
+
+      assert_instance_of DuckDB::Error, error
     end
 
     private
 
     def time_parts(time)
       [time.year, time.month, time.day, time.hour, time.min, time.sec]
+    end
+
+    def vector_of_unreferenced_data_chunk
+      DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER]).get_vector(0)
     end
 
     def stale_output_table_function(name, &block)
