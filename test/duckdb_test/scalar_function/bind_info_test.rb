@@ -229,5 +229,23 @@ module DuckDBTest
 
       assert_instance_of DuckDB::ClientContext, received
     end
+
+    def test_bind_info_used_after_bind_callback_raises # rubocop:disable Minitest/MultipleAssertions
+      saved_bind_info = nil
+
+      sf = DuckDB::ScalarFunction.new
+      sf.name = 'test_bind_info_stale'
+      sf.return_type = :integer
+      sf.add_parameter(:integer)
+      sf.set_bind { |bind_info| saved_bind_info = bind_info }
+      sf.set_function { |v| v }
+      @conn.register_scalar_function(sf)
+      @conn.execute('SELECT test_bind_info_stale(1)')
+
+      assert_raises(DuckDB::Error) { saved_bind_info.argument_count }
+      assert_raises(DuckDB::Error) { saved_bind_info.set_error('late') }
+      assert_raises(DuckDB::Error) { saved_bind_info.get_argument(0) }
+      assert_raises(DuckDB::Error) { saved_bind_info.client_context }
+    end
   end
 end

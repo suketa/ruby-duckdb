@@ -379,6 +379,8 @@ static void execute_bind_callback_protected(void *user_data) {
     arg.bind_info_obj = rbduckdb_scalar_function_bind_info_new(darg->info);
 
     rb_protect(call_bind_proc, (VALUE)&arg, &exception_state);
+    /* duckdb_bind_info is only valid during the callback. */
+    rbduckdb_scalar_function_bind_info_invalidate(arg.bind_info_obj);
     if (exception_state) {
         VALUE msg = rbduckdb_pending_error_message();
         duckdb_scalar_function_bind_set_error(darg->info, StringValueCStr(msg));

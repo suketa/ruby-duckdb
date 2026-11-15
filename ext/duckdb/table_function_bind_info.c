@@ -40,6 +40,21 @@ rubyDuckDBBindInfo *rbduckdb_get_struct_bind_info(VALUE obj) {
 }
 
 /*
+ * Returns the struct for +self+, raising DuckDB::Error if the underlying
+ * DuckDB info is no longer valid (i.e. the object is used after the bind
+ * callback has returned).
+ */
+static rubyDuckDBBindInfo *get_valid_bind_info(VALUE self) {
+    rubyDuckDBBindInfo *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
+    if (ctx->bind_info == NULL) {
+        rb_raise(eDuckDBError, "DuckDB::TableFunction::BindInfo can only be used inside the bind callback");
+    }
+    return ctx;
+}
+
+/*
  * Converts a duckdb_value to a Ruby VALUE.
  * Handles basic types: BIGINT, INTEGER, VARCHAR, DOUBLE, BOOLEAN.
  * Returns Qnil for unsupported types.
@@ -57,7 +72,7 @@ static VALUE table_function_bind_info_parameter_count(VALUE self) {
     rubyDuckDBBindInfo *ctx;
     idx_t count;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
+    ctx = get_valid_bind_info(self);
 
     count = duckdb_bind_get_parameter_count(ctx->bind_info);
 
@@ -77,9 +92,9 @@ static VALUE table_function_bind_info_get_parameter(VALUE self, VALUE index) {
     idx_t idx;
     duckdb_value param_value;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     idx = NUM2ULL(index);
+    ctx = get_valid_bind_info(self);
     param_value = duckdb_bind_get_parameter(ctx->bind_info, idx);
 
     return rbduckdb_duckdb_value_to_ruby_and_destroy(param_value);
@@ -98,9 +113,9 @@ static VALUE table_function_bind_info_get_named_parameter(VALUE self, VALUE name
     const char *param_name;
     duckdb_value param_value;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     param_name = StringValueCStr(name);
+    ctx = get_valid_bind_info(self);
     param_value = duckdb_bind_get_named_parameter(ctx->bind_info, param_name);
 
     // If parameter not found, return nil
@@ -125,10 +140,10 @@ static VALUE table_function_bind_info__add_result_column(VALUE self, VALUE colum
     rubyDuckDBLogicalType *ctx_logical_type;
     const char *col_name;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     col_name = StringValueCStr(column_name);
+    ctx_logical_type = rbduckdb_get_struct_logical_type(logical_type);
+    ctx = get_valid_bind_info(self);
     duckdb_bind_add_result_column(ctx->bind_info, col_name, ctx_logical_type->logical_type);
 
     return self;
@@ -148,10 +163,10 @@ static VALUE table_function_bind_info_set_cardinality(VALUE self, VALUE cardinal
     idx_t card;
     bool exact;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     card = NUM2ULL(cardinality);
     exact = RTEST(is_exact);
+    ctx = get_valid_bind_info(self);
 
     duckdb_bind_set_cardinality(ctx->bind_info, card, exact);
 
@@ -172,7 +187,7 @@ static VALUE table_function_bind_info_set_bind_data(VALUE self, VALUE data) {
     rubyDuckDBBindInfo *ctx;
     void *handle;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
+    ctx = get_valid_bind_info(self);
 
     if (ctx->bind_data_handle != NULL) {
         rbduckdb_function_data_release(ctx->bind_data_handle);
@@ -196,9 +211,9 @@ static VALUE table_function_bind_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBBindInfo *ctx;
     const char *error_msg;
 
-    TypedData_Get_Struct(self, rubyDuckDBBindInfo, &bind_info_data_type, ctx);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     error_msg = StringValueCStr(error);
+    ctx = get_valid_bind_info(self);
     duckdb_bind_set_error(ctx->bind_info, error_msg);
 
     return self;

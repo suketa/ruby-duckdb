@@ -2,6 +2,8 @@
 
 VALUE cDuckDBVector;
 
+static void mark(void *ctx);
+static void compact(void *ctx);
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
 static size_t memsize(const void *p);
@@ -14,9 +16,19 @@ static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid);
 
 static const rb_data_type_t vector_data_type = {
     "DuckDB/Vector",
-    {NULL, deallocate, memsize,},
+    {mark, deallocate, memsize, compact},
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY | RUBY_TYPED_WB_PROTECTED
 };
+
+static void mark(void *ctx) {
+    rubyDuckDBVector *p = (rubyDuckDBVector *)ctx;
+    rb_gc_mark_movable(p->data_chunk);
+}
+
+static void compact(void *ctx) {
+    rubyDuckDBVector *p = (rubyDuckDBVector *)ctx;
+    p->data_chunk = rb_gc_location(p->data_chunk);
+}
 
 static void deallocate(void *ctx) {
     rubyDuckDBVector *p = (rubyDuckDBVector *)ctx;
@@ -25,16 +37,39 @@ static void deallocate(void *ctx) {
 
 static VALUE allocate(VALUE klass) {
     rubyDuckDBVector *ctx;
-    return TypedData_Make_Struct(klass, rubyDuckDBVector, &vector_data_type, ctx);
+    VALUE obj = TypedData_Make_Struct(klass, rubyDuckDBVector, &vector_data_type, ctx);
+    ctx->data_chunk = Qnil;
+    return obj;
 }
 
 static size_t memsize(const void *p) {
     return sizeof(rubyDuckDBVector);
 }
 
-rubyDuckDBVector *rbduckdb_get_struct_vector(VALUE obj) {
+VALUE rbduckdb_vector_new(VALUE data_chunk, uint64_t data_chunk_generation, duckdb_vector vector) {
     rubyDuckDBVector *ctx;
+    VALUE obj = allocate(cDuckDBVector);
+
     TypedData_Get_Struct(obj, rubyDuckDBVector, &vector_data_type, ctx);
+    RB_OBJ_WRITE(obj, &ctx->data_chunk, data_chunk);
+    ctx->data_chunk_generation = data_chunk_generation;
+    ctx->vector = vector;
+    return obj;
+}
+
+/*
+ * Returns the struct for +self+, raising DuckDB::Error if the vector is no
+ * longer usable: its DataChunk was the output of a TableFunction execute
+ * callback that has returned, or the DataChunk was re-initialized.
+ */
+static rubyDuckDBVector *get_valid_vector(VALUE self) {
+    rubyDuckDBVector *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+    if (ctx->vector == NULL || NIL_P(ctx->data_chunk) ||
+        !rbduckdb_data_chunk_is_current(ctx->data_chunk, ctx->data_chunk_generation)) {
+        rb_raise(eDuckDBError, "DuckDB::Vector is no longer valid (its DuckDB::DataChunk is gone or was re-initialized)");
+    }
     return ctx;
 }
 
@@ -51,7 +86,7 @@ static VALUE vector_get_data(VALUE self) {
     rubyDuckDBVector *ctx;
     void *data;
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+    ctx = get_valid_vector(self);
 
     data = duckdb_vector_get_data(ctx->vector);
 
@@ -71,7 +106,7 @@ static VALUE vector_get_validity(VALUE self) {
     rubyDuckDBVector *ctx;
     uint64_t *validity;
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+    ctx = get_valid_vector(self);
 
     validity = duckdb_vector_get_validity(ctx->vector);
 
@@ -95,10 +130,10 @@ static VALUE vector_assign_string_element(VALUE self, VALUE index, VALUE str) {
     idx_t idx;
     const char *string_val;
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     idx = NUM2ULL(index);
     string_val = StringValueCStr(str);
+    ctx = get_valid_vector(self);
 
     duckdb_vector_assign_string_element(ctx->vector, idx, string_val);
 
@@ -120,11 +155,11 @@ static VALUE vector_assign_string_element_len(VALUE self, VALUE index, VALUE str
     const char *string_val;
     idx_t str_len;
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
-
+    /* Convert arguments first: to_int/to_str may run Ruby code. */
     idx = NUM2ULL(index);
     string_val = StringValuePtr(str);
     str_len = RSTRING_LEN(str);
+    ctx = get_valid_vector(self);
 
     duckdb_vector_assign_string_element_len(ctx->vector, idx, string_val, str_len);
 
@@ -145,7 +180,7 @@ static VALUE vector_logical_type(VALUE self) {
     rubyDuckDBVector *ctx;
     duckdb_logical_type logical_type;
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
+    ctx = get_valid_vector(self);
 
     logical_type = duckdb_vector_get_column_type(ctx->vector);
 
@@ -166,9 +201,9 @@ static VALUE vector_set_validity(VALUE self, VALUE index, VALUE valid) {
     idx_t idx;
     uint64_t *validity;
 
-    TypedData_Get_Struct(self, rubyDuckDBVector, &vector_data_type, ctx);
-
+    /* Convert arguments first: to_int may run Ruby code. */
     idx = NUM2ULL(index);
+    ctx = get_valid_vector(self);
 
     if (RTEST(valid)) {
         // Setting to valid - ensure validity mask exists and set bit

@@ -182,5 +182,30 @@ module DuckDBTest
 
       assert_equal table_function, result
     end
+
+    def test_bind_info_used_after_bind_callback_raises # rubocop:disable Minitest/MultipleAssertions
+      table_function = DuckDB::TableFunction.new
+      table_function.name = 'test_bind_info_stale'
+      table_function.add_parameter(DuckDB::LogicalType::BIGINT)
+
+      saved_bind_info = nil
+      table_function.bind do |bind_info|
+        saved_bind_info = bind_info
+        bind_info.add_result_column('value', DuckDB::LogicalType::BIGINT)
+      end
+      table_function.init { |_init_info| nil }
+      table_function.execute { |_func_info, output| output.size = 0 }
+
+      @conn.register_table_function(table_function)
+      @conn.query('SELECT * FROM test_bind_info_stale(1)').each.to_a
+
+      assert_raises(DuckDB::Error) { saved_bind_info.parameter_count }
+      assert_raises(DuckDB::Error) { saved_bind_info.get_parameter(0) }
+      assert_raises(DuckDB::Error) { saved_bind_info.get_named_parameter('limit') }
+      assert_raises(DuckDB::Error) { saved_bind_info.set_cardinality(1, true) }
+      assert_raises(DuckDB::Error) { saved_bind_info.bind_data = { late: true } }
+      assert_raises(DuckDB::Error) { saved_bind_info.set_error('late') }
+      assert_raises(DuckDB::Error) { saved_bind_info.add_result_column('late', DuckDB::LogicalType::BIGINT) }
+    end
   end
 end

@@ -39,6 +39,30 @@ VALUE rbduckdb_scalar_function_bind_info_new(duckdb_bind_info bind_info) {
 }
 
 /*
+ * Marks +obj+ as no longer usable. Called after the bind callback returns,
+ * because the duckdb_bind_info is only valid while the callback runs.
+ */
+void rbduckdb_scalar_function_bind_info_invalidate(VALUE obj) {
+    rubyDuckDBScalarFunctionBindInfo *ctx;
+    TypedData_Get_Struct(obj, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
+    ctx->bind_info = NULL;
+}
+
+/*
+ * Returns the struct for +self+, raising DuckDB::Error if the underlying
+ * DuckDB info is no longer valid (i.e. the object is used after the bind
+ * callback has returned).
+ */
+static rubyDuckDBScalarFunctionBindInfo *get_valid_bind_info(VALUE self) {
+    rubyDuckDBScalarFunctionBindInfo *ctx;
+    TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
+    if (ctx->bind_info == NULL) {
+        rb_raise(eDuckDBError, "DuckDB::ScalarFunction::BindInfo can only be used inside the bind callback");
+    }
+    return ctx;
+}
+
+/*
  * call-seq:
  *   bind_info.argument_count -> Integer
  *
@@ -48,7 +72,7 @@ VALUE rbduckdb_scalar_function_bind_info_new(duckdb_bind_info bind_info) {
  */
 static VALUE scalar_function_bind_info_argument_count(VALUE self) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
+    ctx = get_valid_bind_info(self);
     return ULL2NUM(duckdb_scalar_function_bind_get_argument_count(ctx->bind_info));
 }
 
@@ -63,8 +87,10 @@ static VALUE scalar_function_bind_info_argument_count(VALUE self) {
  */
 static VALUE scalar_function_bind_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
-    duckdb_scalar_function_bind_set_error(ctx->bind_info, StringValueCStr(error));
+    /* Convert arguments first: to_str may run Ruby code. */
+    const char *message = StringValueCStr(error);
+    ctx = get_valid_bind_info(self);
+    duckdb_scalar_function_bind_set_error(ctx->bind_info, message);
     return self;
 }
 
@@ -77,8 +103,11 @@ static VALUE scalar_function_bind_info_set_error(VALUE self, VALUE error) {
  */
 static VALUE scalar_function_bind_info__get_argument(VALUE self, VALUE index) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
-    TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
-    duckdb_expression expr = duckdb_scalar_function_bind_get_argument(ctx->bind_info, (idx_t)NUM2ULL(index));
+    /* Convert arguments first: to_int may run Ruby code. */
+    idx_t idx = (idx_t)NUM2ULL(index);
+    duckdb_expression expr;
+    ctx = get_valid_bind_info(self);
+    expr = duckdb_scalar_function_bind_get_argument(ctx->bind_info, idx);
     return rbduckdb_expression_new(expr);
 }
 
@@ -91,7 +120,7 @@ static VALUE scalar_function_bind_info__get_argument(VALUE self, VALUE index) {
 static VALUE scalar_function_bind_info_client_context(VALUE self) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
     duckdb_client_context client_context;
-    TypedData_Get_Struct(self, rubyDuckDBScalarFunctionBindInfo, &scalar_function_bind_info_data_type, ctx);
+    ctx = get_valid_bind_info(self);
     duckdb_scalar_function_get_client_context(ctx->bind_info, &client_context);
     return rbduckdb_client_context_new(client_context);
 }

@@ -511,10 +511,106 @@ module DuckDBTest
                    @conn.query('SELECT * FROM t ORDER BY id').to_a)
     end
 
+    def test_data_chunk_used_after_execute_callback_raises # rubocop:disable Minitest/MultipleAssertions
+      saved_output = nil
+      table_function = stale_output_table_function('test_data_chunk_stale') do |output|
+        saved_output = output
+      end
+
+      @conn.register_table_function(table_function)
+      @conn.query('SELECT * FROM test_data_chunk_stale()').each.to_a
+
+      assert_raises(DuckDB::Error) { saved_output.column_count }
+      assert_raises(DuckDB::Error) { saved_output.size }
+      assert_raises(DuckDB::Error) { saved_output.size = 1 }
+      assert_raises(DuckDB::Error) { saved_output.get_vector(0) }
+      assert_raises(DuckDB::Error) { saved_output.set_value(0, 0, 1) }
+      assert_raises(DuckDB::Error) { saved_output.reset }
+    end
+
+    def test_vector_from_execute_output_used_after_callback_raises # rubocop:disable Minitest/MultipleAssertions
+      saved_vector = nil
+      table_function = stale_output_table_function('test_vector_stale') do |output|
+        saved_vector = output.get_vector(0)
+      end
+
+      @conn.register_table_function(table_function)
+      @conn.query('SELECT * FROM test_vector_stale()').each.to_a
+
+      assert_raises(DuckDB::Error) { saved_vector.get_data }
+      assert_raises(DuckDB::Error) { saved_vector.get_validity }
+      assert_raises(DuckDB::Error) { saved_vector.assign_string_element(0, 'late') }
+      assert_raises(DuckDB::Error) { saved_vector.assign_string_element_len(0, 'late') }
+      assert_raises(DuckDB::Error) { saved_vector.logical_type }
+      assert_raises(DuckDB::Error) { saved_vector.set_validity(0, false) }
+    end
+
+    def test_vector_from_reinitialized_data_chunk_raises
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      vector = chunk.get_vector(0)
+      chunk.send(:initialize, [DuckDB::LogicalType::VARCHAR])
+
+      assert_raises(DuckDB::Error) { vector.logical_type }
+    end
+
+    def test_vector_from_user_owned_data_chunk_keeps_chunk_alive
+      vector = vector_of_unreferenced_data_chunk
+      GC.start
+      GC.compact if GC.respond_to?(:compact)
+
+      assert_equal :integer, vector.logical_type.type
+    end
+
+    def test_get_vector_with_out_of_range_index_raises_index_error
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+
+      assert_raises(IndexError) { chunk.get_vector(1) }
+      assert_raises(IndexError) { chunk.get_vector(-1) }
+    end
+
+    def test_initialize_with_invalid_type_keeps_current_chunk
+      chunk = DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER])
+      vector = chunk.get_vector(0)
+
+      assert_raises(TypeError) { chunk.send(:initialize, [DuckDB::LogicalType::VARCHAR, 'oops']) }
+      assert_equal 1, chunk.column_count
+      assert_equal :integer, vector.logical_type.type
+    end
+
+    def test_reinitialize_execute_output_raises
+      error = nil
+      table_function = stale_output_table_function('test_reinit_output') do |output|
+        output.send(:initialize, [DuckDB::LogicalType::VARCHAR])
+      rescue DuckDB::Error => e
+        error = e
+      end
+
+      @conn.register_table_function(table_function)
+      @conn.query('SELECT * FROM test_reinit_output()').each.to_a
+
+      assert_instance_of DuckDB::Error, error
+    end
+
     private
 
     def time_parts(time)
       [time.year, time.month, time.day, time.hour, time.min, time.sec]
+    end
+
+    def vector_of_unreferenced_data_chunk
+      DuckDB::DataChunk.new([DuckDB::LogicalType::INTEGER]).get_vector(0)
+    end
+
+    def stale_output_table_function(name, &block)
+      table_function = DuckDB::TableFunction.new
+      table_function.name = name
+      table_function.bind { |bind_info| bind_info.add_result_column('value', DuckDB::LogicalType::VARCHAR) }
+      table_function.init { |_init_info| nil }
+      table_function.execute do |_func_info, output|
+        block.call(output)
+        output.size = 0
+      end
+      table_function
     end
   end
 end
