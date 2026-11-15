@@ -87,8 +87,10 @@ static VALUE scalar_function_bind_info_argument_count(VALUE self) {
  */
 static VALUE scalar_function_bind_info_set_error(VALUE self, VALUE error) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
+    /* Convert arguments first: to_str may run Ruby code. */
+    const char *message = StringValueCStr(error);
     ctx = get_valid_bind_info(self);
-    duckdb_scalar_function_bind_set_error(ctx->bind_info, StringValueCStr(error));
+    duckdb_scalar_function_bind_set_error(ctx->bind_info, message);
     return self;
 }
 
@@ -101,8 +103,11 @@ static VALUE scalar_function_bind_info_set_error(VALUE self, VALUE error) {
  */
 static VALUE scalar_function_bind_info__get_argument(VALUE self, VALUE index) {
     rubyDuckDBScalarFunctionBindInfo *ctx;
+    /* Convert arguments first: to_int may run Ruby code. */
+    idx_t idx = (idx_t)NUM2ULL(index);
+    duckdb_expression expr;
     ctx = get_valid_bind_info(self);
-    duckdb_expression expr = duckdb_scalar_function_bind_get_argument(ctx->bind_info, (idx_t)NUM2ULL(index));
+    expr = duckdb_scalar_function_bind_get_argument(ctx->bind_info, idx);
     return rbduckdb_expression_new(expr);
 }
 
