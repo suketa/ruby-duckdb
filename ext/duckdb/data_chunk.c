@@ -1,7 +1,6 @@
 #include "ruby-duckdb.h"
 
 VALUE cDuckDBDataChunk;
-extern VALUE cDuckDBVector;
 
 static void deallocate(void *ctx);
 static VALUE allocate(VALUE klass);
@@ -65,6 +64,53 @@ rubyDuckDBDataChunk *rbduckdb_get_struct_data_chunk(VALUE obj) {
     return ctx;
 }
 
+/*
+ * Returns the struct for +self+, raising DuckDB::Error if it does not hold a
+ * usable chunk: either it was never initialized, or it was the output chunk
+ * of a TableFunction execute callback that has already returned.
+ */
+static rubyDuckDBDataChunk *get_valid_data_chunk(VALUE self) {
+    rubyDuckDBDataChunk *ctx;
+
+    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    if (ctx->data_chunk == NULL) {
+        rb_raise(eDuckDBError, "DuckDB::DataChunk is not available (it is not initialized, or it was used after the table function execute callback returned)");
+    }
+    return ctx;
+}
+
+duckdb_data_chunk rbduckdb_get_valid_data_chunk(VALUE obj) {
+    return get_valid_data_chunk(obj)->data_chunk;
+}
+
+/*
+ * Detaches +obj+ from its DuckDB chunk. Used for the output chunk passed to a
+ * TableFunction execute callback, which DuckDB owns and which is only valid
+ * while the callback runs. Vectors obtained from +obj+ become invalid too.
+ */
+void rbduckdb_data_chunk_invalidate(VALUE obj) {
+    rubyDuckDBDataChunk *ctx;
+
+    TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    free_column_types(ctx);
+    if (ctx->owned && ctx->data_chunk) {
+        duckdb_destroy_data_chunk(&(ctx->data_chunk));
+    }
+    ctx->data_chunk = NULL;
+    ctx->owned = false;
+    ctx->generation++;
+}
+
+/*
+ * Returns true if +obj+ still holds the same chunk it held at +generation+.
+ */
+bool rbduckdb_data_chunk_is_current(VALUE obj, unsigned long generation) {
+    rubyDuckDBDataChunk *ctx;
+
+    TypedData_Get_Struct(obj, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    return ctx->data_chunk != NULL && ctx->generation == generation;
+}
+
 VALUE rbduckdb_create_data_chunk(duckdb_data_chunk chunk, bool owned) {
     VALUE obj = allocate(cDuckDBDataChunk);
     rubyDuckDBDataChunk *ctx;
@@ -94,8 +140,11 @@ static VALUE data_chunk_initialize(int argc, VALUE *argv, VALUE self) {
     free_column_types(ctx);
     if (ctx->owned && ctx->data_chunk) {
         duckdb_destroy_data_chunk(&(ctx->data_chunk));
-        ctx->owned = false;
     }
+    /* Vectors from the previous chunk must not be used any more. */
+    ctx->data_chunk = NULL;
+    ctx->owned = false;
+    ctx->generation++;
 
     column_count = (idx_t)RARRAY_LEN(logical_types);
     types = ALLOC_N(duckdb_logical_type, column_count);
@@ -130,7 +179,7 @@ static VALUE data_chunk_column_count(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t count;
 
-    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx = get_valid_data_chunk(self);
 
     count = duckdb_data_chunk_get_column_count(ctx->data_chunk);
 
@@ -149,7 +198,7 @@ static VALUE data_chunk_size(VALUE self) {
     rubyDuckDBDataChunk *ctx;
     idx_t size;
 
-    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx = get_valid_data_chunk(self);
 
     size = duckdb_data_chunk_get_size(ctx->data_chunk);
 
@@ -168,7 +217,7 @@ static VALUE data_chunk_set_size(VALUE self, VALUE size) {
     rubyDuckDBDataChunk *ctx;
     idx_t sz;
 
-    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx = get_valid_data_chunk(self);
 
     sz = NUM2ULL(size);
     duckdb_data_chunk_set_size(ctx->data_chunk, sz);
@@ -188,20 +237,13 @@ static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx) {
     rubyDuckDBDataChunk *ctx;
     idx_t idx;
     duckdb_vector vector;
-    VALUE vector_obj;
-    rubyDuckDBVector *vector_ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx = get_valid_data_chunk(self);
 
     idx = NUM2ULL(col_idx);
     vector = duckdb_data_chunk_get_vector(ctx->data_chunk, idx);
 
-    // Create Vector wrapper
-    vector_obj = rb_class_new_instance(0, NULL, cDuckDBVector);
-    vector_ctx = rbduckdb_get_struct_vector(vector_obj);
-    vector_ctx->vector = vector;
-
-    return vector_obj;
+    return rbduckdb_vector_new(self, ctx->generation, vector);
 }
 
 /*
@@ -215,7 +257,7 @@ static VALUE data_chunk_get_vector(VALUE self, VALUE col_idx) {
 static VALUE data_chunk__reset(VALUE self) {
     rubyDuckDBDataChunk *ctx;
 
-    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx = get_valid_data_chunk(self);
 
     duckdb_data_chunk_reset(ctx->data_chunk);
 
@@ -259,11 +301,8 @@ static VALUE data_chunk_set_value(VALUE self, VALUE col_idx, VALUE row_idx, VALU
     duckdb_vector vector;
     duckdb_logical_type type;
 
-    TypedData_Get_Struct(self, rubyDuckDBDataChunk, &data_chunk_data_type, ctx);
+    ctx = get_valid_data_chunk(self);
 
-    if (!ctx->data_chunk) {
-        rb_raise(eDuckDBError, "data chunk is not initialized");
-    }
     if (NUM2LL(col_idx) < 0) {
         rb_raise(rb_eIndexError, "column index %"PRIsVALUE" out of range", rb_inspect(col_idx));
     }

@@ -183,7 +183,7 @@ module DuckDBTest
       assert_equal table_function, result
     end
 
-    def test_bind_info_used_after_bind_callback_raises
+    def test_bind_info_used_after_bind_callback_raises # rubocop:disable Minitest/MultipleAssertions
       table_function = DuckDB::TableFunction.new
       table_function.name = 'test_bind_info_stale'
       table_function.add_parameter(DuckDB::LogicalType::BIGINT)

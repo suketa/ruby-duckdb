@@ -439,20 +439,16 @@ static VALUE appender__append_value(VALUE self, VALUE val) {
 
 /* :nodoc: */
 static VALUE appender__append_data_chunk(VALUE self, VALUE chunk) {
-    rubyDuckDBDataChunk *chunk_ctx;
+    duckdb_data_chunk data_chunk = rbduckdb_get_valid_data_chunk(chunk);
 
-    chunk_ctx = rbduckdb_get_struct_data_chunk(chunk);
-
-    return state_to_rbool(duckdb_append_data_chunk(appender_of(self), chunk_ctx->data_chunk));
+    return state_to_rbool(duckdb_append_data_chunk(appender_of(self), data_chunk));
 }
 
 /* :nodoc: */
 static VALUE appender__append_default_to_chunk(VALUE self, VALUE chunk, VALUE col, VALUE row) {
-    rubyDuckDBDataChunk *chunk_ctx;
+    duckdb_data_chunk data_chunk = rbduckdb_get_valid_data_chunk(chunk);
 
-    chunk_ctx = rbduckdb_get_struct_data_chunk(chunk);
-
-    return state_to_rbool(duckdb_append_default_to_chunk(appender_of(self), chunk_ctx->data_chunk, NUM2ULL(col), NUM2ULL(row)));
+    return state_to_rbool(duckdb_append_default_to_chunk(appender_of(self), data_chunk, NUM2ULL(col), NUM2ULL(row)));
 }
 
 /* :nodoc: */

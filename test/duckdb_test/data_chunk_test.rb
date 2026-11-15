@@ -511,7 +511,7 @@ module DuckDBTest
                    @conn.query('SELECT * FROM t ORDER BY id').to_a)
     end
 
-    def test_data_chunk_used_after_execute_callback_raises
+    def test_data_chunk_used_after_execute_callback_raises # rubocop:disable Minitest/MultipleAssertions
       saved_output = nil
       table_function = stale_output_table_function('test_data_chunk_stale') do |output|
         saved_output = output
@@ -528,7 +528,7 @@ module DuckDBTest
       assert_raises(DuckDB::Error) { saved_output.reset }
     end
 
-    def test_vector_from_execute_output_used_after_callback_raises
+    def test_vector_from_execute_output_used_after_callback_raises # rubocop:disable Minitest/MultipleAssertions
       saved_vector = nil
       table_function = stale_output_table_function('test_vector_stale') do |output|
         saved_vector = output.get_vector(0)

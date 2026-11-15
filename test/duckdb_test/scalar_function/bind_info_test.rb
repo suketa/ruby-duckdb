@@ -230,7 +230,7 @@ module DuckDBTest
       assert_instance_of DuckDB::ClientContext, received
     end
 
-    def test_bind_info_used_after_bind_callback_raises
+    def test_bind_info_used_after_bind_callback_raises # rubocop:disable Minitest/MultipleAssertions
       saved_bind_info = nil
 
       sf = DuckDB::ScalarFunction.new
