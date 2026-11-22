@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby: ['3.3.12', '3.4.10', '4.0.9', '4.1.0-preview1', 'head']
-        duckdb: ['1.4.5', '1.5.6', '2.0.0']
+        duckdb: ['1.4.5', '1.5.6', '2.0.1']
     env:
       # Released Bundler is broken on ruby-head and 4.1.0-preview1 due to ruby/ruby#16895.
       # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.
@@ -54,7 +54,7 @@ jobs:
       run: |
         # DuckDB 2.0 ships duckdb-shared-libs-*.tar.gz instead of libduckdb-*.zip.
         case "${DUCKDB_VERSION}" in
-          "2.0.0") ASSET="duckdb-shared-libs-osx-universal.tar.gz"; EXPECTED_SHA256="14cd63180614cfd961f7959146ecd9087527ff20b67311efdc3fa1c29c18204d" ;;
+          "2.0.1") ASSET="duckdb-shared-libs-osx-universal.tar.gz"; EXPECTED_SHA256="9a4be5a2a31ad5bb8c92bf37f18d59b9c10a79b392d7848cabd6eb2e05837449" ;;
           "1.5.6") ASSET="libduckdb-osx-universal.zip"; EXPECTED_SHA256="e0bc007d9b0094c0970ac1847a8601d10aad07cbd2910ce586ec810f77b638d6" ;;
           "1.4.5") ASSET="libduckdb-osx-universal.zip"; EXPECTED_SHA256="33f840404e3b420600936d5b59d342680aa4af41cc06d9a5589711e43cd75766" ;;
           *) echo "No known SHA256 for DuckDB v${DUCKDB_VERSION}"; exit 1 ;;

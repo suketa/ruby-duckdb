@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby: ['3.3.10', '3.4.10', '4.0.7', 'ucrt', 'mingw', 'mswin', 'head']
-        duckdb: ['1.4.5', '1.5.6', '2.0.0']
+        duckdb: ['1.4.5', '1.5.6', '2.0.1']
     env:
       # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
       # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.
@@ -54,7 +54,7 @@ jobs:
       run: |
         # DuckDB 2.0 ships duckdb-shared-libs-*.tar.gz instead of libduckdb-*.zip.
         switch ($env:DUCKDB_VERSION) {
-          "2.0.0" { $ASSET = "duckdb-shared-libs-windows-amd64.tar.gz"; $EXPECTED_SHA256 = "2b83169128239de5f45fe21de80f99bf436e53aa4bb24020dd951a1ba8d4b95f" }
+          "2.0.1" { $ASSET = "duckdb-shared-libs-windows-amd64.tar.gz"; $EXPECTED_SHA256 = "d51f23831423b82418ee1d5bae324484f9fbe4a2c2424fa5b6be3392453c62ce" }
           "1.5.6" { $ASSET = "libduckdb-windows-amd64.zip"; $EXPECTED_SHA256 = "44cf59583f9951d2cb09b1bf115a63ecb2d8901e363903029d86c7d8683fe96a" }
           "1.4.5" { $ASSET = "libduckdb-windows-amd64.zip"; $EXPECTED_SHA256 = "f2079105369a2698f7d9663e5908a16919e7b03f4ff681ceb716b270a5903a11" }
           default { Write-Error "No known SHA256 for DuckDB v$env:DUCKDB_VERSION"; exit 1 }
