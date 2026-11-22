@@ -11,7 +11,7 @@
   <meta name="keywords" content="ruby,documentation,CHANGELOG">
   <meta
     name="description"
-    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Vector`s) passed to `TableFunction#execute` is kept and used after its"
+    content="CHANGELOG: Changelog All notable changes to this project will be documented in this file. Unreleased - bump up DuckDB 2."
   >
 
 
@@ -23,7 +23,7 @@
 
 
 
-    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Vector`s) passed to `TableFunction#execute` is kept and used after its">
+    <meta property="og:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased - bump up DuckDB 2.">
 
 
 
@@ -35,7 +35,7 @@
 
 
 
-    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Vector`s) passed to `TableFunction#execute` is kept and used after its">
+    <meta name="twitter:description" content="Changelog All notable changes to this project will be documented in this file. Unreleased - bump up DuckDB 2.">
 
 
 
@@ -473,6 +473,8 @@
 
 <h1 id="label-Unreleased"><a href="#label-Unreleased">Unreleased</a></h1>
 <ul><li>
+<p>bump up <a href="DuckDB.html"><code>DuckDB</code></a> 2.0.1 on CI.</p>
+</li><li>
 <p>fix use-after-free when <code>DuckDB::TableFunction::BindInfo</code>, <code>DuckDB::ScalarFunction::BindInfo</code>, or the <a href="DuckDB/DataChunk.html"><code>DuckDB::DataChunk</code></a> (and its <a href="DuckDB/Vector.html"><code>DuckDB::Vector</code></a>s) passed to <code>TableFunction#execute</code> is kept and used after its callback returns. Such use now raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a>. A <a href="DuckDB/Vector.html"><code>DuckDB::Vector</code></a> also keeps its <code>DataChunk</code> alive and raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a> once the chunk is re-initialized (issue #1559).</p>
 </li><li>
 <p>add <a href="DuckDB/TableFunction/InitInfo.html#method-i-init_data-3D"><code>DuckDB::TableFunction::InitInfo#init_data=</code></a> to store an arbitrary Ruby object as a custom table function’s global init data (issue #1554).</p>
