@@ -60,7 +60,6 @@ PLATFORMS
   arm-linux
   arm64-darwin
   x64-mingw-ucrt
-  x64-mingw32
   x64-mswin64
   x86-linux
   x86_64-darwin
