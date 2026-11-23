@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 # Unreleased
 - bump up DuckDB 2.0.1 on CI.
+- drop x64-mingw32 (MSVCRT) Ruby from Windows CI and Gemfile.lock platforms.
 - fix use-after-free when `DuckDB::TableFunction::BindInfo`, `DuckDB::ScalarFunction::BindInfo`, or the `DuckDB::DataChunk` (and its `DuckDB::Vector`s) passed to `TableFunction#execute` is kept and used after its callback returns. Such use now raises `DuckDB::Error`. A `DuckDB::Vector` also keeps its `DataChunk` alive and raises `DuckDB::Error` once the chunk is re-initialized (issue #1559).
 - add `DuckDB::TableFunction::InitInfo#init_data=` to store an arbitrary Ruby object as a custom table function's global init data (issue #1554).
 - add `DuckDB::TableFunction::FunctionInfo#init_data` to retrieve, during execution, the object stored by `InitInfo#init_data=` (issue #1555).
