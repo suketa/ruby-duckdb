@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 # Unreleased
+
+# 2.0.1.0 - 2026-11-27
 - bump up DuckDB 2.0.1 on CI.
 - bump Ruby to 3.3.14, 3.4.13 and 4.0.10 on CI.
 - drop x64-mingw32 (MSVCRT) Ruby from Windows CI and Gemfile.lock platforms.
