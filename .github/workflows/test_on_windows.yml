@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['3.3.10', '3.4.10', '4.0.7', 'ucrt', 'mswin', 'head']
+        ruby: ['3.3.14', '3.4.13', '4.0.10', 'ucrt', 'mswin', 'head']
         duckdb: ['1.4.5', '1.5.6', '2.0.1']
     env:
       # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
