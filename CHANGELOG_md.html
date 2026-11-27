@@ -475,6 +475,8 @@
 <ul><li>
 <p>bump up <a href="DuckDB.html"><code>DuckDB</code></a> 2.0.1 on CI.</p>
 </li><li>
+<p>bump Ruby to 3.3.14, 3.4.13 and 4.0.10 on CI.</p>
+</li><li>
 <p>drop x64-mingw32 (MSVCRT) Ruby from Windows CI and Gemfile.lock platforms.</p>
 </li><li>
 <p>fix use-after-free when <code>DuckDB::TableFunction::BindInfo</code>, <code>DuckDB::ScalarFunction::BindInfo</code>, or the <a href="DuckDB/DataChunk.html"><code>DuckDB::DataChunk</code></a> (and its <a href="DuckDB/Vector.html"><code>DuckDB::Vector</code></a>s) passed to <code>TableFunction#execute</code> is kept and used after its callback returns. Such use now raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a>. A <a href="DuckDB/Vector.html"><code>DuckDB::Vector</code></a> also keeps its <code>DataChunk</code> alive and raises <a href="DuckDB/Error.html"><code>DuckDB::Error</code></a> once the chunk is re-initialized (issue #1559).</p>
